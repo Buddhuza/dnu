@@ -11,6 +11,7 @@ const dateLabel = iso => new Intl.DateTimeFormat(undefined, { month: 'short', da
 
 function App() {
   const [config, setConfig] = useState(null);
+  const [daily, setDaily] = useState(null);
   const [activeId, setActiveId] = useState('google-news');
   const [search, setSearch] = useState('');
   const [group, setGroup] = useState('All sources');
@@ -29,6 +30,12 @@ function App() {
   const [toast, setToast] = useState('');
 
   useEffect(() => { fetch('/api/config').then(r => r.json()).then(setConfig).catch(() => setError('The server is unavailable. Start the API and refresh.')); }, []);
+  useEffect(() => {
+    const refresh = () => fetch('/api/daily-update').then(r => r.json()).then(setDaily).catch(() => {});
+    refresh();
+    const timer = setInterval(refresh, 60_000);
+    return () => clearInterval(timer);
+  }, []);
   useEffect(() => { localStorage.setItem('signal-selected', JSON.stringify(selected)); }, [selected]);
   useEffect(() => { localStorage.setItem('signal-title', JSON.stringify(reportTitle)); }, [reportTitle]);
   const sources = config?.sources ?? [];
@@ -36,6 +43,18 @@ function App() {
   const groups = ['All sources', ...new Set(sources.map(x => x.group))];
   const visibleSources = useMemo(() => sources.filter(x => (group === 'All sources' || x.group === group) && `${x.name} ${x.group} ${x.url}`.toLowerCase().includes(search.toLowerCase())), [sources, group, search]);
   const selectedIds = useMemo(() => new Set(selected.map(x => x.id)), [selected]);
+  const dailySections = useMemo(() => {
+    const sections = new Map();
+    for (const item of daily?.articles ?? []) {
+      if (!sections.has(item.section)) sections.set(item.section, new Map());
+      const subsections = sections.get(item.section);
+      const label = item.subsection || '';
+      if (!subsections.has(label)) subsections.set(label, []);
+      subsections.get(label).push(item);
+    }
+    return [...sections].map(([section, subsections]) => ({ section, subsections: [...subsections] }));
+  }, [daily]);
+  const blockedDailySources = daily?.sourceOutcomes?.filter(x => /failed|unreadable|could not be fetched/i.test(x.status)) ?? [];
 
   function applyScope() {
     const next = { include: words(includeText), exclude: words(excludeText) };
@@ -88,7 +107,7 @@ function App() {
     setLoading(false);
     if (failed) setError(`${failed} source${failed === 1 ? '' : 's'} could not be collected. Other results are shown below.`);
   }
-  function toggle(item) { setSelected(current => selectedIds.has(item.id) ? current.filter(x => x.id !== item.id) : [...current, { ...item, section: item.group, subsection: '', reviewed: false }]); }
+  function toggle(item) { setSelected(current => selectedIds.has(item.id) ? current.filter(x => x.id !== item.id) : [...current, { ...item, section: item.section || item.group, subsection: item.subsection || '', reviewed: Boolean(item.reviewed) }]); }
   async function reviewArticle(item) {
     setReviewingId(item.id);
     setReviewErrors(current => ({ ...current, [item.id]: '' }));
@@ -143,6 +162,9 @@ function App() {
       </aside>
       <main className="main-panel">
         <div className="hero"><div><span className="eyebrow">INTELLIGENCE / DAILY BRIEF</span><h1>Find the stories<br/><i>that matter.</i></h1><p>Review timely coverage from your trusted sources. Keep the signal, leave the noise.</p></div><div className="hero-art"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="hero-globe">✳</div><span className="art-label">MONITORING<br/>IN PROGRESS</span></div></div>
+        <section className="daily-update" aria-labelledby="daily-update-title"><div className="daily-heading"><div><span className="eyebrow">TODAY'S ROUNDUP</span><h2 id="daily-update-title">Daily news update</h2><p>{daily ? `${daily.articles.length} selected articles · ${new Set(daily.articles.map(x => x.sourceId)).size} agencies · Prepared ${dateLabel(daily.checkedAt)}` : 'Loading the latest prepared update…'}</p></div>{daily?.articles?.length > 0 && <a className="daily-download" href="/api/daily-update.docx">Download Word update ↓</a>}</div>
+          {daily && <><p className="daily-coverage">Stories shown here have publication times within the past 24 hours. This is a selected roundup; accessible sources were not reviewed exhaustively. Older stories leave the stream as the window moves.</p>{dailySections.map(({ section, subsections }) => <div className="daily-section" key={section}><h3>{section}</h3>{subsections.map(([subsection, items]) => <div key={subsection}>{subsection && <h4>{subsection}</h4>}{items.map(item => <article className="daily-story" key={item.id}><p><strong>{item.title}{/[.!?]$/.test(item.title) ? '' : '.'}</strong> {item.summary} (<a href={item.url} target="_blank" rel="noopener noreferrer">{item.sourceName}</a>)</p><button onClick={() => toggle(item)}>{selectedIds.has(item.id) ? 'Remove from report' : 'Add to report'}</button></article>)}</div>)}</div>)}{!daily.articles.length && <p className="daily-empty">The prepared update has expired. Collect fresh articles below to build the next report.</p>}{blockedDailySources.length > 0 && <details className="daily-sources"><summary>Sources we could not read ({blockedDailySources.length})</summary><ul>{blockedDailySources.map((item, i) => <li key={`${item.name}-${i}`}>{item.name}: {item.status}</li>)}</ul></details>}</>}
+        </section>
         <section className="scope-card"><div className="section-title"><div><span className="eyebrow">01 / REFINE</span><h2>Your coverage scope</h2></div><span className="scope-hint">Comma-separated phrases</span></div><div className="scope-inputs"><label><span className="input-label"><b className="include-dot"/> INCLUDE KEYWORDS</span><textarea value={includeText} onChange={e => setIncludeText(e.target.value)} rows="2" placeholder="security, politics, election"/></label><label><span className="input-label"><b className="exclude-dot"/> EXCLUDE KEYWORDS</span><textarea value={excludeText} onChange={e => setExcludeText(e.target.value)} rows="2" placeholder="sports, entertainment, opinion"/></label></div><div className="scope-bottom"><span>Matches any included phrase in the headline or summary. Exclusions always apply.</span><button className="dark-button" onClick={applyScope}>Apply scope <span>↗</span></button></div></section>
         <section className="headlines-section"><div className="section-title"><div><span className="eyebrow">02 / REVIEW</span><h2>Latest headlines</h2></div><span className="time-filter">◷ &nbsp; LAST 24 HOURS</span></div><div className="source-banner"><div className="banner-icon">{active?.id === 'google-news' ? 'G' : active?.name?.[0] || 'S'}</div><div><strong>{active?.name || 'Select a source'}</strong><small>{active?.url || 'Choose an outlet from the left'}</small></div><button onClick={() => loadSource()} disabled={loading || !active}>{loading ? 'Collecting…' : 'Collect headlines'} <span>↗</span></button></div><div className="batch-row"><span>Check up to three undated articles per source, or investigate up to ten for the selected source. Firecrawl usage scales with the article count.</span><button onClick={() => loadSource(activeId, true)} disabled={loading || !config?.firecrawlConfigured || !active || activeId === 'google-news'}>Deep scan source</button><button onClick={loadVisible} disabled={loading || !config?.firecrawlConfigured || !visibleSources.length}>Collect visible sources ({visibleSources.length})</button></div>
           {!config?.firecrawlConfigured && <div className="notice"><strong>Firecrawl connection needed</strong><p>Add <code>FIRECRAWL_API_KEY</code> to the server environment to collect live headlines. See the README for setup.</p></div>}

@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { DEFAULT_INCLUDE, DEFAULT_EXCLUDE, normalizeArticles, parseWords, scrapeHeadlines, scrapeArticle, undatedCandidates, reviewedArticle } from './news.js';
 import { createReportDocx } from './report.js';
+import { currentDailyUpdate } from './daily.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const sources = [
@@ -11,6 +12,7 @@ const sources = [
   ...JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'))
 ];
 const sourceById = new Map(sources.map(source => [source.id, source]));
+const dailySnapshot = JSON.parse(readFileSync(join(root, 'data/daily-update-2026-10-09.json'), 'utf8'));
 const cache = new Map();
 const articleCache = new Map();
 const app = express();
@@ -18,6 +20,22 @@ app.use(express.json({ limit: '256kb' }));
 
 app.get('/api/config', (_req, res) => {
   res.json({ sources, defaultInclude: DEFAULT_INCLUDE, defaultExclude: DEFAULT_EXCLUDE, firecrawlConfigured: Boolean(process.env.FIRECRAWL_API_KEY) });
+});
+
+app.get('/api/daily-update', (_req, res) => {
+  res.json(currentDailyUpdate(dailySnapshot));
+});
+
+app.get('/api/daily-update.docx', async (_req, res) => {
+  const update = currentDailyUpdate(dailySnapshot);
+  if (!update.articles.length) return res.status(410).json({ error: 'This daily update has expired. Collect new articles for the next report.' });
+  try {
+    const coverageNote = `${update.articles.length} selected articles from ${new Set(update.articles.map(x => x.sourceId)).size} agencies. Source pages were checked for this selected roundup; many accessible sources were not reviewed article by article. Publication times fall within the 24 hours ending ${update.servedAt}. Opinion and analysis were excluded.`;
+    const buffer = await createReportDocx({ ...update, coverageNote });
+    res.set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    res.set('Content-Disposition', 'attachment; filename="daily-news-update-2026-10-09.docx"');
+    res.send(buffer);
+  } catch (error) { res.status(500).json({ error: `Could not create daily update: ${error.message}` }); }
 });
 
 app.post('/api/headlines', async (req, res) => {
