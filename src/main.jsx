@@ -21,6 +21,9 @@ function App() {
   const [batchProgress, setBatchProgress] = useState(null);
   const [error, setError] = useState('');
   const [selected, setSelected] = useState(() => readStored('signal-selected', []));
+  const [reviewingId, setReviewingId] = useState('');
+  const [reviewErrors, setReviewErrors] = useState({});
+  const [sourceOutcomes, setSourceOutcomes] = useState({});
   const [reportTitle, setReportTitle] = useState(() => readStored('signal-title', 'Security & politics briefing'));
   const [toast, setToast] = useState('');
 
@@ -53,7 +56,8 @@ function App() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Collection failed');
       setResult(data);
-    } catch (e) { setError(e.message); }
+      setSourceOutcomes(current => ({ ...current, [id]: data.headlines.length ? 'collected' : 'no verified article' }));
+    } catch (e) { setError(e.message); setSourceOutcomes(current => ({ ...current, [id]: 'access failed' })); }
     finally { setLoading(false); }
   }
   async function loadVisible() {
@@ -72,8 +76,9 @@ function App() {
           const data = await response.json();
           if (!response.ok) throw new Error(data.error);
           gathered.push(...data.headlines);
+          setSourceOutcomes(current => ({ ...current, [source.id]: data.headlines.length ? 'collected' : 'no verified article' }));
           setResult({ headlines: [...gathered].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date().toISOString(), batch: true });
-        } catch { failed++; }
+        } catch { failed++; setSourceOutcomes(current => ({ ...current, [source.id]: 'access failed' })); }
         done++;
         setBatchProgress({ done, total: visibleSources.length, failed });
       }
@@ -82,13 +87,45 @@ function App() {
     setLoading(false);
     if (failed) setError(`${failed} source${failed === 1 ? '' : 's'} could not be collected. Other results are shown below.`);
   }
-  function toggle(item) { setSelected(current => selectedIds.has(item.id) ? current.filter(x => x.id !== item.id) : [...current, item]); }
-  const markdown = `# ${reportTitle.trim() || 'News briefing'}\n\nPrepared ${new Date().toLocaleString()}\n\n${selected.map((x, i) => `## ${i + 1}. ${x.title}\n\n- Source: ${x.sourceName}\n- Published: ${dateLabel(x.publishedAt)}\n- Link: ${x.url}${x.summary ? `\n\n${x.summary}` : ''}`).join('\n\n')}\n`;
+  function toggle(item) { setSelected(current => selectedIds.has(item.id) ? current.filter(x => x.id !== item.id) : [...current, { ...item, section: item.group, subsection: '', reviewed: false }]); }
+  async function reviewArticle(item) {
+    setReviewingId(item.id);
+    setReviewErrors(current => ({ ...current, [item.id]: '' }));
+    try {
+      const response = await fetch('/api/article', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sourceId: item.sourceId, url: item.url }) });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Article review failed');
+      setSelected(current => current.map(x => x.id === item.id ? { ...x, ...data, reviewed: true, section: x.section || item.group, subsection: x.subsection || '' } : x));
+    } catch (e) { setReviewErrors(current => ({ ...current, [item.id]: e.message })); }
+    finally { setReviewingId(''); }
+  }
+  function updateSelected(id, field, value) { setSelected(current => current.map(x => x.id === id ? { ...x, [field]: value } : x)); }
+  const missingSources = sources.filter(x => x.id !== 'google-news' && sourceOutcomes[x.id] && sourceOutcomes[x.id] !== 'collected');
+  const grouped = new Map();
+  for (const item of selected) {
+    const section = item.section?.trim() || item.group || 'Miscellaneous';
+    if (!grouped.has(section)) grouped.set(section, []);
+    grouped.get(section).push(item);
+  }
+  const reportBody = [...grouped].map(([section, items]) => `## ${section.toUpperCase()}\n\n${items.map(x => `${x.subsection?.trim() ? `### ${x.subsection.trim().toUpperCase()}\n\n` : ''}${x.title.replace(/[.!?]$/, '')}. ${x.summary.trim()} ([${x.sourceName}](${x.url}))`).join('\n\n')}`).join('\n\n');
+  const missingBody = missingSources.length ? `\n\n## AGENCIES FROM WHICH NO VERIFIED ARTICLE WAS COLLECTED\n\n${missingSources.map(x => `- ${x.name}: ${sourceOutcomes[x.id]}`).join('\n')}` : '';
+  const markdown = `# ${reportTitle.trim() || 'Daily news update'}\n\nPrepared ${new Date().toLocaleString()} · last 24 hours\n\n${reportBody}${missingBody}\n`;
+  const reportReady = selected.length > 0 && selected.every(x => x.reviewed && x.summary?.trim());
   function downloadReport() {
     const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url; a.download = `signal-desk-${new Date().toISOString().slice(0, 10)}.md`; a.click();
     URL.revokeObjectURL(url);
+  }
+  async function downloadDocx() {
+    try {
+      const sourceOutcomesList = sources.filter(x => x.id !== 'google-news' && sourceOutcomes[x.id]).map(x => ({ name: x.name, status: sourceOutcomes[x.id] }));
+      const response = await fetch('/api/report.docx', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: reportTitle, articles: selected, sourceOutcomes: sourceOutcomesList, coverageNote: `${selected.length} selected articles. ${sourceOutcomesList.length} of ${sources.length - 1} listed source pages checked in this session. Sources without a selected article may still have other relevant coverage.` }) });
+      if (!response.ok) throw new Error((await response.json()).error || 'Report export failed');
+      const url = URL.createObjectURL(await response.blob());
+      const a = document.createElement('a'); a.href = url; a.download = `daily-news-update-${new Date().toISOString().slice(0, 10)}.docx`; a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) { setToast(e.message); }
   }
 
   return <div className="app-shell">
@@ -112,7 +149,7 @@ function App() {
           {!loading && !result && !error && <div className="empty-result"><span className="empty-symbol">◎</span><strong>Your next story starts here.</strong><p>Choose a source or collect all visible sources. Results are filtered to the past 24 hours.</p></div>}
         </section>
       </main>
-      <aside className="report-panel"><div className="report-header"><span className="eyebrow">03 / COMPOSE</span><h2>Your report <em>{selected.length}</em></h2><p>Handpick the stories worth sharing.</p></div><label className="report-title-label">REPORT TITLE<input value={reportTitle} onChange={e => setReportTitle(e.target.value)} maxLength="100"/></label><div className="selected-list">{selected.length ? selected.map((item, i) => <div className="selected-item" key={item.id}><span className="selected-index">{String(i + 1).padStart(2, '0')}</span><div><strong>{item.title}</strong><small>{item.sourceName} · {dateLabel(item.publishedAt)}</small></div><button aria-label={`Remove ${item.title}`} onClick={() => toggle(item)}>×</button></div>) : <div className="report-empty"><div>▤</div><strong>A clear desk, for now.</strong><p>Headlines you add will appear here, ready for your report.</p></div>}</div><div className="report-bottom"><div className="report-count"><span>SELECTED STORIES</span><strong>{String(selected.length).padStart(2, '0')}</strong></div><button className="export-button" disabled={!selected.length} onClick={downloadReport}>Download report <span>↓</span></button><small>Exports a Markdown file with links and source details.</small></div></aside>
+      <aside className="report-panel"><div className="report-header"><span className="eyebrow">03 / COMPOSE</span><h2>Your report <em>{selected.length}</em></h2><p>Handpick and verify stories before export.</p></div><label className="report-title-label">REPORT TITLE<input value={reportTitle} onChange={e => setReportTitle(e.target.value)} maxLength="100"/></label><div className="selected-list">{selected.length ? selected.map((item, i) => <div className="selected-item" key={item.id}><span className="selected-index">{String(i + 1).padStart(2, '0')}</span><div className="selected-content"><strong>{item.title}</strong><small>{item.sourceName} · {dateLabel(item.publishedAt)}</small>{!item.reviewed && <button className="review-button" disabled={reviewingId === item.id} onClick={() => reviewArticle(item)}>{reviewingId === item.id ? 'Reviewing…' : 'Review full article'}</button>}{reviewErrors[item.id] && <small className="review-error">{reviewErrors[item.id]}</small>}{item.reviewed && <><label>SECTION<input value={item.section || ''} onChange={e => updateSelected(item.id, 'section', e.target.value)}/></label><label>COUNTRY / TOPIC<input value={item.subsection || ''} onChange={e => updateSelected(item.id, 'subsection', e.target.value)}/></label><label>ONE-SENTENCE SUMMARY<textarea rows="3" value={item.summary || ''} onChange={e => updateSelected(item.id, 'summary', e.target.value)}/></label></>}</div><button className="remove-button" aria-label={`Remove ${item.title}`} onClick={() => toggle(item)}>×</button></div>) : <div className="report-empty"><div>▤</div><strong>A clear desk, for now.</strong><p>Headlines you add will appear here, ready for your report.</p></div>}</div><div className="report-bottom"><div className="report-count"><span>SELECTED STORIES</span><strong>{String(selected.length).padStart(2, '0')}</strong></div><button className="export-button" disabled={!reportReady} onClick={downloadDocx}>Download Word report <span>↓</span></button><button className="markdown-button" disabled={!reportReady} onClick={downloadReport}>Download Markdown</button><small>{reportReady ? 'Includes linked agencies and source outcomes.' : 'Review every selected article and complete its summary to export.'}</small></div></aside>
     </div>{toast && <div className="toast" onClick={() => setToast('')}>{toast} ×</div>}
   </div>;
 }

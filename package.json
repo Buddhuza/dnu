@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently -k \"npm:dev:server\" \"npm:dev:web\"",
-    "dev:server": "node --watch server/index.js",
+    "dev:server": "NODE_USE_ENV_PROXY=1 node --watch server/index.js",
     "dev:web": "vite --host 0.0.0.0",
     "build": "vite build",
-    "start": "node server/index.js",
+    "start": "NODE_USE_ENV_PROXY=1 node server/index.js",
     "test": "node --test"
   },
   "dependencies": {
+    "docx": "^9.9.0",
     "express": "^4.21.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
