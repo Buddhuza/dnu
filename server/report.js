@@ -28,14 +28,20 @@ export async function createReportDocx({ title, articles, sourceOutcomes = [], c
       ]
     }));
   }
-  const missing = sourceOutcomes.filter(x => x.status !== 'collected');
+  const blocked = sourceOutcomes.filter(x => /failed|unreadable|could not be fetched/i.test(x.status));
+  const unselected = sourceOutcomes.filter(x => x.status !== 'collected' && !/failed|unreadable|could not be fetched/i.test(x.status));
   if (coverageNote) {
     children.push(new Paragraph({ text: 'COVERAGE NOTE', heading: HeadingLevel.HEADING_1 }));
     children.push(new Paragraph({ text: coverageNote }));
   }
-  if (missing.length) {
-    children.push(new Paragraph({ text: 'AGENCIES FROM WHICH NO VERIFIED ARTICLE WAS COLLECTED', heading: HeadingLevel.HEADING_1 }));
-    for (const item of missing) children.push(new Paragraph({ text: `${item.name}: ${item.status}` }));
+  if (blocked.length) {
+    children.push(new Paragraph({ text: 'SOURCES THAT COULD NOT BE READ', heading: HeadingLevel.HEADING_1 }));
+    for (const item of blocked) children.push(new Paragraph({ text: `${item.name}: ${item.status}` }));
+  }
+  if (unselected.length) {
+    children.push(new Paragraph({ text: 'OTHER SOURCES WITHOUT A SELECTED ARTICLE', heading: HeadingLevel.HEADING_1 }));
+    children.push(new Paragraph({ text: 'These pages were fetched, but this selected roundup did not assess every article on them.' }));
+    for (const item of unselected) children.push(new Paragraph({ text: item.name }));
   }
   const document = new Document({ sections: [{ children }] });
   return Packer.toBuffer(document);

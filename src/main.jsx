@@ -56,8 +56,8 @@ function App() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Collection failed');
       setResult(data);
-      setSourceOutcomes(current => ({ ...current, [id]: data.headlines.length ? 'collected' : 'no verified article' }));
-    } catch (e) { setError(e.message); setSourceOutcomes(current => ({ ...current, [id]: 'access failed' })); }
+      setSourceOutcomes(current => ({ ...current, [id]: data.headlines.length ? 'collected' : 'no matching headline in this scrape' }));
+    } catch (e) { setError(e.message); setSourceOutcomes(current => ({ ...current, [id]: 'collection failed' })); }
     finally { setLoading(false); }
   }
   async function loadVisible() {
@@ -76,9 +76,9 @@ function App() {
           const data = await response.json();
           if (!response.ok) throw new Error(data.error);
           gathered.push(...data.headlines);
-          setSourceOutcomes(current => ({ ...current, [source.id]: data.headlines.length ? 'collected' : 'no verified article' }));
+          setSourceOutcomes(current => ({ ...current, [source.id]: data.headlines.length ? 'collected' : 'no matching headline in this scrape' }));
           setResult({ headlines: [...gathered].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date().toISOString(), batch: true });
-        } catch { failed++; setSourceOutcomes(current => ({ ...current, [source.id]: 'access failed' })); }
+        } catch { failed++; setSourceOutcomes(current => ({ ...current, [source.id]: 'collection failed' })); }
         done++;
         setBatchProgress({ done, total: visibleSources.length, failed });
       }
@@ -108,7 +108,9 @@ function App() {
     grouped.get(section).push(item);
   }
   const reportBody = [...grouped].map(([section, items]) => `## ${section.toUpperCase()}\n\n${items.map(x => `${x.subsection?.trim() ? `### ${x.subsection.trim().toUpperCase()}\n\n` : ''}${x.title.replace(/[.!?]$/, '')}. ${x.summary.trim()} ([${x.sourceName}](${x.url}))`).join('\n\n')}`).join('\n\n');
-  const missingBody = missingSources.length ? `\n\n## AGENCIES FROM WHICH NO VERIFIED ARTICLE WAS COLLECTED\n\n${missingSources.map(x => `- ${x.name}: ${sourceOutcomes[x.id]}`).join('\n')}` : '';
+  const blockedSources = missingSources.filter(x => /failed|unreadable|could not be fetched/i.test(sourceOutcomes[x.id]));
+  const unselectedSources = missingSources.filter(x => !/failed|unreadable|could not be fetched/i.test(sourceOutcomes[x.id]));
+  const missingBody = `${blockedSources.length ? `\n\n## SOURCES THAT COULD NOT BE READ\n\n${blockedSources.map(x => `- ${x.name}: ${sourceOutcomes[x.id]}`).join('\n')}` : ''}${unselectedSources.length ? `\n\n## OTHER SOURCES WITHOUT A SELECTED ARTICLE\n\nThese pages were fetched, but this selected roundup did not assess every article on them.\n\n${unselectedSources.map(x => `- ${x.name}`).join('\n')}` : ''}`;
   const markdown = `# ${reportTitle.trim() || 'Daily news update'}\n\nPrepared ${new Date().toLocaleString()} · last 24 hours\n\n${reportBody}${missingBody}\n`;
   const reportReady = selected.length > 0 && selected.every(x => x.reviewed && x.summary?.trim());
   function downloadReport() {
@@ -120,7 +122,7 @@ function App() {
   async function downloadDocx() {
     try {
       const sourceOutcomesList = sources.filter(x => x.id !== 'google-news' && sourceOutcomes[x.id]).map(x => ({ name: x.name, status: sourceOutcomes[x.id] }));
-      const response = await fetch('/api/report.docx', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: reportTitle, articles: selected, sourceOutcomes: sourceOutcomesList, coverageNote: `${selected.length} selected articles. ${sourceOutcomesList.length} of ${sources.length - 1} listed source pages checked in this session. Sources without a selected article may still have other relevant coverage.` }) });
+      const response = await fetch('/api/report.docx', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: reportTitle, articles: selected, sourceOutcomes: sourceOutcomesList, coverageNote: `${selected.length} selected articles. ${sourceOutcomesList.length} of ${sources.length - 1} listed source pages attempted in this session. Fetched pages without a selected article were not assessed exhaustively and may have other relevant coverage.` }) });
       if (!response.ok) throw new Error((await response.json()).error || 'Report export failed');
       const url = URL.createObjectURL(await response.blob());
       const a = document.createElement('a'); a.href = url; a.download = `daily-news-update-${new Date().toISOString().slice(0, 10)}.docx`; a.click();
