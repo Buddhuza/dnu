@@ -144,7 +144,7 @@ function App() {
   }
   async function downloadDocx() {
     try {
-      const sourceOutcomesList = sources.filter(x => x.id !== 'google-news' && sourceOutcomes[x.id]).map(x => ({ name: x.name, status: sourceOutcomes[x.id] }));
+      const sourceOutcomesList = sources.filter(x => x.id !== 'google-news' && sourceOutcomes[x.id]).map(x => ({ name: x.name, group: x.group, url: x.url, status: sourceOutcomes[x.id] }));
       const response = await fetch('/api/report.docx', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: reportTitle, articles: selected, sourceOutcomes: sourceOutcomesList, coverageNote: `${selected.length} selected articles. ${sourceOutcomesList.length} of ${sources.length - 1} listed source pages attempted in this session. Fetched pages without a selected article were not assessed exhaustively and may have other relevant coverage.` }) });
       if (!response.ok) throw new Error((await response.json()).error || 'Report export failed');
       const url = URL.createObjectURL(await response.blob());

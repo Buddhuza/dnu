@@ -24,4 +24,6 @@ Use **Collect visible sources** after choosing a region or searching the source 
 
 Select a headline, then press **Review full article**. The app checks the article's publication time and proposes a factual one-sentence summary based on its first paragraphs. Edit the summary, section, and country or topic before export. Export requires every selected article to be reviewed. The Word and Markdown reports group stories by section and hyperlink the agency name to the article. They list collection failures separately from fetched pages without a selected article; the latter is not evidence that the source lacked relevant news.
 
+Word exports use a blanked copy of the supplied example in `server/templates/daily-update-template.docx`. Its logo, Calibri styles, blue section headings, shaded subsection bands, A4 margins, and page-number footer are preserved. Only the prepared title, article paragraphs, and source appendix are populated for each export.
+
 The selected report, title, and keyword settings are stored in your browser's local storage. They are not shared between browsers.
