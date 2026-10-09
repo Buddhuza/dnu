@@ -1,4 +1,4 @@
-export const DEFAULT_INCLUDE = ['security', 'politics', 'defense', 'diplomacy', 'election', 'conflict'];
+export const DEFAULT_INCLUDE = ['security', 'politics', 'political', 'defense', 'diplomacy', 'election', 'conflict', 'war', 'terrorism', 'parliament', 'government', 'minister', 'president', 'police', 'military', 'NATO', 'Russia', 'Ukraine', 'attack', 'sanctions', 'protest'];
 export const DEFAULT_EXCLUDE = [];
 
 let nextFirecrawlSlot = 0;
@@ -52,7 +52,7 @@ function articleArray(payload) {
   return value?.articles ?? value?.headlines ?? [];
 }
 
-export function normalizeArticles(payload, source, now = Date.now(), include = DEFAULT_INCLUDE, exclude = DEFAULT_EXCLUDE) {
+export function normalizeArticles(payload, source, now = Date.now(), include = DEFAULT_INCLUDE, exclude = DEFAULT_EXCLUDE, allowMidnight = false) {
   const cutoff = now - 24 * 60 * 60 * 1000;
   const seen = new Set();
   const result = [];
@@ -63,11 +63,12 @@ export function normalizeArticles(payload, source, now = Date.now(), include = D
     const publishedAt = String(raw.publishedAt ?? raw.published_at ?? raw.date ?? '').trim();
     // A date without a time and timezone cannot prove membership in a rolling 24-hour window.
     if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})$/i.test(publishedAt)) continue;
+    if (!allowMidnight && /T00:00:00(?:\.0+)?Z$/i.test(publishedAt)) continue;
     const timestamp = Date.parse(publishedAt);
     if (!title || !Number.isFinite(timestamp) || timestamp < cutoff || timestamp > now + 5 * 60 * 1000) continue;
     let url;
     try {
-      url = new URL(String(raw.url ?? raw.link ?? ''), source.url);
+      url = new URL(String(raw.url ?? raw.absoluteUrl ?? raw.link ?? ''), source.url);
       if (!['http:', 'https:'].includes(url.protocol)) continue;
     } catch { continue; }
     const key = url.toString();
@@ -81,9 +82,46 @@ export function normalizeArticles(payload, source, now = Date.now(), include = D
   return result.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)).slice(0, 40);
 }
 
+export function undatedCandidates(payload, source, include = DEFAULT_INCLUDE, exclude = DEFAULT_EXCLUDE) {
+  const seen = new Set();
+  const candidates = [];
+  for (const raw of articleArray(payload)) {
+    if (!raw || typeof raw !== 'object') continue;
+    const listedTime = String(raw.publishedAt ?? raw.published_at ?? raw.date ?? '');
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})$/i.test(listedTime) && !/T00:00:00(?:\.0+)?Z$/i.test(listedTime)) continue;
+    const title = String(raw.title ?? raw.headline ?? '').trim();
+    const summary = String(raw.summary ?? raw.description ?? '').trim();
+    if (!title) continue;
+    const haystack = `${title} ${summary}`.toLocaleLowerCase();
+    if (include.length && !include.some(w => haystack.includes(w.toLocaleLowerCase()))) continue;
+    if (exclude.some(w => haystack.includes(w.toLocaleLowerCase()))) continue;
+    let url;
+    try {
+      url = new URL(String(raw.url ?? raw.absoluteUrl ?? raw.link ?? ''), source.url);
+      if (url.protocol !== 'https:' || url.hostname.replace(/^www\./, '') !== new URL(source.url).hostname.replace(/^www\./, '')) continue;
+    } catch { continue; }
+    if (seen.has(url.href)) continue;
+    seen.add(url.href);
+    candidates.push({ title, url: url.href });
+  }
+  return candidates;
+}
+
+export function reviewedArticle(payload, source, url, now = Date.now()) {
+  const data = payload?.data ?? {};
+  const extracted = typeof data.json === 'string' ? JSON.parse(data.json) : data.json ?? {};
+  const publishedAt = data.metadata?.publishedTime ?? data.metadata?.['article:published_time'] ?? extracted.publishedAt;
+  if (!publishedAt || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})$/i.test(publishedAt)) return null;
+  const time = Date.parse(publishedAt);
+  if (!Number.isFinite(time) || time < now - 86400000 || time > now + 300000) return null;
+  const title = String(data.metadata?.ogTitle ?? extracted.exactHeadline ?? data.metadata?.title ?? '').trim();
+  if (!title) return null;
+  return { id: url, url, sourceId: source.id, sourceName: source.name, group: source.group, title, summary: String(extracted.summary ?? '').trim(), publishedAt: new Date(time).toISOString() };
+}
+
 export async function scrapeHeadlines(source, include, apiKey, fetchImpl = fetch) {
   const targetUrl = source.id === 'google-news' ? googleNewsUrl(include) : source.url;
-  const prompt = 'Extract news article headlines linked from this page. Return an object with an articles array. For each article return title, absolute article URL, a brief summary if visible, and publishedAt as an ISO 8601 timestamp with timezone. Only include articles with a clearly visible publication date and time. Do not invent dates, titles, or URLs. Do not include navigation links.';
+  const prompt = 'Extract news article headlines linked from this page. Return an object with an articles array. For each article return title, url (absolute article URL), a brief summary if visible, and publishedAt as an ISO 8601 timestamp with timezone only when the exact time and timezone are visible. Include article links even when the date or time is not visible; omit publishedAt for those. Do not turn a date-only label into a midnight timestamp. Do not invent dates, titles, or URLs. Do not include navigation links.';
   return firecrawlPost({ url: targetUrl, formats: [{ type: 'json', prompt }], onlyMainContent: true, timeout: 30000 }, apiKey, fetchImpl);
 }
 

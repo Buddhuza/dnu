@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { googleNewsUrl, normalizeArticles, scrapeHeadlines } from './news.js';
+import { googleNewsUrl, normalizeArticles, scrapeHeadlines, undatedCandidates, reviewedArticle } from './news.js';
 
 const source = { id: 'source-1', name: 'Test News', group: 'Test', url: 'https://example.com/news/' };
 const now = Date.parse('2026-10-09T12:00:00Z');
@@ -36,4 +36,20 @@ test('Firecrawl request sends the fixed source URL and bearer credential', async
   assert.equal(called.url, 'https://api.firecrawl.dev/v2/scrape');
   assert.equal(called.options.headers.Authorization, 'Bearer test-key');
   assert.equal(JSON.parse(called.options.body).url, source.url);
+});
+
+test('undated matching links can be checked on their original article pages', () => {
+  const payload = { data: { json: { articles: [
+    { title: 'Security talks continue', url: '/story-1' },
+    { title: 'Election vote opens', absoluteUrl: 'https://example.com/story-2', publishedAt: '2026-10-09T00:00:00Z' },
+    { title: 'Sports results', url: '/sports' },
+    { title: 'Security elsewhere', url: 'https://other.example/story' }
+  ] } } };
+  const candidates = undatedCandidates(payload, source, ['security', 'election']);
+  assert.deepEqual(candidates.map(x => x.url), ['https://example.com/story-1', 'https://example.com/story-2']);
+  assert.equal(normalizeArticles(payload, source, now, ['election']).length, 0);
+  const verified = reviewedArticle({ data: { metadata: { publishedTime: '2026-10-09T10:00:00Z', ogTitle: 'Security talks continue' }, json: { summary: 'The ministers agreed to meet again.' } } }, source, candidates[0].url, now);
+  assert.equal(verified.publishedAt, '2026-10-09T10:00:00.000Z');
+  assert.equal(verified.summary, 'The ministers agreed to meet again.');
+  assert.equal(reviewedArticle({ data: { metadata: { publishedTime: '2026-10-08T10:00:00Z', ogTitle: 'Old story' } } }, source, candidates[0].url, now), null);
 });

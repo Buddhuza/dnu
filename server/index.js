@@ -2,7 +2,7 @@ import express from 'express';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { DEFAULT_INCLUDE, DEFAULT_EXCLUDE, normalizeArticles, parseWords, scrapeHeadlines, scrapeArticle } from './news.js';
+import { DEFAULT_INCLUDE, DEFAULT_EXCLUDE, normalizeArticles, parseWords, scrapeHeadlines, scrapeArticle, undatedCandidates, reviewedArticle } from './news.js';
 import { createReportDocx } from './report.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -34,7 +34,23 @@ app.post('/api/headlines', async (req, res) => {
       cache.set(cacheKey, entry);
     }
     const headlines = normalizeArticles(entry.payload, source, Date.now(), include, exclude);
-    res.json({ source, headlines, fetchedAt: new Date(entry.at).toISOString(), note: 'Only headlines with verifiable publication times within the last 24 hours are shown.' });
+    const candidates = source.id === 'google-news' ? [] : undatedCandidates(entry.payload, source, include, exclude);
+    let checked = 0;
+    for (const candidate of candidates.slice(0, req.body?.deepScan === true ? 10 : 3)) {
+        checked++;
+        try {
+          let article = articleCache.get(candidate.url);
+          if (!article || Date.now() - article.at > 10 * 60 * 1000) {
+            article = { at: Date.now(), payload: await scrapeArticle(candidate.url, process.env.FIRECRAWL_API_KEY) };
+            articleCache.set(candidate.url, article);
+          }
+          const reviewed = reviewedArticle(article.payload, source, candidate.url);
+          if (!reviewed) continue;
+          const matched = normalizeArticles({ data: { json: { articles: [reviewed] } } }, source, Date.now(), include, exclude, true);
+          headlines.push(...matched);
+        } catch { /* Other candidates may still be verifiable. */ }
+    }
+    res.json({ source, headlines: headlines.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date(entry.at).toISOString(), candidatesFound: candidates.length, candidatesChecked: checked, note: 'Listings without a full timestamp are checked against original articles. No result is not proof that the source had no relevant news.' });
   } catch (error) {
     res.status(502).json({ error: `Could not collect ${source.name}: ${error.message}` });
   }
@@ -56,21 +72,9 @@ app.post('/api/article', async (req, res) => {
       entry = { at: Date.now(), payload: await scrapeArticle(articleUrl.href, process.env.FIRECRAWL_API_KEY) };
       articleCache.set(articleUrl.href, entry);
     }
-    const data = entry.payload.data ?? {};
-    const extracted = typeof data.json === 'string' ? JSON.parse(data.json) : data.json ?? {};
-    const publishedAt = data.metadata?.publishedTime ?? data.metadata?.['article:published_time'] ?? extracted.publishedAt;
-    if (!publishedAt || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})$/i.test(publishedAt)) return res.status(422).json({ error: 'This article has no verifiable publication time.' });
-    const time = Date.parse(publishedAt);
-    if (!Number.isFinite(time) || time < Date.now() - 86400000 || time > Date.now() + 300000) return res.status(422).json({ error: 'This article is outside the last 24 hours.' });
-    res.json({
-      url: articleUrl.href,
-      sourceId: source.id,
-      sourceName: source.name,
-      group: source.group,
-      title: String(data.metadata?.ogTitle ?? extracted.exactHeadline ?? data.metadata?.title ?? '').trim(),
-      summary: String(extracted.summary ?? '').trim(),
-      publishedAt: new Date(time).toISOString()
-    });
+    const reviewed = reviewedArticle(entry.payload, source, articleUrl.href);
+    if (!reviewed) return res.status(422).json({ error: 'This article has no verifiable publication time within the last 24 hours.' });
+    res.json(reviewed);
   } catch (error) { res.status(502).json({ error: `Could not review article: ${error.message}` }); }
 });
 

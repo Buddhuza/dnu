@@ -6,6 +6,7 @@ const readStored = (key, fallback) => {
   try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
 };
 const words = text => [...new Set(text.split(/[,\n]/).map(x => x.trim()).filter(Boolean))].slice(0, 25);
+const defaultScope = 'security, politics, political, defense, diplomacy, election, conflict, war, terrorism, parliament, government, minister, president, police, military, NATO, Russia, Ukraine, attack, sanctions, protest';
 const dateLabel = iso => new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
 
 function App() {
@@ -13,9 +14,9 @@ function App() {
   const [activeId, setActiveId] = useState('google-news');
   const [search, setSearch] = useState('');
   const [group, setGroup] = useState('All sources');
-  const [includeText, setIncludeText] = useState(() => readStored('signal-include', 'security, politics, defense, diplomacy, election, conflict'));
+  const [includeText, setIncludeText] = useState(() => readStored('signal-include', defaultScope));
   const [excludeText, setExcludeText] = useState(() => readStored('signal-exclude', ''));
-  const [scope, setScope] = useState(() => ({ include: words(readStored('signal-include', 'security, politics, defense, diplomacy, election, conflict')), exclude: words(readStored('signal-exclude', '')) }));
+  const [scope, setScope] = useState(() => ({ include: words(readStored('signal-include', defaultScope)), exclude: words(readStored('signal-exclude', '')) }));
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [batchProgress, setBatchProgress] = useState(null);
@@ -45,18 +46,18 @@ function App() {
     setError('');
     setToast('Scope updated. Refresh a source to collect matching headlines.');
   }
-  async function loadSource(id = activeId) {
+  async function loadSource(id = activeId, deepScan = false) {
     setBatchProgress(null);
     setActiveId(id);
     setLoading(true);
     setError('');
     setResult(null);
     try {
-      const response = await fetch('/api/headlines', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sourceId: id, ...scope }) });
+      const response = await fetch('/api/headlines', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sourceId: id, deepScan, ...scope }) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Collection failed');
       setResult(data);
-      setSourceOutcomes(current => ({ ...current, [id]: data.headlines.length ? 'collected' : 'no matching headline in this scrape' }));
+      setSourceOutcomes(current => ({ ...current, [id]: data.headlines.length ? 'collected' : `no verified headline in this scan (${data.candidatesChecked} of ${data.candidatesFound} undated candidates checked)` }));
     } catch (e) { setError(e.message); setSourceOutcomes(current => ({ ...current, [id]: 'collection failed' })); }
     finally { setLoading(false); }
   }
@@ -76,7 +77,7 @@ function App() {
           const data = await response.json();
           if (!response.ok) throw new Error(data.error);
           gathered.push(...data.headlines);
-          setSourceOutcomes(current => ({ ...current, [source.id]: data.headlines.length ? 'collected' : 'no matching headline in this scrape' }));
+          setSourceOutcomes(current => ({ ...current, [source.id]: data.headlines.length ? 'collected' : `no verified headline in this scan (${data.candidatesChecked} of ${data.candidatesFound} undated candidates checked)` }));
           setResult({ headlines: [...gathered].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date().toISOString(), batch: true });
         } catch { failed++; setSourceOutcomes(current => ({ ...current, [source.id]: 'collection failed' })); }
         done++;
@@ -143,11 +144,11 @@ function App() {
       <main className="main-panel">
         <div className="hero"><div><span className="eyebrow">INTELLIGENCE / DAILY BRIEF</span><h1>Find the stories<br/><i>that matter.</i></h1><p>Review timely coverage from your trusted sources. Keep the signal, leave the noise.</p></div><div className="hero-art"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="hero-globe">✳</div><span className="art-label">MONITORING<br/>IN PROGRESS</span></div></div>
         <section className="scope-card"><div className="section-title"><div><span className="eyebrow">01 / REFINE</span><h2>Your coverage scope</h2></div><span className="scope-hint">Comma-separated phrases</span></div><div className="scope-inputs"><label><span className="input-label"><b className="include-dot"/> INCLUDE KEYWORDS</span><textarea value={includeText} onChange={e => setIncludeText(e.target.value)} rows="2" placeholder="security, politics, election"/></label><label><span className="input-label"><b className="exclude-dot"/> EXCLUDE KEYWORDS</span><textarea value={excludeText} onChange={e => setExcludeText(e.target.value)} rows="2" placeholder="sports, entertainment, opinion"/></label></div><div className="scope-bottom"><span>Matches any included phrase in the headline or summary. Exclusions always apply.</span><button className="dark-button" onClick={applyScope}>Apply scope <span>↗</span></button></div></section>
-        <section className="headlines-section"><div className="section-title"><div><span className="eyebrow">02 / REVIEW</span><h2>Latest headlines</h2></div><span className="time-filter">◷ &nbsp; LAST 24 HOURS</span></div><div className="source-banner"><div className="banner-icon">{active?.id === 'google-news' ? 'G' : active?.name?.[0] || 'S'}</div><div><strong>{active?.name || 'Select a source'}</strong><small>{active?.url || 'Choose an outlet from the left'}</small></div><button onClick={() => loadSource()} disabled={loading || !active}>{loading ? 'Collecting…' : 'Collect headlines'} <span>↗</span></button></div><div className="batch-row"><span>Or collect from every source currently shown in the sidebar. Firecrawl usage scales with the source count.</span><button onClick={loadVisible} disabled={loading || !config?.firecrawlConfigured || !visibleSources.length}>Collect visible sources ({visibleSources.length})</button></div>
+        <section className="headlines-section"><div className="section-title"><div><span className="eyebrow">02 / REVIEW</span><h2>Latest headlines</h2></div><span className="time-filter">◷ &nbsp; LAST 24 HOURS</span></div><div className="source-banner"><div className="banner-icon">{active?.id === 'google-news' ? 'G' : active?.name?.[0] || 'S'}</div><div><strong>{active?.name || 'Select a source'}</strong><small>{active?.url || 'Choose an outlet from the left'}</small></div><button onClick={() => loadSource()} disabled={loading || !active}>{loading ? 'Collecting…' : 'Collect headlines'} <span>↗</span></button></div><div className="batch-row"><span>Check up to three undated articles per source, or investigate up to ten for the selected source. Firecrawl usage scales with the article count.</span><button onClick={() => loadSource(activeId, true)} disabled={loading || !config?.firecrawlConfigured || !active || activeId === 'google-news'}>Deep scan source</button><button onClick={loadVisible} disabled={loading || !config?.firecrawlConfigured || !visibleSources.length}>Collect visible sources ({visibleSources.length})</button></div>
           {!config?.firecrawlConfigured && <div className="notice"><strong>Firecrawl connection needed</strong><p>Add <code>FIRECRAWL_API_KEY</code> to the server environment to collect live headlines. See the README for setup.</p></div>}
           {error && <div className="error-box" role="alert">{error}</div>}
           {loading && <div className="loading-box"><div className="spinner"/> {batchProgress ? `Collected ${batchProgress.done} of ${batchProgress.total} sources${batchProgress.failed ? ` · ${batchProgress.failed} failed` : ''}` : 'Scraping and checking publication times…'}</div>}
-          {result && <><div className="result-meta">{result.headlines.length} verified headlines · Checked {dateLabel(result.fetchedAt)}</div>{result.headlines.length ? <div className="headline-list">{result.headlines.map(item => <article className="headline-card" key={item.id}><div className="headline-top"><span className="category-label">{item.sourceName}</span><span>{dateLabel(item.publishedAt)}</span></div><h3><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title} ↗</a></h3>{item.summary && <p>{item.summary}</p>}<button className={`select-button ${selectedIds.has(item.id) ? 'selected' : ''}`} onClick={() => toggle(item)}>{selectedIds.has(item.id) ? '✓ Added to report' : '＋ Add to report'}</button></article>)}</div> : <div className="empty-result">No matching headlines with verified publication times in the last 24 hours. Try broader keywords or a different source.</div>}</>}
+          {result && <><div className="result-meta">{result.headlines.length} verified headlines · Checked {dateLabel(result.fetchedAt)}{!result.batch && result.candidatesFound ? ` · ${result.candidatesChecked} of ${result.candidatesFound} undated candidates checked` : ''}</div>{result.headlines.length ? <div className="headline-list">{result.headlines.map(item => <article className="headline-card" key={item.id}><div className="headline-top"><span className="category-label">{item.sourceName}</span><span>{dateLabel(item.publishedAt)}</span></div><h3><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title} ↗</a></h3>{item.summary && <p>{item.summary}</p>}<button className={`select-button ${selectedIds.has(item.id) ? 'selected' : ''}`} onClick={() => toggle(item)}>{selectedIds.has(item.id) ? '✓ Added to report' : '＋ Add to report'}</button></article>)}</div> : <div className="empty-result">No matching headline was verified in this scan. This does not mean the source had no relevant news. Try Deep scan source or broader keywords.</div>}</>}
           {!loading && !result && !error && <div className="empty-result"><span className="empty-symbol">◎</span><strong>Your next story starts here.</strong><p>Choose a source or collect all visible sources. Results are filtered to the past 24 hours.</p></div>}
         </section>
       </main>
