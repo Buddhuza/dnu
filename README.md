@@ -4,6 +4,8 @@ A local news review app for Google News and the 172 outlets in `sources.json` (t
 
 The homepage opens with the prepared **Daily news update** in the supplied section and story format. It displays only items from the prepared snapshot whose publication timestamps are still within the rolling 24-hour window. Use **Add to report** on any story, or download the prepared Word update directly. The snapshot in `data/daily-update-2026-10-09.json` is a selected roundup, not an automatically refreshed or exhaustive feed; the collection controls below it are for gathering new articles.
 
+For a quick preview that does not clone or install the project, open the [static GitHub Pages preview](https://buddhuza.github.io/scrapeandreport/). It displays the prepared update and supports local report selection. Live Firecrawl collection and generated Word exports from newly selected stories require the full server app below.
+
 ## Run locally
 
 Requires Node.js 20 or newer and a Firecrawl API key.
