@@ -1,0 +1,1034 @@
+[
+  {
+    "id": "source-1",
+    "name": "DTT",
+    "group": "South Eastern Europe",
+    "url": "https://dtt-net.com/category/w-balkan-news/"
+  },
+  {
+    "id": "source-2",
+    "name": "BIRN",
+    "group": "South Eastern Europe",
+    "url": "https://balkaninsight.com/all-the-news-from-the-balkans/"
+  },
+  {
+    "id": "source-3",
+    "name": "EWB",
+    "group": "South Eastern Europe",
+    "url": "https://europeanwesternbalkans.com/latest/"
+  },
+  {
+    "id": "source-4",
+    "name": "Euronews.al",
+    "group": "South Eastern Europe",
+    "url": "https://euronews.al/en/just-in/"
+  },
+  {
+    "id": "source-5",
+    "name": "ADN",
+    "group": "South Eastern Europe",
+    "url": "https://albaniandailynews.com/category/politics"
+  },
+  {
+    "id": "source-6",
+    "name": "TemA",
+    "group": "South Eastern Europe",
+    "url": "https://english.gazetatema.net/category/politics/"
+  },
+  {
+    "id": "source-7",
+    "name": "Tirana Times",
+    "group": "South Eastern Europe",
+    "url": "https://www.tiranatimes.com/"
+  },
+  {
+    "id": "source-8",
+    "name": "N1",
+    "group": "South Eastern Europe",
+    "url": "https://n1info.ba/english/news"
+  },
+  {
+    "id": "source-9",
+    "name": "Sarajevo Times",
+    "group": "South Eastern Europe",
+    "url": "https://sarajevotimes.com/"
+  },
+  {
+    "id": "source-10",
+    "name": "Mina",
+    "group": "South Eastern Europe",
+    "url": "https://www.mina.news/en/category/mina-generalni-english"
+  },
+  {
+    "id": "source-11",
+    "name": "CdM",
+    "group": "South Eastern Europe",
+    "url": "https://www.cdm.me/english/"
+  },
+  {
+    "id": "source-12",
+    "name": "Vijesti.me",
+    "group": "South Eastern Europe",
+    "url": "https://en.vijesti.me/latest-news"
+  },
+  {
+    "id": "source-13",
+    "name": "Meta.mk",
+    "group": "South Eastern Europe",
+    "url": "https://meta.mk/en/category/mkd-en/"
+  },
+  {
+    "id": "source-14",
+    "name": "MIA",
+    "group": "South Eastern Europe",
+    "url": "https://mia.mk/en/latest-posts"
+  },
+  {
+    "id": "source-15",
+    "name": "Republika",
+    "group": "South Eastern Europe",
+    "url": "https://english.republika.mk/category/macedonia/"
+  },
+  {
+    "id": "source-16",
+    "name": "Skopje Diem",
+    "group": "South Eastern Europe",
+    "url": "https://skopjediem.com/"
+  },
+  {
+    "id": "source-17",
+    "name": "N1",
+    "group": "South Eastern Europe",
+    "url": "https://n1info.rs/english/news/"
+  },
+  {
+    "id": "source-18",
+    "name": "Tanjug",
+    "group": "South Eastern Europe",
+    "url": "https://www.tanjug.rs/english"
+  },
+  {
+    "id": "source-19",
+    "name": "Telegraf",
+    "group": "South Eastern Europe",
+    "url": "https://www.telegraf.rs/english"
+  },
+  {
+    "id": "source-20",
+    "name": "Prishtina Insight",
+    "group": "South Eastern Europe",
+    "url": "https://prishtinainsight.com/category/news/"
+  },
+  {
+    "id": "source-21",
+    "name": "RTK",
+    "group": "South Eastern Europe",
+    "url": "https://www.rtklive.com/en/news-category.php?CatID=5"
+  },
+  {
+    "id": "source-22",
+    "name": "Gazeta Express",
+    "group": "South Eastern Europe",
+    "url": "https://www.gazetaexpress.com/news/"
+  },
+  {
+    "id": "source-23",
+    "name": "Fena",
+    "group": "South Eastern Europe",
+    "url": "https://www.fena.ba/category/32#1"
+  },
+  {
+    "id": "source-24",
+    "name": "ABC.al",
+    "group": "South Eastern Europe",
+    "url": "https://abcnews.al/kategoria/english/"
+  },
+  {
+    "id": "source-25",
+    "name": "Kosovo Online",
+    "group": "South Eastern Europe",
+    "url": "https://www.kosovo-online.com/en"
+  },
+  {
+    "id": "source-26",
+    "name": "BelTA",
+    "group": "East Europe",
+    "url": "https://eng.belta.by/all_news"
+  },
+  {
+    "id": "source-27",
+    "name": "Belsat",
+    "group": "East Europe",
+    "url": "https://en.belsat.eu/79795236/news"
+  },
+  {
+    "id": "source-28",
+    "name": "Euroradio",
+    "group": "East Europe",
+    "url": "https://euroradio.fm/en/all-news"
+  },
+  {
+    "id": "source-29",
+    "name": "Charter 97",
+    "group": "East Europe",
+    "url": "https://charter97.org/en/news/"
+  },
+  {
+    "id": "source-30",
+    "name": "Moldpres",
+    "group": "East Europe",
+    "url": "https://www.moldpres.md/eng"
+  },
+  {
+    "id": "source-31",
+    "name": "Infotag",
+    "group": "East Europe",
+    "url": "https://www.infotag.md/news_arhive_en/"
+  },
+  {
+    "id": "source-32",
+    "name": "IPN",
+    "group": "East Europe",
+    "url": "https://ipn.md/en/all-news/"
+  },
+  {
+    "id": "source-33",
+    "name": "Interfax.ua",
+    "group": "East Europe",
+    "url": "https://en.interfax.com.ua/news/general.html"
+  },
+  {
+    "id": "source-34",
+    "name": "Ukrinform",
+    "group": "East Europe",
+    "url": "https://www.ukrinform.net/block-lastnews"
+  },
+  {
+    "id": "source-35",
+    "name": "RBC.ua",
+    "group": "East Europe",
+    "url": "https://newsukraine.rbc.ua/news"
+  },
+  {
+    "id": "source-36",
+    "name": "Pravda.ua",
+    "group": "East Europe",
+    "url": "https://www.pravda.com.ua/eng/news/"
+  },
+  {
+    "id": "source-37",
+    "name": "Kyiv Post",
+    "group": "East Europe",
+    "url": "https://www.kyivpost.com/all-news"
+  },
+  {
+    "id": "source-38",
+    "name": "Hromadske",
+    "group": "East Europe",
+    "url": "https://hromadske.ua/en/news"
+  },
+  {
+    "id": "source-39",
+    "name": "Kyiv Independent",
+    "group": "East Europe",
+    "url": "https://kyivindependent.com/news-archive/"
+  },
+  {
+    "id": "source-40",
+    "name": "NikVesti",
+    "group": "East Europe",
+    "url": "https://nikvesti.com/en/news/archive/all"
+  },
+  {
+    "id": "source-41",
+    "name": "KHPG",
+    "group": "East Europe",
+    "url": "https://khpg.org/en/page_1"
+  },
+  {
+    "id": "source-42",
+    "name": "Ukranews",
+    "group": "East Europe",
+    "url": "https://ukranews.com/en/news"
+  },
+  {
+    "id": "source-43",
+    "name": "UNN",
+    "group": "East Europe",
+    "url": "https://unn.ua/en/news"
+  },
+  {
+    "id": "source-44",
+    "name": "Euromaidan",
+    "group": "East Europe",
+    "url": "https://euromaidanpress.com/"
+  },
+  {
+    "id": "source-45",
+    "name": "TSN",
+    "group": "East Europe",
+    "url": "https://tsn.ua/en"
+  },
+  {
+    "id": "source-46",
+    "name": "Armenia Liberty",
+    "group": "South Caucasus",
+    "url": "https://www.azatutyun.am/z/1089"
+  },
+  {
+    "id": "source-47",
+    "name": "PAN",
+    "group": "South Caucasus",
+    "url": "https://www.pan.am/en/newsfeed"
+  },
+  {
+    "id": "source-48",
+    "name": "Armenpress",
+    "group": "South Caucasus",
+    "url": "https://armenpress.am/en/articles"
+  },
+  {
+    "id": "source-49",
+    "name": "Panorama",
+    "group": "South Caucasus",
+    "url": "https://www.panorama.am/en/news/"
+  },
+  {
+    "id": "source-50",
+    "name": "News.am",
+    "group": "South Caucasus",
+    "url": "https://news.am/eng/news/"
+  },
+  {
+    "id": "source-51",
+    "name": "Arminfo",
+    "group": "South Caucasus",
+    "url": "https://arminfo.info/allnews.php?lang=3"
+  },
+  {
+    "id": "source-52",
+    "name": "ARKA",
+    "group": "South Caucasus",
+    "url": "https://arka.am/en/news/"
+  },
+  {
+    "id": "source-53",
+    "name": "Civinet",
+    "group": "South Caucasus",
+    "url": "https://www.civilnet.am/en/"
+  },
+  {
+    "id": "source-54",
+    "name": "Hetq",
+    "group": "South Caucasus",
+    "url": "https://hetq.am/en/articles/"
+  },
+  {
+    "id": "source-55",
+    "name": "APA",
+    "group": "South Caucasus",
+    "url": "https://en.apa.az/all-news"
+  },
+  {
+    "id": "source-56",
+    "name": "Trend",
+    "group": "South Caucasus",
+    "url": "https://www.trend.az/azerbaijan/"
+  },
+  {
+    "id": "source-57",
+    "name": "Azertag",
+    "group": "South Caucasus",
+    "url": "https://azertag.az/en/son-xeberler"
+  },
+  {
+    "id": "source-58",
+    "name": "Azernews",
+    "group": "South Caucasus",
+    "url": "https://www.azernews.az/latest/"
+  },
+  {
+    "id": "source-59",
+    "name": "News.az",
+    "group": "South Caucasus",
+    "url": "https://news.az/news/latest"
+  },
+  {
+    "id": "source-60",
+    "name": "Report.az",
+    "group": "South Caucasus",
+    "url": "https://report.az/en/"
+  },
+  {
+    "id": "source-61",
+    "name": "Civil.ge",
+    "group": "South Caucasus",
+    "url": "https://civil.ge/archives/category/news"
+  },
+  {
+    "id": "source-62",
+    "name": "1TV",
+    "group": "South Caucasus",
+    "url": "https://1tv.ge/lang/en?s=&post_type=news"
+  },
+  {
+    "id": "source-63",
+    "name": "IPN",
+    "group": "South Caucasus",
+    "url": "https://www.interpressnews.ge/en/latestnews"
+  },
+  {
+    "id": "source-64",
+    "name": "GT",
+    "group": "South Caucasus",
+    "url": "https://georgiatoday.ge/category/news/"
+  },
+  {
+    "id": "source-65",
+    "name": "OC Media",
+    "group": "South Caucasus",
+    "url": "https://oc-media.org/"
+  },
+  {
+    "id": "source-66",
+    "name": "JAMnews",
+    "group": "South Caucasus",
+    "url": "https://jam-news.net/"
+  },
+  {
+    "id": "source-67",
+    "name": "Trend",
+    "group": "Central Asia",
+    "url": "https://www.trend.az/casia/"
+  },
+  {
+    "id": "source-68",
+    "name": "TCA",
+    "group": "Central Asia",
+    "url": "https://timesca.com/category/local-politics/"
+  },
+  {
+    "id": "source-69",
+    "name": "Tengri",
+    "group": "Central Asia",
+    "url": "https://en.tengrinews.kz/"
+  },
+  {
+    "id": "source-70",
+    "name": "KazTAG",
+    "group": "Central Asia",
+    "url": "https://kaztag.kz/en/news/"
+  },
+  {
+    "id": "source-71",
+    "name": "Kazinform",
+    "group": "Central Asia",
+    "url": "https://qazinform.com/lenta"
+  },
+  {
+    "id": "source-72",
+    "name": "Interfax.kz",
+    "group": "Central Asia",
+    "url": "https://interfax.kz/?lang=eng&int_id=21"
+  },
+  {
+    "id": "source-73",
+    "name": "Astana Times",
+    "group": "Central Asia",
+    "url": "https://astanatimes.com/"
+  },
+  {
+    "id": "source-74",
+    "name": "24.kg",
+    "group": "Central Asia",
+    "url": "https://24.kg/english/"
+  },
+  {
+    "id": "source-75",
+    "name": "Kabar",
+    "group": "Central Asia",
+    "url": "https://en.kabar.kg/news/"
+  },
+  {
+    "id": "source-76",
+    "name": "AKIpress",
+    "group": "Central Asia",
+    "url": "https://akipress.com/allnews/"
+  },
+  {
+    "id": "source-77",
+    "name": "Asia-Plus",
+    "group": "Central Asia",
+    "url": "https://asiaplustj.info/en/news/all"
+  },
+  {
+    "id": "source-78",
+    "name": "Kun.uz",
+    "group": "Central Asia",
+    "url": "https://kun.uz/en/news/list"
+  },
+  {
+    "id": "source-79",
+    "name": "RFE/RL",
+    "group": "Miscl",
+    "url": "https://www.rferl.org/latest-news"
+  },
+  {
+    "id": "source-80",
+    "name": "DW",
+    "group": "Miscl",
+    "url": "https://www.dw.com/en/top-stories/s-9097"
+  },
+  {
+    "id": "source-81",
+    "name": "Politico.eu",
+    "group": "Miscl",
+    "url": "https://www.politico.eu/latest/"
+  },
+  {
+    "id": "source-82",
+    "name": "Euronews",
+    "group": "Miscl",
+    "url": "https://www.euronews.com/just-in"
+  },
+  {
+    "id": "source-83",
+    "name": "BBC",
+    "group": "Miscl",
+    "url": "https://www.bbc.com/news"
+  },
+  {
+    "id": "source-84",
+    "name": "Bloomberg",
+    "group": "Miscl",
+    "url": "https://www.bnnbloomberg.ca/business/politics/"
+  },
+  {
+    "id": "source-85",
+    "name": "AP",
+    "group": "Miscl",
+    "url": "https://apnews.com/world-news"
+  },
+  {
+    "id": "source-86",
+    "name": "dpa",
+    "group": "Miscl",
+    "url": "https://nordot.app/-/units/601684660556563553"
+  },
+  {
+    "id": "source-87",
+    "name": "dpa",
+    "group": "Miscl",
+    "url": "https://www.dpa-international.com/politics/"
+  },
+  {
+    "id": "source-88",
+    "name": "BTA",
+    "group": "Miscl",
+    "url": "https://www.bta.bg/en/news/bulgaria"
+  },
+  {
+    "id": "source-89",
+    "name": "Radio Prague",
+    "group": "Miscl",
+    "url": "https://english.radio.cz/news"
+  },
+  {
+    "id": "source-90",
+    "name": "ERR",
+    "group": "Miscl",
+    "url": "https://news.err.ee/k/news"
+  },
+  {
+    "id": "source-91",
+    "name": "Yle",
+    "group": "Miscl",
+    "url": "https://yle.fi/news/tuoreimmat"
+  },
+  {
+    "id": "source-92",
+    "name": "RFI",
+    "group": "Miscl",
+    "url": "https://www.rfi.fr/en/live-news/"
+  },
+  {
+    "id": "source-93",
+    "name": "ANSA",
+    "group": "Miscl",
+    "url": "https://www.ansa.it/english/"
+  },
+  {
+    "id": "source-94",
+    "name": "LSM",
+    "group": "Miscl",
+    "url": "https://eng.lsm.lv/archive/"
+  },
+  {
+    "id": "source-95",
+    "name": "LRT",
+    "group": "Miscl",
+    "url": "https://www.lrt.lt/en/news-in-english"
+  },
+  {
+    "id": "source-96",
+    "name": "Polskie Radio",
+    "group": "Miscl",
+    "url": "https://www.polskieradio.pl/395/7784"
+  },
+  {
+    "id": "source-97",
+    "name": "TASS",
+    "group": "Miscl",
+    "url": "https://tass.com/politics"
+  },
+  {
+    "id": "source-98",
+    "name": "Izvestia",
+    "group": "Miscl",
+    "url": "https://en.iz.ru/en/feed"
+  },
+  {
+    "id": "source-99",
+    "name": "Sputnik",
+    "group": "Miscl",
+    "url": "https://sputnikglobe.com/russia/"
+  },
+  {
+    "id": "source-100",
+    "name": "Fox",
+    "group": "Miscl",
+    "url": "https://www.foxnews.com/us"
+  },
+  {
+    "id": "source-101",
+    "name": "CNN",
+    "group": "Miscl",
+    "url": "https://edition.cnn.com/us"
+  },
+  {
+    "id": "source-102",
+    "name": "Xinhua",
+    "group": "Miscl",
+    "url": "https://english.news.cn/list/china-chinaworld.htm"
+  },
+  {
+    "id": "source-103",
+    "name": "Yanhop",
+    "group": "Miscl",
+    "url": "https://en.yna.co.kr/news"
+  },
+  {
+    "id": "source-104",
+    "name": "AsiaOne",
+    "group": "Miscl",
+    "url": "https://www.asiaone.com/lite"
+  },
+  {
+    "id": "source-105",
+    "name": "RFA",
+    "group": "Miscl",
+    "url": "https://www.rfa.org/english/"
+  },
+  {
+    "id": "source-106",
+    "name": "Guardian",
+    "group": "Miscl",
+    "url": "https://www.theguardian.com/world"
+  },
+  {
+    "id": "source-107",
+    "name": "Novinite",
+    "group": "Miscl",
+    "url": "https://www.novinite.com/"
+  },
+  {
+    "id": "source-108",
+    "name": "Romania Insider",
+    "group": "Miscl",
+    "url": "https://www.romania-insider.com/"
+  },
+  {
+    "id": "source-109",
+    "name": "Cyprus Mail",
+    "group": "Miscl",
+    "url": "https://cyprus-mail.com/"
+  },
+  {
+    "id": "source-110",
+    "name": "NFP",
+    "group": "Miscl",
+    "url": "https://notesfrompoland.com/"
+  },
+  {
+    "id": "source-111",
+    "name": "Baltic Times",
+    "group": "Miscl",
+    "url": "https://www.baltictimes.com/"
+  },
+  {
+    "id": "source-112",
+    "name": "NewsinEnglish.no",
+    "group": "Miscl",
+    "url": "https://www.newsinenglish.no/"
+  },
+  {
+    "id": "source-113",
+    "name": "Copenhagen Post",
+    "group": "Miscl",
+    "url": "https://cphpost.dk/"
+  },
+  {
+    "id": "source-114",
+    "name": "Local Sweden",
+    "group": "Miscl",
+    "url": "https://www.thelocal.se/"
+  },
+  {
+    "id": "source-115",
+    "name": "Moscow Times",
+    "group": "Miscl",
+    "url": "https://www.themoscowtimes.com/"
+  },
+  {
+    "id": "source-116",
+    "name": "Meduza",
+    "group": "Miscl",
+    "url": "https://meduza.io/en"
+  },
+  {
+    "id": "source-117",
+    "name": "Rudaw",
+    "group": "Miscl",
+    "url": "https://www.rudaw.net/english"
+  },
+  {
+    "id": "source-118",
+    "name": "Kurdistan 24",
+    "group": "Miscl",
+    "url": "https://www.kurdistan24.net/en"
+  },
+  {
+    "id": "source-119",
+    "name": "Iran International",
+    "group": "Miscl",
+    "url": "https://www.iranintl.com/en"
+  },
+  {
+    "id": "source-120",
+    "name": "TOI",
+    "group": "Miscl",
+    "url": "https://www.timesofisrael.com/"
+  },
+  {
+    "id": "source-121",
+    "name": "L'Orient Today",
+    "group": "Miscl",
+    "url": "https://today.lorientlejour.com/"
+  },
+  {
+    "id": "source-122",
+    "name": "Al Jazeera",
+    "group": "Miscl",
+    "url": "https://www.aljazeera.com/news/"
+  },
+  {
+    "id": "source-123",
+    "name": "Dawn",
+    "group": "Miscl",
+    "url": "https://www.dawn.com/"
+  },
+  {
+    "id": "source-124",
+    "name": "Montsame",
+    "group": "Miscl",
+    "url": "https://montsame.mn/en"
+  },
+  {
+    "id": "source-125",
+    "name": "Korea Herald",
+    "group": "Miscl",
+    "url": "https://www.koreaherald.com/"
+  },
+  {
+    "id": "source-126",
+    "name": "CBC",
+    "group": "Miscl",
+    "url": "https://www.cbc.ca/news/politics"
+  },
+  {
+    "id": "source-127",
+    "name": "Local France",
+    "group": "Miscl",
+    "url": "https://www.thelocal.fr/"
+  },
+  {
+    "id": "source-128",
+    "name": "Local Germany",
+    "group": "Miscl",
+    "url": "https://www.thelocal.de/"
+  },
+  {
+    "id": "source-129",
+    "name": "Local Spain",
+    "group": "Miscl",
+    "url": "https://www.thelocal.es/"
+  },
+  {
+    "id": "source-130",
+    "name": "Catalan News",
+    "group": "Miscl",
+    "url": "https://www.catalannews.com/politics"
+  },
+  {
+    "id": "source-131",
+    "name": "NL Times",
+    "group": "Miscl",
+    "url": "https://nltimes.nl/"
+  },
+  {
+    "id": "source-132",
+    "name": "Dutch News",
+    "group": "Miscl",
+    "url": "https://www.dutchnews.nl/?list"
+  },
+  {
+    "id": "source-133",
+    "name": "Belga",
+    "group": "Miscl",
+    "url": "https://www.belganewsagency.eu/"
+  },
+  {
+    "id": "source-134",
+    "name": "VRT",
+    "group": "Miscl",
+    "url": "https://www.vrt.be/vrtnws/en"
+  },
+  {
+    "id": "source-135",
+    "name": "Swissinfo",
+    "group": "Miscl",
+    "url": "https://www.swissinfo.ch/eng"
+  },
+  {
+    "id": "source-136",
+    "name": "Local Switzerland",
+    "group": "Miscl",
+    "url": "https://www.thelocal.ch/"
+  },
+  {
+    "id": "source-137",
+    "name": "Local Austria",
+    "group": "Miscl",
+    "url": "https://www.thelocal.at/"
+  },
+  {
+    "id": "source-138",
+    "name": "Vindobona",
+    "group": "Miscl",
+    "url": "https://www.vindobona.org/"
+  },
+  {
+    "id": "source-139",
+    "name": "The Journal",
+    "group": "Miscl",
+    "url": "https://www.thejournal.ie/"
+  },
+  {
+    "id": "source-140",
+    "name": "itv",
+    "group": "Miscl",
+    "url": "https://www.itv.com/news"
+  },
+  {
+    "id": "source-141",
+    "name": "4 News",
+    "group": "Miscl",
+    "url": "https://www.channel4.com/news"
+  },
+  {
+    "id": "source-142",
+    "name": "Iceland Review",
+    "group": "Miscl",
+    "url": "https://www.icelandreview.com/"
+  },
+  {
+    "id": "source-143",
+    "name": "Tovima",
+    "group": "Miscl",
+    "url": "https://www.tovima.com/"
+  },
+  {
+    "id": "source-144",
+    "name": "DNH",
+    "group": "Miscl",
+    "url": "https://dailynewshungary.com/"
+  },
+  {
+    "id": "source-145",
+    "name": "Malta Independent",
+    "group": "Miscl",
+    "url": "https://www.independent.com.mt/"
+  },
+  {
+    "id": "source-146",
+    "name": "Portugal News",
+    "group": "Miscl",
+    "url": "https://www.theportugalnews.com/"
+  },
+  {
+    "id": "source-147",
+    "name": "Turkish Minute",
+    "group": "Miscl",
+    "url": "https://turkishminute.com/category/national/"
+  },
+  {
+    "id": "source-148",
+    "name": "Daily Sabah",
+    "group": "Miscl",
+    "url": "https://www.dailysabah.com/"
+  },
+  {
+    "id": "source-149",
+    "name": "AA",
+    "group": "Miscl",
+    "url": "https://www.aa.com.tr/en"
+  },
+  {
+    "id": "source-150",
+    "name": "Vatican News",
+    "group": "Miscl",
+    "url": "https://www.vaticannews.va/en.html"
+  },
+  {
+    "id": "source-151",
+    "name": "Croatia Week",
+    "group": "Miscl",
+    "url": "https://www.croatiaweek.com/category/news-3/"
+  },
+  {
+    "id": "source-152",
+    "name": "Slovenia Times",
+    "group": "Miscl",
+    "url": "https://sloveniatimes.com/c/latest-news"
+  },
+  {
+    "id": "source-153",
+    "name": "Reuters",
+    "group": "Miscl",
+    "url": "https://www.reuters.com/world/"
+  },
+  {
+    "id": "source-154",
+    "name": "NPR",
+    "group": "Miscl",
+    "url": "https://www.npr.org/sections/world/"
+  },
+  {
+    "id": "source-155",
+    "name": "PBS",
+    "group": "Miscl",
+    "url": "https://www.pbs.org/newshour/world"
+  },
+  {
+    "id": "source-156",
+    "name": "CBS",
+    "group": "Miscl",
+    "url": "https://www.cbsnews.com/world/"
+  },
+  {
+    "id": "source-157",
+    "name": "Axios",
+    "group": "Miscl",
+    "url": "https://www.axios.com/world"
+  },
+  {
+    "id": "source-158",
+    "name": "The Hill",
+    "group": "Miscl",
+    "url": "https://thehill.com/policy/international/"
+  },
+  {
+    "id": "source-159",
+    "name": "NBC",
+    "group": "Miscl",
+    "url": "https://www.nbcnews.com/world"
+  },
+  {
+    "id": "source-160",
+    "name": "USA Today",
+    "group": "Miscl",
+    "url": "https://www.usatoday.com/news/world/"
+  },
+  {
+    "id": "source-161",
+    "name": "Defense News",
+    "group": "Miscl",
+    "url": "https://www.defensenews.com/"
+  },
+  {
+    "id": "source-162",
+    "name": "Breaking Defense",
+    "group": "Miscl",
+    "url": "https://breakingdefense.com/"
+  },
+  {
+    "id": "source-163",
+    "name": "Stars and Stripes",
+    "group": "Miscl",
+    "url": "https://www.stripes.com/"
+  },
+  {
+    "id": "source-164",
+    "name": "Military Times",
+    "group": "Miscl",
+    "url": "https://www.militarytimes.com/news/"
+  },
+  {
+    "id": "source-165",
+    "name": "VOA",
+    "group": "Miscl",
+    "url": "https://www.voanews.com/"
+  },
+  {
+    "id": "source-166",
+    "name": "Defense One",
+    "group": "Miscl",
+    "url": "https://www.defenseone.com/"
+  },
+  {
+    "id": "source-167",
+    "name": "FP",
+    "group": "Miscl",
+    "url": "https://foreignpolicy.com/category/latest/"
+  },
+  {
+    "id": "source-168",
+    "name": "C-Span",
+    "group": "Miscl",
+    "url": "https://www.c-span.org/news/"
+  },
+  {
+    "id": "source-169",
+    "name": "Tolo",
+    "group": "Miscl",
+    "url": "https://www.tolonews.com/afghanistan"
+  },
+  {
+    "id": "source-170",
+    "name": "Khaama",
+    "group": "Miscl",
+    "url": "https://www.khaama.com/category/afghanistan/"
+  },
+  {
+    "id": "source-171",
+    "name": "Pajhwok",
+    "group": "Miscl",
+    "url": "https://pajhwok.com/"
+  },
+  {
+    "id": "source-172",
+    "name": "Ariana",
+    "group": "Miscl",
+    "url": "https://www.ariananews.af/category/latest-news/"
+  }
+]
