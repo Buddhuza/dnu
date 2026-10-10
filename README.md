@@ -4,7 +4,13 @@ A local news review app for Google News and the 172 outlets in `sources.json` (t
 
 The homepage opens with the prepared **Daily news update** in the supplied section and story format. It displays only items from the prepared snapshot whose publication timestamps are still within the rolling 24-hour window. Use **Add to report** on any story, or download the prepared Word update directly. The snapshot in `data/daily-update-2026-10-09.json` is a selected roundup, not an automatically refreshed or exhaustive feed; the collection controls below it are for gathering new articles.
 
-For a quick preview that does not clone or install the project, open the [static GitHub Pages preview](https://buddhuza.github.io/scrapeandreport/). It displays the prepared update and supports local report selection. Live Firecrawl collection and generated Word exports from newly selected stories require the full server app below.
+For a quick preview that does not clone or install the project, open the [static GitHub Pages preview](https://buddhuza.github.io/scrapeandreport/). It displays the prepared update, supports content management, and exports a customised Word update. Live Firecrawl collection requires the full server app below.
+
+## Manage the website
+
+Use **Manage site** in the top bar to edit the site title and intro, show or hide the hero and coverage note, rename and reorder sections, edit or hide stories, add a story, and choose a theme or individual colors and font. Changes preview immediately and save to the current browser. **Download customised Word** exports the displayed stories with the supplied Word template, including local edits.
+
+The manager's **Save & share** tab exports and imports a JSON settings file. Browser edits are private to that browser. To publish them for all visitors, replace `data/site-config.json` with the exported file, rebuild, and redeploy the site. The public site's default settings come from that file.
 
 ## Run locally
 

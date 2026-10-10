@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "brandName": "SIGNAL DESK",
+  "brandTagline": "NEWS MONITORING WORKSPACE",
+  "eyebrow": "INTELLIGENCE / DAILY BRIEF",
+  "heroTitle": "Find the stories",
+  "heroAccent": "that matter.",
+  "heroDescription": "Review timely coverage from your trusted sources. Keep the signal, leave the noise.",
+  "updateTitle": "Daily news update",
+  "coverageText": "",
+  "showHero": true,
+  "showCoverage": true,
+  "theme": {
+    "name": "Forest",
+    "primary": "#123e47",
+    "accent": "#bce081",
+    "background": "#f7f8f6",
+    "surface": "#ffffff",
+    "text": "#182a36",
+    "section": "#0070c0",
+    "font": "DM Sans"
+  },
+  "sections": [
+    {
+      "id": "Lead stories",
+      "name": "Lead stories",
+      "visible": true
+    },
+    {
+      "id": "South Eastern Europe",
+      "name": "South Eastern Europe",
+      "visible": true
+    },
+    {
+      "id": "Eastern Europe",
+      "name": "Eastern Europe",
+      "visible": true
+    },
+    {
+      "id": "South Caucasus",
+      "name": "South Caucasus",
+      "visible": true
+    },
+    {
+      "id": "Central Asia",
+      "name": "Central Asia",
+      "visible": true
+    },
+    {
+      "id": "Miscellaneous",
+      "name": "Miscellaneous",
+      "visible": true
+    },
+    {
+      "id": "International organisations",
+      "name": "International organisations",
+      "visible": true
+    }
+  ],
+  "articleEdits": {},
+  "customArticles": []
+}
