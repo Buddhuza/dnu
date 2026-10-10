@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent } from './siteConfig.js';
+import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources } from './siteConfig.js';
 
 const articles = [
   { id: 'a', section: 'Europe', subsection: 'Poland', title: 'Original headline', summary: 'Original summary.', sourceName: 'Agency', url: 'https://example.com/a' },
@@ -26,4 +26,17 @@ test('import rejects unsafe links and invalid colors', () => {
   assert.equal(config.theme.primary, '#123e47');
   assert.equal(config.customArticles.length, 0);
   assert.equal(config.sections.length, 2);
+});
+
+test('custom sources, visibility, and dark appearance survive settings import', () => {
+  const config = normalizeSiteConfig({
+    ...defaultSiteConfig(articles),
+    darkMode: true,
+    fontSize: 17,
+    customSources: [{ id: 'manual-source-test-1', name: 'New outlet', group: 'Europe', url: 'https://example.com/news' }],
+    hiddenSourceIds: ['provided']
+  }, articles);
+  assert.equal(config.darkMode, true);
+  assert.equal(config.fontSize, 17);
+  assert.deepEqual(displaySources([{ id: 'provided', name: 'Old outlet' }], config).map(item => item.name), ['New outlet']);
 });

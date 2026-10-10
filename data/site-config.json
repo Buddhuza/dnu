@@ -10,6 +10,12 @@
   "coverageText": "",
   "showHero": true,
   "showCoverage": true,
+  "showSources": true,
+  "showUpdate": true,
+  "showScope": true,
+  "showLatest": true,
+  "darkMode": false,
+  "fontSize": 14,
   "theme": {
     "name": "Forest",
     "primary": "#123e47",
@@ -18,6 +24,16 @@
     "surface": "#ffffff",
     "text": "#182a36",
     "section": "#0070c0",
+    "font": "DM Sans"
+  },
+  "darkTheme": {
+    "name": "Dark",
+    "primary": "#172f3a",
+    "accent": "#c6e690",
+    "background": "#101a20",
+    "surface": "#1c2a32",
+    "text": "#eaf1ef",
+    "section": "#8ec7ee",
     "font": "DM Sans"
   },
   "sections": [
@@ -58,5 +74,7 @@
     }
   ],
   "articleEdits": {},
-  "customArticles": []
+  "customArticles": [],
+  "customSources": [],
+  "hiddenSourceIds": []
 }

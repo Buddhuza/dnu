@@ -35,6 +35,20 @@ export function parseWords(value) {
   return [...new Set(value.map(v => String(v).trim()).filter(Boolean))].slice(0, 25).map(v => v.slice(0, 60));
 }
 
+export function customSourceFromRequest(value) {
+  if (!value || typeof value !== 'object' || !/^manual-source-[a-zA-Z0-9-]{1,100}$/.test(value.id ?? '')) return null;
+  const name = String(value.name ?? '').trim().slice(0, 80);
+  const group = String(value.group ?? 'Custom').trim().slice(0, 80) || 'Custom';
+  if (!name) return null;
+  try {
+    const url = new URL(String(value.url ?? ''));
+    if (url.protocol !== 'https:' || url.username || url.password || (url.port && url.port !== '443')) return null;
+    const host = url.hostname.toLowerCase();
+    if (!host.includes('.') || host === 'localhost' || host.endsWith('.local') || host.endsWith('.internal') || /^[0-9.]+$/.test(host) || host.includes(':')) return null;
+    return { id: value.id, name, group, url: url.href };
+  } catch { return null; }
+}
+
 export function googleNewsUrl(words) {
   const query = words.length ? words.map(w => `"${w.replaceAll('"', '')}"`).join(' OR ') : 'world news';
   const url = new URL('https://news.google.com/search');

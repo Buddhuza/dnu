@@ -5,6 +5,8 @@ export const THEME_PRESETS = {
   warm: { name: 'Warm', primary: '#5b3b32', accent: '#f3d4a4', background: '#fbf7f1', surface: '#ffffff', text: '#3d302a', section: '#9b5834', font: 'Georgia' }
 };
 
+export const DARK_THEME = { name: 'Dark', primary: '#172f3a', accent: '#c6e690', background: '#101a20', surface: '#1c2a32', text: '#eaf1ef', section: '#8ec7ee', font: 'DM Sans' };
+
 const defaults = {
   version: 1,
   brandName: 'SIGNAL DESK',
@@ -17,10 +19,19 @@ const defaults = {
   coverageText: '',
   showHero: true,
   showCoverage: true,
+  showSources: true,
+  showUpdate: true,
+  showScope: true,
+  showLatest: true,
+  darkMode: false,
+  fontSize: 14,
   theme: THEME_PRESETS.forest,
+  darkTheme: DARK_THEME,
   sections: [],
   articleEdits: {},
-  customArticles: []
+  customArticles: [],
+  customSources: [],
+  hiddenSourceIds: []
 };
 
 const color = (value, fallback) => /^#[0-9a-f]{6}$/i.test(value ?? '') ? value : fallback;
@@ -31,7 +42,7 @@ const httpsUrl = value => {
 
 export function defaultSiteConfig(articles = []) {
   const names = [...new Set(articles.map(item => item.section).filter(Boolean))];
-  return { ...defaults, theme: { ...THEME_PRESETS.forest }, sections: names.map(name => ({ id: name, name, visible: true })) };
+  return { ...defaults, theme: { ...THEME_PRESETS.forest }, darkTheme: { ...DARK_THEME }, sections: names.map(name => ({ id: name, name, visible: true })) };
 }
 
 export function normalizeSiteConfig(input, articles = []) {
@@ -47,17 +58,18 @@ export function normalizeSiteConfig(input, articles = []) {
   });
   for (const section of base.sections) if (!seen.has(section.id)) sections.push(section);
   const sectionIds = new Set(sections.map(item => item.id));
-  const rawTheme = input.theme && typeof input.theme === 'object' ? input.theme : {};
-  const theme = {
-    name: clean(rawTheme.name, base.theme.name, 40),
-    primary: color(rawTheme.primary, base.theme.primary),
-    accent: color(rawTheme.accent, base.theme.accent),
-    background: color(rawTheme.background, base.theme.background),
-    surface: color(rawTheme.surface, base.theme.surface),
-    text: color(rawTheme.text, base.theme.text),
-    section: color(rawTheme.section, base.theme.section),
-    font: ['DM Sans', 'Manrope', 'Georgia'].includes(rawTheme.font) ? rawTheme.font : base.theme.font
-  };
+  const parseTheme = (raw, fallback) => ({
+    name: clean(raw?.name, fallback.name, 40),
+    primary: color(raw?.primary, fallback.primary),
+    accent: color(raw?.accent, fallback.accent),
+    background: color(raw?.background, fallback.background),
+    surface: color(raw?.surface, fallback.surface),
+    text: color(raw?.text, fallback.text),
+    section: color(raw?.section, fallback.section),
+    font: ['DM Sans', 'Manrope', 'Georgia'].includes(raw?.font) ? raw.font : fallback.font
+  });
+  const theme = parseTheme(input.theme, base.theme);
+  const darkTheme = parseTheme(input.darkTheme, base.darkTheme);
   const articleEdits = Object.create(null);
   if (input.articleEdits && typeof input.articleEdits === 'object' && !Array.isArray(input.articleEdits)) {
     for (const [id, edit] of Object.entries(input.articleEdits).slice(0, 500)) {
@@ -85,6 +97,16 @@ export function normalizeSiteConfig(input, articles = []) {
       hidden: item.hidden === true, reviewed: true
     }];
   });
+  const customSources = (Array.isArray(input.customSources) ? input.customSources : []).slice(0, 100).flatMap(item => {
+    const url = httpsUrl(item?.url);
+    const name = clean(item?.name, '', 80).trim();
+    const id = clean(item?.id, '', 120);
+    if (!url || !name || !/^manual-source-[a-zA-Z0-9-]{1,100}$/.test(id)) return [];
+    return [{
+      id,
+      name, group: clean(item.group, 'Custom', 80).trim() || 'Custom', url
+    }];
+  });
   return {
     version: 1,
     brandName: clean(input.brandName, base.brandName, 80),
@@ -97,8 +119,20 @@ export function normalizeSiteConfig(input, articles = []) {
     coverageText: clean(input.coverageText, '', 600),
     showHero: input.showHero !== false,
     showCoverage: input.showCoverage !== false,
-    theme, sections, articleEdits, customArticles
+    showSources: input.showSources !== false,
+    showUpdate: input.showUpdate !== false,
+    showScope: input.showScope !== false,
+    showLatest: input.showLatest !== false,
+    darkMode: input.darkMode === true,
+    fontSize: Number.isFinite(Number(input.fontSize)) ? Math.max(14, Math.min(20, Number(input.fontSize))) : 14,
+    theme, darkTheme, sections, articleEdits, customArticles, customSources,
+    hiddenSourceIds: (Array.isArray(input.hiddenSourceIds) ? input.hiddenSourceIds : []).filter(id => typeof id === 'string').slice(0, 500)
   };
+}
+
+export function displaySources(baseSources, config) {
+  const hidden = new Set(config.hiddenSourceIds);
+  return [...baseSources, ...config.customSources].filter(source => !hidden.has(source.id));
 }
 
 export function displaySiteContent(articles, config) {

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { googleNewsUrl, normalizeArticles, scrapeHeadlines, undatedCandidates, reviewedArticle } from './news.js';
+import { googleNewsUrl, normalizeArticles, scrapeHeadlines, undatedCandidates, reviewedArticle, customSourceFromRequest } from './news.js';
 
 const source = { id: 'source-1', name: 'Test News', group: 'Test', url: 'https://example.com/news/' };
 const now = Date.parse('2026-10-09T12:00:00Z');
@@ -52,4 +52,12 @@ test('undated matching links can be checked on their original article pages', ()
   assert.equal(verified.publishedAt, '2026-10-09T10:00:00.000Z');
   assert.equal(verified.summary, 'The ministers agreed to meet again.');
   assert.equal(reviewedArticle({ data: { metadata: { publishedTime: '2026-10-08T10:00:00Z', ogTitle: 'Old story' } } }, source, candidates[0].url, now), null);
+});
+
+test('manual source accepts a public HTTPS news site and rejects local targets', () => {
+  const input = { id: 'manual-source-123', name: 'New Agency', group: 'Europe', url: 'https://news.example.org/latest' };
+  assert.equal(customSourceFromRequest(input)?.url, input.url);
+  assert.equal(customSourceFromRequest({ ...input, url: 'https://localhost/private' }), null);
+  assert.equal(customSourceFromRequest({ ...input, url: 'http://news.example.org/' }), null);
+  assert.equal(customSourceFromRequest({ ...input, url: 'https://127.0.0.1/' }), null);
 });

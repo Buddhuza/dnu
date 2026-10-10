@@ -44,3 +44,19 @@
 .cms-file input{display:none}
 .cms-message{background:#eef6ec;color:#316049;border-radius:7px;padding:10px 12px;font-size:12px;margin-top:18px}
 @media(max-width:720px){.cms-backdrop{padding:7px}.cms-dialog{height:98vh}.cms-header{padding:16px}.cms-layout{display:flex;flex-direction:column}.cms-tabs{flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid #dce5df;padding:8px}.cms-tabs button{white-space:nowrap}.cms-content{padding:20px 16px}.cms-presets{grid-template-columns:repeat(2,1fr)}.cms-color-grid{grid-template-columns:1fr}}
+
+.cms-content,.cms-tabs button,.cms-header p,.cms-help,.cms-fields label,.cms-font-label,.cms-fields input:not([type=checkbox]),.cms-fields textarea,.cms-fields select,.cms-font-label select,.cms-section-row input,.cms-search,.cms-check,.cms-story summary,.cms-primary,.cms-file,.cms-danger,.cms-presets button,.cms-color-grid label,.cms-color-grid code,.cms-message{font-size:var(--site-body-size,14px)!important}
+.cms-source-list{display:grid;gap:8px;max-height:350px;overflow:auto;margin:12px 0}
+.cms-custom-source{display:grid;grid-template-columns:1fr 1fr 2fr auto;gap:8px;align-items:center}
+.cms-custom-source input{min-width:0;border:1px solid #d9e4da;border-radius:7px;background:#fff;color:#273d31;padding:9px 11px;font-size:var(--site-body-size,14px)}
+.cms-source-row{display:flex;align-items:center;gap:10px;padding:8px;border:1px solid #e3eae4;border-radius:7px;font-size:var(--site-body-size,14px)}
+.cms-source-row input{accent-color:var(--site-primary);width:18px;height:18px}
+.cms-source-row span{display:flex;flex-direction:column;gap:2px}
+.cms-source-row small{color:#718579}
+.app-shell[data-mode="dark"] .cms-dialog{background:var(--site-surface);color:var(--site-text)}
+.app-shell[data-mode="dark"] .cms-header,.app-shell[data-mode="dark"] .cms-tabs,.app-shell[data-mode="dark"] .cms-section-row,.app-shell[data-mode="dark"] .cms-story,.app-shell[data-mode="dark"] .cms-stories,.app-shell[data-mode="dark"] .cms-source-row{border-color:#3b555d}
+.app-shell[data-mode="dark"] .cms-tabs,.app-shell[data-mode="dark"] .cms-close,.app-shell[data-mode="dark"] .cms-order button,.app-shell[data-mode="dark"] .cms-presets button,.app-shell[data-mode="dark"] .cms-color-grid label span{background:#263a43;color:var(--site-text)}
+.app-shell[data-mode="dark"] .cms-tabs button,.app-shell[data-mode="dark"] .cms-fields label,.app-shell[data-mode="dark"] .cms-font-label,.app-shell[data-mode="dark"] .cms-color-grid label,.app-shell[data-mode="dark"] .cms-color-grid code,.app-shell[data-mode="dark"] .cms-check,.app-shell[data-mode="dark"] .cms-help,.app-shell[data-mode="dark"] .cms-header p,.app-shell[data-mode="dark"] .cms-source-row small{color:#bdd0ca!important}
+.app-shell[data-mode="dark"] .cms-tabs button.active{background:var(--site-primary);color:#fff}
+.app-shell[data-mode="dark"] .cms-fields input:not([type=checkbox]),.app-shell[data-mode="dark"] .cms-fields textarea,.app-shell[data-mode="dark"] .cms-fields select,.app-shell[data-mode="dark"] .cms-font-label select,.app-shell[data-mode="dark"] .cms-section-row input,.app-shell[data-mode="dark"] .cms-search,.app-shell[data-mode="dark"] .cms-custom-source input{background:#1a2b33;border-color:#3b555d;color:var(--site-text)}
+@media(max-width:720px){.cms-custom-source{grid-template-columns:1fr 1fr}.cms-custom-source input[type=url]{grid-column:1/-1}}

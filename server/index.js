@@ -2,7 +2,7 @@ import express from 'express';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { DEFAULT_INCLUDE, DEFAULT_EXCLUDE, normalizeArticles, parseWords, scrapeHeadlines, scrapeArticle, undatedCandidates, reviewedArticle } from './news.js';
+import { DEFAULT_INCLUDE, DEFAULT_EXCLUDE, normalizeArticles, parseWords, scrapeHeadlines, scrapeArticle, undatedCandidates, reviewedArticle, customSourceFromRequest } from './news.js';
 import { createReportDocx } from './report.js';
 import { currentDailyUpdate } from './daily.js';
 
@@ -39,12 +39,13 @@ app.get('/api/daily-update.docx', async (_req, res) => {
 });
 
 app.post('/api/headlines', async (req, res) => {
-  const source = sourceById.get(req.body?.sourceId);
+  const source = sourceById.get(req.body?.sourceId) ?? customSourceFromRequest(req.body?.customSource);
+  if (source?.id !== req.body?.sourceId) return res.status(400).json({ error: 'Choose a valid source from the list.' });
   if (!source) return res.status(400).json({ error: 'Choose a source from the list.' });
   const include = parseWords(req.body?.include);
   const exclude = parseWords(req.body?.exclude);
   if (!process.env.FIRECRAWL_API_KEY) return res.status(503).json({ error: 'Set FIRECRAWL_API_KEY on the server to collect headlines.' });
-  const cacheKey = JSON.stringify([source.id, include]);
+  const cacheKey = JSON.stringify([source.id, source.url, include]);
   try {
     let entry = cache.get(cacheKey);
     if (!entry || Date.now() - entry.at > 5 * 60 * 1000) {

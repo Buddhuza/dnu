@@ -1,14 +1,14 @@
 # Signal Desk
 
-A local news review app for Google News and the 172 outlets in `sources.json` (transcribed from the supplied `agencies_updated.txt`). Choose a source, collect its headlines with Firecrawl, refine the results with included and excluded phrases, select stories, review their full articles, and download a Word or Markdown report.
+A local news review app for Google News and the 172 outlets in `sources.json` (transcribed from the supplied `agencies_updated.txt`). Choose a source, collect its headlines with Firecrawl, and refine the results with included and excluded phrases. The prepared news stream can be edited and exported as a Word update.
 
-The homepage opens with the prepared **Daily news update** in the supplied section and story format. It displays only items from the prepared snapshot whose publication timestamps are still within the rolling 24-hour window. Use **Add to report** on any story, or download the prepared Word update directly. The snapshot in `data/daily-update-2026-10-09.json` is a selected roundup, not an automatically refreshed or exhaustive feed; the collection controls below it are for gathering new articles.
+The homepage opens with the prepared **Daily news update** in the supplied section and story format. It displays only items from the prepared snapshot whose publication timestamps are still within the rolling 24-hour window. Read the stories in a single stream, or download the prepared Word update directly. The snapshot in `data/daily-update-2026-10-09.json` is a selected roundup, not an automatically refreshed or exhaustive feed; the collection controls below it are for gathering new articles.
 
 For a quick preview that does not clone or install the project, open the [static GitHub Pages preview](https://buddhuza.github.io/scrapeandreport/). It displays the prepared update, supports content management, and exports a customised Word update. Live Firecrawl collection requires the full server app below.
 
 ## Manage the website
 
-Use **Manage site** in the top bar to edit the site title and intro, show or hide the hero and coverage note, rename and reorder sections, edit or hide stories, add a story, and choose a theme or individual colors and font. Changes preview immediately and save to the current browser. **Download customised Word** exports the displayed stories with the supplied Word template, including local edits.
+Use **Manage site** in the top bar to edit the site title and intro, show or hide page areas, rename and reorder sections, edit or hide stories, add a story, add or hide news sources, and adjust light and dark palettes, font, and text size. The top bar also has a dark mode switch. Text starts at 14 px. Changes preview immediately and save to the current browser. **Download customised Word** exports the displayed stories with the supplied Word template, including local edits.
 
 The manager's **Save & share** tab exports and imports a JSON settings file. Browser edits are private to that browser. To publish them for all visitors, replace `data/site-config.json` with the exported file, rebuild, and redeploy the site. The public site's default settings come from that file.
 
@@ -28,8 +28,8 @@ Run `npm test` for the filtering, Firecrawl request, and Word report checks. The
 
 Use **Collect visible sources** after choosing a region or searching the source list to gather several outlets at once. This makes at least one Firecrawl extraction request per source and up to three extra article requests when the listing lacks precise timestamps. Requests are paced to respect a ten-per-minute Firecrawl limit; collecting all 173 entries can take a long time and consume several Firecrawl credits per source. Failed sources are counted while successful results remain visible.
 
-Select a headline, then press **Review full article**. The app checks the article's publication time and proposes a factual one-sentence summary based on its first paragraphs. Edit the summary, section, and country or topic before export. Export requires every selected article to be reviewed. The Word and Markdown reports group stories by section and hyperlink the agency name to the article. They list collection failures separately from fetched pages without a selected article; the latter is not evidence that the source lacked relevant news.
+The **Latest headlines** area displays verified stories from the last 24 hours. The **Daily news update** stream can be edited in Manage site and exported to Word using the supplied template. The former report sidebar and selection steps have been removed.
 
 Word exports use a blanked copy of the supplied example in `server/templates/daily-update-template.docx`. Its logo, Calibri styles, blue section headings, shaded subsection bands, A4 margins, and page-number footer are preserved. Only the prepared title, article paragraphs, and source appendix are populated for each export.
 
-The selected report, title, and keyword settings are stored in your browser's local storage. They are not shared between browsers.
+Keyword and site settings, including custom sources and dark mode, are stored in your browser's local storage. They are not shared between browsers. Export settings from Manage site to move them to another browser.
