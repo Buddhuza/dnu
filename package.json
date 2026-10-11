@@ -16,7 +16,8 @@
     "express": "^4.21.2",
     "jszip": "^3.10.2",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "sax": "^1.4.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",

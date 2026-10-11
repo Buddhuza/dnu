@@ -16,7 +16,8 @@ test('Word report preserves article text, sections, and linked agency names', as
   const document = await zip.file('word/document.xml').async('string');
   const relationships = await zip.file('word/_rels/document.xml.rels').async('string');
   assert.match(document, /Exact headline/);
-  assert.match(document, /A verified extra fact/);
+  assert.doesNotMatch(document, /A verified extra fact/);
+  assert.doesNotMatch(document, /Exact headline\./);
   assert.match(document, /EASTERN EUROPE/);
   assert.match(document, /Missing News/);
   assert.match(document, /AGENCIES FROM WHICH NO QUALIFYING ARTICLE WAS COLLECTED/);

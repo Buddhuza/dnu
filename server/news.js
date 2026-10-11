@@ -131,11 +131,11 @@ export function reviewedArticle(payload, source, url, now = Date.now()) {
 
 export async function scrapeHeadlines(source, include, apiKey, fetchImpl = fetch) {
   const targetUrl = source.listingUrl || source.url;
-  const prompt = 'Extract news article headlines linked from this page. Return an object with an articles array. For each article return title, url (absolute article URL), a brief summary if visible, and publishedAt as an ISO 8601 timestamp with timezone only when the exact time and timezone are visible. Include article links even when the date or time is not visible; omit publishedAt for those. Do not turn a date-only label into a midnight timestamp. Do not invent dates, titles, or URLs. Do not include navigation links.';
+  const prompt = 'Extract exact news article headlines linked from this page. Return an object with an articles array. For each article return title, url (absolute article URL), and publishedAt as an ISO 8601 timestamp with timezone only when the exact time and timezone are visible. Include article links even when the date or time is not visible; omit publishedAt for those. Do not turn a date-only label into a midnight timestamp. Do not invent dates, titles, or URLs. Do not include navigation links.';
   return firecrawlPost({ url: targetUrl, formats: [{ type: 'json', prompt }], onlyMainContent: true, timeout: 30000 }, apiKey, fetchImpl);
 }
 
 export async function scrapeArticle(url, apiKey, fetchImpl = fetch) {
-  const prompt = 'Read the original news article. Return an object with exactHeadline copied verbatim from the article, publishedAt as an ISO 8601 timestamp with timezone only if explicitly available, and summary as exactly one factual sentence containing the most important new detail from the first few article paragraphs. The summary must add information not already in the headline. Do not include opinion, interpretation, or invented details.';
+  const prompt = 'Read the original news article. Return an object with exactHeadline copied verbatim from the article and publishedAt as an ISO 8601 timestamp with timezone only if explicitly available. Do not invent or rewrite the headline or publication time.';
   return firecrawlPost({ url, formats: ['markdown', { type: 'json', prompt }], onlyMainContent: true, timeout: 30000 }, apiKey, fetchImpl);
 }

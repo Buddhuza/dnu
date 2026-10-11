@@ -23,6 +23,7 @@ function App() {
   const [daily, setDaily] = useState(null);
   const [staticPreview, setStaticPreview] = useState(false);
   const [activeId, setActiveId] = useState(preparedSources[0]?.id || '');
+  const [websiteSourceId, setWebsiteSourceId] = useState('');
   const [search, setSearch] = useState('');
   const [group, setGroup] = useState('All sources');
   const [includeText, setIncludeText] = useState(() => readStored('signal-include', defaultScope));
@@ -52,8 +53,11 @@ function App() {
   useEffect(() => { localStorage.setItem('signal-site-settings-v1', JSON.stringify(siteConfig)); document.title = siteConfig.brandName || 'Signal Desk'; }, [siteConfig]);
   const sources = useMemo(() => displaySources(config?.sources ?? [], siteConfig), [config, siteConfig]);
   const active = sources.find(x => x.id === activeId);
+  const websiteSource = sources.find(x => x.id === websiteSourceId);
+  const canCollect = Boolean(config?.firecrawlConfigured || config?.feedSourceIds?.includes(activeId));
   const groups = ['All sources', ...new Set(sources.map(x => x.group))];
   const visibleSources = useMemo(() => sources.filter(x => (group === 'All sources' || x.group === group) && `${x.name} ${x.group} ${x.url}`.toLowerCase().includes(search.toLowerCase())), [sources, group, search]);
+  const collectionSources = useMemo(() => visibleSources.filter(x => config?.firecrawlConfigured || config?.feedSourceIds?.includes(x.id)).sort((a, b) => Number(config?.feedSourceIds?.includes(b.id)) - Number(config?.feedSourceIds?.includes(a.id))), [visibleSources, config]);
   const displayedArticles = useMemo(() => displaySiteContent(daily?.articles ?? [], siteConfig), [daily, siteConfig]);
   const activeTheme = siteConfig.darkMode ? siteConfig.darkTheme : siteConfig.theme;
   const themeStyle = {
@@ -109,16 +113,18 @@ function App() {
     finally { setLoading(false); }
   }
   async function loadVisible() {
-    if (!visibleSources.length) return;
+    if (!collectionSources.length) return;
     setLoading(true);
     setError('');
     setResult({ headlines: [], fetchedAt: new Date().toISOString(), batch: true });
-    setBatchProgress({ done: 0, total: visibleSources.length, failed: 0 });
-    let cursor = 0, done = 0, failed = 0;
+    setBatchProgress({ done: 0, total: collectionSources.length, failed: 0 });
+    let done = 0, failed = 0;
     const gathered = [];
-    const worker = async () => {
-      while (cursor < visibleSources.length) {
-        const source = visibleSources[cursor++];
+    const collectGroup = async groupSources => {
+      let cursor = 0;
+      const worker = async () => {
+      while (cursor < groupSources.length) {
+        const source = groupSources[cursor++];
         try {
           const response = await fetch('/api/headlines', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(sourceRequest(source)) });
           const data = await response.json();
@@ -127,10 +133,13 @@ function App() {
           setResult({ headlines: [...gathered].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date().toISOString(), batch: true });
         } catch { failed++; }
         done++;
-        setBatchProgress({ done, total: visibleSources.length, failed });
+        setBatchProgress({ done, total: collectionSources.length, failed });
       }
     };
-    await Promise.all(Array.from({ length: Math.min(4, visibleSources.length) }, worker));
+      await Promise.all(Array.from({ length: Math.min(4, groupSources.length) }, worker));
+    };
+    await collectGroup(collectionSources.filter(source => config?.feedSourceIds?.includes(source.id)));
+    await collectGroup(collectionSources.filter(source => !config?.feedSourceIds?.includes(source.id)));
     setLoading(false);
     if (failed) setError(`${failed} source${failed === 1 ? '' : 's'} could not be collected. Other results are shown below.`);
   }
@@ -148,12 +157,12 @@ function App() {
   }
 
   const collectionPanel = (
-        <section className="headlines-section" id="live-collection"><div className="section-title"><div><h2>Live collection</h2></div><span className="time-filter">◷ &nbsp; LAST 48 HOURS</span></div><div className="source-banner"><div className="banner-icon">{active?.name?.[0] || 'S'}</div><div><strong>{active?.name || 'Select a source'}</strong><small>{active?.url || 'Choose an outlet from the left'}</small></div><button onClick={() => loadSource()} disabled={loading || !active || !config?.firecrawlConfigured}>{loading ? 'Collecting…' : 'Collect headlines'} <span>↗</span></button></div><div className="batch-row"><span>Check up to three article pages when dates need verification; Internazionale Reuters stories are always checked this way. Deep scan checks up to ten. Firecrawl usage scales with the article count.</span><button onClick={() => loadSource(activeId, true)} disabled={loading || !config?.firecrawlConfigured || !active}>Deep scan source</button><button onClick={loadVisible} disabled={loading || !config?.firecrawlConfigured || !visibleSources.length}>Collect visible sources ({visibleSources.length})</button></div>
-          {!config?.firecrawlConfigured && <div className="notice"><p>{staticPreview ? 'This published page shows the prepared update. Select a source to see any stories from it in this update. Live collection requires the server app with Firecrawl.' : <>Add <code>FIRECRAWL_API_KEY</code> to the server environment to collect live headlines. See the README for setup.</>}</p></div>}
+        <section className="headlines-section" id="live-collection"><div className="section-title"><div><h2>Live collection</h2></div><span className="time-filter">◷ &nbsp; LAST 48 HOURS</span></div><div className="source-banner"><div className="banner-icon">{active?.name?.[0] || 'S'}</div><div><strong>{active?.name || 'Select a source'}</strong><small>{active?.url || 'Choose an outlet from the left'}</small></div><button onClick={() => loadSource()} disabled={loading || !active || !canCollect}>{loading ? 'Collecting…' : 'Collect headlines'} <span>↗</span></button></div><div className="batch-row"><span>Publisher feeds are checked first at no Firecrawl cost. Sites without a usable feed fall back to Firecrawl, which may check up to three article pages for dates; deep scan checks up to ten.</span><button onClick={() => loadSource(activeId, true)} disabled={loading || !config?.firecrawlConfigured || !active}>Deep scan source</button><button onClick={loadVisible} disabled={loading || !collectionSources.length}>Collect visible sources ({collectionSources.length})</button></div>
+          {!config?.firecrawlConfigured && <div className="notice"><p>{staticPreview ? 'This published page shows the prepared update. Live collection requires the server app; feeds work without Firecrawl, while other sources need an API key.' : <>Feed sources can be collected without an API key. Add <code>FIRECRAWL_API_KEY</code> for other sources.</>}</p></div>}
           {error && <div className="error-box" role="alert">{error}</div>}
-          {loading && <div className="loading-box"><div className="spinner"/> {batchProgress ? `Collected ${batchProgress.done} of ${batchProgress.total} sources${batchProgress.failed ? ` · ${batchProgress.failed} failed` : ''}` : 'Scraping and checking publication times…'}</div>}
-          {result && <><div className="result-meta">{result.headlines.length} verified headlines · Checked {dateLabel(result.fetchedAt)}{!result.batch && result.candidatesFound ? ` · ${result.candidatesChecked} of ${result.candidatesFound} article candidates checked` : ''}</div>{result.headlines.length ? <div className="headline-list">{result.headlines.map(item => <article className="headline-card" key={item.id}><div className="headline-top"><span className="category-label">{item.sourceName}</span><span>{dateLabel(item.publishedAt)}</span></div><h3><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title} ↗</a></h3>{item.summary && <p>{item.summary}</p>}</article>)}</div> : <div className="empty-result">No matching headline was verified in this scan. This does not mean the source had no relevant news. Try Deep scan source or broader keywords.</div>}</>}
-          {!loading && !result && !error && (staticPreview ? <div className="snapshot-results"><p>{selectedSourceStories.length ? `${selectedSourceStories.length} prepared update stories from ${active?.name}` : `No ${active?.name || 'source'} stories were selected for this prepared update.`}</p>{selectedSourceStories.map(item => <article className="headline-card" key={item.id}><h3><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title} ↗</a></h3><p>{item.summary}</p></article>)}</div> : <div className="empty-result"><span className="empty-symbol">◎</span><strong>Your next story starts here.</strong><p>Choose a source or collect all visible sources. Results are filtered to the past 48 hours.</p></div>)}
+          {loading && <div className="loading-box"><div className="spinner"/> {batchProgress ? `Collected ${batchProgress.done} of ${batchProgress.total} sources${batchProgress.failed ? ` · ${batchProgress.failed} failed` : ''}` : 'Collecting headlines and checking publication times…'}</div>}
+          {result && <><div className="result-meta">{result.headlines.length} headlines · Checked {dateLabel(result.fetchedAt)}{result.collectionMethod ? ` · ${result.collectionMethod === 'feed' ? 'Publisher feed, 0 Firecrawl credits' : 'Firecrawl'}` : ''}{!result.batch && result.candidatesFound ? ` · ${result.candidatesChecked} of ${result.candidatesFound} article candidates checked` : ''}</div>{result.headlines.length ? <div className="headline-list">{result.headlines.map(item => <article className="headline-card" key={item.id}><div className="headline-top"><span className="category-label">{item.sourceName}</span><span>{dateLabel(item.publishedAt)}</span></div><h3><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title} ↗</a></h3></article>)}</div> : <div className="empty-result">No matching headline was found in this scan. This does not mean the source had no relevant news. Try broader keywords.</div>}</>}
+          {!loading && !result && !error && (staticPreview ? <div className="snapshot-results"><p>{selectedSourceStories.length ? `${selectedSourceStories.length} prepared update stories from ${active?.name}` : `No ${active?.name || 'source'} stories were selected for this prepared update.`}</p>{selectedSourceStories.map(item => <article className="headline-card" key={item.id}><h3><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title} ↗</a></h3></article>)}</div> : <div className="empty-result"><span className="empty-symbol">◎</span><strong>Your next story starts here.</strong><p>Choose a source or collect all visible sources. Results are filtered to the past 48 hours.</p></div>)}
         </section>
   );
 
@@ -164,15 +173,18 @@ function App() {
         <div className="sidebar-heading"><span className="eyebrow">DISCOVER</span><h2>Sources <em>{sources.length}</em></h2><p>Browse the outlets in your monitoring list. Source categories do not limit report placement.</p></div>
         <label className="search-box"><span>⌕</span><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search sources" aria-label="Search sources"/><kbd>⌘ K</kbd></label>
         <select className="group-select" value={group} onChange={e => setGroup(e.target.value)} aria-label="Filter source region">{groups.map(x => <option key={x}>{x}</option>)}</select>
-        <div className="source-list">{visibleSources.map(x => <button key={x.id} className={`source-row ${activeId === x.id ? 'active' : ''}`} onClick={() => { setActiveId(x.id); setResult(null); setError(''); setManagerTab('Collect'); setManaging(true); }}><span className="source-icon">{x.name[0]}</span><span className="source-copy"><strong>{x.name}</strong><small>{x.group}</small></span><span className="source-arrow">›</span></button>)}{!visibleSources.length && <p className="no-sources">No sources match this search.</p>}</div>
+        <div className="source-list">{visibleSources.map(x => <button key={x.id} className={`source-row ${websiteSourceId === x.id ? 'active' : ''}`} onClick={() => { setActiveId(x.id); setWebsiteSourceId(x.id); setResult(null); setError(''); }} aria-label={`Show ${x.name} website beside the daily news update`}><span className="source-icon">{x.name[0]}</span><span className="source-copy"><strong>{x.name}</strong><small>{x.group}</small></span><span className="source-arrow">›</span></button>)}{!visibleSources.length && <p className="no-sources">No sources match this search.</p>}</div>
         <div className="sidebar-foot"><span className="pulse"/> {sources.length} visible sources</div>
       </aside>}
-      <main className="main-panel">
+      <main className={`main-panel ${websiteSource ? 'with-website' : ''}`}>
         {siteConfig.showHero && <div className="hero"><div><span className="eyebrow">{siteConfig.eyebrow}</span><h1>{siteConfig.heroTitle}<br/><i>{siteConfig.heroAccent}</i></h1><p>{siteConfig.heroDescription}</p></div><div className="hero-art"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="hero-globe">✳</div><span className="art-label">MONITORING<br/>IN PROGRESS</span></div></div>}
+        <div className={`reading-layout ${websiteSource ? 'website-open' : ''}`}>
         {siteConfig.showUpdate && <section className={`daily-update ${siteConfig.sectionHeadingUppercase ? 'uppercase-headings' : ''}`} aria-labelledby="daily-update-title">
           <div className="daily-heading"><h2 id="daily-update-title">{siteConfig.updateTitle === 'Daily news update' ? daily?.title ?? siteConfig.updateTitle : siteConfig.updateTitle}</h2>{daily?.articles?.length > 0 && <button className="daily-download" disabled={!displayedArticles.length} onClick={downloadManagedDocx}>Download report</button>}</div>
-          {daily && <>{dailySections.map(({ section, subsections }) => <div className="daily-section" key={section}><h3>{section}</h3>{subsections.map(([subsection, items]) => <div key={subsection}>{subsection && <h4 className={section === 'Miscellaneous' ? 'plain-topic' : undefined}>{subsection}</h4>}{items.map((item, index) => <React.Fragment key={item.id}>{item.country && (index === 0 || items[index - 1].country !== item.country) && <h5 className="daily-country">{item.country}</h5>}<article className="daily-story"><p><strong>{item.title}{/[.!?]$/.test(item.title) ? '' : '.'}</strong> {item.summary} (<a href={item.url} target="_blank" rel="noopener noreferrer">{item.sourceName}</a>)</p></article></React.Fragment>)}</div>)}</div>)}{!displayedArticles.length && <p className="daily-empty">There are no visible stories in this update. Use Manage site to show or add content.</p>}{blockedDailySources.length > 0 && <details className="daily-sources"><summary>Sources without verified coverage ({blockedDailySources.length})</summary><ul>{blockedDailySources.map((item, i) => <li key={`${item.name}-${i}`}>{item.name}: {item.status}</li>)}</ul></details>}{siteConfig.showCoverage && <p className="daily-coverage">{siteConfig.coverageText || (daily.windowStart ? `Monday–Friday, 5–9 October 2026 edition. Coverage window: 5 October, 00:00 to 9 October, 23:59 (Vienna time). Prepared ${dateLabel(daily.checkedAt)} from selected original articles. This static snapshot does not refresh automatically.` : `Prepared ${dateLabel(daily.checkedAt)} from selected reporting in the preceding ${daily.windowHours || 48} hours.`)}</p>}</>}
+          {daily && <>{dailySections.map(({ section, subsections }) => <div className="daily-section" key={section}><h3>{section}</h3>{subsections.map(([subsection, items]) => <div key={subsection}>{subsection && <h4 className={section === 'Miscellaneous' ? 'plain-topic' : undefined}>{subsection}</h4>}{items.map((item, index) => <React.Fragment key={item.id}>{item.country && (index === 0 || items[index - 1].country !== item.country) && <h5 className="daily-country">{item.country}</h5>}<article className="daily-story"><p><strong>{item.title}</strong> (<a href={item.url} target="_blank" rel="noopener noreferrer">{item.sourceName}</a>)</p></article></React.Fragment>)}</div>)}</div>)}{!displayedArticles.length && <p className="daily-empty">There are no visible stories in this update. Use Manage site to show or add content.</p>}{blockedDailySources.length > 0 && <details className="daily-sources"><summary>Sources without verified coverage ({blockedDailySources.length})</summary><ul>{blockedDailySources.map((item, i) => <li key={`${item.name}-${i}`}>{item.name}: {item.status}</li>)}</ul></details>}{siteConfig.showCoverage && <p className="daily-coverage">{siteConfig.coverageText || (daily.windowStart ? `Monday–Friday, 5–9 October 2026 edition. Coverage window: 5 October, 00:00 to 9 October, 23:59 (Vienna time). Prepared ${dateLabel(daily.checkedAt)} from selected original articles. This static snapshot does not refresh automatically.` : `Prepared ${dateLabel(daily.checkedAt)} from selected reporting in the preceding ${daily.windowHours || 48} hours.`)}</p>}</>}
         </section>}
+        {websiteSource && <section className="website-panel" aria-label={`${websiteSource.name} website`}><div className="website-panel-heading"><div><span className="eyebrow">SOURCE WEBSITE</span><h2>{websiteSource.name}</h2></div><button onClick={() => setWebsiteSourceId('')} aria-label="Close source website">×</button></div><div className="website-panel-actions"><a href={websiteSource.url} target="_blank" rel="noopener noreferrer">Open website in new tab ↗</a><button onClick={() => { setManagerTab('Collect'); setManaging(true); }}>Collect headlines</button></div><p>Some publishers block display inside other websites. Use the link above if this panel stays blank.</p><iframe key={websiteSource.id} src={websiteSource.url} title={`${websiteSource.name} website`} referrerPolicy="no-referrer" loading="lazy"/></section>}
+        </div>
         {siteConfig.showLatest && <SourceCoverage sources={[...(config?.sources ?? preparedSources), ...siteConfig.customSources]} articles={displayedArticles} outcomes={daily?.sourceOutcomes ?? []} extraChecks={daily?.sourceChecks ?? []} selectedId={activeId}/>}
       </main>
     </div>{toast && <div className="toast" onClick={() => setToast('')}>{toast} ×</div>}

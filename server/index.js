@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { DEFAULT_INCLUDE, DEFAULT_EXCLUDE, normalizeArticles, parseWords, scrapeHeadlines, scrapeArticle, undatedCandidates, reviewedArticle, customSourceFromRequest } from './news.js';
+import { collectFeed, FEED_URLS } from './feeds.js';
 import { createReportDocx } from './report.js';
 import { currentDailyUpdate } from './daily.js';
 import { reportFilename } from '../src/reportFilename.js';
@@ -17,7 +18,7 @@ const app = express();
 app.use(express.json({ limit: '256kb' }));
 
 app.get('/api/config', (_req, res) => {
-  res.json({ sources, defaultInclude: DEFAULT_INCLUDE, defaultExclude: DEFAULT_EXCLUDE, firecrawlConfigured: Boolean(process.env.FIRECRAWL_API_KEY) });
+  res.json({ sources, defaultInclude: DEFAULT_INCLUDE, defaultExclude: DEFAULT_EXCLUDE, firecrawlConfigured: Boolean(process.env.FIRECRAWL_API_KEY), feedSourceIds: Object.keys(FEED_URLS) });
 });
 
 app.get('/api/daily-update', (_req, res) => {
@@ -41,16 +42,22 @@ app.post('/api/headlines', async (req, res) => {
   if (!source) return res.status(400).json({ error: 'Choose a source from the list.' });
   const include = parseWords(req.body?.include);
   const exclude = parseWords(req.body?.exclude);
-  if (!process.env.FIRECRAWL_API_KEY) return res.status(503).json({ error: 'Set FIRECRAWL_API_KEY on the server to collect headlines.' });
   const cacheKey = JSON.stringify([source.id, source.url, include]);
   try {
     let entry = cache.get(cacheKey);
     if (!entry || Date.now() - entry.at > 5 * 60 * 1000) {
-      entry = { at: Date.now(), payload: await scrapeHeadlines(source, include, process.env.FIRECRAWL_API_KEY) };
+      let payload = null;
+      try { payload = await collectFeed(source); } catch { /* Fall through to Firecrawl when a feed is unavailable. */ }
+      if (!payload) {
+        if (!process.env.FIRECRAWL_API_KEY) return res.status(503).json({ error: 'No usable feed was available. Set FIRECRAWL_API_KEY on the server to collect this source.' });
+        payload = await scrapeHeadlines(source, include, process.env.FIRECRAWL_API_KEY);
+      }
+      entry = { at: Date.now(), payload };
       cache.set(cacheKey, entry);
     }
-    const headlines = [];
-    const candidates = undatedCandidates(entry.payload, source, include, exclude, true);
+    const fromFeed = entry.payload.collectionMethod === 'feed';
+    const headlines = fromFeed ? normalizeArticles(entry.payload, source, Date.now(), include, exclude, true) : [];
+    const candidates = fromFeed ? [] : undatedCandidates(entry.payload, source, include, exclude, true);
     let checked = 0;
     for (const candidate of candidates.slice(0, req.body?.deepScan === true ? 10 : 3)) {
         checked++;
@@ -66,7 +73,7 @@ app.post('/api/headlines', async (req, res) => {
           headlines.push(...matched);
         } catch { /* Other candidates may still be verifiable. */ }
     }
-    res.json({ source, headlines: headlines.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date(entry.at).toISOString(), candidatesFound: candidates.length, candidatesChecked: checked, note: 'Article pages are checked when listing dates are missing or unreliable. No result is not proof that the source had no relevant news.' });
+    res.json({ source, headlines: headlines.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date(entry.at).toISOString(), candidatesFound: candidates.length, candidatesChecked: checked, collectionMethod: fromFeed ? 'feed' : 'firecrawl', note: fromFeed ? 'Headlines and dates came from the publisher feed. Article pages were not independently checked.' : 'Article pages are checked when listing dates are missing or unreliable. No result is not proof that the source had no relevant news.' });
   } catch (error) {
     res.status(502).json({ error: `Could not collect ${source.name}: ${error.message}` });
   }
@@ -96,8 +103,8 @@ app.post('/api/article', async (req, res) => {
 
 app.post('/api/report.docx', async (req, res) => {
   const articles = Array.isArray(req.body?.articles) ? req.body.articles.slice(0, 300) : [];
-  if (!articles.length || articles.some(x => !x.reviewed || !x.title?.trim() || !x.summary?.trim() || !x.sourceName?.trim() || !/^https:\/\//.test(x.url))) {
-    return res.status(400).json({ error: 'Review each selected article and complete its summary before export.' });
+  if (!articles.length || articles.some(x => !x.reviewed || !x.title?.trim() || !x.sourceName?.trim() || !/^https:\/\//.test(x.url))) {
+    return res.status(400).json({ error: 'Review each selected headline and provide its source before export.' });
   }
   try {
     const buffer = await createReportDocx({ title: String(req.body.title ?? '').slice(0, 120), articles, sourceOutcomes: Array.isArray(req.body.sourceOutcomes) ? req.body.sourceOutcomes : [] });
