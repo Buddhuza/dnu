@@ -7,10 +7,7 @@ import { createReportDocx } from './report.js';
 import { currentDailyUpdate } from './daily.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const sources = [
-  { id: 'google-news', name: 'Google News', group: 'Google News', url: 'https://news.google.com/' },
-  ...JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'))
-];
+const sources = JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'));
 const sourceById = new Map(sources.map(source => [source.id, source]));
 const dailySnapshot = JSON.parse(readFileSync(join(root, 'data/daily-update-2026-10-11.json'), 'utf8'));
 const cache = new Map();
@@ -52,8 +49,8 @@ app.post('/api/headlines', async (req, res) => {
       entry = { at: Date.now(), payload: await scrapeHeadlines(source, include, process.env.FIRECRAWL_API_KEY) };
       cache.set(cacheKey, entry);
     }
-    const headlines = source.verifyArticlePages ? [] : normalizeArticles(entry.payload, source, Date.now(), include, exclude);
-    const candidates = source.id === 'google-news' ? [] : undatedCandidates(entry.payload, source, include, exclude, source.verifyArticlePages);
+    const headlines = [];
+    const candidates = undatedCandidates(entry.payload, source, include, exclude, true);
     let checked = 0;
     for (const candidate of candidates.slice(0, req.body?.deepScan === true ? 10 : 3)) {
         checked++;
@@ -82,7 +79,7 @@ app.post('/api/article', async (req, res) => {
   try {
     articleUrl = new URL(String(req.body?.url ?? ''));
     if (articleUrl.protocol !== 'https:') throw new Error('HTTPS required');
-    if (source.id !== 'google-news' && articleUrl.hostname.replace(/^www\./, '') !== new URL(source.url).hostname.replace(/^www\./, '')) throw new Error('The article must belong to its selected source.');
+    if (articleUrl.hostname.replace(/^www\./, '') !== new URL(source.url).hostname.replace(/^www\./, '')) throw new Error('The article must belong to its selected source.');
   } catch { return res.status(400).json({ error: 'Invalid article URL for this source.' }); }
   if (!process.env.FIRECRAWL_API_KEY) return res.status(503).json({ error: 'Set FIRECRAWL_API_KEY on the server to review articles.' });
   try {

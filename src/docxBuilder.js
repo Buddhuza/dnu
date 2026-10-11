@@ -39,17 +39,23 @@ export async function createReportDocxFromTemplate(templateBytes, { title, artic
   const zip = await JSZip.loadAsync(templateBytes);
   const paragraphs = [];
   const relationships = [];
-  let currentSection = '', currentSubsection = '';
+  let currentSection = '', currentSubsection = '', currentCountry = '';
   for (const [index, item] of articles.entries()) {
     const section = item.section || 'Miscellaneous';
     if (section !== currentSection) {
       currentSection = section;
       currentSubsection = '';
+      currentCountry = '';
       paragraphs.push(sectionParagraph(section));
     }
     if (item.subsection && item.subsection !== currentSubsection) {
       currentSubsection = item.subsection;
+      currentCountry = '';
       paragraphs.push(subsectionParagraph(item.subsection));
+    }
+    if (item.country && item.country !== currentCountry) {
+      currentCountry = item.country;
+      paragraphs.push(subsectionParagraph(item.country));
     }
     const relationshipId = `rIdStory${index + 1}`;
     paragraphs.push(storyParagraph(item, relationshipId));
@@ -80,5 +86,5 @@ export async function createReportDocxFromTemplate(templateBytes, { title, artic
   let relationshipXml = await zip.file('word/_rels/document.xml.rels').async('string');
   relationshipXml = relationshipXml.replace('</Relationships>', `${relationships.join('')}</Relationships>`);
   zip.file('word/_rels/document.xml.rels', relationshipXml);
-  return zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
+  return zip.generateAsync({ type: 'uint8array', compression: 'DEFLATE' });
 }

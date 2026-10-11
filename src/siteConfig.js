@@ -11,7 +11,7 @@ export const DARK_THEME = { name: 'Dark', primary: '#172f3a', accent: '#c6e690',
 
 const defaults = {
   version: 1,
-  brandName: 'SIGNAL DESK',
+  brandName: 'SITUATION ROOM',
   brandTagline: 'NEWS MONITORING WORKSPACE',
   eyebrow: 'INTELLIGENCE / DAILY BRIEF',
   heroTitle: 'Find the stories',
@@ -29,7 +29,7 @@ const defaults = {
   fontSize: 18,
   sectionHeadingSize: 26,
   sectionHeadingUppercase: true,
-  updateWidth: 600,
+  updateWidth: 900,
   theme: THEME_PRESETS.forest,
   darkTheme: DARK_THEME,
   sections: [],
@@ -94,6 +94,7 @@ export function normalizeSiteConfig(input, articles = []) {
         title: clean(edit.title, '', 400),
         summary: clean(edit.summary, '', 1200),
         subsection: legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : clean(edit.subsection, '', 100),
+        country: clean(edit.country, '', 100),
         sectionId: legacyOrganisations ? 'Miscellaneous' : sectionIds.has(edit.sectionId) ? edit.sectionId : '',
         hidden: edit.hidden === true
       };
@@ -111,6 +112,7 @@ export function normalizeSiteConfig(input, articles = []) {
       publishedAt: Number.isFinite(Date.parse(item.publishedAt)) ? new Date(item.publishedAt).toISOString() : new Date().toISOString(),
       sectionId: legacyOrganisations ? 'Miscellaneous' : sectionIds.has(item.sectionId) ? item.sectionId : sections[0]?.id || 'Miscellaneous',
       subsection: legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : clean(item.subsection, '', 100),
+      country: clean(item.country, '', 100),
       hidden: item.hidden === true, reviewed: true
     }];
   });
@@ -126,7 +128,7 @@ export function normalizeSiteConfig(input, articles = []) {
   });
   return {
     version: 1,
-    brandName: clean(input.brandName, base.brandName, 80),
+    brandName: input.brandName === 'SIGNAL DESK' ? base.brandName : clean(input.brandName, base.brandName, 80),
     brandTagline: clean(input.brandTagline, base.brandTagline, 100),
     eyebrow: clean(input.eyebrow, base.eyebrow, 100),
     heroTitle: clean(input.heroTitle, base.heroTitle, 100),
@@ -144,7 +146,7 @@ export function normalizeSiteConfig(input, articles = []) {
     fontSize: Number.isFinite(Number(input.fontSize)) ? Math.max(14, Math.min(24, Number(input.fontSize))) : 18,
     sectionHeadingSize: Number.isFinite(Number(input.sectionHeadingSize)) ? Math.max(20, Math.min(40, Number(input.sectionHeadingSize))) : 26,
     sectionHeadingUppercase: input.sectionHeadingUppercase !== false,
-    updateWidth: Number.isFinite(Number(input.updateWidth)) ? Math.max(480, Math.min(1100, Number(input.updateWidth))) : 600,
+    updateWidth: Number.isFinite(Number(input.updateWidth)) ? Math.max(480, Math.min(1400, Number(input.updateWidth) === 600 ? 900 : Number(input.updateWidth))) : 900,
     theme, darkTheme, sections, articleEdits, customArticles, customSources,
     hiddenSourceIds: (Array.isArray(input.hiddenSourceIds) ? input.hiddenSourceIds : []).filter(id => typeof id === 'string').slice(0, 500)
   };
@@ -169,7 +171,8 @@ export function displaySiteContent(articles, config) {
       summary: edit?.summary?.trim() || article.summary,
       section: sectionById.get(sectionId)?.name || sectionId,
       sectionId,
-      subsection: edit ? edit.subsection : legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : article.subsection
+      subsection: edit ? edit.subsection : legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : article.subsection,
+      country: edit?.country || article.country || ''
     });
   }
   for (const article of config.customArticles) {

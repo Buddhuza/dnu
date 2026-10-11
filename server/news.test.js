@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { googleNewsUrl, normalizeArticles, scrapeHeadlines, undatedCandidates, reviewedArticle, customSourceFromRequest } from './news.js';
+import { normalizeArticles, scrapeHeadlines, undatedCandidates, reviewedArticle, customSourceFromRequest } from './news.js';
 
 const source = { id: 'source-1', name: 'Test News', group: 'Test', url: 'https://example.com/news/' };
 const now = Date.parse('2026-10-09T12:00:00Z');
@@ -18,13 +18,6 @@ test('keeps only dated, matching headlines from the last 48 hours', () => {
   const result = normalizeArticles(payload, source, now, ['security'], ['sports']);
   assert.equal(result.length, 1);
   assert.equal(result[0].url, 'https://example.com/story-1');
-});
-
-test('Google News query uses the selected phrases and two-day window', () => {
-  const url = new URL(googleNewsUrl(['security', 'election']));
-  assert.equal(url.hostname, 'news.google.com');
-  assert.match(url.searchParams.get('q'), /when:2d/);
-  assert.match(url.searchParams.get('q'), /election/);
 });
 
 test('Firecrawl request sends the fixed source URL and bearer credential', async () => {

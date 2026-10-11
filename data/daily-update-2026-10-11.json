@@ -139,7 +139,8 @@
       "group": "Miscl",
       "section": "Miscellaneous",
       "subsection": "WESTERN / CENTRAL EUROPE",
-      "reviewed": true
+      "reviewed": true,
+      "country": "Poland"
     },
     {
       "id": "https://www.euronews.com/video/2026/10/10/police-clash-with-protesters-in-brussels-as-thousands-march-against-spending-cuts",
@@ -152,7 +153,8 @@
       "group": "Miscl",
       "section": "Miscellaneous",
       "subsection": "WESTERN / CENTRAL EUROPE",
-      "reviewed": true
+      "reviewed": true,
+      "country": "Belgium"
     },
     {
       "id": "https://www.euronews.com/2026/10/10/palestinian-president-abbas-postpones-legislative-elections-until-september-2027",
@@ -295,13 +297,6 @@
       "group": "Miscl",
       "url": "https://www.reuters.com/world/",
       "status": "collected"
-    },
-    {
-      "id": "google-news",
-      "name": "Google News",
-      "group": "Google News",
-      "url": "https://news.google.com/",
-      "status": "collection failed: Firecrawl could not retrieve the Google News search page"
     },
     {
       "id": "source-80",

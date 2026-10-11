@@ -49,16 +49,6 @@ export function customSourceFromRequest(value) {
   } catch { return null; }
 }
 
-export function googleNewsUrl(words) {
-  const query = words.length ? words.map(w => `"${w.replaceAll('"', '')}"`).join(' OR ') : 'world news';
-  const url = new URL('https://news.google.com/search');
-  url.searchParams.set('q', `(${query}) when:2d`);
-  url.searchParams.set('hl', 'en-US');
-  url.searchParams.set('gl', 'US');
-  url.searchParams.set('ceid', 'US:en');
-  return url.toString();
-}
-
 function articleArray(payload) {
   const json = payload?.data?.json ?? payload?.json;
   const value = typeof json === 'string' ? JSON.parse(json) : json;
@@ -140,7 +130,7 @@ export function reviewedArticle(payload, source, url, now = Date.now()) {
 }
 
 export async function scrapeHeadlines(source, include, apiKey, fetchImpl = fetch) {
-  const targetUrl = source.id === 'google-news' ? googleNewsUrl(include) : source.listingUrl || source.url;
+  const targetUrl = source.listingUrl || source.url;
   const prompt = 'Extract news article headlines linked from this page. Return an object with an articles array. For each article return title, url (absolute article URL), a brief summary if visible, and publishedAt as an ISO 8601 timestamp with timezone only when the exact time and timezone are visible. Include article links even when the date or time is not visible; omit publishedAt for those. Do not turn a date-only label into a midnight timestamp. Do not invent dates, titles, or URLs. Do not include navigation links.';
   return firecrawlPost({ url: targetUrl, formats: [{ type: 'json', prompt }], onlyMainContent: true, timeout: 30000 }, apiKey, fetchImpl);
 }

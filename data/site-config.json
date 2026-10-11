@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "brandName": "SIGNAL DESK",
+  "brandName": "SITUATION ROOM",
   "brandTagline": "NEWS MONITORING WORKSPACE",
   "eyebrow": "INTELLIGENCE / DAILY BRIEF",
   "heroTitle": "Find the stories",
@@ -18,7 +18,7 @@
   "fontSize": 18,
   "sectionHeadingSize": 26,
   "sectionHeadingUppercase": true,
-  "updateWidth": 600,
+  "updateWidth": 900,
   "theme": {
     "name": "Forest",
     "primary": "#123e47",
