@@ -23,17 +23,17 @@
 @media(max-width:720px){.manage-button{margin-left:auto}.brand-text small{display:none}}
 
 /* Two-column reading layout and adjustable text size. */
-.app-shell{font-size:var(--site-body-size,14px)}
+.app-shell{font-size:var(--site-body-size,18px)}
 .workspace{grid-template-columns:264px minmax(0,1fr)}
 .workspace.no-sidebar{grid-template-columns:minmax(0,1fr)}
 .main-panel{width:100%;max-width:1200px;margin:0 auto}
 .mode-button{border:1px solid #dce7de;background:var(--site-surface,#fff);color:var(--site-text,#182a36);border-radius:7px;padding:8px 11px;font-size:14px;font-weight:700;white-space:nowrap}
 .manage-button{font-size:14px}
-.sidebar-heading p,.source-copy strong,.search-box input,.group-select,.hero p,.scope-inputs textarea,.scope-bottom>span,.source-banner strong,.notice,.error-box,.loading-box,.empty-result,.headline-card p,.daily-heading p,.daily-coverage,.daily-story p,.daily-sources,.daily-empty,.batch-row,.daily-download,.daily-original,.dark-button,.source-banner button{font-size:var(--site-body-size,14px)}
+.sidebar-heading p,.source-copy strong,.search-box input,.group-select,.hero p,.scope-inputs textarea,.scope-bottom>span,.source-banner strong,.notice,.error-box,.loading-box,.empty-result,.headline-card p,.daily-heading p,.daily-coverage,.daily-story p,.daily-sources,.daily-empty,.batch-row,.daily-download,.daily-original,.dark-button,.source-banner button{font-size:var(--site-body-size,18px)}
 .daily-story p{line-height:1.7}
-.headline-card h3{font-size:calc(var(--site-body-size,14px) + 2px)}
+.headline-card h3{font-size:calc(var(--site-body-size,18px) + 2px)}
 .headline-card p{color:var(--site-text,#182a36)}
-.daily-section h4,.source-copy small,.source-banner small,.headline-top,.result-meta{font-size:calc(var(--site-body-size,14px) - 1px)}
+.daily-section h4,.source-copy small,.source-banner small,.headline-top,.result-meta{font-size:calc(var(--site-body-size,18px) - 1px)}
 .app-shell[data-mode="dark"]{color-scheme:dark}
 .app-shell[data-mode="dark"] .topbar,.app-shell[data-mode="dark"] .sidebar,.app-shell[data-mode="dark"] .scope-card,.app-shell[data-mode="dark"] .daily-update,.app-shell[data-mode="dark"] .source-banner,.app-shell[data-mode="dark"] .headline-card,.app-shell[data-mode="dark"] .loading-box,.app-shell[data-mode="dark"] .empty-result{border-color:#344851}
 .app-shell[data-mode="dark"] .sidebar-heading p,.app-shell[data-mode="dark"] .source-copy small,.app-shell[data-mode="dark"] .source-banner small,.app-shell[data-mode="dark"] .daily-heading p,.app-shell[data-mode="dark"] .daily-coverage,.app-shell[data-mode="dark"] .headline-top,.app-shell[data-mode="dark"] .result-meta,.app-shell[data-mode="dark"] .scope-bottom>span,.app-shell[data-mode="dark"] .scope-hint,.app-shell[data-mode="dark"] .empty-result,.app-shell[data-mode="dark"] .sidebar-foot{color:#b4c8c5}

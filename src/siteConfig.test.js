@@ -7,6 +7,10 @@ const articles = [
   { id: 'b', section: 'Asia', subsection: 'Japan', title: 'Second headline', summary: 'Second summary.', sourceName: 'Agency', url: 'https://example.com/b' }
 ];
 
+test('default reading text starts at 18 px', () => {
+  assert.equal(defaultSiteConfig(articles).fontSize, 18);
+});
+
 test('section edits reorder, rename, and hide news without changing source data', () => {
   const config = defaultSiteConfig(articles);
   config.sections = [{ id: 'Asia', name: 'Asia Pacific', visible: true }, { id: 'Europe', name: 'Europe', visible: false }];

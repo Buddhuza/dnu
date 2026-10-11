@@ -31,7 +31,12 @@ function App() {
   const [error, setError] = useState('');
   const [toast, setToast] = useState('');
   const [managing, setManaging] = useState(false);
-  const [siteConfig, setSiteConfig] = useState(() => normalizeSiteConfig(readStored('signal-site-settings-v1', publishedSiteConfig), preparedUpdate.articles));
+  const [siteConfig, setSiteConfig] = useState(() => {
+    const stored = readStored('signal-site-settings-v1', publishedSiteConfig);
+    const shouldIncrease = !readStored('signal-font-increase-v1', false) && stored.fontSize === 14;
+    localStorage.setItem('signal-font-increase-v1', JSON.stringify(true));
+    return normalizeSiteConfig({ ...stored, fontSize: shouldIncrease ? 18 : stored.fontSize }, preparedUpdate.articles);
+  });
 
   useEffect(() => { fetch('/api/config').then(r => { if (!r.ok) throw new Error('API unavailable'); return r.json(); }).then(setConfig).catch(() => setConfig({ sources: [{ id: 'google-news', name: 'Google News', group: 'Google News', url: 'https://news.google.com/' }, ...preparedSources], firecrawlConfigured: false })); }, []);
   useEffect(() => {

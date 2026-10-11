@@ -8,7 +8,7 @@ For a quick preview that does not clone or install the project, open the [static
 
 ## Manage the website
 
-Use **Manage site** in the top bar to edit the site title and intro, show or hide page areas, rename and reorder sections, edit or hide stories, add a story, add or hide news sources, and adjust light and dark palettes, font, and text size. The top bar also has a dark mode switch. Text starts at 14 px. Changes preview immediately and save to the current browser. **Download customised Word** exports the displayed stories with the supplied Word template, including local edits.
+Use **Manage site** in the top bar to edit the site title and intro, show or hide page areas, rename and reorder sections, edit or hide stories, add a story, add or hide news sources, and adjust light and dark palettes, font, and text size. The top bar also has a dark mode switch. Text starts at 18 px. Changes preview immediately and save to the current browser. **Download customised Word** exports the displayed stories with the supplied Word template, including local edits.
 
 The manager's **Save & share** tab exports and imports a JSON settings file. Browser edits are private to that browser. To publish them for all visitors, replace `data/site-config.json` with the exported file, rebuild, and redeploy the site. The public site's default settings come from that file.
 

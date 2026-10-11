@@ -24,7 +24,7 @@ const defaults = {
   showScope: true,
   showLatest: true,
   darkMode: false,
-  fontSize: 14,
+  fontSize: 18,
   theme: THEME_PRESETS.forest,
   darkTheme: DARK_THEME,
   sections: [],
@@ -124,7 +124,7 @@ export function normalizeSiteConfig(input, articles = []) {
     showScope: input.showScope !== false,
     showLatest: input.showLatest !== false,
     darkMode: input.darkMode === true,
-    fontSize: Number.isFinite(Number(input.fontSize)) ? Math.max(14, Math.min(20, Number(input.fontSize))) : 14,
+    fontSize: Number.isFinite(Number(input.fontSize)) ? Math.max(14, Math.min(24, Number(input.fontSize))) : 18,
     theme, darkTheme, sections, articleEdits, customArticles, customSources,
     hiddenSourceIds: (Array.isArray(input.hiddenSourceIds) ? input.hiddenSourceIds : []).filter(id => typeof id === 'string').slice(0, 500)
   };
