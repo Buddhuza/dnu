@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { googleNewsUrl, normalizeArticles, scrapeHeadlines, undatedCandidates, reviewedArticle, customSourceFromRequest } from './news.js';
 
 const source = { id: 'source-1', name: 'Test News', group: 'Test', url: 'https://example.com/news/' };
@@ -60,4 +61,25 @@ test('manual source accepts a public HTTPS news site and rejects local targets',
   assert.equal(customSourceFromRequest({ ...input, url: 'https://localhost/private' }), null);
   assert.equal(customSourceFromRequest({ ...input, url: 'http://news.example.org/' }), null);
   assert.equal(customSourceFromRequest({ ...input, url: 'https://127.0.0.1/' }), null);
+});
+
+test('Internazionale collects its Reuters feed and credits Reuters articles', async () => {
+  const source = JSON.parse(readFileSync(new URL('../sources.json', import.meta.url), 'utf8')).find(item => item.name === 'Internazionale');
+  let targetUrl;
+  const fetchStub = async (_url, options) => {
+    targetUrl = JSON.parse(options.body).url;
+    return { ok: true, json: async () => ({ success: true, data: { json: { articles: [] } } }) };
+  };
+  await scrapeHeadlines(source, [], 'test-key', fetchStub);
+  assert.equal(source.group, 'Miscl');
+  assert.equal(source.verifyArticlePages, true);
+  assert.equal(targetUrl, 'https://www.internazionale.it/ultime-notizie-reuters');
+  const payload = { data: { json: { articles: [
+    { title: 'Reuters security report', url: 'https://www.internazionale.it/ultime-notizie-reuters/2026/10/10/security-report', publishedAt: '2026-10-10T10:00:00+02:00' },
+    { title: 'Unrelated security opinion', url: 'https://www.internazionale.it/opinioni/security', publishedAt: '2026-10-10T10:00:00+02:00' }
+  ] } } };
+  const result = normalizeArticles(payload, source, Date.parse('2026-10-11T12:00:00Z'), ['security']);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].sourceName, 'Reuters via Internazionale');
+  assert.deepEqual(undatedCandidates(payload, source, ['security'], [], true).map(item => item.url), [result[0].url]);
 });

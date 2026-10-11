@@ -52,8 +52,8 @@ app.post('/api/headlines', async (req, res) => {
       entry = { at: Date.now(), payload: await scrapeHeadlines(source, include, process.env.FIRECRAWL_API_KEY) };
       cache.set(cacheKey, entry);
     }
-    const headlines = normalizeArticles(entry.payload, source, Date.now(), include, exclude);
-    const candidates = source.id === 'google-news' ? [] : undatedCandidates(entry.payload, source, include, exclude);
+    const headlines = source.verifyArticlePages ? [] : normalizeArticles(entry.payload, source, Date.now(), include, exclude);
+    const candidates = source.id === 'google-news' ? [] : undatedCandidates(entry.payload, source, include, exclude, source.verifyArticlePages);
     let checked = 0;
     for (const candidate of candidates.slice(0, req.body?.deepScan === true ? 10 : 3)) {
         checked++;
@@ -69,7 +69,7 @@ app.post('/api/headlines', async (req, res) => {
           headlines.push(...matched);
         } catch { /* Other candidates may still be verifiable. */ }
     }
-    res.json({ source, headlines: headlines.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date(entry.at).toISOString(), candidatesFound: candidates.length, candidatesChecked: checked, note: 'Listings without a full timestamp are checked against original articles. No result is not proof that the source had no relevant news.' });
+    res.json({ source, headlines: headlines.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date(entry.at).toISOString(), candidatesFound: candidates.length, candidatesChecked: checked, note: 'Article pages are checked when listing dates are missing or unreliable. No result is not proof that the source had no relevant news.' });
   } catch (error) {
     res.status(502).json({ error: `Could not collect ${source.name}: ${error.message}` });
   }
