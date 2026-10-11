@@ -29,7 +29,8 @@ test('import rejects unsafe links and invalid colors', () => {
   }, articles);
   assert.equal(config.theme.primary, '#123e47');
   assert.equal(config.customArticles.length, 0);
-  assert.equal(config.sections.length, 2);
+  assert.equal(config.sections.length, 8);
+  assert.ok(config.sections.some(section => section.id === 'Miscellaneous' && section.subsections.includes('INTERNATIONAL ORGANISATIONS')));
 });
 
 test('custom sources, visibility, and dark appearance survive settings import', () => {
@@ -43,4 +44,17 @@ test('custom sources, visibility, and dark appearance survive settings import', 
   assert.equal(config.darkMode, true);
   assert.equal(config.fontSize, 17);
   assert.deepEqual(displaySources([{ id: 'provided', name: 'Old outlet' }], config).map(item => item.name), ['New outlet']);
+});
+
+test('old organisation stories move into Miscellaneous', () => {
+  const article = { ...articles[0], section: 'Lead stories', subsection: 'International organisations' };
+  const config = normalizeSiteConfig({
+    version: 1,
+    customArticles: [{ id: 'manual-org', title: 'OSCE meeting', url: 'https://example.com/osce', sourceName: 'Agency', sectionId: 'International organisations', subsection: 'OSCE' }]
+  }, [article]);
+  const displayed = displaySiteContent([article], config);
+  assert.deepEqual(displayed.map(item => [item.section, item.subsection]), [
+    ['Miscellaneous', 'INTERNATIONAL ORGANISATIONS'],
+    ['Miscellaneous', 'INTERNATIONAL ORGANISATIONS']
+  ]);
 });

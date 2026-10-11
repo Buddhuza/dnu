@@ -1,0 +1,328 @@
+{
+  "title": "Daily news update — 48 hours",
+  "checkedAt": "2026-10-11T12:07:19.065800Z",
+  "windowHours": 48,
+  "articles": [
+    {
+      "id": "https://www.reuters.com/world/europe/ukraine-will-halt-strikes-refineries-if-russia-stops-energy-attacks-zelenskiy-2026-10-11/",
+      "url": "https://www.reuters.com/world/europe/ukraine-will-halt-strikes-refineries-if-russia-stops-energy-attacks-zelenskiy-2026-10-11/",
+      "title": "Ukraine will stop hitting refineries if Russia halts energy attacks, Zelenskiy says",
+      "summary": "He made the offer after Trump demanded Kyiv stop attacking Russian oil facilities and blamed those strikes for high U.S. diesel prices.",
+      "publishedAt": "2026-10-11T09:47:09.015000Z",
+      "sourceId": "source-153",
+      "sourceName": "Reuters",
+      "group": "Miscl",
+      "section": "Lead stories",
+      "subsection": "Ukraine",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.reuters.com/business/aerospace-defense/russian-attack-ukraines-zaporizhzhia-kills-seven-governor-says-2026-10-10/",
+      "url": "https://www.reuters.com/business/aerospace-defense/russian-attack-ukraines-zaporizhzhia-kills-seven-governor-says-2026-10-10/",
+      "title": "Trump calls for replacing Ukraine's Zelenskiy in tussle over diesel deal with Russia",
+      "summary": "Zelenskiy said a Russian strike on Zaporizhzhia killed 20 people, including three children, after Washington lifted sanctions on Russian diesel.",
+      "publishedAt": "2026-10-10T06:39:24.472000Z",
+      "sourceId": "source-153",
+      "sourceName": "Reuters",
+      "group": "Miscl",
+      "section": "Lead stories",
+      "subsection": "Ukraine",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.reuters.com/world/middle-east/yemens-houthis-renew-warning-over-saudi-airports-after-deadly-riyadh-attack-2026-10-11/",
+      "url": "https://www.reuters.com/world/middle-east/yemens-houthis-renew-warning-over-saudi-airports-after-deadly-riyadh-attack-2026-10-11/",
+      "title": "Yemen's Houthis renew warning over Saudi airports after deadly Riyadh attack",
+      "summary": "The warning followed an attack on Riyadh’s international airport that killed 12 people and injured more than 300.",
+      "publishedAt": "2026-10-11T10:23:29.221000Z",
+      "sourceId": "source-153",
+      "sourceName": "Reuters",
+      "group": "Miscl",
+      "section": "Lead stories",
+      "subsection": "Middle East / North Africa",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.reuters.com/world/us-military-says-it-disabled-cargo-vessel-trying-run-iran-blockade-2026-10-11/",
+      "url": "https://www.reuters.com/world/us-military-says-it-disabled-cargo-vessel-trying-run-iran-blockade-2026-10-11/",
+      "title": "US military says it disabled cargo vessel trying to run Iran blockade",
+      "summary": "U.S. Central Command said a fighter jet hit the Panama-flagged M/V Ocean Molica in the Gulf of Oman without harming its crew after it ignored warnings.",
+      "publishedAt": "2026-10-11T01:35:31.109000Z",
+      "sourceId": "source-153",
+      "sourceName": "Reuters",
+      "group": "Miscl",
+      "section": "Lead stories",
+      "subsection": "Middle East / North Africa",
+      "reviewed": true
+    },
+    {
+      "id": "https://sarajevotimes.com/vice-president-of-rs-on-election-results-bosniaks-are-politically-marginalized-in-republika-srpska-we-lost-the-protection-mechanism/",
+      "url": "https://sarajevotimes.com/vice-president-of-rs-on-election-results-bosniaks-are-politically-marginalized-in-republika-srpska-we-lost-the-protection-mechanism/",
+      "sourceId": "source-9",
+      "sourceName": "Sarajevo Times",
+      "section": "South Eastern Europe",
+      "subsection": "Bosnia and Herzegovina",
+      "title": "Vice President of RS on Election Results: Bosniaks Are Politically Marginalized in Republika Srpska, We Lost the Protection Mechanism",
+      "summary": "Vice President Ćamil Duraković warned that the results weakened Bosniak representation and safeguards for vital national interests in the entity.",
+      "publishedAt": "2026-10-09T14:00:00+00:00",
+      "reviewed": true
+    },
+    {
+      "id": "https://skopjediem.com/uncategorized/kos-says-her-vision-is-for-western-balkans-to-become-part-of-eu-one-day/",
+      "url": "https://skopjediem.com/uncategorized/kos-says-her-vision-is-for-western-balkans-to-become-part-of-eu-one-day/",
+      "sourceId": "source-16",
+      "sourceName": "Skopje Diem",
+      "section": "South Eastern Europe",
+      "subsection": "North Macedonia",
+      "title": "Kos Says Her Vision Is for Western Balkans to Become Part of EU One Day",
+      "summary": "At a transport conference in Sofia, Commissioner Kos pointed to more than 130 regional road, rail and border-crossing projects.",
+      "publishedAt": "2026-10-09T20:00:48+00:00",
+      "reviewed": true
+    },
+    {
+      "id": "https://europeanwesternbalkans.com/2026/10/09/nova-staff-accuse-the-new-owner-of-imposing-a-chief-editor-just-ahead-of-the-election/",
+      "url": "https://europeanwesternbalkans.com/2026/10/09/nova-staff-accuse-the-new-owner-of-imposing-a-chief-editor-just-ahead-of-the-election/",
+      "sourceId": "source-3",
+      "sourceName": "EWB",
+      "section": "South Eastern Europe",
+      "subsection": "Serbia",
+      "title": "“Nova” staff accuse the new owner of imposing a chief editor just ahead of the election",
+      "summary": "Employees resisted owner Pedro Vargas Santos David’s appointment of Marko Stjepanović after the dismissal of Nova’s editor-in-chief.",
+      "publishedAt": "2026-10-09T12:51:09+00:00",
+      "reviewed": true
+    },
+    {
+      "id": "https://hromadske.ua/en/society/272248-ukrainian-journalist-says-austrian-police-held-him-at-gunpoint-accused-him-of-spying-for-kyiv",
+      "url": "https://hromadske.ua/en/society/272248-ukrainian-journalist-says-austrian-police-held-him-at-gunpoint-accused-him-of-spying-for-kyiv",
+      "sourceId": "source-38",
+      "sourceName": "Hromadske",
+      "section": "Eastern Europe",
+      "subsection": "Ukraine",
+      "title": "Ukrainian journalist says Austrian police held him at gunpoint, accused him of spying for Kyiv",
+      "summary": "Mykhailo Tkach said masked officers smashed his car windows in Vienna; his cameraman remained in custody when he spoke.",
+      "publishedAt": "2026-10-09T18:34:00+03:00",
+      "reviewed": true
+    },
+    {
+      "id": "https://oc-media.org/azerbaijan-students-launch-school-strike-over-hijab-restrictions/",
+      "url": "https://oc-media.org/azerbaijan-students-launch-school-strike-over-hijab-restrictions/",
+      "sourceId": "source-65",
+      "sourceName": "OC Media",
+      "section": "South Caucasus",
+      "subsection": "Azerbaijan",
+      "title": "Azerbaijan students launch school strike over hijab restrictions",
+      "summary": "The Baku education department announced school monitoring visits as pupils at two schools boycotted classes over restrictions on hijabs.",
+      "publishedAt": "2026-10-09T14:04:36.000Z",
+      "reviewed": true
+    },
+    {
+      "id": "https://akipress.com/news:924034:Former_First_Deputy_Chairman_of_National_Security_Committee_Avazov_and_ex-Minister_of_Health_Dosmambetov_detained/",
+      "url": "https://akipress.com/news:924034:Former_First_Deputy_Chairman_of_National_Security_Committee_Avazov_and_ex-Minister_of_Health_Dosmambetov_detained/",
+      "title": "Former First Deputy Chairman of National Security Committee Avazov and ex-Minister of Health Dosmambetov detained",
+      "summary": "The Military Prosecutor’s Office confirmed the detentions to AKIpress, but the publicly visible report did not specify any charges.",
+      "publishedAt": "2026-10-09T16:41:00Z",
+      "sourceId": "source-76",
+      "sourceName": "AKIpress",
+      "group": "Central Asia",
+      "section": "Central Asia",
+      "subsection": "Kyrgyzstan",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.reuters.com/world/europe/poland-says-police-got-information-about-possible-attack-pm-defence-minister-2026-10-11/",
+      "url": "https://www.reuters.com/world/europe/poland-says-police-got-information-about-possible-attack-pm-defence-minister-2026-10-11/",
+      "title": "Polish security services meet following threat to PM and defence minister",
+      "summary": "The interior minister and security services coordinator ordered a meeting at the Internal Security Agency’s counter-terrorism centre after police received the information.",
+      "publishedAt": "2026-10-11T08:48:09.601000Z",
+      "sourceId": "source-153",
+      "sourceName": "Reuters",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.euronews.com/video/2026/10/10/police-clash-with-protesters-in-brussels-as-thousands-march-against-spending-cuts",
+      "url": "https://www.euronews.com/video/2026/10/10/police-clash-with-protesters-in-brussels-as-thousands-march-against-spending-cuts",
+      "title": "Video. Police clash with protesters in Brussels as thousands march against spending cuts",
+      "summary": "Police estimated that 30,000 people attended the trade union march and said more than 100 were detained after clashes on its sidelines.",
+      "publishedAt": "2026-10-09T22:27:58Z",
+      "sourceId": "source-82",
+      "sourceName": "Euronews",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.euronews.com/2026/10/10/palestinian-president-abbas-postpones-legislative-elections-until-september-2027",
+      "url": "https://www.euronews.com/2026/10/10/palestinian-president-abbas-postpones-legislative-elections-until-september-2027",
+      "title": "Palestinian President Abbas postpones legislative elections until 2027",
+      "summary": "A presidential decree cited security and logistical obstacles and moved the planned November 2026 vote to September 2027.",
+      "publishedAt": "2026-10-10T14:04:51Z",
+      "sourceId": "source-82",
+      "sourceName": "Euronews",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.iranintl.com/en/202610091479",
+      "url": "https://www.iranintl.com/en/202610091479",
+      "sourceId": "source-119",
+      "sourceName": "Iran International",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "title": "Iran executed over 2,000 people in past year, rights group says",
+      "summary": "Rights group HRANA counted 2,003 executions from October 10, 2025 through October 8, 2026, up from 1,553 in the preceding year.",
+      "publishedAt": "2026-10-09T19:04:00.000Z",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.euronews.com/2026/10/09/flydubai-co-pilot-planned-suicide-attack-in-tel-aviv-airport-inspired-by-911",
+      "url": "https://www.euronews.com/2026/10/09/flydubai-co-pilot-planned-suicide-attack-in-tel-aviv-airport-inspired-by-911",
+      "title": "Flydubai co-pilot planned suicide attack in Israel inspired by 9/11",
+      "summary": "Authorities said the Omani co-pilot had previously been barred from flying in Oman because of extremist views.",
+      "publishedAt": "2026-10-09T18:29:39Z",
+      "sourceId": "source-82",
+      "sourceName": "Euronews",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.reuters.com/world/middle-east/vessel-struck-by-unknown-projectile-off-uae-coast-amid-surge-attacks-ukmto-says-2026-10-09/",
+      "url": "https://www.reuters.com/world/middle-east/vessel-struck-by-unknown-projectile-off-uae-coast-amid-surge-attacks-ukmto-says-2026-10-09/",
+      "title": "Vessel struck by unknown projectile off UAE coast amid surge in attacks, UKMTO says",
+      "summary": "The Panama-flagged crude tanker GEM NO.2 reported a fire that was extinguished; authorities had not identified who fired the projectile.",
+      "publishedAt": "2026-10-09T14:30:36.437000Z",
+      "sourceId": "source-153",
+      "sourceName": "Reuters",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.reuters.com/business/healthcare-pharmaceuticals/who-says-russia-confirms-death-research-lab-no-plague-case-registered-2026-10-10/",
+      "url": "https://www.reuters.com/business/healthcare-pharmaceuticals/who-says-russia-confirms-death-research-lab-no-plague-case-registered-2026-10-10/",
+      "title": "WHO unsure what caused pneumonia that killed plague-lab worker in Russia",
+      "summary": "The WHO said tests on the worker and her contacts were negative for the high-threat pathogens checked, and it found no evidence of ongoing transmission.",
+      "publishedAt": "2026-10-10T16:23:38.291000Z",
+      "sourceId": "source-153",
+      "sourceName": "Reuters",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "RUSSIA / EURASIA",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.reuters.com/world/china/middle-east-war-high-debt-levels-dominate-imf-world-bank-meetings-bangkok-2026-10-11/",
+      "url": "https://www.reuters.com/world/china/middle-east-war-high-debt-levels-dominate-imf-world-bank-meetings-bangkok-2026-10-11/",
+      "title": "Middle East war, high debt levels to dominate IMF-World Bank meetings in Bangkok",
+      "summary": "The annual IMF and World Bank meetings are being held outside Washington for the first time in three years, with rising energy prices adding pressure to global growth.",
+      "publishedAt": "2026-10-11T04:03:14.237000Z",
+      "sourceId": "source-153",
+      "sourceName": "Reuters",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "INTERNATIONAL ORGANISATIONS",
+      "reviewed": true
+    }
+  ],
+  "sourceOutcomes": [
+    {
+      "id": "source-3",
+      "name": "EWB",
+      "group": "South Eastern Europe",
+      "url": "https://europeanwesternbalkans.com/latest/",
+      "status": "collected"
+    },
+    {
+      "id": "source-9",
+      "name": "Sarajevo Times",
+      "group": "South Eastern Europe",
+      "url": "https://sarajevotimes.com/",
+      "status": "collected"
+    },
+    {
+      "id": "source-16",
+      "name": "Skopje Diem",
+      "group": "South Eastern Europe",
+      "url": "https://skopjediem.com/",
+      "status": "collected"
+    },
+    {
+      "id": "source-38",
+      "name": "Hromadske",
+      "group": "East Europe",
+      "url": "https://hromadske.ua/en/news",
+      "status": "collected"
+    },
+    {
+      "id": "source-65",
+      "name": "OC Media",
+      "group": "South Caucasus",
+      "url": "https://oc-media.org/",
+      "status": "collected"
+    },
+    {
+      "id": "source-76",
+      "name": "AKIpress",
+      "group": "Central Asia",
+      "url": "https://akipress.com/allnews/",
+      "status": "collected"
+    },
+    {
+      "id": "source-82",
+      "name": "Euronews",
+      "group": "Miscl",
+      "url": "https://www.euronews.com/just-in",
+      "status": "collected"
+    },
+    {
+      "id": "source-119",
+      "name": "Iran International",
+      "group": "Miscl",
+      "url": "https://www.iranintl.com/en",
+      "status": "collected"
+    },
+    {
+      "id": "source-153",
+      "name": "Reuters",
+      "group": "Miscl",
+      "url": "https://www.reuters.com/world/",
+      "status": "collected"
+    },
+    {
+      "id": "google-news",
+      "name": "Google News",
+      "group": "Google News",
+      "url": "https://news.google.com/",
+      "status": "collection failed: Firecrawl could not retrieve the Google News search page"
+    },
+    {
+      "id": "source-80",
+      "name": "DW",
+      "group": "Miscl",
+      "url": "https://www.dw.com/en/top-stories/s-9097",
+      "status": "page fetched, but article publication times were not verified for this roundup"
+    },
+    {
+      "id": "source-83",
+      "name": "BBC",
+      "group": "Miscl",
+      "url": "https://www.bbc.com/news",
+      "status": "page fetched, but article publication times were not verified for this roundup"
+    },
+    {
+      "id": "source-85",
+      "name": "AP",
+      "group": "Miscl",
+      "url": "https://apnews.com/world-news",
+      "status": "page fetched, but article publication times were not verified for this roundup"
+    }
+  ]
+}

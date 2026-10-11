@@ -5,10 +5,10 @@ import { googleNewsUrl, normalizeArticles, scrapeHeadlines, undatedCandidates, r
 const source = { id: 'source-1', name: 'Test News', group: 'Test', url: 'https://example.com/news/' };
 const now = Date.parse('2026-10-09T12:00:00Z');
 
-test('keeps only dated, matching headlines from the last 24 hours', () => {
+test('keeps only dated, matching headlines from the last 48 hours', () => {
   const payload = { data: { json: { articles: [
     { title: 'Security meeting held today', url: '/story-1', publishedAt: '2026-10-09T10:00:00Z' },
-    { title: 'Security meeting held yesterday', url: '/story-2', publishedAt: '2026-10-08T10:00:00Z' },
+    { title: 'Security meeting held yesterday', url: '/story-2', publishedAt: '2026-10-07T10:00:00Z' },
     { title: 'Security rumor', url: '/story-3' },
     { title: 'Security date only', url: '/story-5', publishedAt: '2026-10-09' },
     { title: 'Security sports event', url: '/story-4', publishedAt: '2026-10-09T09:00:00Z' },
@@ -19,10 +19,10 @@ test('keeps only dated, matching headlines from the last 24 hours', () => {
   assert.equal(result[0].url, 'https://example.com/story-1');
 });
 
-test('Google News query uses the selected phrases and one-day window', () => {
+test('Google News query uses the selected phrases and two-day window', () => {
   const url = new URL(googleNewsUrl(['security', 'election']));
   assert.equal(url.hostname, 'news.google.com');
-  assert.match(url.searchParams.get('q'), /when:1d/);
+  assert.match(url.searchParams.get('q'), /when:2d/);
   assert.match(url.searchParams.get('q'), /election/);
 });
 
@@ -51,7 +51,7 @@ test('undated matching links can be checked on their original article pages', ()
   const verified = reviewedArticle({ data: { metadata: { publishedTime: '2026-10-09T10:00:00Z', ogTitle: 'Security talks continue' }, json: { summary: 'The ministers agreed to meet again.' } } }, source, candidates[0].url, now);
   assert.equal(verified.publishedAt, '2026-10-09T10:00:00.000Z');
   assert.equal(verified.summary, 'The ministers agreed to meet again.');
-  assert.equal(reviewedArticle({ data: { metadata: { publishedTime: '2026-10-08T10:00:00Z', ogTitle: 'Old story' } } }, source, candidates[0].url, now), null);
+  assert.equal(reviewedArticle({ data: { metadata: { publishedTime: '2026-10-07T10:00:00Z', ogTitle: 'Old story' } } }, source, candidates[0].url, now), null);
 });
 
 test('manual source accepts a public HTTPS news site and rejects local targets', () => {

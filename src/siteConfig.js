@@ -1,5 +1,7 @@
+import { NEWS_SECTIONS } from './newsSections.js';
+
 export const THEME_PRESETS = {
-  forest: { name: 'Forest', primary: '#123e47', accent: '#bce081', background: '#f7f8f6', surface: '#ffffff', text: '#182a36', section: '#0070c0', font: 'DM Sans' },
+  forest: { name: 'Forest', primary: '#123e47', accent: '#bce081', background: '#f4efe6', surface: '#fdfaf4', text: '#182a36', section: '#0070c0', font: 'DM Sans' },
   blue: { name: 'OSCE blue', primary: '#183b65', accent: '#c6dcf2', background: '#f4f7fb', surface: '#ffffff', text: '#1b2d42', section: '#0070c0', font: 'DM Sans' },
   slate: { name: 'Slate', primary: '#263340', accent: '#d7e1e9', background: '#f2f4f6', surface: '#ffffff', text: '#1f2d38', section: '#465e78', font: 'Manrope' },
   warm: { name: 'Warm', primary: '#5b3b32', accent: '#f3d4a4', background: '#fbf7f1', surface: '#ffffff', text: '#3d302a', section: '#9b5834', font: 'Georgia' }
@@ -15,7 +17,7 @@ const defaults = {
   heroTitle: 'Find the stories',
   heroAccent: 'that matter.',
   heroDescription: 'Review timely coverage from your trusted sources. Keep the signal, leave the noise.',
-  updateTitle: 'Daily news update',
+  updateTitle: 'Daily news update — 48 hours',
   coverageText: '',
   showHero: true,
   showCoverage: true,
@@ -25,6 +27,9 @@ const defaults = {
   showLatest: true,
   darkMode: false,
   fontSize: 18,
+  sectionHeadingSize: 26,
+  sectionHeadingUppercase: true,
+  updateWidth: 600,
   theme: THEME_PRESETS.forest,
   darkTheme: DARK_THEME,
   sections: [],
@@ -41,8 +46,10 @@ const httpsUrl = value => {
 };
 
 export function defaultSiteConfig(articles = []) {
-  const names = [...new Set(articles.map(item => item.section).filter(Boolean))];
-  return { ...defaults, theme: { ...THEME_PRESETS.forest }, darkTheme: { ...DARK_THEME }, sections: names.map(name => ({ id: name, name, visible: true })) };
+  const names = [...new Set(articles.map(item => item.section).filter(Boolean))].filter(name => name !== 'International organisations');
+  const sections = NEWS_SECTIONS.map(section => ({ ...section, name: section.id, visible: true, subsections: [...section.subsections] }));
+  for (const name of names) if (!sections.some(section => section.id === name)) sections.push({ id: name, name, visible: true, subsections: [] });
+  return { ...defaults, theme: { ...THEME_PRESETS.forest }, darkTheme: { ...DARK_THEME }, sections };
 }
 
 export function normalizeSiteConfig(input, articles = []) {
@@ -52,9 +59,13 @@ export function normalizeSiteConfig(input, articles = []) {
   const seen = new Set();
   const sections = rawSections.slice(0, 40).flatMap(item => {
     const id = clean(item?.id, '', 80).trim();
-    if (!id || seen.has(id)) return [];
+    if (!id || id === 'International organisations' || seen.has(id)) return [];
     seen.add(id);
-    return [{ id, name: clean(item?.name, id, 80).trim() || id, visible: item?.visible !== false }];
+    const standard = NEWS_SECTIONS.find(section => section.id === id);
+    const subsections = Array.isArray(item?.subsections)
+      ? [...new Set(item.subsections.map(value => clean(value, '', 100).trim()).filter(Boolean))].slice(0, 40)
+      : [...(standard?.subsections ?? [])];
+    return [{ id, name: clean(item?.name, id, 80).trim() || id, visible: item?.visible !== false, subsections }];
   });
   for (const section of base.sections) if (!seen.has(section.id)) sections.push(section);
   const sectionIds = new Set(sections.map(item => item.id));
@@ -69,16 +80,21 @@ export function normalizeSiteConfig(input, articles = []) {
     font: ['DM Sans', 'Manrope', 'Georgia'].includes(raw?.font) ? raw.font : fallback.font
   });
   const theme = parseTheme(input.theme, base.theme);
+  if (theme.name === 'Forest' && theme.background === '#f7f8f6' && theme.surface === '#ffffff') {
+    theme.background = base.theme.background;
+    theme.surface = base.theme.surface;
+  }
   const darkTheme = parseTheme(input.darkTheme, base.darkTheme);
   const articleEdits = Object.create(null);
   if (input.articleEdits && typeof input.articleEdits === 'object' && !Array.isArray(input.articleEdits)) {
     for (const [id, edit] of Object.entries(input.articleEdits).slice(0, 500)) {
       if (!edit || typeof edit !== 'object') continue;
+      const legacyOrganisations = edit.sectionId === 'International organisations';
       articleEdits[id] = {
         title: clean(edit.title, '', 400),
         summary: clean(edit.summary, '', 1200),
-        subsection: clean(edit.subsection, '', 100),
-        sectionId: sectionIds.has(edit.sectionId) ? edit.sectionId : '',
+        subsection: legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : clean(edit.subsection, '', 100),
+        sectionId: legacyOrganisations ? 'Miscellaneous' : sectionIds.has(edit.sectionId) ? edit.sectionId : '',
         hidden: edit.hidden === true
       };
     }
@@ -87,13 +103,14 @@ export function normalizeSiteConfig(input, articles = []) {
     const url = httpsUrl(item?.url);
     const title = clean(item?.title, '', 400).trim();
     if (!url || !title) return [];
+    const legacyOrganisations = item.sectionId === 'International organisations';
     return [{
       id: clean(item.id, `manual-${url}`, 500), url,
       sourceId: 'manual', sourceName: clean(item.sourceName, 'Manual entry', 100),
       title, summary: clean(item.summary, '', 1200),
       publishedAt: Number.isFinite(Date.parse(item.publishedAt)) ? new Date(item.publishedAt).toISOString() : new Date().toISOString(),
-      sectionId: sectionIds.has(item.sectionId) ? item.sectionId : sections[0]?.id || 'Miscellaneous',
-      subsection: clean(item.subsection, '', 100),
+      sectionId: legacyOrganisations ? 'Miscellaneous' : sectionIds.has(item.sectionId) ? item.sectionId : sections[0]?.id || 'Miscellaneous',
+      subsection: legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : clean(item.subsection, '', 100),
       hidden: item.hidden === true, reviewed: true
     }];
   });
@@ -125,6 +142,9 @@ export function normalizeSiteConfig(input, articles = []) {
     showLatest: input.showLatest !== false,
     darkMode: input.darkMode === true,
     fontSize: Number.isFinite(Number(input.fontSize)) ? Math.max(14, Math.min(24, Number(input.fontSize))) : 18,
+    sectionHeadingSize: Number.isFinite(Number(input.sectionHeadingSize)) ? Math.max(20, Math.min(40, Number(input.sectionHeadingSize))) : 26,
+    sectionHeadingUppercase: input.sectionHeadingUppercase !== false,
+    updateWidth: Number.isFinite(Number(input.updateWidth)) ? Math.max(480, Math.min(1100, Number(input.updateWidth))) : 600,
     theme, darkTheme, sections, articleEdits, customArticles, customSources,
     hiddenSourceIds: (Array.isArray(input.hiddenSourceIds) ? input.hiddenSourceIds : []).filter(id => typeof id === 'string').slice(0, 500)
   };
@@ -140,7 +160,8 @@ export function displaySiteContent(articles, config) {
   const items = [];
   for (const article of articles) {
     const edit = config.articleEdits[article.id];
-    const sectionId = edit?.sectionId || article.section;
+    const legacyOrganisations = article.section === 'International organisations' || (article.section === 'Lead stories' && article.subsection === 'International organisations');
+    const sectionId = edit?.sectionId || (legacyOrganisations ? 'Miscellaneous' : article.section);
     if (edit?.hidden || sectionById.get(sectionId)?.visible === false) continue;
     items.push({
       ...article,
@@ -148,7 +169,7 @@ export function displaySiteContent(articles, config) {
       summary: edit?.summary?.trim() || article.summary,
       section: sectionById.get(sectionId)?.name || sectionId,
       sectionId,
-      subsection: edit ? edit.subsection : article.subsection
+      subsection: edit ? edit.subsection : legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : article.subsection
     });
   }
   for (const article of config.customArticles) {

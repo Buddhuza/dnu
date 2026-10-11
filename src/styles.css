@@ -47,3 +47,12 @@
 .app-shell[data-mode="dark"] .mode-button,.app-shell[data-mode="dark"] .manage-button{border-color:#42606a;color:var(--site-text)}
 @media(max-width:1100px){.workspace{grid-template-columns:220px minmax(0,1fr)}.workspace.no-sidebar{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:720px){.workspace,.workspace.no-sidebar{display:block}.mode-button,.manage-button{padding:7px;font-size:12px}.topbar{gap:6px}.brand-text strong{font-size:13px}.main-panel{max-width:none}}
+
+/* Focus the update into a reading column; keep the rest of the workspace wide. */
+.daily-update{width:min(100%,var(--update-width,600px));margin-left:auto;margin-right:auto}
+.daily-section h3{font-size:var(--section-heading-size,26px);line-height:1.2;letter-spacing:.01em}
+.daily-update.uppercase-headings .daily-section h3{text-transform:uppercase}
+.daily-update:not(.uppercase-headings) .daily-section h3{text-transform:none}
+.daily-section h4{font-size:calc(var(--site-body-size,18px) - 2px)}
+.app-shell[data-mode="light"] .daily-coverage{background:#f5f0e8}
+@media(max-width:720px){.daily-update{width:100%}}

@@ -52,7 +52,7 @@ export function customSourceFromRequest(value) {
 export function googleNewsUrl(words) {
   const query = words.length ? words.map(w => `"${w.replaceAll('"', '')}"`).join(' OR ') : 'world news';
   const url = new URL('https://news.google.com/search');
-  url.searchParams.set('q', `(${query}) when:1d`);
+  url.searchParams.set('q', `(${query}) when:2d`);
   url.searchParams.set('hl', 'en-US');
   url.searchParams.set('gl', 'US');
   url.searchParams.set('ceid', 'US:en');
@@ -67,7 +67,7 @@ function articleArray(payload) {
 }
 
 export function normalizeArticles(payload, source, now = Date.now(), include = DEFAULT_INCLUDE, exclude = DEFAULT_EXCLUDE, allowMidnight = false) {
-  const cutoff = now - 24 * 60 * 60 * 1000;
+  const cutoff = now - 48 * 60 * 60 * 1000;
   const seen = new Set();
   const result = [];
   for (const raw of articleArray(payload)) {
@@ -75,7 +75,7 @@ export function normalizeArticles(payload, source, now = Date.now(), include = D
     const title = String(raw.title ?? raw.headline ?? '').trim();
     const summary = String(raw.summary ?? raw.description ?? '').trim();
     const publishedAt = String(raw.publishedAt ?? raw.published_at ?? raw.date ?? '').trim();
-    // A date without a time and timezone cannot prove membership in a rolling 24-hour window.
+    // A date without a time and timezone cannot prove membership in a rolling 48-hour window.
     if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})$/i.test(publishedAt)) continue;
     if (!allowMidnight && /T00:00:00(?:\.0+)?Z$/i.test(publishedAt)) continue;
     const timestamp = Date.parse(publishedAt);
@@ -127,7 +127,7 @@ export function reviewedArticle(payload, source, url, now = Date.now()) {
   const publishedAt = data.metadata?.publishedTime ?? data.metadata?.['article:published_time'] ?? extracted.publishedAt;
   if (!publishedAt || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})$/i.test(publishedAt)) return null;
   const time = Date.parse(publishedAt);
-  if (!Number.isFinite(time) || time < now - 86400000 || time > now + 300000) return null;
+  if (!Number.isFinite(time) || time < now - 48 * 60 * 60 * 1000 || time > now + 300000) return null;
   const title = String(data.metadata?.ogTitle ?? extracted.exactHeadline ?? data.metadata?.title ?? '').trim();
   if (!title) return null;
   return { id: url, url, sourceId: source.id, sourceName: source.name, group: source.group, title, summary: String(extracted.summary ?? '').trim(), publishedAt: new Date(time).toISOString() };

@@ -12,7 +12,7 @@ const sources = [
   ...JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'))
 ];
 const sourceById = new Map(sources.map(source => [source.id, source]));
-const dailySnapshot = JSON.parse(readFileSync(join(root, 'data/daily-update-2026-10-09.json'), 'utf8'));
+const dailySnapshot = JSON.parse(readFileSync(join(root, 'data/daily-update-2026-10-11.json'), 'utf8'));
 const cache = new Map();
 const articleCache = new Map();
 const app = express();
@@ -30,10 +30,10 @@ app.get('/api/daily-update.docx', async (_req, res) => {
   const update = currentDailyUpdate(dailySnapshot);
   if (!update.articles.length) return res.status(410).json({ error: 'This daily update has expired. Collect new articles for the next report.' });
   try {
-    const coverageNote = `${update.articles.length} selected articles from ${new Set(update.articles.map(x => x.sourceId)).size} agencies. Source pages were checked for this selected roundup; many accessible sources were not reviewed article by article. Publication times fall within the 24 hours ending ${update.servedAt}. Opinion and analysis were excluded.`;
+    const coverageNote = `${update.articles.length} selected articles from ${new Set(update.articles.map(x => x.sourceId)).size} agencies. Source pages were checked for this selected roundup; many accessible sources were not reviewed article by article. Publication times fall within the ${update.windowHours || 48} hours ending ${update.servedAt}. Opinion and analysis were excluded.`;
     const buffer = await createReportDocx({ ...update, coverageNote });
     res.set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-    res.set('Content-Disposition', 'attachment; filename="daily-news-update-2026-10-09.docx"');
+    res.set('Content-Disposition', 'attachment; filename="daily-news-update-2026-10-11.docx"');
     res.send(buffer);
   } catch (error) { res.status(500).json({ error: `Could not create daily update: ${error.message}` }); }
 });
@@ -92,7 +92,7 @@ app.post('/api/article', async (req, res) => {
       articleCache.set(articleUrl.href, entry);
     }
     const reviewed = reviewedArticle(entry.payload, source, articleUrl.href);
-    if (!reviewed) return res.status(422).json({ error: 'This article has no verifiable publication time within the last 24 hours.' });
+    if (!reviewed) return res.status(422).json({ error: 'This article has no verifiable publication time within the last 48 hours.' });
     res.json(reviewed);
   } catch (error) { res.status(502).json({ error: `Could not review article: ${error.message}` }); }
 });

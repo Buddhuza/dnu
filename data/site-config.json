@@ -6,7 +6,7 @@
   "heroTitle": "Find the stories",
   "heroAccent": "that matter.",
   "heroDescription": "Review timely coverage from your trusted sources. Keep the signal, leave the noise.",
-  "updateTitle": "Daily news update",
+  "updateTitle": "Daily news update — 48 hours",
   "coverageText": "",
   "showHero": true,
   "showCoverage": true,
@@ -16,12 +16,15 @@
   "showLatest": true,
   "darkMode": false,
   "fontSize": 18,
+  "sectionHeadingSize": 26,
+  "sectionHeadingUppercase": true,
+  "updateWidth": 600,
   "theme": {
     "name": "Forest",
     "primary": "#123e47",
     "accent": "#bce081",
-    "background": "#f7f8f6",
-    "surface": "#ffffff",
+    "background": "#f4efe6",
+    "surface": "#fdfaf4",
     "text": "#182a36",
     "section": "#0070c0",
     "font": "DM Sans"
@@ -40,37 +43,72 @@
     {
       "id": "Lead stories",
       "name": "Lead stories",
-      "visible": true
+      "visible": true,
+      "subsections": [
+        "Ukraine",
+        "Middle East / North Africa"
+      ]
     },
     {
       "id": "South Eastern Europe",
       "name": "South Eastern Europe",
-      "visible": true
+      "visible": true,
+      "subsections": [
+        "Albania",
+        "Bosnia and Herzegovina",
+        "Montenegro",
+        "North Macedonia",
+        "Serbia",
+        "Serbia / Kosovo"
+      ]
     },
     {
       "id": "Eastern Europe",
       "name": "Eastern Europe",
-      "visible": true
+      "visible": true,
+      "subsections": [
+        "Belarus",
+        "Moldova",
+        "Moldova / Transdniestria",
+        "Ukraine"
+      ]
     },
     {
       "id": "South Caucasus",
       "name": "South Caucasus",
-      "visible": true
+      "visible": true,
+      "subsections": [
+        "Armenia",
+        "Azerbaijan",
+        "Georgia",
+        "Georgia / Abkhazia / South Ossetia"
+      ]
     },
     {
       "id": "Central Asia",
       "name": "Central Asia",
-      "visible": true
+      "visible": true,
+      "subsections": [
+        "Kazakhstan",
+        "Kyrgyzstan",
+        "Tajikistan",
+        "Turkmenistan",
+        "Uzbekistan"
+      ]
     },
     {
       "id": "Miscellaneous",
       "name": "Miscellaneous",
-      "visible": true
-    },
-    {
-      "id": "International organisations",
-      "name": "International organisations",
-      "visible": true
+      "visible": true,
+      "subsections": [
+        "WESTERN / CENTRAL EUROPE",
+        "MIDDLE EAST / NORTH AFRICA",
+        "RUSSIA / EURASIA",
+        "AFGHANISTAN / PAKISTAN",
+        "NORTH EAST ASIA",
+        "NORTH AMERICA",
+        "INTERNATIONAL ORGANISATIONS"
+      ]
     }
   ],
   "articleEdits": {},
