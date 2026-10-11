@@ -10,7 +10,7 @@ import { reportFilename } from '../src/reportFilename.js';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const sources = JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'));
 const sourceById = new Map(sources.map(source => [source.id, source]));
-const dailySnapshot = JSON.parse(readFileSync(join(root, 'data/daily-update-2026-10-08.json'), 'utf8'));
+const dailySnapshot = JSON.parse(readFileSync(join(root, 'data/daily-update-2026-10-05-09.json'), 'utf8'));
 const cache = new Map();
 const articleCache = new Map();
 const app = express();
@@ -30,8 +30,8 @@ app.get('/api/daily-update.docx', async (_req, res) => {
   try {
     const buffer = await createReportDocx(update);
     res.set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-    res.set('Content-Disposition', `attachment; filename="${reportFilename()}"`);
-    res.send(buffer);
+    res.set('Content-Disposition', `attachment; filename="${reportFilename(update)}"`);
+    res.send(Buffer.from(buffer));
   } catch (error) { res.status(500).json({ error: `Could not create daily update: ${error.message}` }); }
 });
 
@@ -102,8 +102,8 @@ app.post('/api/report.docx', async (req, res) => {
   try {
     const buffer = await createReportDocx({ title: String(req.body.title ?? '').slice(0, 120), articles, sourceOutcomes: Array.isArray(req.body.sourceOutcomes) ? req.body.sourceOutcomes : [] });
     res.set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-    res.set('Content-Disposition', `attachment; filename="${reportFilename()}"`);
-    res.send(buffer);
+    res.set('Content-Disposition', `attachment; filename="${reportFilename(req.body)}"`);
+    res.send(Buffer.from(buffer));
   } catch (error) { res.status(500).json({ error: `Could not create report: ${error.message}` }); }
 });
 

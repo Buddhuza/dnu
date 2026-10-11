@@ -63,3 +63,22 @@ test('prepared Thursday edition covers only its fixed 36-hour window and follows
     if (article.section === 'Lead stories' && article.subsection === 'Ukraine') assert.equal(article.sourceName, 'Reuters');
   }
 });
+
+test('prepared Monday–Friday edition covers its fixed window and uses country or organisation labels in Miscellaneous', () => {
+  const update = JSON.parse(readFileSync(new URL('../data/daily-update-2026-10-05-09.json', import.meta.url), 'utf8'));
+  const start = Date.parse(update.windowStart);
+  const end = Date.parse(update.windowEnd);
+  const allowed = new Map(NEWS_SECTIONS.map(section => [section.id, new Set(section.subsections)]));
+  assert.equal(update.windowHours, 120);
+  assert.equal(start, Date.parse('2026-10-04T22:00:00Z'));
+  assert.equal(end, Date.parse('2026-10-09T21:59:59Z'));
+  assert.ok(update.articles.length >= 20);
+  for (const article of update.articles) {
+    const published = Date.parse(article.publishedAt);
+    assert.ok(published >= start && published <= end, article.title);
+    assert.ok(allowed.get(article.section)?.has(article.subsection), article.title);
+    if (article.section === 'Miscellaneous') assert.ok(article.country, article.title);
+    if (article.section === 'Lead stories' && article.subsection === 'Ukraine') assert.equal(article.sourceName, 'Reuters');
+  }
+  assert.equal(currentDailyUpdate(update, Date.parse('2026-10-11T12:00:00Z')).articles.length, update.articles.length);
+});

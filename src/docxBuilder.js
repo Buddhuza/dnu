@@ -9,8 +9,7 @@ function sectionParagraph(value) {
   return `<w:p><w:pPr><w:pStyle w:val="Heading1"/><w:keepNext/><w:spacing w:before="360" w:after="120"/><w:rPr><w:b/><w:bCs/></w:rPr></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:bCs/>`)}</w:p>`;
 }
 
-function subsectionParagraph(value) {
-  const plainTopic = ['WESTERN / CENTRAL EUROPE', 'MIDDLE EAST / NORTH AFRICA'].includes(value.toUpperCase());
+function subsectionParagraph(value, plainTopic = false) {
   return `<w:p><w:pPr><w:keepNext/>${plainTopic ? '' : '<w:shd w:val="clear" w:color="auto" w:fill="D9E2F3"/>'}<w:spacing w:before="200" w:after="120"/><w:jc w:val="both"/></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:color w:val="0070C0"/><w:sz w:val="24"/>`)}</w:p>`;
 }
 
@@ -62,7 +61,7 @@ export async function createReportDocxFromTemplate(templateBytes, { title, artic
     if (item.subsection && item.subsection !== currentSubsection) {
       currentSubsection = item.subsection;
       currentCountry = '';
-      paragraphs.push(subsectionParagraph(item.subsection));
+      paragraphs.push(subsectionParagraph(item.subsection, section === 'Miscellaneous'));
     }
     if (item.country && item.country !== currentCountry) {
       currentCountry = item.country;
