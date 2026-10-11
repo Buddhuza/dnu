@@ -8,7 +8,7 @@ For a quick preview that does not clone or install the project, open the [static
 
 ## Manage the website
 
-Use **Manage site** in the top bar to edit the site title and intro, show or hide page areas, rename and reorder sections, edit or hide stories, add a story, add or hide news sources, and adjust light and dark palettes, font, and text size. The top bar also has a dark mode switch. Text starts at 18 px. Changes preview immediately and save to the current browser. **Download customised Word** exports the displayed stories with the supplied Word template, including local edits.
+Use **Manage site** in the top bar to edit the site title and intro, show or hide page areas, rename and reorder sections, edit or hide stories, add a story, add or hide news sources, and adjust light and dark palettes, font, and text size. The top bar also has a dark mode switch. Text starts at 18 px. Changes preview immediately and save to the current browser. **Download report** exports the displayed stories with the supplied Word template, including local edits. Its filename includes the local date and time of generation, and the last page ends with the required disclaimer below a rule.
 
 Section headings default to uppercase 26 px text, and the news stream is 600 px wide for reading. Change heading size, capitalization, width, section names and subsection lists in **Manage site**. The light palette uses a beige background. International Organisations appears under Miscellaneous; Ukraine lead stories use Reuters reporting.
 

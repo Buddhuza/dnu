@@ -7,6 +7,7 @@ import SiteManager from './SiteManager.jsx';
 import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources } from './siteConfig.js';
 import { orderedSubsections } from './newsSections.js';
 import { createReportDocxFromTemplate } from './docxBuilder.js';
+import { reportFilename } from './reportFilename.js';
 import './styles.css';
 
 const readStored = (key, fallback) => {
@@ -137,10 +138,10 @@ function App() {
       if (!response.ok) throw new Error('The Word template is unavailable.');
       const templateBytes = await response.arrayBuffer();
       const title = siteConfig.updateTitle === 'Daily news update' ? daily?.title : siteConfig.updateTitle;
-      const coverageNote = `Customised website copy based on the update prepared ${daily?.checkedAt || 'earlier'}. Headlines, summaries, sections, and manually added stories may have been edited in this browser; check their original articles before sharing.`;
-      const file = await createReportDocxFromTemplate(templateBytes, { title, articles: displayedArticles, sourceOutcomes: daily?.sourceOutcomes ?? [], coverageNote });
+      const file = await createReportDocxFromTemplate(templateBytes, { title, articles: displayedArticles, sourceOutcomes: daily?.sourceOutcomes ?? [] });
+      const generatedAt = new Date();
       const url = URL.createObjectURL(new Blob([file], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }));
-      const a = document.createElement('a'); a.href = url; a.download = 'daily-news-update.docx'; document.body.appendChild(a); a.click(); a.remove();
+      const a = document.createElement('a'); a.href = url; a.download = reportFilename(generatedAt); document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 60_000);
     } catch (error) { setToast(error.message || 'Could not create the Word update.'); }
   }

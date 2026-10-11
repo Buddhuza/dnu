@@ -5,6 +5,7 @@ import { dirname, join } from 'node:path';
 import { DEFAULT_INCLUDE, DEFAULT_EXCLUDE, normalizeArticles, parseWords, scrapeHeadlines, scrapeArticle, undatedCandidates, reviewedArticle, customSourceFromRequest } from './news.js';
 import { createReportDocx } from './report.js';
 import { currentDailyUpdate } from './daily.js';
+import { reportFilename } from '../src/reportFilename.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const sources = JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'));
@@ -27,10 +28,9 @@ app.get('/api/daily-update.docx', async (_req, res) => {
   const update = currentDailyUpdate(dailySnapshot);
   if (!update.articles.length) return res.status(410).json({ error: 'This daily update has expired. Collect new articles for the next report.' });
   try {
-    const coverageNote = `${update.articles.length} selected articles from ${new Set(update.articles.map(x => x.sourceId)).size} agencies. Source pages were checked for this selected roundup; many accessible sources were not reviewed article by article. Publication times fall within the ${update.windowHours || 48} hours ending ${update.servedAt}. Opinion and analysis were excluded.`;
-    const buffer = await createReportDocx({ ...update, coverageNote });
+    const buffer = await createReportDocx(update);
     res.set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-    res.set('Content-Disposition', 'attachment; filename="daily-news-update-2026-10-11.docx"');
+    res.set('Content-Disposition', `attachment; filename="${reportFilename()}"`);
     res.send(buffer);
   } catch (error) { res.status(500).json({ error: `Could not create daily update: ${error.message}` }); }
 });
@@ -100,9 +100,9 @@ app.post('/api/report.docx', async (req, res) => {
     return res.status(400).json({ error: 'Review each selected article and complete its summary before export.' });
   }
   try {
-    const buffer = await createReportDocx({ title: String(req.body.title ?? '').slice(0, 120), articles, sourceOutcomes: Array.isArray(req.body.sourceOutcomes) ? req.body.sourceOutcomes : [], coverageNote: String(req.body.coverageNote ?? '').slice(0, 1000) });
+    const buffer = await createReportDocx({ title: String(req.body.title ?? '').slice(0, 120), articles, sourceOutcomes: Array.isArray(req.body.sourceOutcomes) ? req.body.sourceOutcomes : [] });
     res.set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-    res.set('Content-Disposition', 'attachment; filename="daily-news-update.docx"');
+    res.set('Content-Disposition', `attachment; filename="${reportFilename()}"`);
     res.send(buffer);
   } catch (error) { res.status(500).json({ error: `Could not create report: ${error.message}` }); }
 });
