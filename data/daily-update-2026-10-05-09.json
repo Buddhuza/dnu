@@ -1,6 +1,6 @@
 {
   "title": "Daily news update — Monday to Friday, 5–9 October 2026",
-  "checkedAt": "2026-10-11T19:53:00.118Z",
+  "checkedAt": "2026-10-11T20:34:32.013573Z",
   "windowHours": 120,
   "windowStart": "2026-10-04T22:00:00Z",
   "windowEnd": "2026-10-09T21:59:59Z",
@@ -32,6 +32,45 @@
       "reviewed": true
     },
     {
+      "id": "https://www.politico.eu/article/russia-ukraine-attacks-vladimir-putin-birthday/",
+      "url": "https://www.politico.eu/article/russia-ukraine-attacks-vladimir-putin-birthday/",
+      "title": "Russia hits Ukraine with wave of attacks on Putin’s birthday",
+      "summary": "Officials reported five people killed and 26 injured after a residential building was hit in Pryluky.",
+      "publishedAt": "2026-10-07T09:34:34+00:00",
+      "sourceId": "source-81",
+      "sourceName": "Politico.eu",
+      "group": "Miscl",
+      "section": "Lead stories",
+      "subsection": "Ukraine",
+      "reviewed": true
+    },
+    {
+      "id": "https://apnews.com/article/ukraine-russia-war-troop-shortage-desertion-draft-9d80ef8b18a90b00c7117ae5902fcd14",
+      "url": "https://apnews.com/article/ukraine-russia-war-troop-shortage-desertion-draft-9d80ef8b18a90b00c7117ae5902fcd14",
+      "title": "Ukraine faces a shortage of troops to relieve tired fighters at the front",
+      "summary": "Draft avoidance and desertion have compounded mobilisation problems, limiting Ukraine’s ability to use gains from drone technology.",
+      "publishedAt": "2026-10-08T04:03:03Z",
+      "sourceId": "source-85",
+      "sourceName": "AP",
+      "group": "Miscl",
+      "section": "Lead stories",
+      "subsection": "Ukraine",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.bbc.com/news/articles/c875pwq134l3o",
+      "url": "https://www.bbc.com/news/articles/c875pwq134l3o",
+      "title": "Russian strike on buses kills at least 30, say officials, as deadly attacks on Ukraine surge",
+      "summary": "The glide bomb hit two civilian buses in Kramatorsk, and officials also reported casualties in a nearby village.",
+      "publishedAt": "2026-10-08T10:16:33.663Z",
+      "sourceId": "source-83",
+      "sourceName": "BBC",
+      "group": "Miscl",
+      "section": "Lead stories",
+      "subsection": "Ukraine",
+      "reviewed": true
+    },
+    {
       "id": "https://www.reuters.com/business/energy/ukraine-says-it-hit-russias-largest-oil-refinery-2026-10-08/",
       "url": "https://www.reuters.com/business/energy/ukraine-says-it-hit-russias-largest-oil-refinery-2026-10-08/",
       "title": "Ukraine says it hit Russia's largest oil refinery",
@@ -39,6 +78,19 @@
       "publishedAt": "2026-10-08T15:10:48.164000Z",
       "sourceId": "source-153",
       "sourceName": "Reuters",
+      "group": "Miscl",
+      "section": "Lead stories",
+      "subsection": "Ukraine",
+      "reviewed": true
+    },
+    {
+      "id": "https://apnews.com/article/russia-ukraine-war-drone-missile-strikes-2c6c8b081e8e316c83af17a39bce7fe5",
+      "url": "https://apnews.com/article/russia-ukraine-war-drone-missile-strikes-2c6c8b081e8e316c83af17a39bce7fe5",
+      "title": "Russian strikes across Ukraine kill 3 people as Kyiv struggles to counter escalating attacks",
+      "summary": "The latest deaths followed bombardments that had killed more than 50 people across the country over the previous three days.",
+      "publishedAt": "2026-10-09T09:24:21Z",
+      "sourceId": "source-85",
+      "sourceName": "AP",
       "group": "Miscl",
       "section": "Lead stories",
       "subsection": "Ukraine",
@@ -71,6 +123,19 @@
       "reviewed": true
     },
     {
+      "id": "https://www.bbc.com/news/articles/cqlydk7796wdo",
+      "url": "https://www.bbc.com/news/articles/cqlydk7796wdo",
+      "title": "Tanker hit by multiple projectiles in Gulf off Qatar, maritime agency says",
+      "summary": "The Antigua and Barbuda-flagged tanker was hit north of Qatar, and maritime monitors reported casualties.",
+      "publishedAt": "2026-10-08T10:07:58.474Z",
+      "sourceId": "source-83",
+      "sourceName": "BBC",
+      "group": "Miscl",
+      "section": "Lead stories",
+      "subsection": "Middle East / North Africa",
+      "reviewed": true
+    },
+    {
       "id": "https://www.reuters.com/world/asia-pacific/attack-risks-rise-tankers-iran-vows-block-more-hormuz-routes-2026-10-08/",
       "url": "https://www.reuters.com/world/asia-pacific/attack-risks-rise-tankers-iran-vows-block-more-hormuz-routes-2026-10-08/",
       "title": "Attack risks rise for tankers as Iran vows to block more Hormuz routes",
@@ -78,6 +143,32 @@
       "publishedAt": "2026-10-08T13:17:47.558000Z",
       "sourceId": "source-153",
       "sourceName": "Reuters",
+      "group": "Miscl",
+      "section": "Lead stories",
+      "subsection": "Middle East / North Africa",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.aljazeera.com/news/2026/10/9/trump-says-us-will-not-strike-iran-before-midterm-elections",
+      "url": "https://www.aljazeera.com/news/2026/10/9/trump-says-us-will-not-strike-iran-before-midterm-elections",
+      "title": "Trump says US will not strike Iran before midterm elections",
+      "summary": "Trump said US officials were having productive discussions with Iran and referred to the 3 November elections.",
+      "publishedAt": "2026-10-09T06:22:07Z",
+      "sourceId": "source-122",
+      "sourceName": "Al Jazeera",
+      "group": "Miscl",
+      "section": "Lead stories",
+      "subsection": "Middle East / North Africa",
+      "reviewed": true
+    },
+    {
+      "id": "https://apnews.com/article/saudi-airport-attack-houthis-5226e214e7c50ceff68915379ec3a714",
+      "url": "https://apnews.com/article/saudi-airport-attack-houthis-5226e214e7c50ceff68915379ec3a714",
+      "title": "Saudi authorities say 3 killed in Houthi-claimed attacks on Riyadh airport",
+      "summary": "A Saudi aviation official said a pilot was among those killed and several other people were wounded.",
+      "publishedAt": "2026-10-09T07:47:32Z",
+      "sourceId": "source-85",
+      "sourceName": "AP",
       "group": "Miscl",
       "section": "Lead stories",
       "subsection": "Middle East / North Africa",
@@ -94,6 +185,32 @@
       "group": "Miscl",
       "section": "Lead stories",
       "subsection": "Middle East / North Africa",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.euronews.com/2026/10/09/irans-irgc-strikes-tanker-and-threatens-to-target-vessels-beyond-hormuz",
+      "url": "https://www.euronews.com/2026/10/09/irans-irgc-strikes-tanker-and-threatens-to-target-vessels-beyond-hormuz",
+      "title": "Iran's IRGC strikes tanker and threatens to target ships beyond Hormuz",
+      "summary": "The Revolutionary Guards claimed responsibility for setting a tanker ablaze and warned they could pursue vessels elsewhere in the region.",
+      "publishedAt": "2026-10-09T17:04:30+02:00",
+      "sourceId": "source-82",
+      "sourceName": "Euronews",
+      "group": "Miscl",
+      "section": "Lead stories",
+      "subsection": "Middle East / North Africa",
+      "reviewed": true
+    },
+    {
+      "id": "https://dtt-net.com/tensions-and-chaos-in-albania-parliament-and-in-tirana-streets-as-ruling-party-adopts-contested-law-reducing-number-of-municipalities/",
+      "url": "https://dtt-net.com/tensions-and-chaos-in-albania-parliament-and-in-tirana-streets-as-ruling-party-adopts-contested-law-reducing-number-of-municipalities/",
+      "title": "Tensions and Chaos in Albania parliament and in Tirana streets, as ruling party adopts contested law reducing number of municipalities",
+      "summary": "The law passed after an almost 15-hour parliamentary session while protesters outside threw bottles at the building.",
+      "publishedAt": "2026-10-09T03:23:48+02:00",
+      "sourceId": "source-1",
+      "sourceName": "DTT",
+      "group": "South Eastern Europe",
+      "section": "South Eastern Europe",
+      "subsection": "Albania",
       "reviewed": true
     },
     {
@@ -120,6 +237,58 @@
       "group": "South Eastern Europe",
       "section": "South Eastern Europe",
       "subsection": "Bosnia and Herzegovina",
+      "reviewed": true
+    },
+    {
+      "id": "https://fena.ba/article/1700632/sda-begins-coalition-talks-in-zenica-doboj-canton-seeks-partners-for-comfortable-majority",
+      "url": "https://fena.ba/article/1700632/sda-begins-coalition-talks-in-zenica-doboj-canton-seeks-partners-for-comfortable-majority",
+      "title": "SDA begins coalition talks in Zenica-Doboj Canton, seeks partners for comfortable majority",
+      "summary": "The party said it had secured 43,877 votes and 14 seats in the Zenica-Doboj Canton Assembly.",
+      "publishedAt": "2026-10-09T20:02:00+00:00",
+      "sourceId": "source-23",
+      "sourceName": "Fena",
+      "group": "South Eastern Europe",
+      "section": "South Eastern Europe",
+      "subsection": "Bosnia and Herzegovina",
+      "reviewed": true
+    },
+    {
+      "id": "https://balkaninsight.com/2026/10/08/serbian-watchdog-claims-voters-rights-under-threat-ahead-of-elections/bi/",
+      "url": "https://balkaninsight.com/2026/10/08/serbian-watchdog-claims-voters-rights-under-threat-ahead-of-elections/bi/",
+      "title": "Serbian Watchdog Claims Voters’ Rights Under Threat Ahead of Elections",
+      "summary": "Election monitor CRTA alleged intimidation, unlawful surveillance and unequal media coverage ahead of the 25 October vote.",
+      "publishedAt": "2026-10-08T14:28:17+00:00",
+      "sourceId": "source-2",
+      "sourceName": "BIRN",
+      "group": "South Eastern Europe",
+      "section": "South Eastern Europe",
+      "subsection": "Serbia",
+      "reviewed": true
+    },
+    {
+      "id": "https://europeanwesternbalkans.com/2026/10/09/nova-staff-accuse-the-new-owner-of-imposing-a-chief-editor-just-ahead-of-the-election/",
+      "url": "https://europeanwesternbalkans.com/2026/10/09/nova-staff-accuse-the-new-owner-of-imposing-a-chief-editor-just-ahead-of-the-election/",
+      "title": "“Nova” staff accuse the new owner of imposing a chief editor just ahead of the election",
+      "summary": "Employees objected to the appointment of Marko Stjepanović as editor-in-chief ahead of the election.",
+      "publishedAt": "2026-10-09T12:51:09+00:00",
+      "sourceId": "source-3",
+      "sourceName": "EWB",
+      "group": "South Eastern Europe",
+      "section": "South Eastern Europe",
+      "subsection": "Serbia",
+      "reviewed": true
+    },
+    {
+      "id": "https://balkaninsight.com/2026/10/08/justina-shiroka-pula-another-woman-at-kosovos-helm/bi/",
+      "url": "https://balkaninsight.com/2026/10/08/justina-shiroka-pula-another-woman-at-kosovos-helm/bi/",
+      "title": "Justina Shiroka Pula, Another Woman at Kosovo’s Helm",
+      "summary": "A last-minute agreement between the two largest parties averted another election as the deadline to choose a president neared.",
+      "publishedAt": "2026-10-08T05:49:33+00:00",
+      "sourceId": "source-2",
+      "sourceName": "BIRN",
+      "group": "South Eastern Europe",
+      "section": "South Eastern Europe",
+      "subsection": "Serbia / Kosovo",
       "reviewed": true
     },
     {
@@ -162,6 +331,32 @@
       "reviewed": true
     },
     {
+      "id": "https://kyivindependent.com/uk-to-provide-71-million-winter-aid-package-to-ukraine/",
+      "url": "https://kyivindependent.com/uk-to-provide-71-million-winter-aid-package-to-ukraine/",
+      "title": "UK to provide $71 million winter aid package to Ukraine",
+      "summary": "The £54 million package includes humanitarian and energy funding as Russian attacks put pressure on Ukraine’s winter preparations.",
+      "publishedAt": "2026-10-09T01:59:45.000Z",
+      "sourceId": "source-39",
+      "sourceName": "Kyiv Independent",
+      "group": "East Europe",
+      "section": "Eastern Europe",
+      "subsection": "Ukraine",
+      "reviewed": true
+    },
+    {
+      "id": "https://en.interfax.com.ua/news/general/1217376.html",
+      "url": "https://en.interfax.com.ua/news/general/1217376.html",
+      "title": "Klitschko, Estonian Defense Minister discuss strengthening air defense, military aid to Kyiv, Ukraine",
+      "summary": "Kyiv Mayor Vitali Klitschko called for faster delivery of air-defence missiles amid attacks on the capital’s infrastructure.",
+      "publishedAt": "2026-10-09T17:56:43.347479+03:00",
+      "sourceId": "source-33",
+      "sourceName": "Interfax.ua",
+      "group": "East Europe",
+      "section": "Eastern Europe",
+      "subsection": "Ukraine",
+      "reviewed": true
+    },
+    {
       "id": "https://oc-media.org/iran-is-now-satisfied-with-trump-route-armenia-foreign-minister-says/",
       "url": "https://oc-media.org/iran-is-now-satisfied-with-trump-route-armenia-foreign-minister-says/",
       "title": "Iran is now ‘satisfied’ with Trump Route, Armenia Foreign Minister says",
@@ -169,6 +364,19 @@
       "publishedAt": "2026-10-08T13:11:16Z",
       "sourceId": "source-65",
       "sourceName": "OC Media",
+      "group": "South Caucasus",
+      "section": "South Caucasus",
+      "subsection": "Armenia",
+      "reviewed": true
+    },
+    {
+      "id": "https://en.apa.az/foreign-policy/pm-pashinyan-peace-between-armenia-and-azerbaijan-is-an-accomplished-fact-529032",
+      "url": "https://en.apa.az/foreign-policy/pm-pashinyan-peace-between-armenia-and-azerbaijan-is-an-accomplished-fact-529032",
+      "title": "PM Pashinyan: Peace between Armenia and Azerbaijan is an accomplished fact",
+      "summary": "At a CIS summit, Nikol Pashinyan said the initialled peace agreement confirmed that neither country had territorial claims against the other.",
+      "publishedAt": "2026-10-09T10:15:00+04:00",
+      "sourceId": "source-55",
+      "sourceName": "APA",
       "group": "South Caucasus",
       "section": "South Caucasus",
       "subsection": "Armenia",
@@ -188,6 +396,19 @@
       "reviewed": true
     },
     {
+      "id": "https://en.apa.az/official-news/trilateral-meeting-of-azerbaijani-russian-and-iranian-presidents-begins-529120",
+      "url": "https://en.apa.az/official-news/trilateral-meeting-of-azerbaijani-russian-and-iranian-presidents-begins-529120",
+      "title": "Trilateral meeting of Azerbaijani, Russian and Iranian presidents begins",
+      "summary": "The three leaders were expected to discuss the North–South transport corridor.",
+      "publishedAt": "2026-10-09T14:01:00+04:00",
+      "sourceId": "source-55",
+      "sourceName": "APA",
+      "group": "South Caucasus",
+      "section": "South Caucasus",
+      "subsection": "Azerbaijan",
+      "reviewed": true
+    },
+    {
       "id": "https://oc-media.org/azerbaijan-students-launch-school-strike-over-hijab-restrictions/",
       "url": "https://oc-media.org/azerbaijan-students-launch-school-strike-over-hijab-restrictions/",
       "title": "Azerbaijan students launch school strike over hijab restrictions",
@@ -198,6 +419,32 @@
       "group": "South Caucasus",
       "section": "South Caucasus",
       "subsection": "Azerbaijan",
+      "reviewed": true
+    },
+    {
+      "id": "https://civil.ge/archives/753868",
+      "url": "https://civil.ge/archives/753868",
+      "title": "Anti-Government Protester Says He Left Georgia Following Abuse by Police Officers",
+      "summary": "Sergey Kancheli alleged that six officers took him to a cemetery, beat him and threatened him with a gun.",
+      "publishedAt": "2026-10-07T23:00:00+00:00",
+      "sourceId": "source-61",
+      "sourceName": "Civil.ge",
+      "group": "South Caucasus",
+      "section": "South Caucasus",
+      "subsection": "Georgia",
+      "reviewed": true
+    },
+    {
+      "id": "https://civil.ge/archives/744288",
+      "url": "https://civil.ge/archives/744288",
+      "title": "SSSG Says Wanted Georgian Arrested Over Alleged Plot to Carry Out ‘Subversive Acts’ Linked to October 4 Unrest",
+      "summary": "The security service alleged the suspect had obtained firearms, ammunition and explosives for actions linked to the unrest.",
+      "publishedAt": "2026-10-07T23:27:00+00:00",
+      "sourceId": "source-61",
+      "sourceName": "Civil.ge",
+      "group": "South Caucasus",
+      "section": "South Caucasus",
+      "subsection": "Georgia",
       "reviewed": true
     },
     {
@@ -279,6 +526,32 @@
       "reviewed": true
     },
     {
+      "id": "https://24.kg/en/article/former-transport-minister-nurlan-sulaimanov-released-on-travel-restrictions",
+      "url": "https://24.kg/en/article/former-transport-minister-nurlan-sulaimanov-released-on-travel-restrictions",
+      "title": "Former Transport Minister Nurlan Sulaimanov released on travel restrictions",
+      "summary": "He was released from custody under a written promise not to leave the country after being charged with corruption.",
+      "publishedAt": "2026-10-09T09:03:16+06:00",
+      "sourceId": "source-74",
+      "sourceName": "24.kg",
+      "group": "Central Asia",
+      "section": "Central Asia",
+      "subsection": "Kyrgyzstan",
+      "reviewed": true
+    },
+    {
+      "id": "https://en.kabar.kg/news/kyrgyzstan-uzbekistan-to-strengthen-inter-parliamentary-relations/",
+      "url": "https://en.kabar.kg/news/kyrgyzstan-uzbekistan-to-strengthen-inter-parliamentary-relations/",
+      "title": "Kyrgyzstan, Uzbekistan to strengthen inter-parliamentary relations",
+      "summary": "The parliamentary speakers discussed political, economic and cultural ties at a bilateral commission meeting.",
+      "publishedAt": "2026-10-09T10:31:53+06:00",
+      "sourceId": "source-75",
+      "sourceName": "Kabar",
+      "group": "Central Asia",
+      "section": "Central Asia",
+      "subsection": "Kyrgyzstan",
+      "reviewed": true
+    },
+    {
       "id": "https://akipress.com/news:924034:Former_First_Deputy_Chairman_of_National_Security_Committee_Avazov_and_ex-Minister_of_Health_Dosmambetov_detained/",
       "url": "https://akipress.com/news:924034:Former_First_Deputy_Chairman_of_National_Security_Committee_Avazov_and_ex-Minister_of_Health_Dosmambetov_detained/",
       "title": "Former First Deputy Chairman of National Security Committee Avazov and ex-Minister of Health Dosmambetov detained",
@@ -289,6 +562,48 @@
       "group": "Central Asia",
       "section": "Central Asia",
       "subsection": "Kyrgyzstan",
+      "reviewed": true
+    },
+    {
+      "id": "https://hromadske.ua/en/society/272248-ukrainian-journalist-says-austrian-police-held-him-at-gunpoint-accused-him-of-spying-for-kyiv",
+      "url": "https://hromadske.ua/en/society/272248-ukrainian-journalist-says-austrian-police-held-him-at-gunpoint-accused-him-of-spying-for-kyiv",
+      "title": "Ukrainian journalist says Austrian police held him at gunpoint, accused him of spying for Kyiv",
+      "summary": "Journalist Mykhailo Tkach said he was released early on 9 October while his cameraman remained in custody at the time of his account.",
+      "publishedAt": "2026-10-09T18:34:00+03:00",
+      "sourceId": "source-38",
+      "sourceName": "Hromadske",
+      "group": "East Europe",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Austria",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.defensenews.com/global/europe/2026/10/09/estonias-krattworks-crafting-shahed-like-dummy-drone-for-target-practice/",
+      "url": "https://www.defensenews.com/global/europe/2026/10/09/estonias-krattworks-crafting-shahed-like-dummy-drone-for-target-practice/",
+      "title": "Estonia’s KrattWorks crafting Shahed-like dummy drone for target practice",
+      "summary": "The company says the target drone will help militaries practise shooting down aircraft that mimic Russian-used Shahed drones.",
+      "publishedAt": "2026-10-09T10:11:46.218Z",
+      "sourceId": "source-161",
+      "sourceName": "Defense News",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Estonia",
+      "reviewed": true
+    },
+    {
+      "id": "https://news.err.ee/1610162188/estonia-pushes-firm-to-drop-russian-supplier-after-eu-strategic-project-nod",
+      "url": "https://news.err.ee/1610162188/estonia-pushes-firm-to-drop-russian-supplier-after-eu-strategic-project-nod",
+      "title": "Estonia pushes firm to drop Russian supplier after EU strategic project nod",
+      "summary": "Foreign Minister Margus Tsahkna said NPM Silmet should set a deadline for ending Russian raw-material purchases after receiving EU backing.",
+      "publishedAt": "2026-10-09T17:06:00+03:00",
+      "sourceId": "source-90",
+      "sourceName": "ERR",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Estonia",
       "reviewed": true
     },
     {
@@ -320,6 +635,76 @@
       "country": "Germany"
     },
     {
+      "id": "https://www.thelocal.de/20261008/germanys-fractious-ruling-coalition-hails-constructive-talks",
+      "url": "https://www.thelocal.de/20261008/germanys-fractious-ruling-coalition-hails-constructive-talks",
+      "title": "Germany's fractious ruling coalition hails 'constructive' talks",
+      "summary": "The three governing parties met to resolve disputes that had delayed reform plans.",
+      "publishedAt": "2026-10-08T13:52:01+02:00",
+      "sourceId": "source-128",
+      "sourceName": "Local Germany",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Germany",
+      "reviewed": true
+    },
+    {
+      "id": "https://notesfrompoland.com/2026/10/09/polish-police-detain-more-teens-following-school-knife-attacks-amid-fears-of-further-incidents/",
+      "url": "https://notesfrompoland.com/2026/10/09/polish-police-detain-more-teens-following-school-knife-attacks-amid-fears-of-further-incidents/",
+      "title": "Polish police detain more teens following school knife attacks amid fears of further incidents",
+      "summary": "Police said at least 10 more people, mostly teenagers, had been detained over online threats or weapons possession.",
+      "publishedAt": "2026-10-09T13:41:45+02:00",
+      "sourceId": "source-110",
+      "sourceName": "NFP",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Poland",
+      "reviewed": true
+    },
+    {
+      "id": "https://ipn.md/en/the-german-defense-company-rheinmetall-has-purchased-the-damen-mangalia-shipyard-in-romania/",
+      "url": "https://ipn.md/en/the-german-defense-company-rheinmetall-has-purchased-the-damen-mangalia-shipyard-in-romania/",
+      "title": "The German defense company, Rheinmetall, has purchased the Damen Mangalia shipyard in Romania",
+      "summary": "The bankrupt Damen Mangalia shipyard was sold at auction to the German defence manufacturer.",
+      "publishedAt": "2026-10-09T13:20:19+00:00",
+      "sourceId": "source-32",
+      "sourceName": "IPN",
+      "group": "East Europe",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Romania",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.thelocal.se/20261009/swedens-red-green-parties-head-into-first-post-election-meeting",
+      "url": "https://www.thelocal.se/20261009/swedens-red-green-parties-head-into-first-post-election-meeting",
+      "title": "Sweden's red-green parties head into first post-election meeting",
+      "summary": "Leaders of the Social Democrats, Left, Centre and Green parties met amid a deadlock over forming a government.",
+      "publishedAt": "2026-10-09T13:23:03+02:00",
+      "sourceId": "source-114",
+      "sourceName": "Local Sweden",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Sweden",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.euronews.com/2026/10/08/royal-navy-sailor-faces-court-over-alleged-spying-for-russia",
+      "url": "https://www.euronews.com/2026/10/08/royal-navy-sailor-faces-court-over-alleged-spying-for-russia",
+      "title": "Royal Navy sailor appears in court accused of spying for Russia",
+      "summary": "The 24-year-old sailor appeared in a London court after being charged with trying to share protected defence information.",
+      "publishedAt": "2026-10-08T15:53:59+02:00",
+      "sourceId": "source-82",
+      "sourceName": "Euronews",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "United Kingdom",
+      "reviewed": true
+    },
+    {
       "id": "https://www.reuters.com/world/middle-east/us-imposes-fresh-iran-related-sanctions-2026-10-08/",
       "url": "https://www.reuters.com/world/middle-east/us-imposes-fresh-iran-related-sanctions-2026-10-08/",
       "title": "US imposes fresh sanctions on Iran's shadow fleet",
@@ -332,6 +717,34 @@
       "subsection": "MIDDLE EAST / NORTH AFRICA",
       "reviewed": true,
       "country": "Iran"
+    },
+    {
+      "id": "https://www.kurdistan24.net/en/story/944891/putin-vows-to-help-end-middle-east-war-in-talks-with-pezeshkian",
+      "url": "https://www.kurdistan24.net/en/story/944891/putin-vows-to-help-end-middle-east-war-in-talks-with-pezeshkian",
+      "title": "Putin Vows to Help End Middle East War in Talks With Pezeshkian",
+      "summary": "The Russian and Iranian presidents met in Turkmenistan amid continuing regional fighting.",
+      "publishedAt": "2026-10-09T08:20:00+03:00",
+      "sourceId": "source-118",
+      "sourceName": "Kurdistan 24",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "country": "Iran",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.iranintl.com/en/202610091479",
+      "url": "https://www.iranintl.com/en/202610091479",
+      "title": "Iran executed over 2,000 people in past year, rights group says",
+      "summary": "Rights group HRANA said its count of 2,003 executions covered 10 October 2025 through 8 October 2026, a 29% increase on the previous period.",
+      "publishedAt": "2026-10-09T19:04:00.000Z",
+      "sourceId": "source-119",
+      "sourceName": "Iran International",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "country": "Iran",
+      "reviewed": true
     },
     {
       "id": "https://www.reuters.com/world/middle-east/lebanons-hezbollah-gets-200-million-iran-help-displaced-sources-say-2026-10-07/",
@@ -362,6 +775,34 @@
       "reviewed": true
     },
     {
+      "id": "https://www.kurdistan24.net/en/story/945028/dem-party-urges-swift-peace-steps-warns-over-hasakah",
+      "url": "https://www.kurdistan24.net/en/story/945028/dem-party-urges-swift-peace-steps-warns-over-hasakah",
+      "title": "DEM Party Urges Swift Peace Steps, Warns Over Hasakah",
+      "summary": "The DEM Party called for a parliamentary monitoring mechanism and a formal role for Abdullah Öcalan in the peace process.",
+      "publishedAt": "2026-10-09T21:20:00+03:00",
+      "sourceId": "source-118",
+      "sourceName": "Kurdistan 24",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "country": "Türkiye",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.aljazeera.com/news/2026/10/9/un-envoy-warns-yemen-has-returned-to-full-scale-war-urges-dialogue",
+      "url": "https://www.aljazeera.com/news/2026/10/9/un-envoy-warns-yemen-has-returned-to-full-scale-war-urges-dialogue",
+      "title": "UN envoy warns Yemen has returned to ‘full-scale war’, urges dialogue",
+      "summary": "UN envoy Hans Grundberg said at least 46 civilians had been killed and more than 130 injured in Yemen since August.",
+      "publishedAt": "2026-10-09T20:56:01Z",
+      "sourceId": "source-122",
+      "sourceName": "Al Jazeera",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "country": "Yemen",
+      "reviewed": true
+    },
+    {
       "id": "https://www.reuters.com/business/energy/us-russia-explore-gas-sale-europe-amid-ukraine-war-say-sources-2026-10-08/",
       "url": "https://www.reuters.com/business/energy/us-russia-explore-gas-sale-europe-amid-ukraine-war-say-sources-2026-10-08/",
       "title": "EXCLUSIVE: US, Russia explore gas sale to Europe amid Ukraine war, say sources",
@@ -376,6 +817,62 @@
       "country": "Russia"
     },
     {
+      "id": "https://kyivindependent.com/trump-says-russia-agreed-to-supply-millions-of-tons-of-diesel-to-us-global-markets/",
+      "url": "https://kyivindependent.com/trump-says-russia-agreed-to-supply-millions-of-tons-of-diesel-to-us-global-markets/",
+      "title": "Trump allows Russia to supply millions of tons of diesel to US, global markets",
+      "summary": "The US president said Russian diesel shipments would begin immediately, with further supplies expected in November.",
+      "publishedAt": "2026-10-09T18:53:55.000Z",
+      "sourceId": "source-39",
+      "sourceName": "Kyiv Independent",
+      "group": "East Europe",
+      "section": "Miscellaneous",
+      "subsection": "RUSSIA / EURASIA",
+      "country": "Russia",
+      "reviewed": true
+    },
+    {
+      "id": "https://en.yna.co.kr/view/AEN20261009003651315",
+      "url": "https://en.yna.co.kr/view/AEN20261009003651315",
+      "title": "(LEAD) Police expand team investigating recent hacking of financial institutions",
+      "summary": "The National Office of Investigation added 15 officers to a team examining attacks on financial companies.",
+      "publishedAt": "2026-10-09T22:48:13+09:00",
+      "sourceId": "source-103",
+      "sourceName": "Yonhap",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "NORTH EAST ASIA",
+      "country": "South Korea",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.militarytimes.com/missile-defense/2026/10/09/pentagon-raytheon-sign-63b-deal-to-replenish-us-missile-interceptor-supply/",
+      "url": "https://www.militarytimes.com/missile-defense/2026/10/09/pentagon-raytheon-sign-63b-deal-to-replenish-us-missile-interceptor-supply/",
+      "title": "Pentagon, Raytheon sign $6.3B deal to replenish US missile interceptor supply",
+      "summary": "The five-year contract covers continuing production of Standard Missile-3 Block IB interceptors.",
+      "publishedAt": "2026-10-09T20:17:18.942Z",
+      "sourceId": "source-164",
+      "sourceName": "Military Times",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "NORTH AMERICA",
+      "country": "United States",
+      "reviewed": true
+    },
+    {
+      "id": "https://en.apa.az/official-news/president-azerbaijan-is-also-ready-to-assume-the-cis-chairmanship-in-2028-529042",
+      "url": "https://en.apa.az/official-news/president-azerbaijan-is-also-ready-to-assume-the-cis-chairmanship-in-2028-529042",
+      "title": "President: Azerbaijan is also ready to assume the CIS chairmanship in 2028",
+      "summary": "President Ilham Aliyev said Azerbaijan could host the organisation’s Council of Heads of State meeting in autumn 2028.",
+      "publishedAt": "2026-10-09T10:39:00+04:00",
+      "sourceId": "source-55",
+      "sourceName": "APA",
+      "group": "South Caucasus",
+      "section": "Miscellaneous",
+      "subsection": "INTERNATIONAL ORGANISATIONS",
+      "country": "CIS",
+      "reviewed": true
+    },
+    {
       "id": "https://www.reuters.com/world/europe/eu-commission-floats-safeguard-against-democratic-backsliding-by-new-members-2026-10-06/",
       "url": "https://www.reuters.com/world/europe/eu-commission-floats-safeguard-against-democratic-backsliding-by-new-members-2026-10-06/",
       "title": "EU Commission floats safeguards against democratic backsliding by new members",
@@ -387,6 +884,34 @@
       "section": "Miscellaneous",
       "subsection": "INTERNATIONAL ORGANISATIONS",
       "country": "EU",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.koreaherald.com/article/10898012",
+      "url": "https://www.koreaherald.com/article/10898012",
+      "title": "EU trade chief seeks ‘tangible outcomes’ in China talks",
+      "summary": "EU and Chinese officials reached an understanding on hybrid vehicles and sought more predictable access to rare earths.",
+      "publishedAt": "2026-10-09T21:30:52+09:00",
+      "sourceId": "source-125",
+      "sourceName": "Korea Herald",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "INTERNATIONAL ORGANISATIONS",
+      "country": "EU",
+      "reviewed": true
+    },
+    {
+      "id": "https://en.kabar.kg/news/members-of-kyrgyz-parliament-participating-in-osce-pa-sessions/",
+      "url": "https://en.kabar.kg/news/members-of-kyrgyz-parliament-participating-in-osce-pa-sessions/",
+      "title": "Members of Kyrgyz Parliament participating in OSCE PA sessions",
+      "summary": "Two Kyrgyz lawmakers attended the Parliamentary Assembly’s autumn session in Andorra la Vella, held from 7 to 9 October.",
+      "publishedAt": "2026-10-09T10:46:40+06:00",
+      "sourceId": "source-75",
+      "sourceName": "Kabar",
+      "group": "Central Asia",
+      "section": "Miscellaneous",
+      "subsection": "INTERNATIONAL ORGANISATIONS",
+      "country": "OSCE",
       "reviewed": true
     }
   ],
@@ -432,6 +957,213 @@
       "group": "Central Asia",
       "url": "https://akipress.com/allnews/",
       "status": "collected"
+    },
+    {
+      "id": "source-1",
+      "name": "DTT",
+      "group": "South Eastern Europe",
+      "url": "https://dtt-net.com/category/w-balkan-news/",
+      "status": "collected"
+    },
+    {
+      "id": "source-3",
+      "name": "EWB",
+      "group": "South Eastern Europe",
+      "url": "https://europeanwesternbalkans.com/latest/",
+      "status": "collected"
+    },
+    {
+      "id": "source-39",
+      "name": "Kyiv Independent",
+      "group": "East Europe",
+      "url": "https://kyivindependent.com/news-archive/",
+      "status": "collected"
+    },
+    {
+      "id": "source-33",
+      "name": "Interfax.ua",
+      "group": "East Europe",
+      "url": "https://en.interfax.com.ua/news/general.html",
+      "status": "collected"
+    },
+    {
+      "id": "source-74",
+      "name": "24.kg",
+      "group": "Central Asia",
+      "url": "https://24.kg/english/",
+      "status": "collected"
+    },
+    {
+      "id": "source-75",
+      "name": "Kabar",
+      "group": "Central Asia",
+      "url": "https://en.kabar.kg/news/",
+      "status": "collected"
+    },
+    {
+      "id": "source-38",
+      "name": "Hromadske",
+      "group": "East Europe",
+      "url": "https://hromadske.ua/en/news",
+      "status": "collected"
+    },
+    {
+      "id": "source-90",
+      "name": "ERR",
+      "group": "Miscl",
+      "url": "https://news.err.ee/k/news",
+      "status": "collected"
+    },
+    {
+      "id": "source-161",
+      "name": "Defense News",
+      "group": "Miscl",
+      "url": "https://www.defensenews.com/",
+      "status": "collected"
+    },
+    {
+      "id": "source-110",
+      "name": "NFP",
+      "group": "Miscl",
+      "url": "https://notesfrompoland.com/",
+      "status": "collected"
+    },
+    {
+      "id": "source-32",
+      "name": "IPN",
+      "group": "East Europe",
+      "url": "https://ipn.md/en/all-news/",
+      "status": "collected"
+    },
+    {
+      "id": "source-114",
+      "name": "Local Sweden",
+      "group": "Miscl",
+      "url": "https://www.thelocal.se/",
+      "status": "collected"
+    },
+    {
+      "id": "source-118",
+      "name": "Kurdistan 24",
+      "group": "Miscl",
+      "url": "https://www.kurdistan24.net/en",
+      "status": "collected"
+    },
+    {
+      "id": "source-119",
+      "name": "Iran International",
+      "group": "Miscl",
+      "url": "https://www.iranintl.com/en",
+      "status": "collected"
+    },
+    {
+      "id": "source-103",
+      "name": "Yonhap",
+      "group": "Miscl",
+      "url": "https://en.yna.co.kr/news",
+      "status": "collected"
+    },
+    {
+      "id": "source-164",
+      "name": "Military Times",
+      "group": "Miscl",
+      "url": "https://www.militarytimes.com/news/",
+      "status": "collected"
+    },
+    {
+      "id": "source-125",
+      "name": "Korea Herald",
+      "group": "Miscl",
+      "url": "https://www.koreaherald.com/",
+      "status": "collected"
+    },
+    {
+      "id": "source-81",
+      "name": "Politico.eu",
+      "group": "Miscl",
+      "url": "https://www.politico.eu/latest/",
+      "status": "collected"
+    },
+    {
+      "id": "source-82",
+      "name": "Euronews",
+      "group": "Miscl",
+      "url": "https://www.euronews.com/just-in",
+      "status": "collected"
+    },
+    {
+      "id": "source-61",
+      "name": "Civil.ge",
+      "group": "South Caucasus",
+      "url": "https://civil.ge/archives/category/news",
+      "status": "collected"
+    },
+    {
+      "id": "source-85",
+      "name": "AP",
+      "group": "Miscl",
+      "url": "https://apnews.com/world-news",
+      "status": "collected"
+    },
+    {
+      "id": "source-83",
+      "name": "BBC",
+      "group": "Miscl",
+      "url": "https://www.bbc.com/news",
+      "status": "collected"
+    },
+    {
+      "id": "source-23",
+      "name": "Fena",
+      "group": "South Eastern Europe",
+      "url": "https://www.fena.ba/category/32#1",
+      "status": "collected"
+    },
+    {
+      "id": "source-2",
+      "name": "BIRN",
+      "group": "South Eastern Europe",
+      "url": "https://balkaninsight.com/all-the-news-from-the-balkans/",
+      "status": "collected"
+    },
+    {
+      "id": "source-55",
+      "name": "APA",
+      "group": "South Caucasus",
+      "url": "https://en.apa.az/all-news",
+      "status": "collected"
+    },
+    {
+      "id": "source-80",
+      "name": "DW",
+      "group": "Miscl",
+      "url": "https://www.dw.com/en/top-stories/s-9097",
+      "status": "no verified article",
+      "reason": "A sampled DW video page did not expose a verifiable original publication timestamp; it was excluded from the dated report."
+    },
+    {
+      "id": "source-122",
+      "name": "Al Jazeera",
+      "group": "Miscl",
+      "url": "https://www.aljazeera.com/news/",
+      "status": "collected"
+    },
+    {
+      "id": "source-128",
+      "name": "Local Germany",
+      "group": "Miscl",
+      "url": "https://www.thelocal.de/",
+      "status": "collected"
+    }
+  ],
+  "sourceChecks": [
+    {
+      "id": "newsnow-world",
+      "name": "NewsNow",
+      "group": "News discovery",
+      "url": "https://www.newsnow.co.uk/h/World+News",
+      "status": "Checked, no verified story",
+      "reason": "Firecrawl fetched the World News index and followed a headline redirect to the original publisher. The index had no reliable publication times; the tested original article was dated 12 October, outside this 5–9 October report. NewsNow was used only as a discovery check."
     }
   ]
 }

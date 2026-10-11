@@ -8,6 +8,7 @@ export const NEWS_SECTIONS = [
 ];
 
 export const EDITORIAL_GUIDANCE = [
+  'Any international news agency can supply stories in any report section. The source-list category is only for browsing outlets; place each article by the location or organisation it covers.',
   'Lead stories cover Ukraine and the Middle East. Prefer Reuters, AP, AFP, DW, Politico, Euronews, BBC or dpa for Ukraine leads; place an international organisation here only for an exceptional OSCE story.',
   'Use Serbia / Kosovo for Kosovo coverage and Moldova / Transdniestria for Transdniestria coverage. Use Georgia / Abkhazia / South Ossetia for Georgia’s breakaway republics.',
   'Western / Central Europe includes Iceland and the UK, while Belarus, Moldova and Ukraine belong in Eastern Europe. Middle East / North Africa focuses especially on the Iran war and the Strait of Hormuz.',

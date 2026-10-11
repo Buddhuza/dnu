@@ -72,13 +72,27 @@ test('prepared Monday–Friday edition covers its fixed window and uses country 
   assert.equal(update.windowHours, 120);
   assert.equal(start, Date.parse('2026-10-04T22:00:00Z'));
   assert.equal(end, Date.parse('2026-10-09T21:59:59Z'));
-  assert.ok(update.articles.length >= 20);
+  assert.ok(update.articles.length >= 60);
+  assert.ok(new Set(update.articles.map(article => article.sourceId)).size >= 25);
+  assert.ok(update.articles.some(article => article.group === 'Miscl' && article.section === 'Lead stories'));
+  assert.ok(new Set(update.articles.filter(article => article.section === 'South Eastern Europe' && article.subsection === 'Bosnia and Herzegovina').map(article => article.sourceId)).size >= 2);
+  assert.ok(new Set(update.articles.filter(article => article.section === 'South Caucasus' && article.subsection === 'Georgia').map(article => article.sourceId)).size >= 2);
+  assert.ok(update.sourceChecks.some(check => check.name === 'NewsNow' && /original publisher/i.test(check.reason)));
+  const byPlace = new Map();
+  for (const article of update.articles) {
+    const place = `${article.section}|${article.subsection}|${article.country || ''}`;
+    if (!byPlace.has(place)) byPlace.set(place, []);
+    byPlace.get(place).push(article);
+  }
+  for (const [place, articles] of byPlace) if (articles.length > 1) {
+    assert.ok(new Set(articles.map(article => article.sourceId)).size > 1, place);
+  }
   for (const article of update.articles) {
     const published = Date.parse(article.publishedAt);
     assert.ok(published >= start && published <= end, article.title);
     assert.ok(allowed.get(article.section)?.has(article.subsection), article.title);
     if (article.section === 'Miscellaneous') assert.ok(article.country, article.title);
-    if (article.section === 'Lead stories' && article.subsection === 'Ukraine') assert.equal(article.sourceName, 'Reuters');
+    if (article.section === 'Lead stories' && article.subsection === 'Ukraine') assert.ok(['Reuters', 'AP', 'BBC', 'Politico.eu', 'Euronews', 'DW', 'AFP', 'dpa'].includes(article.sourceName), article.title);
   }
   assert.equal(currentDailyUpdate(update, Date.parse('2026-10-11T12:00:00Z')).articles.length, update.articles.length);
 });

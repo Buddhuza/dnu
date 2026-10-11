@@ -67,3 +67,30 @@
 .snapshot-results>p{font-size:var(--site-body-size,18px);color:var(--site-text,#182a36)}
 .snapshot-results .headline-card{margin-top:10px}
 @media(max-width:720px){.brand-text strong{font-size:17px}.brand-text small{font-size:13px}}
+
+/* The report title and site identity stay above the configurable section size. */
+.topbar{min-height:92px;height:auto;padding-top:10px;padding-bottom:10px}
+.brand-mark{width:auto;height:50px;background:none;border-radius:0;flex:none}
+.brand-mark img{display:block;height:50px;width:auto}
+.brand-text strong{font-size:max(32px,calc(var(--section-heading-size,26px) + 6px));line-height:1.04;letter-spacing:.015em}
+.brand-text small{font-size:13px;line-height:1.2}
+.daily-heading h2{font-size:max(34px,calc(var(--section-heading-size,26px) + 8px));line-height:1.15}
+.source-coverage{width:min(100%,var(--update-width,900px));margin:30px auto 0;background:var(--site-surface,#fff);border:1px solid #e2e9e2;border-radius:13px;padding:25px 28px}
+.source-coverage h2{font-size:25px;margin:0 0 12px;color:var(--site-text,#182a36)}
+.coverage-explanation{line-height:1.55;margin:0 0 16px}
+.coverage-counts{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 16px}
+.coverage-counts span{padding:9px 12px;border-radius:8px;background:#edf4f2;font-size:14px}
+.coverage-counts strong{font-size:20px;margin-right:5px}
+.coverage-controls{display:flex;gap:10px;margin-bottom:14px}
+.coverage-controls input,.coverage-controls select{min-width:0;padding:9px 11px;border:1px solid #ccd9d6;border-radius:7px;background:var(--site-surface,#fff);color:var(--site-text,#182a36)}
+.coverage-controls input{flex:1}
+.coverage-list{max-height:520px;overflow:auto;border-top:1px solid #dbe4e1}
+.coverage-row{padding:14px 3px;border-bottom:1px solid #dbe4e1;scroll-margin-top:20px}
+.coverage-row.selected{background:#edf4f2}
+.coverage-row>div{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.coverage-row>div span{font-size:14px;color:var(--site-section,#0070c0)}
+.coverage-row p{margin:6px 0;line-height:1.45}
+.coverage-row a{font-size:13px;color:var(--site-section,#0070c0);overflow-wrap:anywhere}
+.app-shell[data-mode="dark"] .coverage-counts span,.app-shell[data-mode="dark"] .coverage-row.selected{background:#263a43}
+@media(max-width:1100px){.brand-text strong{font-size:max(28px,calc(var(--section-heading-size,26px) + 2px))}.brand-mark,.brand-mark img{height:44px}.live-pill{display:none}}
+@media(max-width:720px){.topbar{flex-wrap:wrap}.brand-mark,.brand-mark img{height:38px}.brand-text strong{font-size:max(27px,calc(var(--section-heading-size,26px) + 1px));letter-spacing:-.05em}.brand-text small{display:block;font-size:10px}.coverage-controls{flex-direction:column}.source-coverage{padding:20px 18px}}
