@@ -34,15 +34,31 @@ test('a 48-hour update keeps articles inside its stated window', () => {
   assert.deepEqual(currentDailyUpdate(snapshot, now).articles.map(item => item.sourceId), ['inside']);
 });
 
-test('prepared 48-hour edition follows the regional placement rules', () => {
-  const update = JSON.parse(readFileSync(new URL('../data/daily-update-2026-10-11.json', import.meta.url), 'utf8'));
-  const checked = Date.parse(update.checkedAt);
+test('a retrospective 36-hour edition stays available after Thursday', () => {
+  const snapshot = {
+    windowHours: 36,
+    windowStart: '2026-10-07T09:59:59Z',
+    windowEnd: '2026-10-08T21:59:59Z',
+    articles: [
+      { publishedAt: '2026-10-08T15:00:00Z' },
+      { publishedAt: '2026-10-09T00:00:00Z' }
+    ],
+    sourceOutcomes: []
+  };
+  assert.equal(currentDailyUpdate(snapshot, Date.parse('2026-10-11T12:00:00Z')).articles.length, 1);
+});
+
+test('prepared Thursday edition covers only its fixed 36-hour window and follows regional placement', () => {
+  const update = JSON.parse(readFileSync(new URL('../data/daily-update-2026-10-08.json', import.meta.url), 'utf8'));
+  const start = Date.parse(update.windowStart);
+  const end = Date.parse(update.windowEnd);
   const allowed = new Map(NEWS_SECTIONS.map(section => [section.id, new Set(section.subsections)]));
-  assert.equal(update.windowHours, 48);
+  assert.equal(update.windowHours, 36);
+  assert.equal(end - start, 36 * 60 * 60 * 1000 - 1000);
   assert.ok(update.articles.length > 0);
   for (const article of update.articles) {
     const published = Date.parse(article.publishedAt);
-    assert.ok(published >= checked - 48 * 60 * 60 * 1000 && published <= checked, article.title);
+    assert.ok(published >= start && published <= end, article.title);
     assert.ok(allowed.get(article.section)?.has(article.subsection), article.title);
     if (article.section === 'Lead stories' && article.subsection === 'Ukraine') assert.equal(article.sourceName, 'Reuters');
   }

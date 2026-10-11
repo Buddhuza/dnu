@@ -10,7 +10,8 @@ function sectionParagraph(value) {
 }
 
 function subsectionParagraph(value) {
-  return `<w:p><w:pPr><w:keepNext/><w:shd w:val="clear" w:color="auto" w:fill="D9E2F3"/><w:spacing w:before="200" w:after="120"/><w:jc w:val="both"/></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:color w:val="0070C0"/><w:sz w:val="24"/>`)}</w:p>`;
+  const plainTopic = ['WESTERN / CENTRAL EUROPE', 'MIDDLE EAST / NORTH AFRICA'].includes(value.toUpperCase());
+  return `<w:p><w:pPr><w:keepNext/>${plainTopic ? '' : '<w:shd w:val="clear" w:color="auto" w:fill="D9E2F3"/>'}<w:spacing w:before="200" w:after="120"/><w:jc w:val="both"/></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:color w:val="0070C0"/><w:sz w:val="24"/>`)}</w:p>`;
 }
 
 function storyParagraph(item, relationshipId) {

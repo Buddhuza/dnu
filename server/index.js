@@ -10,7 +10,7 @@ import { reportFilename } from '../src/reportFilename.js';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const sources = JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'));
 const sourceById = new Map(sources.map(source => [source.id, source]));
-const dailySnapshot = JSON.parse(readFileSync(join(root, 'data/daily-update-2026-10-11.json'), 'utf8'));
+const dailySnapshot = JSON.parse(readFileSync(join(root, 'data/daily-update-2026-10-08.json'), 'utf8'));
 const cache = new Map();
 const articleCache = new Map();
 const app = express();

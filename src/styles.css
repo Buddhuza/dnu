@@ -61,6 +61,7 @@
 .brand-text small{font-size:13px}
 .daily-country{font:800 calc(var(--site-body-size,18px) - 2px)/1.4 var(--site-font,'DM Sans',sans-serif);text-transform:uppercase;letter-spacing:.09em;color:var(--site-section,#0070c0);margin:18px 0 7px}
 .daily-section h4,.daily-country{background:#d9e2f3;color:#0070c0;padding:6px 10px}
+.daily-section h4.plain-topic{background:transparent;color:var(--site-section,#0070c0);padding:0}
 .daily-coverage{margin:28px 0 0}
 .snapshot-results{margin-top:18px}
 .snapshot-results>p{font-size:var(--site-body-size,18px);color:var(--site-text,#182a36)}

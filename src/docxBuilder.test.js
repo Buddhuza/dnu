@@ -15,6 +15,8 @@ test('browser report download creates a readable Word file with country headings
   const zip = await JSZip.loadAsync(output);
   const document = await zip.file('word/document.xml').async('string');
   assert.match(document, /BELGIUM/);
+  assert.doesNotMatch(document.split('WESTERN / CENTRAL EUROPE')[0].split('<w:p>').at(-1), /<w:shd/);
+  assert.match(document.split('BELGIUM')[0].split('<w:p>').at(-1), /<w:shd[^>]*w:fill="D9E2F3"/);
   assert.match(document, /Exact headline/);
   assert.doesNotMatch(document, /COVERAGE NOTE|This coverage note must not appear/);
   assert.match(document, /<w:tblpPr[^>]*w:tblpYSpec="bottom"/);
