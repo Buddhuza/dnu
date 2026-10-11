@@ -80,6 +80,6 @@ test('Internazionale collects its Reuters feed and credits Reuters articles', as
   ] } } };
   const result = normalizeArticles(payload, source, Date.parse('2026-10-11T12:00:00Z'), ['security']);
   assert.equal(result.length, 1);
-  assert.equal(result[0].sourceName, 'Reuters via Internazionale');
+  assert.equal(result[0].sourceName, 'Reuters');
   assert.deepEqual(undatedCandidates(payload, source, ['security'], [], true).map(item => item.url), [result[0].url]);
 });
