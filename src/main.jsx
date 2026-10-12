@@ -51,7 +51,7 @@ function App() {
     const timer = setInterval(refresh, 60_000);
     return () => clearInterval(timer);
   }, []);
-  useEffect(() => { localStorage.setItem('dnu-site-settings-v1', JSON.stringify(siteConfig)); document.title = siteConfig.brandName || 'DNU'; }, [siteConfig]);
+  useEffect(() => { localStorage.setItem('dnu-site-settings-v1', JSON.stringify(siteConfig)); document.title = siteConfig.brandName || 'SITUATION ROOM'; }, [siteConfig]);
   const sources = useMemo(() => displaySources(config?.sources ?? [], siteConfig), [config, siteConfig]);
   const active = sources.find(x => x.id === activeId);
   const websiteSource = sources.find(x => x.id === websiteSourceId);
