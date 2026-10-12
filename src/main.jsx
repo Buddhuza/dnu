@@ -177,7 +177,6 @@ function App() {
         <div className="sidebar-foot"><span className="pulse"/> {sources.length} visible sources</div>
       </aside>}
       <main className={`main-panel ${websiteSource ? 'with-website' : ''}`}>
-        {siteConfig.showHero && <div className="hero"><div><span className="eyebrow">{siteConfig.eyebrow}</span><h1>{siteConfig.heroTitle}<br/><i>{siteConfig.heroAccent}</i></h1><p>{siteConfig.heroDescription}</p></div><div className="hero-art"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="hero-globe">✳</div><span className="art-label">MONITORING<br/>IN PROGRESS</span></div></div>}
         <div className={`reading-layout ${websiteSource ? 'website-open' : ''}`}>
         {siteConfig.showUpdate && <section className={`daily-update ${siteConfig.sectionHeadingUppercase ? 'uppercase-headings' : ''}`} aria-labelledby="daily-update-title">
           <div className="daily-heading"><div><h2 id="daily-update-title">{siteConfig.updateTitle}</h2>{daily?.windowStart && daily?.windowEnd && <p className="report-date">{reportDateLabel(daily.windowStart, daily.windowEnd)}</p>}</div>{daily?.articles?.length > 0 && <button className="daily-download" disabled={!displayedArticles.length} onClick={downloadManagedDocx}>Download report</button>}</div>
