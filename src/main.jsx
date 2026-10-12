@@ -12,8 +12,8 @@ import { reportFilename } from './reportFilename.js';
 import { reportDateLabel } from './reportDate.js';
 import './styles.css';
 
-const readStored = (key, fallback) => {
-  try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
+const readStored = (key, fallback, legacyKey) => {
+  try { return JSON.parse(localStorage.getItem(key) ?? (legacyKey ? localStorage.getItem(legacyKey) : null)) ?? fallback; } catch { return fallback; }
 };
 const words = text => [...new Set(text.split(/[,\n]/).map(x => x.trim()).filter(Boolean))].slice(0, 25);
 const defaultScope = 'security, politics, political, defense, diplomacy, election, conflict, war, terrorism, parliament, government, minister, president, police, military, NATO, Russia, Ukraine, attack, sanctions, protest';
@@ -27,9 +27,9 @@ function App() {
   const [websiteSourceId, setWebsiteSourceId] = useState('');
   const [search, setSearch] = useState('');
   const [group, setGroup] = useState('All sources');
-  const [includeText, setIncludeText] = useState(() => readStored('signal-include', defaultScope));
-  const [excludeText, setExcludeText] = useState(() => readStored('signal-exclude', ''));
-  const [scope, setScope] = useState(() => ({ include: words(readStored('signal-include', defaultScope)), exclude: words(readStored('signal-exclude', '')) }));
+  const [includeText, setIncludeText] = useState(() => readStored('dnu-include', defaultScope, 'signal-include'));
+  const [excludeText, setExcludeText] = useState(() => readStored('dnu-exclude', '', 'signal-exclude'));
+  const [scope, setScope] = useState(() => ({ include: words(readStored('dnu-include', defaultScope, 'signal-include')), exclude: words(readStored('dnu-exclude', '', 'signal-exclude')) }));
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [batchProgress, setBatchProgress] = useState(null);
@@ -38,9 +38,9 @@ function App() {
   const [managing, setManaging] = useState(false);
   const [managerTab, setManagerTab] = useState('Content');
   const [siteConfig, setSiteConfig] = useState(() => {
-    const stored = readStored('signal-site-settings-v1', publishedSiteConfig);
-    const shouldIncrease = !readStored('signal-font-increase-v1', false) && stored.fontSize === 14;
-    localStorage.setItem('signal-font-increase-v1', JSON.stringify(true));
+    const stored = readStored('dnu-site-settings-v1', publishedSiteConfig, 'signal-site-settings-v1');
+    const shouldIncrease = !readStored('dnu-font-increase-v1', false, 'signal-font-increase-v1') && stored.fontSize === 14;
+    localStorage.setItem('dnu-font-increase-v1', JSON.stringify(true));
     return normalizeSiteConfig({ ...stored, fontSize: shouldIncrease ? 18 : stored.fontSize }, preparedUpdate.articles);
   });
 
@@ -51,7 +51,7 @@ function App() {
     const timer = setInterval(refresh, 60_000);
     return () => clearInterval(timer);
   }, []);
-  useEffect(() => { localStorage.setItem('signal-site-settings-v1', JSON.stringify(siteConfig)); document.title = siteConfig.brandName || 'Signal Desk'; }, [siteConfig]);
+  useEffect(() => { localStorage.setItem('dnu-site-settings-v1', JSON.stringify(siteConfig)); document.title = siteConfig.brandName || 'DNU'; }, [siteConfig]);
   const sources = useMemo(() => displaySources(config?.sources ?? [], siteConfig), [config, siteConfig]);
   const active = sources.find(x => x.id === activeId);
   const websiteSource = sources.find(x => x.id === websiteSourceId);
@@ -90,8 +90,8 @@ function App() {
 
   function applyScope() {
     const next = { include: words(includeText), exclude: words(excludeText) };
-    localStorage.setItem('signal-include', JSON.stringify(includeText));
-    localStorage.setItem('signal-exclude', JSON.stringify(excludeText));
+    localStorage.setItem('dnu-include', JSON.stringify(includeText));
+    localStorage.setItem('dnu-exclude', JSON.stringify(excludeText));
     setScope(next);
     setResult(null);
     setError('');

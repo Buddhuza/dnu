@@ -11,7 +11,7 @@ export const DARK_THEME = { name: 'Dark', primary: '#172f3a', accent: '#c6e690',
 
 const defaults = {
   version: 1,
-  brandName: 'SITUATION ROOM',
+  brandName: 'DNU',
   brandTagline: 'NEWS MONITORING WORKSPACE',
   updateTitle: 'DAILY NEWS UPDATE',
   coverageText: '',
@@ -123,7 +123,7 @@ export function normalizeSiteConfig(input, articles = []) {
   });
   return {
     version: 1,
-    brandName: input.brandName === 'SIGNAL DESK' ? base.brandName : clean(input.brandName, base.brandName, 80),
+    brandName: ['SIGNAL DESK', 'SITUATION ROOM'].includes(input.brandName) ? base.brandName : clean(input.brandName, base.brandName, 80),
     brandTagline: clean(input.brandTagline, base.brandTagline, 100),
     updateTitle: /^Daily news update(?:\s*[—,]\s*.+)?$/i.test(input.updateTitle ?? '') ? base.updateTitle : clean(input.updateTitle, base.updateTitle, 100),
     coverageText: clean(input.coverageText, '', 600),

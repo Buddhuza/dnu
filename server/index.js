@@ -118,4 +118,4 @@ if (process.env.NODE_ENV === 'production') app.use(express.static(join(root, 'di
 if (process.env.NODE_ENV === 'production') app.get('*', (_req, res) => res.sendFile(join(root, 'dist', 'index.html')));
 
 const port = Number(process.env.PORT || 3001);
-app.listen(port, '0.0.0.0', () => console.log(`Signal Desk server listening on ${port}`));
+app.listen(port, '0.0.0.0', () => console.log(`DNU server listening on ${port}`));

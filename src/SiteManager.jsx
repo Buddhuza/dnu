@@ -62,7 +62,7 @@ export default function SiteManager({ initialTab = 'Content', collectionPanel, c
   const downloadSettings = () => {
     const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = 'signal-desk-site-settings.json'; a.click();
+    const a = document.createElement('a'); a.href = url; a.download = 'dnu-site-settings.json'; a.click();
     URL.revokeObjectURL(url);
   };
   const importSettings = async event => {
