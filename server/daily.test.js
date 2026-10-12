@@ -75,6 +75,8 @@ test('prepared Monday–Friday edition covers its fixed window and uses country 
   assert.ok(update.articles.length >= 60);
   assert.ok(new Set(update.articles.map(article => article.sourceId)).size >= 25);
   assert.ok(update.articles.some(article => article.group === 'Miscl' && article.section === 'Lead stories'));
+  assert.equal(update.articles.filter(article => article.section === 'Lead stories' && article.subsection === 'Ukraine').length, 4);
+  assert.equal(update.articles.filter(article => article.section === 'Lead stories' && article.subsection === 'Middle East').length, 2);
   assert.ok(new Set(update.articles.filter(article => article.section === 'South Eastern Europe' && article.subsection === 'Bosnia and Herzegovina').map(article => article.sourceId)).size >= 2);
   assert.ok(new Set(update.articles.filter(article => article.section === 'South Caucasus' && article.subsection === 'Georgia').map(article => article.sourceId)).size >= 2);
   assert.ok(update.sourceChecks.some(check => check.name === 'NewsNow' && /original publisher/i.test(check.reason)));

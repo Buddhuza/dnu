@@ -17,7 +17,7 @@ const defaults = {
   heroTitle: 'Find the stories',
   heroAccent: 'that matter.',
   heroDescription: 'Review timely coverage from your trusted sources. Keep the signal, leave the noise.',
-  updateTitle: 'Daily news update — Monday to Friday, 5–9 October 2026',
+  updateTitle: 'DAILY NEWS UPDATE',
   coverageText: '',
   showHero: true,
   showCoverage: true,
@@ -65,7 +65,7 @@ export function normalizeSiteConfig(input, articles = []) {
     const subsections = Array.isArray(item?.subsections)
       ? [...new Set(item.subsections.map(value => clean(value, '', 100).trim()).filter(Boolean))].slice(0, 40)
       : [...(standard?.subsections ?? [])];
-    return [{ id, name: clean(item?.name, id, 80).trim() || id, visible: item?.visible !== false, subsections }];
+    return [{ id, name: clean(item?.name, id, 80).trim() || id, visible: item?.visible !== false, subsections: id === 'Lead stories' ? subsections.map(value => value === 'Middle East / North Africa' ? 'Middle East' : value) : subsections }];
   });
   for (const section of base.sections) if (!seen.has(section.id)) sections.push(section);
   const sectionIds = new Set(sections.map(item => item.id));
@@ -93,7 +93,7 @@ export function normalizeSiteConfig(input, articles = []) {
       articleEdits[id] = {
         title: clean(edit.title, '', 400),
         summary: clean(edit.summary, '', 1200),
-        subsection: legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : clean(edit.subsection, '', 100),
+        subsection: legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : edit.sectionId === 'Lead stories' && edit.subsection === 'Middle East / North Africa' ? 'Middle East' : clean(edit.subsection, '', 100),
         country: clean(edit.country, '', 100),
         sectionId: legacyOrganisations ? 'Miscellaneous' : sectionIds.has(edit.sectionId) ? edit.sectionId : '',
         hidden: edit.hidden === true
@@ -111,7 +111,7 @@ export function normalizeSiteConfig(input, articles = []) {
       title, summary: clean(item.summary, '', 1200),
       publishedAt: Number.isFinite(Date.parse(item.publishedAt)) ? new Date(item.publishedAt).toISOString() : new Date().toISOString(),
       sectionId: legacyOrganisations ? 'Miscellaneous' : sectionIds.has(item.sectionId) ? item.sectionId : sections[0]?.id || 'Miscellaneous',
-      subsection: legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : clean(item.subsection, '', 100),
+      subsection: legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : item.sectionId === 'Lead stories' && item.subsection === 'Middle East / North Africa' ? 'Middle East' : clean(item.subsection, '', 100),
       country: clean(item.country, '', 100),
       hidden: item.hidden === true, reviewed: true
     }];
@@ -134,7 +134,7 @@ export function normalizeSiteConfig(input, articles = []) {
     heroTitle: clean(input.heroTitle, base.heroTitle, 100),
     heroAccent: clean(input.heroAccent, base.heroAccent, 100),
     heroDescription: clean(input.heroDescription, base.heroDescription, 400),
-    updateTitle: ['Daily news update — 48 hours', 'Daily news update — Thursday, 8 October 2026'].includes(input.updateTitle) ? base.updateTitle : clean(input.updateTitle, base.updateTitle, 100),
+    updateTitle: /^Daily news update(?:\s*[—,]\s*.+)?$/i.test(input.updateTitle ?? '') ? base.updateTitle : clean(input.updateTitle, base.updateTitle, 100),
     coverageText: clean(input.coverageText, '', 600),
     showHero: input.showHero !== false,
     showCoverage: input.showCoverage !== false,

@@ -1,4 +1,5 @@
 import JSZip from 'jszip';
+import { reportDateLabel } from './reportDate.js';
 
 const escapeXml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[char]);
 const textRun = (value, properties = '') => `<w:r><w:rPr>${properties}</w:rPr><w:t xml:space="preserve">${escapeXml(value)}</w:t></w:r>`;
@@ -18,6 +19,10 @@ function storyParagraph(item, relationshipId) {
 
 function noteParagraph(value) {
   return `<w:p><w:pPr><w:spacing w:after="120"/><w:jc w:val="both"/></w:pPr>${textRun(value, `${calibri}<w:color w:val="595959"/>`)}</w:p>`;
+}
+
+function reportDateParagraph(value) {
+  return `<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="80" w:after="180"/></w:pPr>${textRun(value, `${calibri}<w:sz w:val="24"/>`)}</w:p>`;
 }
 
 const disclaimerFirst = 'This product is based on open media sources only and the material used is not always fully validated. Items selected are abridged from the original or are "verbatim". All views, opinions and accounts contained herein are those of the original authors, and do not imply official endorsement or acceptance by the OSCE.';
@@ -42,11 +47,13 @@ function sourceListParagraphs(items) {
   return [...groups].map(([group, names]) => noteParagraph(`${group.toUpperCase()}: ${names.join('; ')}.`));
 }
 
-const defaultTitle = () => `DAILY NEWS UPDATE, ${new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Vienna' }).format(new Date())}`;
+const defaultTitle = () => 'DAILY NEWS UPDATE';
 
-export async function createReportDocxFromTemplate(templateBytes, { title, articles, sourceOutcomes = [] }) {
+export async function createReportDocxFromTemplate(templateBytes, { title, windowStart, windowEnd, articles, sourceOutcomes = [] }) {
   const zip = await JSZip.loadAsync(templateBytes);
   const paragraphs = [];
+  const reportDate = reportDateLabel(windowStart, windowEnd);
+  if (reportDate) paragraphs.push(reportDateParagraph(reportDate));
   const relationships = [];
   let currentSection = '', currentSubsection = '', currentCountry = '';
   for (const [index, item] of articles.entries()) {

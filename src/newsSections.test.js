@@ -6,7 +6,7 @@ test('news section taxonomy places organisations under Miscellaneous', () => {
   assert.deepEqual(NEWS_SECTIONS.map(section => section.id), [
     'Lead stories', 'South Eastern Europe', 'Eastern Europe', 'South Caucasus', 'Central Asia', 'Miscellaneous'
   ]);
-  assert.deepEqual(NEWS_SECTIONS[0].subsections, ['Ukraine', 'Middle East / North Africa']);
+  assert.deepEqual(NEWS_SECTIONS[0].subsections, ['Ukraine', 'Middle East']);
   assert.ok(NEWS_SECTIONS.at(-1).subsections.includes('INTERNATIONAL ORGANISATIONS'));
   assert.ok(NEWS_SECTIONS[1].subsections.includes('Serbia / Kosovo'));
   assert.ok(NEWS_SECTIONS[2].subsections.includes('Moldova / Transdniestria'));

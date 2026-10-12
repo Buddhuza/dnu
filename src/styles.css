@@ -108,3 +108,4 @@
 .website-panel p{font-size:13px;line-height:1.45;color:var(--site-text);opacity:.7}
 .website-panel iframe{width:100%;height:min(75vh,950px);border:1px solid #dbe4e1;border-radius:6px;background:#fff}
 @media(max-width:1250px){.reading-layout.website-open{grid-template-columns:1fr}.website-panel{position:static}}
+.daily-heading .report-date{font-size:var(--site-body-size,18px);line-height:1.5;color:var(--site-text,#182a36);margin:5px 0 0}

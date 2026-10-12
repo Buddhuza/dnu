@@ -1,23 +1,10 @@
 {
-  "title": "Daily news update — Monday to Friday, 5–9 October 2026",
+  "title": "DAILY NEWS UPDATE",
   "checkedAt": "2026-10-11T20:34:32.013573Z",
   "windowHours": 120,
   "windowStart": "2026-10-04T22:00:00Z",
   "windowEnd": "2026-10-09T21:59:59Z",
   "articles": [
-    {
-      "id": "https://www.reuters.com/world/europe/russian-attack-kills-five-ukraines-kharkiv-shatters-residences-2026-10-05/",
-      "url": "https://www.reuters.com/world/europe/russian-attack-kills-five-ukraines-kharkiv-shatters-residences-2026-10-05/",
-      "title": "Russian attack kills 6 in Ukraine's Kharkiv, shatters residences",
-      "summary": "Regional authorities said nearly 60 people were injured after three bombs struck different areas of Kharkiv.",
-      "publishedAt": "2026-10-05T17:00:43.045Z",
-      "sourceId": "source-153",
-      "sourceName": "Reuters",
-      "group": "Miscl",
-      "section": "Lead stories",
-      "subsection": "Ukraine",
-      "reviewed": true
-    },
     {
       "id": "https://www.reuters.com/world/europe/russia-says-it-launched-massive-strikes-kyiv-other-areas-ukraine-2026-10-07/",
       "url": "https://www.reuters.com/world/europe/russia-says-it-launched-massive-strikes-kyiv-other-areas-ukraine-2026-10-07/",
@@ -26,19 +13,6 @@
       "publishedAt": "2026-10-07T05:17:39.927Z",
       "sourceId": "source-153",
       "sourceName": "Reuters",
-      "group": "Miscl",
-      "section": "Lead stories",
-      "subsection": "Ukraine",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.politico.eu/article/russia-ukraine-attacks-vladimir-putin-birthday/",
-      "url": "https://www.politico.eu/article/russia-ukraine-attacks-vladimir-putin-birthday/",
-      "title": "Russia hits Ukraine with wave of attacks on Putin’s birthday",
-      "summary": "Officials reported five people killed and 26 injured after a residential building was hit in Pryluky.",
-      "publishedAt": "2026-10-07T09:34:34+00:00",
-      "sourceId": "source-81",
-      "sourceName": "Politico.eu",
       "group": "Miscl",
       "section": "Lead stories",
       "subsection": "Ukraine",
@@ -84,32 +58,6 @@
       "reviewed": true
     },
     {
-      "id": "https://apnews.com/article/russia-ukraine-war-drone-missile-strikes-2c6c8b081e8e316c83af17a39bce7fe5",
-      "url": "https://apnews.com/article/russia-ukraine-war-drone-missile-strikes-2c6c8b081e8e316c83af17a39bce7fe5",
-      "title": "Russian strikes across Ukraine kill 3 people as Kyiv struggles to counter escalating attacks",
-      "summary": "The latest deaths followed bombardments that had killed more than 50 people across the country over the previous three days.",
-      "publishedAt": "2026-10-09T09:24:21Z",
-      "sourceId": "source-85",
-      "sourceName": "AP",
-      "group": "Miscl",
-      "section": "Lead stories",
-      "subsection": "Ukraine",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.reuters.com/world/middle-east/yemens-houthis-say-they-attacked-riyadh-airport-with-ballistic-missile-2026-10-08/",
-      "url": "https://www.reuters.com/world/middle-east/yemens-houthis-say-they-attacked-riyadh-airport-with-ballistic-missile-2026-10-08/",
-      "title": "Yemen's Houthis say they attacked Riyadh airport with ballistic missile",
-      "summary": "Saudi Arabia had reported that an earlier attack on the same airport killed one person but had not confirmed the new Houthi claim.",
-      "publishedAt": "2026-10-08T03:03:44.662000Z",
-      "sourceId": "source-153",
-      "sourceName": "Reuters",
-      "group": "Miscl",
-      "section": "Lead stories",
-      "subsection": "Middle East / North Africa",
-      "reviewed": true
-    },
-    {
       "id": "https://www.reuters.com/business/energy/hormuz-transits-lowest-over-two-months-after-attacks-data-shows-2026-10-08/",
       "url": "https://www.reuters.com/business/energy/hormuz-transits-lowest-over-two-months-after-attacks-data-shows-2026-10-08/",
       "title": "Hormuz transits at lowest in over two months after attacks, data shows",
@@ -119,72 +67,7 @@
       "sourceName": "Reuters",
       "group": "Miscl",
       "section": "Lead stories",
-      "subsection": "Middle East / North Africa",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.bbc.com/news/articles/cqlydk7796wdo",
-      "url": "https://www.bbc.com/news/articles/cqlydk7796wdo",
-      "title": "Tanker hit by multiple projectiles in Gulf off Qatar, maritime agency says",
-      "summary": "The Antigua and Barbuda-flagged tanker was hit north of Qatar, and maritime monitors reported casualties.",
-      "publishedAt": "2026-10-08T10:07:58.474Z",
-      "sourceId": "source-83",
-      "sourceName": "BBC",
-      "group": "Miscl",
-      "section": "Lead stories",
-      "subsection": "Middle East / North Africa",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.reuters.com/world/asia-pacific/attack-risks-rise-tankers-iran-vows-block-more-hormuz-routes-2026-10-08/",
-      "url": "https://www.reuters.com/world/asia-pacific/attack-risks-rise-tankers-iran-vows-block-more-hormuz-routes-2026-10-08/",
-      "title": "Attack risks rise for tankers as Iran vows to block more Hormuz routes",
-      "summary": "Iran warned it would block shipping routes it had not authorised after the heaviest week of tanker attacks since the war began.",
-      "publishedAt": "2026-10-08T13:17:47.558000Z",
-      "sourceId": "source-153",
-      "sourceName": "Reuters",
-      "group": "Miscl",
-      "section": "Lead stories",
-      "subsection": "Middle East / North Africa",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.aljazeera.com/news/2026/10/9/trump-says-us-will-not-strike-iran-before-midterm-elections",
-      "url": "https://www.aljazeera.com/news/2026/10/9/trump-says-us-will-not-strike-iran-before-midterm-elections",
-      "title": "Trump says US will not strike Iran before midterm elections",
-      "summary": "Trump said US officials were having productive discussions with Iran and referred to the 3 November elections.",
-      "publishedAt": "2026-10-09T06:22:07Z",
-      "sourceId": "source-122",
-      "sourceName": "Al Jazeera",
-      "group": "Miscl",
-      "section": "Lead stories",
-      "subsection": "Middle East / North Africa",
-      "reviewed": true
-    },
-    {
-      "id": "https://apnews.com/article/saudi-airport-attack-houthis-5226e214e7c50ceff68915379ec3a714",
-      "url": "https://apnews.com/article/saudi-airport-attack-houthis-5226e214e7c50ceff68915379ec3a714",
-      "title": "Saudi authorities say 3 killed in Houthi-claimed attacks on Riyadh airport",
-      "summary": "A Saudi aviation official said a pilot was among those killed and several other people were wounded.",
-      "publishedAt": "2026-10-09T07:47:32Z",
-      "sourceId": "source-85",
-      "sourceName": "AP",
-      "group": "Miscl",
-      "section": "Lead stories",
-      "subsection": "Middle East / North Africa",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.reuters.com/world/middle-east/vessel-struck-by-unknown-projectile-off-uae-coast-amid-surge-attacks-ukmto-says-2026-10-09/",
-      "url": "https://www.reuters.com/world/middle-east/vessel-struck-by-unknown-projectile-off-uae-coast-amid-surge-attacks-ukmto-says-2026-10-09/",
-      "title": "Vessel struck by unknown projectile off UAE coast amid surge in attacks, UKMTO says",
-      "summary": "The strike caused a fire that was extinguished, while authorities investigated the condition of the crew and the damage.",
-      "publishedAt": "2026-10-09T14:30:36.437Z",
-      "sourceId": "source-153",
-      "sourceName": "Reuters",
-      "group": "Miscl",
-      "section": "Lead stories",
-      "subsection": "Middle East / North Africa",
+      "subsection": "Middle East",
       "reviewed": true
     },
     {
@@ -197,7 +80,7 @@
       "sourceName": "Euronews",
       "group": "Miscl",
       "section": "Lead stories",
-      "subsection": "Middle East / North Africa",
+      "subsection": "Middle East",
       "reviewed": true
     },
     {
@@ -289,6 +172,45 @@
       "group": "South Eastern Europe",
       "section": "South Eastern Europe",
       "subsection": "Serbia / Kosovo",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.reuters.com/world/europe/russian-attack-kills-five-ukraines-kharkiv-shatters-residences-2026-10-05/",
+      "url": "https://www.reuters.com/world/europe/russian-attack-kills-five-ukraines-kharkiv-shatters-residences-2026-10-05/",
+      "title": "Russian attack kills 6 in Ukraine's Kharkiv, shatters residences",
+      "summary": "Regional authorities said nearly 60 people were injured after three bombs struck different areas of Kharkiv.",
+      "publishedAt": "2026-10-05T17:00:43.045Z",
+      "sourceId": "source-153",
+      "sourceName": "Reuters",
+      "group": "Miscl",
+      "section": "Eastern Europe",
+      "subsection": "Ukraine",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.politico.eu/article/russia-ukraine-attacks-vladimir-putin-birthday/",
+      "url": "https://www.politico.eu/article/russia-ukraine-attacks-vladimir-putin-birthday/",
+      "title": "Russia hits Ukraine with wave of attacks on Putin’s birthday",
+      "summary": "Officials reported five people killed and 26 injured after a residential building was hit in Pryluky.",
+      "publishedAt": "2026-10-07T09:34:34+00:00",
+      "sourceId": "source-81",
+      "sourceName": "Politico.eu",
+      "group": "Miscl",
+      "section": "Eastern Europe",
+      "subsection": "Ukraine",
+      "reviewed": true
+    },
+    {
+      "id": "https://apnews.com/article/russia-ukraine-war-drone-missile-strikes-2c6c8b081e8e316c83af17a39bce7fe5",
+      "url": "https://apnews.com/article/russia-ukraine-war-drone-missile-strikes-2c6c8b081e8e316c83af17a39bce7fe5",
+      "title": "Russian strikes across Ukraine kill 3 people as Kyiv struggles to counter escalating attacks",
+      "summary": "The latest deaths followed bombardments that had killed more than 50 people across the country over the previous three days.",
+      "publishedAt": "2026-10-09T09:24:21Z",
+      "sourceId": "source-85",
+      "sourceName": "AP",
+      "group": "Miscl",
+      "section": "Eastern Europe",
+      "subsection": "Ukraine",
       "reviewed": true
     },
     {
@@ -705,6 +627,34 @@
       "reviewed": true
     },
     {
+      "id": "https://www.reuters.com/world/asia-pacific/attack-risks-rise-tankers-iran-vows-block-more-hormuz-routes-2026-10-08/",
+      "url": "https://www.reuters.com/world/asia-pacific/attack-risks-rise-tankers-iran-vows-block-more-hormuz-routes-2026-10-08/",
+      "title": "Attack risks rise for tankers as Iran vows to block more Hormuz routes",
+      "summary": "Iran warned it would block shipping routes it had not authorised after the heaviest week of tanker attacks since the war began.",
+      "publishedAt": "2026-10-08T13:17:47.558000Z",
+      "sourceId": "source-153",
+      "sourceName": "Reuters",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "reviewed": true,
+      "country": "Iran"
+    },
+    {
+      "id": "https://www.aljazeera.com/news/2026/10/9/trump-says-us-will-not-strike-iran-before-midterm-elections",
+      "url": "https://www.aljazeera.com/news/2026/10/9/trump-says-us-will-not-strike-iran-before-midterm-elections",
+      "title": "Trump says US will not strike Iran before midterm elections",
+      "summary": "Trump said US officials were having productive discussions with Iran and referred to the 3 November elections.",
+      "publishedAt": "2026-10-09T06:22:07Z",
+      "sourceId": "source-122",
+      "sourceName": "Al Jazeera",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "reviewed": true,
+      "country": "Iran"
+    },
+    {
       "id": "https://www.reuters.com/world/middle-east/us-imposes-fresh-iran-related-sanctions-2026-10-08/",
       "url": "https://www.reuters.com/world/middle-east/us-imposes-fresh-iran-related-sanctions-2026-10-08/",
       "title": "US imposes fresh sanctions on Iran's shadow fleet",
@@ -761,6 +711,48 @@
       "reviewed": true
     },
     {
+      "id": "https://www.bbc.com/news/articles/cqlydk7796wdo",
+      "url": "https://www.bbc.com/news/articles/cqlydk7796wdo",
+      "title": "Tanker hit by multiple projectiles in Gulf off Qatar, maritime agency says",
+      "summary": "The Antigua and Barbuda-flagged tanker was hit north of Qatar, and maritime monitors reported casualties.",
+      "publishedAt": "2026-10-08T10:07:58.474Z",
+      "sourceId": "source-83",
+      "sourceName": "BBC",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "reviewed": true,
+      "country": "Qatar"
+    },
+    {
+      "id": "https://www.reuters.com/world/middle-east/yemens-houthis-say-they-attacked-riyadh-airport-with-ballistic-missile-2026-10-08/",
+      "url": "https://www.reuters.com/world/middle-east/yemens-houthis-say-they-attacked-riyadh-airport-with-ballistic-missile-2026-10-08/",
+      "title": "Yemen's Houthis say they attacked Riyadh airport with ballistic missile",
+      "summary": "Saudi Arabia had reported that an earlier attack on the same airport killed one person but had not confirmed the new Houthi claim.",
+      "publishedAt": "2026-10-08T03:03:44.662000Z",
+      "sourceId": "source-153",
+      "sourceName": "Reuters",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "reviewed": true,
+      "country": "Saudi Arabia"
+    },
+    {
+      "id": "https://apnews.com/article/saudi-airport-attack-houthis-5226e214e7c50ceff68915379ec3a714",
+      "url": "https://apnews.com/article/saudi-airport-attack-houthis-5226e214e7c50ceff68915379ec3a714",
+      "title": "Saudi authorities say 3 killed in Houthi-claimed attacks on Riyadh airport",
+      "summary": "A Saudi aviation official said a pilot was among those killed and several other people were wounded.",
+      "publishedAt": "2026-10-09T07:47:32Z",
+      "sourceId": "source-85",
+      "sourceName": "AP",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "reviewed": true,
+      "country": "Saudi Arabia"
+    },
+    {
       "id": "https://www.reuters.com/world/middle-east/syria-weighs-military-aid-saudi-arabia-amid-yemen-war-sources-say-2026-10-07/",
       "url": "https://www.reuters.com/world/middle-east/syria-weighs-military-aid-saudi-arabia-amid-yemen-war-sources-say-2026-10-07/",
       "title": "Syria weighs military aid for Saudi Arabia amid Yemen war, sources say",
@@ -787,6 +779,20 @@
       "subsection": "MIDDLE EAST / NORTH AFRICA",
       "country": "Türkiye",
       "reviewed": true
+    },
+    {
+      "id": "https://www.reuters.com/world/middle-east/vessel-struck-by-unknown-projectile-off-uae-coast-amid-surge-attacks-ukmto-says-2026-10-09/",
+      "url": "https://www.reuters.com/world/middle-east/vessel-struck-by-unknown-projectile-off-uae-coast-amid-surge-attacks-ukmto-says-2026-10-09/",
+      "title": "Vessel struck by unknown projectile off UAE coast amid surge in attacks, UKMTO says",
+      "summary": "The strike caused a fire that was extinguished, while authorities investigated the condition of the crew and the damage.",
+      "publishedAt": "2026-10-09T14:30:36.437Z",
+      "sourceId": "source-153",
+      "sourceName": "Reuters",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "reviewed": true,
+      "country": "United Arab Emirates"
     },
     {
       "id": "https://www.aljazeera.com/news/2026/10/9/un-envoy-warns-yemen-has-returned-to-full-scale-war-urges-dialogue",

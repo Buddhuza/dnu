@@ -6,7 +6,7 @@
   "heroTitle": "Find the stories",
   "heroAccent": "that matter.",
   "heroDescription": "Review timely coverage from your trusted sources. Keep the signal, leave the noise.",
-  "updateTitle": "Daily news update — Monday to Friday, 5–9 October 2026",
+  "updateTitle": "DAILY NEWS UPDATE",
   "coverageText": "",
   "showHero": true,
   "showCoverage": true,
@@ -46,7 +46,7 @@
       "visible": true,
       "subsections": [
         "Ukraine",
-        "Middle East / North Africa"
+        "Middle East"
       ]
     },
     {
