@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { normalizeArticles, scrapeHeadlines, undatedCandidates, reviewedArticle, customSourceFromRequest } from './news.js';
+import { normalizeArticles, scrapeHeadlines, undatedCandidates, reviewedArticle, customSourceFromRequest, DEFAULT_INCLUDE } from './news.js';
 
 const source = { id: 'source-1', name: 'Test News', group: 'Test', url: 'https://example.com/news/' };
 const now = Date.parse('2026-10-09T12:00:00Z');
@@ -46,6 +46,20 @@ test('undated matching links can be checked on their original article pages', ()
   assert.equal(verified.publishedAt, '2026-10-09T10:00:00.000Z');
   assert.equal(verified.summary, 'The ministers agreed to meet again.');
   assert.equal(reviewedArticle({ data: { metadata: { publishedTime: '2026-10-07T10:00:00Z', ogTitle: 'Old story' } } }, source, candidates[0].url, now), null);
+});
+
+test('publisher article timestamps are taken from TASS and Izvestia pages', () => {
+  const tass = { id: 'tass', name: 'TASS', url: 'https://tass.com/politics', group: 'Miscl' };
+  const tassUrl = 'https://tass.com/politics/2201383';
+  const tassPage = { data: { html: '<dateformat time="1791890077" mode="abs"></dateformat>', metadata: { ogTitle: 'Russia to cooperate with ASEAN on marine security — Lavrov' } } };
+  assert.equal(reviewedArticle(tassPage, tass, tassUrl, Date.parse('2026-10-13T12:00:00Z')).publishedAt, '2026-10-13T11:14:37.000Z');
+  assert.equal(reviewedArticle(tassPage, tass, tassUrl, Date.parse('2026-10-13T11:00:00Z')), null);
+
+  const izvestia = { id: 'izvestia', name: 'Izvestia', url: 'https://iz.ru/rubric/mir', group: 'Miscl' };
+  const izvestiaUrl = 'https://iz.ru/2183304/v-frg-zaderzhali-tretego-podozrevaemogo-v-podzhoge-shliuza-starlink-v-polshe-izi';
+  const izvestiaPage = { data: { html: '<div itemprop="datePublished">2026-10-13T12:59:04+03:00</div>', metadata: { ogTitle: 'В ФРГ задержали третьего подозреваемого в поджоге шлюза Starlink в Польше' } } };
+  assert.equal(reviewedArticle(izvestiaPage, izvestia, izvestiaUrl, Date.parse('2026-10-13T12:00:00Z')).publishedAt, '2026-10-13T09:59:04.000Z');
+  assert.deepEqual(undatedCandidates({ data: { json: { articles: [{ title: 'В ФРГ задержали третьего подозреваемого', url: izvestiaUrl }] } } }, izvestia, DEFAULT_INCLUDE).map(item => item.url), [izvestiaUrl]);
 });
 
 test('manual source accepts a public HTTPS news site and rejects local targets', () => {

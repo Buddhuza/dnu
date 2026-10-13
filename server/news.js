@@ -1,4 +1,4 @@
-export const DEFAULT_INCLUDE = ['security', 'politics', 'political', 'defense', 'diplomacy', 'election', 'conflict', 'war', 'terrorism', 'parliament', 'government', 'minister', 'president', 'police', 'military', 'NATO', 'Russia', 'Ukraine', 'attack', 'sanctions', 'protest'];
+export const DEFAULT_INCLUDE = ['security', 'politics', 'political', 'defense', 'diplomacy', 'election', 'conflict', 'war', 'terrorism', 'parliament', 'government', 'minister', 'president', 'police', 'military', 'NATO', 'Russia', 'Ukraine', 'attack', 'sanctions', 'protest', 'полит', 'воен', 'войн', 'террор', 'санкц', 'росси', 'украин', 'атак', 'задерж'];
 export const DEFAULT_EXCLUDE = [];
 
 let nextFirecrawlSlot = 0;
@@ -32,7 +32,7 @@ async function firecrawlPost(payload, apiKey, fetchImpl = fetch) {
 
 export function parseWords(value) {
   if (!Array.isArray(value)) return [];
-  return [...new Set(value.map(v => String(v).trim()).filter(Boolean))].slice(0, 25).map(v => v.slice(0, 60));
+  return [...new Set(value.map(v => String(v).trim()).filter(Boolean))].slice(0, 40).map(v => v.slice(0, 60));
 }
 
 export function customSourceFromRequest(value) {
@@ -120,7 +120,10 @@ export function undatedCandidates(payload, source, include = DEFAULT_INCLUDE, ex
 export function reviewedArticle(payload, source, url, now = Date.now()) {
   const data = payload?.data ?? {};
   const extracted = typeof data.json === 'string' ? JSON.parse(data.json) : data.json ?? {};
-  const publishedAt = data.metadata?.publishedTime ?? data.metadata?.['article:published_time'] ?? extracted.publishedAt;
+  const html = data.html ?? '';
+  const tassTime = new URL(url).hostname === 'tass.com' ? html.match(/<dateformat\s+time="(\d{10})"\s+mode="abs"/)?.[1] : null;
+  const izvestiaTime = new URL(url).hostname === 'iz.ru' ? html.match(/itemprop="datePublished">([^<]+)/)?.[1] : null;
+  const publishedAt = data.metadata?.publishedTime ?? data.metadata?.['article:published_time'] ?? izvestiaTime ?? (tassTime ? new Date(Number(tassTime) * 1000).toISOString() : null) ?? extracted.publishedAt;
   if (!publishedAt || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})$/i.test(publishedAt)) return null;
   const time = Date.parse(publishedAt);
   if (!Number.isFinite(time) || time < now - 48 * 60 * 60 * 1000 || time > now + 300000) return null;
@@ -137,5 +140,5 @@ export async function scrapeHeadlines(source, include, apiKey, fetchImpl = fetch
 
 export async function scrapeArticle(url, apiKey, fetchImpl = fetch) {
   const prompt = 'Read the original news article. Return an object with exactHeadline copied verbatim from the article and publishedAt as an ISO 8601 timestamp with timezone only if explicitly available. Do not invent or rewrite the headline or publication time.';
-  return firecrawlPost({ url, formats: ['markdown', { type: 'json', prompt }], onlyMainContent: true, timeout: 30000 }, apiKey, fetchImpl);
+  return firecrawlPost({ url, formats: ['markdown', 'html', { type: 'json', prompt }], onlyMainContent: true, timeout: 30000 }, apiKey, fetchImpl);
 }

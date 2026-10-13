@@ -1,6 +1,6 @@
 {
   "title": "DAILY NEWS UPDATE",
-  "checkedAt": "2026-10-13T19:21:58.060Z",
+  "checkedAt": "2026-10-13T19:29:10.549Z",
   "windowHours": 24,
   "windowStart": "2026-10-12T11:39:25.563Z",
   "windowEnd": "2026-10-13T11:39:25.563Z",
@@ -761,6 +761,19 @@
       "reviewed": true
     },
     {
+      "id": "https://iz.ru/2183304/v-frg-zaderzhali-tretego-podozrevaemogo-v-podzhoge-shliuza-starlink-v-polshe-izi",
+      "url": "https://iz.ru/2183304/v-frg-zaderzhali-tretego-podozrevaemogo-v-podzhoge-shliuza-starlink-v-polshe-izi",
+      "title": "В ФРГ задержали третьего подозреваемого в поджоге шлюза Starlink в Польше",
+      "publishedAt": "2026-10-13T09:59:04.000Z",
+      "sourceId": "source-98",
+      "sourceName": "Izvestia",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Germany",
+      "reviewed": true
+    },
+    {
       "id": "https://www.tovima.com/world/turkish-nationalist-leader-warns-greece-over-arms-buildup/",
       "url": "https://www.tovima.com/world/turkish-nationalist-leader-warns-greece-over-arms-buildup/",
       "title": "Turkish Nationalist Leader Warns Greece Over Arms Buildup",
@@ -1106,6 +1119,45 @@
       "publishedAt": "2026-10-13T09:57:00.000Z",
       "sourceId": "source-115",
       "sourceName": "Moscow Times",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "RUSSIA / EURASIA",
+      "country": "Russia",
+      "reviewed": true
+    },
+    {
+      "id": "https://tass.com/society/2201279",
+      "url": "https://tass.com/society/2201279",
+      "title": "IN BRIEF: FSB foils drone attack on military airfield in Voronezh Region",
+      "publishedAt": "2026-10-13T09:19:34.000Z",
+      "sourceId": "source-97",
+      "sourceName": "TASS",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "RUSSIA / EURASIA",
+      "country": "Russia",
+      "reviewed": true
+    },
+    {
+      "id": "https://tass.com/politics/2201199",
+      "url": "https://tass.com/politics/2201199",
+      "title": "Over 400 drones head toward Moscow Region overnight — mayor",
+      "publishedAt": "2026-10-13T04:56:37.000Z",
+      "sourceId": "source-97",
+      "sourceName": "TASS",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "RUSSIA / EURASIA",
+      "country": "Russia",
+      "reviewed": true
+    },
+    {
+      "id": "https://tass.com/politics/2201383",
+      "url": "https://tass.com/politics/2201383",
+      "title": "Russia to cooperate with ASEAN on marine security — Lavrov",
+      "publishedAt": "2026-10-13T11:14:37.000Z",
+      "sourceId": "source-97",
+      "sourceName": "TASS",
       "group": "Miscl",
       "section": "Miscellaneous",
       "subsection": "RUSSIA / EURASIA",
@@ -2083,16 +2135,16 @@
       "name": "TASS",
       "group": "Miscl",
       "url": "https://tass.com/politics",
-      "status": "sampled",
-      "reason": "50 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
+      "status": "collected",
+      "reason": "3 articles selected after checking publication details on the original article pages."
     },
     {
       "id": "source-98",
       "name": "Izvestia",
       "group": "Miscl",
-      "url": "https://en.iz.ru/en/feed",
-      "status": "failed",
-      "reason": "Listing-page fetch failed (HTTP 403)."
+      "url": "https://iz.ru/rubric/mir",
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-99",
