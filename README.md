@@ -2,7 +2,7 @@
 
 A local news review app for the 173 outlets in `sources.json` (transcribed from the supplied `agencies_updated.txt`). Choose a source, collect its headlines from a publisher feed where available or Firecrawl otherwise, and refine the results with included and excluded phrases. The prepared news stream can be edited and exported as a Word update.
 
-The homepage opens with a retrospective **Daily news update** for Monday to Friday, 5–9 October 2026. Its fixed coverage window runs from Monday at 00:00 to Friday at 23:59 in Vienna time. The 68 selected stories from 33 outlets have dates on their original article pages within that window. Read them in a single stream or download a Word report. The snapshot in `data/daily-update-2026-10-05-09.json` is a selected roundup, not an automatically refreshed or exhaustive feed. The previous 29-story version was a limited editorial selection from six outlets; it was not a full five-day crawl.
+The homepage opens with a **Daily news update** covering the 24 hours from 12 October 2026 at 13:39 to 13 October 2026 at 13:39 (Vienna time). It contains 30 selected headlines from 11 outlets, linked to their original articles. Read them in a single stream or download a Word report. The snapshot in `data/daily-update-2026-10-13.json` is a selected roundup, not an automatically refreshed or exhaustive feed. Earlier editions remain in `data/`.
 
 For a quick preview that does not clone or install the project, open the [static GitHub Pages preview](https://buddhuza.github.io/dnu/). It displays the prepared update, supports content management, and exports a customised Word update. Live collection requires the full server app below.
 

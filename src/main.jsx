@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import preparedUpdate from '../data/daily-update-2026-10-05-09.json';
+import preparedUpdate from '../data/daily-update-2026-10-13.json';
 import preparedSources from '../sources.json';
 import publishedSiteConfig from '../data/site-config.json';
 import SiteManager from './SiteManager.jsx';
@@ -17,7 +17,7 @@ const readStored = (key, fallback, legacyKey) => {
 };
 const words = text => [...new Set(text.split(/[,\n]/).map(x => x.trim()).filter(Boolean))].slice(0, 25);
 const defaultScope = 'security, politics, political, defense, diplomacy, election, conflict, war, terrorism, parliament, government, minister, president, police, military, NATO, Russia, Ukraine, attack, sanctions, protest';
-const dateLabel = iso => new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
+const dateLabel = iso => new Intl.DateTimeFormat(undefined, { timeZone: 'Europe/Vienna', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
 
 function App() {
   const [config, setConfig] = useState(null);
@@ -84,7 +84,7 @@ function App() {
       subsections: orderedSubsections(siteConfig.sections.find(item => item.name === section), subsections.keys()).map(label => [label, subsections.get(label)])
     }));
   }, [displayedArticles, siteConfig.sections]);
-  const blockedDailySources = daily?.sourceOutcomes?.filter(x => /failed|unreadable|could not be fetched|not verified/i.test(x.status)) ?? [];
+  const blockedDailySources = daily?.sourceOutcomes?.filter(x => /failed|unreadable|could not be fetched|no verified/i.test(x.status)) ?? [];
   const selectedSourceStories = displayedArticles.filter(item => item.sourceId === activeId);
   const sourceRequest = source => ({ sourceId: source.id, ...(source.id.startsWith('manual-source-') ? { customSource: source } : {}), ...scope });
 
@@ -180,7 +180,7 @@ function App() {
         <div className={`reading-layout ${websiteSource ? 'website-open' : ''}`}>
         {siteConfig.showUpdate && <section className={`daily-update ${siteConfig.sectionHeadingUppercase ? 'uppercase-headings' : ''}`} aria-labelledby="daily-update-title">
           <div className="daily-heading"><div><h2 id="daily-update-title">{siteConfig.updateTitle}</h2>{daily?.windowStart && daily?.windowEnd && <p className="report-date">{reportDateLabel(daily.windowStart, daily.windowEnd)}</p>}</div>{daily?.articles?.length > 0 && <button className="daily-download" disabled={!displayedArticles.length} onClick={downloadManagedDocx}>Download report</button>}</div>
-          {daily && <>{dailySections.map(({ section, subsections }) => <div className="daily-section" key={section}><h3>{section}</h3>{subsections.map(([subsection, items]) => <div key={subsection}>{subsection && <h4 className={section === 'Miscellaneous' ? 'plain-topic' : undefined}>{subsection}</h4>}{items.map((item, index) => <React.Fragment key={item.id}>{item.country && (index === 0 || items[index - 1].country !== item.country) && <h5 className="daily-country">{item.country}</h5>}<article className="daily-story"><p><strong>{item.title}</strong> (<a href={item.url} target="_blank" rel="noopener noreferrer">{item.sourceName}</a>)</p></article></React.Fragment>)}</div>)}</div>)}{!displayedArticles.length && <p className="daily-empty">There are no visible stories in this update. Use Manage site to show or add content.</p>}{blockedDailySources.length > 0 && <details className="daily-sources"><summary>Sources without verified coverage ({blockedDailySources.length})</summary><ul>{blockedDailySources.map((item, i) => <li key={`${item.name}-${i}`}>{item.name}: {item.status}</li>)}</ul></details>}{siteConfig.showCoverage && <p className="daily-coverage">{siteConfig.coverageText || (daily.windowStart ? `Monday–Friday, 5–9 October 2026 edition. Coverage window: 5 October, 00:00 to 9 October, 23:59 (Vienna time). Prepared ${dateLabel(daily.checkedAt)} from selected original articles. This static snapshot does not refresh automatically.` : `Prepared ${dateLabel(daily.checkedAt)} from selected reporting in the preceding ${daily.windowHours || 48} hours.`)}</p>}</>}
+          {daily && <>{dailySections.map(({ section, subsections }) => <div className="daily-section" key={section}><h3>{section}</h3>{subsections.map(([subsection, items]) => <div key={subsection}>{subsection && <h4 className={section === 'Miscellaneous' ? 'plain-topic' : undefined}>{subsection}</h4>}{items.map((item, index) => <React.Fragment key={item.id}>{item.country && (index === 0 || items[index - 1].country !== item.country) && <h5 className="daily-country">{item.country}</h5>}<article className="daily-story"><p><strong>{item.title}</strong> (<a href={item.url} target="_blank" rel="noopener noreferrer">{item.sourceName}</a>)</p></article></React.Fragment>)}</div>)}</div>)}{!displayedArticles.length && <p className="daily-empty">There are no visible stories in this update. Use Manage site to show or add content.</p>}{blockedDailySources.length > 0 && <details className="daily-sources"><summary>Sources without verified coverage ({blockedDailySources.length})</summary><ul>{blockedDailySources.map((item, i) => <li key={`${item.name}-${i}`}>{item.name}: {item.reason || item.status}</li>)}</ul></details>}{siteConfig.showCoverage && <p className="daily-coverage">{siteConfig.coverageText || (daily.windowStart ? `Coverage: ${dateLabel(daily.windowStart)} to ${dateLabel(daily.windowEnd)} (Vienna time). Prepared ${dateLabel(daily.checkedAt)} from selected original articles. This static snapshot does not refresh automatically.` : `Prepared ${dateLabel(daily.checkedAt)} from selected reporting in the preceding ${daily.windowHours || 48} hours.`)}</p>}</>}
         </section>}
         {websiteSource && <section className="website-panel" aria-label={`${websiteSource.name} website`}><div className="website-panel-heading"><div><span className="eyebrow">SOURCE WEBSITE</span><h2>{websiteSource.name}</h2></div><button onClick={() => setWebsiteSourceId('')} aria-label="Close source website">×</button></div><div className="website-panel-actions"><a href={websiteSource.url} target="_blank" rel="noopener noreferrer">Open website in new tab ↗</a><button onClick={() => { setManagerTab('Collect'); setManaging(true); }}>Collect headlines</button></div><p>Some publishers block display inside other websites. Use the link above if this panel stays blank.</p><iframe key={websiteSource.id} src={websiteSource.url} title={`${websiteSource.name} website`} referrerPolicy="no-referrer" loading="lazy"/></section>}
         </div>

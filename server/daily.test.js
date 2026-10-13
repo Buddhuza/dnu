@@ -98,3 +98,26 @@ test('prepared Monday–Friday edition covers its fixed window and uses country 
   }
   assert.equal(currentDailyUpdate(update, Date.parse('2026-10-11T12:00:00Z')).articles.length, update.articles.length);
 });
+
+test('13 October edition contains verified headlines inside its fixed 24-hour window', () => {
+  const update = JSON.parse(readFileSync(new URL('../data/daily-update-2026-10-13.json', import.meta.url), 'utf8'));
+  const start = Date.parse(update.windowStart);
+  const end = Date.parse(update.windowEnd);
+  const allowed = new Map(NEWS_SECTIONS.map(section => [section.id, new Set(section.subsections)]));
+  assert.equal(update.windowHours, 24);
+  assert.equal(end - start, 24 * 60 * 60 * 1000);
+  assert.ok(update.articles.length >= 25);
+  assert.ok(new Set(update.articles.map(item => item.sourceId)).size >= 10);
+  const leads = update.articles.filter(item => item.section === 'Lead stories');
+  assert.equal(leads.filter(item => item.subsection === 'Ukraine').length, 4);
+  assert.ok(leads.some(item => item.sourceName === 'Euronews'));
+  assert.ok([1, 2].includes(leads.filter(item => item.subsection === 'Middle East').length));
+  for (const article of update.articles) {
+    assert.ok(Date.parse(article.publishedAt) >= start && Date.parse(article.publishedAt) <= end, article.title);
+    assert.ok(allowed.get(article.section)?.has(article.subsection), article.title);
+    assert.ok(article.title && article.url.startsWith('https://') && article.reviewed);
+    if (article.section === 'Miscellaneous') assert.ok(article.country, article.title);
+    if (article.timePrecision === 'date') assert.ok(article.url.includes('/2026/10/13/'), article.url);
+  }
+  assert.equal(currentDailyUpdate(update, end + 86400000).articles.length, update.articles.length);
+});
