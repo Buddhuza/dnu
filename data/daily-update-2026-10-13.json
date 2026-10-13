@@ -1,6 +1,6 @@
 {
   "title": "DAILY NEWS UPDATE",
-  "checkedAt": "2026-10-13T19:29:10.549Z",
+  "checkedAt": "2026-10-13T20:37:21.182Z",
   "windowHours": 24,
   "windowStart": "2026-10-12T11:39:25.563Z",
   "windowEnd": "2026-10-13T11:39:25.563Z",
@@ -414,6 +414,18 @@
       "reviewed": true
     },
     {
+      "id": "https://sputnikglobe.com/20261013/russia-pounds-ukrainian-military-logistics-hubs-in-nikolayev-region-1124873206.html",
+      "url": "https://sputnikglobe.com/20261013/russia-pounds-ukrainian-military-logistics-hubs-in-nikolayev-region-1124873206.html",
+      "title": "Russia Pounds Ukrainian Military Logistics Hubs in Nikolayev Region",
+      "publishedAt": "2026-10-13T06:48:00.000Z",
+      "sourceId": "source-99",
+      "sourceName": "Sputnik",
+      "group": "Miscl",
+      "section": "Eastern Europe",
+      "subsection": "Ukraine",
+      "reviewed": true
+    },
+    {
       "id": "https://armenpress.am/en/article/1262636",
       "url": "https://armenpress.am/en/article/1262636",
       "title": "Pashinyan: Armenia should focus on signing, ratifying peace agreement with Azerbaijan",
@@ -576,6 +588,18 @@
       "publishedAt": "2026-10-12T12:48:16.000Z",
       "sourceId": "source-77",
       "sourceName": "Asia-Plus",
+      "group": "Central Asia",
+      "section": "Central Asia",
+      "subsection": "Kyrgyzstan",
+      "reviewed": true
+    },
+    {
+      "id": "https://en.kabar.kg/news/kyrgyzstan-china-to-develop-industrial-cooperation/",
+      "url": "https://en.kabar.kg/news/kyrgyzstan-china-to-develop-industrial-cooperation/",
+      "title": "Kyrgyzstan, China to develop industrial cooperation",
+      "publishedAt": "2026-10-13T11:02:48.000Z",
+      "sourceId": "source-75",
+      "sourceName": "Kabar",
       "group": "Central Asia",
       "section": "Central Asia",
       "subsection": "Kyrgyzstan",
@@ -767,6 +791,19 @@
       "publishedAt": "2026-10-13T09:59:04.000Z",
       "sourceId": "source-98",
       "sourceName": "Izvestia",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Germany",
+      "reviewed": true
+    },
+    {
+      "id": "https://app.ekkow.com/1482703288594629177",
+      "url": "https://app.ekkow.com/1482703288594629177",
+      "title": "German minister: Russia diesel deal shows Trump has 'back to the wall'",
+      "publishedAt": "2026-10-13T11:33:31.000Z",
+      "sourceId": "source-86",
+      "sourceName": "dpa",
       "group": "Miscl",
       "section": "Miscellaneous",
       "subsection": "WESTERN / CENTRAL EUROPE",
@@ -969,6 +1006,19 @@
       "reviewed": true
     },
     {
+      "id": "https://www.thelocal.se/20261013/no-end-in-sight-to-swedens-political-stalemate-a-month-after-election",
+      "url": "https://www.thelocal.se/20261013/no-end-in-sight-to-swedens-political-stalemate-a-month-after-election",
+      "title": "Swedish parliament to vote on Social Democratic leader for prime minister",
+      "publishedAt": "2026-10-13T09:49:15.000Z",
+      "sourceId": "source-114",
+      "sourceName": "Local Sweden",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Sweden",
+      "reviewed": true
+    },
+    {
       "id": "https://apnews.com/article/uk-raf-fairford-burnham-iran-security-guard-19a976ffaa3a23c8d7c2230d3960ce14",
       "url": "https://apnews.com/article/uk-raf-fairford-burnham-iran-security-guard-19a976ffaa3a23c8d7c2230d3960ce14",
       "title": "Suspected plot at US-run air base almost certainly directed by Iran, UK prime minister says",
@@ -1048,12 +1098,38 @@
       "reviewed": true
     },
     {
+      "id": "https://www.pbs.org/newshour/world/suspected-plot-at-u-s-run-air-base-almost-certainly-directed-by-iran-uk-prime-minister-says",
+      "url": "https://www.pbs.org/newshour/world/suspected-plot-at-u-s-run-air-base-almost-certainly-directed-by-iran-uk-prime-minister-says",
+      "title": "Suspected plot at U.S.-run air base almost certainly directed by Iran, UK prime minister says",
+      "publishedAt": "2026-10-12T22:25:28.000Z",
+      "sourceId": "source-155",
+      "sourceName": "PBS",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "country": "Iran",
+      "reviewed": true
+    },
+    {
       "id": "https://www.rfi.fr/en/international-news/20261013-ahead-of-israel-vote-desert-town-becomes-frontline-against-ultra-orthodox-expansion",
       "url": "https://www.rfi.fr/en/international-news/20261013-ahead-of-israel-vote-desert-town-becomes-frontline-against-ultra-orthodox-expansion",
       "title": "Ahead of Israel vote, desert town becomes frontline against ultra-Orthodox expansion",
       "publishedAt": "2026-10-13T01:35:54.000Z",
       "sourceId": "source-92",
       "sourceName": "RFI",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "country": "Israel",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.aa.com.tr/en/world/delta-flight-from-new-york-searched-at-israel-s-ben-gurion-airport-after-bomb-threat-media/4086790",
+      "url": "https://www.aa.com.tr/en/world/delta-flight-from-new-york-searched-at-israel-s-ben-gurion-airport-after-bomb-threat-media/4086790",
+      "title": "Delta flight from New York searched at Israel’s Ben Gurion airport after bomb threat: Media",
+      "publishedAt": "2026-10-13T09:34:46.087Z",
+      "sourceId": "source-149",
+      "sourceName": "AA",
       "group": "Miscl",
       "section": "Miscellaneous",
       "subsection": "MIDDLE EAST / NORTH AFRICA",
@@ -1084,6 +1160,19 @@
       "section": "Miscellaneous",
       "subsection": "MIDDLE EAST / NORTH AFRICA",
       "country": "Lebanon",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.rudaw.net/english/categories/kurdistan/1079706",
+      "url": "https://www.rudaw.net/english/categories/kurdistan/1079706",
+      "title": "Kurdish leaders discuss Kurds' rights in Syria with Mazloum Abdi",
+      "publishedAt": "2026-10-13T09:01:00.000Z",
+      "sourceId": "source-117",
+      "sourceName": "Rudaw",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "country": "Syria",
       "reviewed": true
     },
     {
@@ -1289,6 +1378,19 @@
       "publishedAt": "2026-10-13T10:15:05.000Z",
       "sourceId": "source-157",
       "sourceName": "Axios",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "NORTH AMERICA",
+      "country": "United States",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.militarytimes.com/news/your-military/2026/10/12/us-army-creates-robotics-technician-job-to-focus-on-drone-warfare/",
+      "url": "https://www.militarytimes.com/news/your-military/2026/10/12/us-army-creates-robotics-technician-job-to-focus-on-drone-warfare/",
+      "title": "US Army creates robotics technician job to focus on drone warfare",
+      "publishedAt": "2026-10-12T18:30:00.000Z",
+      "sourceId": "source-164",
+      "sourceName": "Military Times",
       "group": "Miscl",
       "section": "Miscellaneous",
       "subsection": "NORTH AMERICA",
@@ -1959,8 +2061,8 @@
       "name": "Kabar",
       "group": "Central Asia",
       "url": "https://en.kabar.kg/news/",
-      "status": "sampled",
-      "reason": "25 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-76",
@@ -2047,8 +2149,8 @@
       "name": "dpa",
       "group": "Miscl",
       "url": "https://nordot.app/-/units/601684660556563553",
-      "status": "sampled",
-      "reason": "10 article links found on the listing; 4 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-87",
@@ -2151,8 +2253,8 @@
       "name": "Sputnik",
       "group": "Miscl",
       "url": "https://sputnikglobe.com/russia/",
-      "status": "sampled",
-      "reason": "21 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-100",
@@ -2271,8 +2373,8 @@
       "name": "Local Sweden",
       "group": "Miscl",
       "url": "https://www.thelocal.se/",
-      "status": "sampled",
-      "reason": "40 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-115",
@@ -2295,8 +2397,8 @@
       "name": "Rudaw",
       "group": "Miscl",
       "url": "https://www.rudaw.net/english",
-      "status": "sampled",
-      "reason": "8 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-118",
@@ -2551,8 +2653,8 @@
       "name": "AA",
       "group": "Miscl",
       "url": "https://www.aa.com.tr/en",
-      "status": "sampled",
-      "reason": "30 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-150",
@@ -2599,8 +2701,8 @@
       "name": "PBS",
       "group": "Miscl",
       "url": "https://www.pbs.org/newshour/world",
-      "status": "sampled",
-      "reason": "10 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-156",
@@ -2671,8 +2773,8 @@
       "name": "Military Times",
       "group": "Miscl",
       "url": "https://www.militarytimes.com/news/",
-      "status": "sampled",
-      "reason": "19 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-165",

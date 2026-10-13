@@ -15,7 +15,7 @@ import './styles.css';
 const readStored = (key, fallback, legacyKey) => {
   try { return JSON.parse(localStorage.getItem(key) ?? (legacyKey ? localStorage.getItem(legacyKey) : null)) ?? fallback; } catch { return fallback; }
 };
-const words = text => [...new Set(text.split(/[,\n]/).map(x => x.trim()).filter(Boolean))].slice(0, 25);
+const words = text => [...new Set(text.split(/[,\n]/).map(x => x.trim()).filter(Boolean))].slice(0, 40);
 const defaultScope = 'security, politics, political, defense, diplomacy, election, conflict, war, terrorism, parliament, government, minister, president, police, military, NATO, Russia, Ukraine, attack, sanctions, protest, полит, воен, войн, террор, санкц, росси, украин, атак, задерж';
 const dateLabel = iso => new Intl.DateTimeFormat(undefined, { timeZone: 'Europe/Vienna', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
 
@@ -97,7 +97,7 @@ function App() {
     setError('');
     setToast('Scope updated. Refresh a source to collect matching headlines.');
   }
-  async function loadSource(id = activeId, deepScan = false) {
+  async function loadSource(id = activeId, fullScan = false) {
     const source = sources.find(item => item.id === id);
     if (!source) return;
     setBatchProgress(null);
@@ -106,10 +106,16 @@ function App() {
     setError('');
     setResult(null);
     try {
-      const response = await fetch('/api/headlines', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...sourceRequest(source), deepScan }) });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Collection failed');
-      setResult(data);
+      const headlines = [];
+      let cursor = 0;
+      do {
+        const response = await fetch('/api/headlines', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...sourceRequest(source), fullScan, cursor }) });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Collection failed');
+        headlines.push(...data.headlines);
+        cursor = data.nextCursor;
+        setResult({ ...data, headlines: [...headlines].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), candidatesChecked: fullScan ? cursor ?? data.candidatesFound : data.candidatesChecked });
+      } while (fullScan && cursor !== null);
     } catch (e) { setError(e.message); }
     finally { setLoading(false); }
   }
@@ -127,11 +133,15 @@ function App() {
       while (cursor < groupSources.length) {
         const source = groupSources[cursor++];
         try {
-          const response = await fetch('/api/headlines', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(sourceRequest(source)) });
-          const data = await response.json();
-          if (!response.ok) throw new Error(data.error);
-          gathered.push(...data.headlines);
-          setResult({ headlines: [...gathered].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date().toISOString(), batch: true });
+          let cursor = 0;
+          do {
+            const response = await fetch('/api/headlines', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...sourceRequest(source), fullScan: true, cursor }) });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error);
+            gathered.push(...data.headlines);
+            setResult({ headlines: [...gathered].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date().toISOString(), batch: true });
+            cursor = data.nextCursor;
+          } while (cursor !== null);
         } catch { failed++; }
         done++;
         setBatchProgress({ done, total: collectionSources.length, failed });
@@ -157,7 +167,7 @@ function App() {
   }
 
   const collectionPanel = (
-        <section className="headlines-section" id="live-collection"><div className="section-title"><div><h2>Live collection</h2></div><span className="time-filter">◷ &nbsp; LAST 48 HOURS</span></div><div className="source-banner"><div className="banner-icon">{active?.name?.[0] || 'S'}</div><div><strong>{active?.name || 'Select a source'}</strong><small>{active?.url || 'Choose an outlet from the left'}</small></div><button onClick={() => loadSource()} disabled={loading || !active || !canCollect}>{loading ? 'Collecting…' : 'Collect headlines'} <span>↗</span></button></div><div className="batch-row"><span>Publisher feeds are checked first at no Firecrawl cost. Sites without a usable feed fall back to Firecrawl, which may check up to three article pages for dates; deep scan checks up to ten.</span><button onClick={() => loadSource(activeId, true)} disabled={loading || !config?.firecrawlConfigured || !active}>Deep scan source</button><button onClick={loadVisible} disabled={loading || !collectionSources.length}>Collect visible sources ({collectionSources.length})</button></div>
+        <section className="headlines-section" id="live-collection"><div className="section-title"><div><h2>Live collection</h2></div><span className="time-filter">◷ &nbsp; LAST 48 HOURS</span></div><div className="source-banner"><div className="banner-icon">{active?.name?.[0] || 'S'}</div><div><strong>{active?.name || 'Select a source'}</strong><small>{active?.url || 'Choose an outlet from the left'}</small></div><button onClick={() => loadSource()} disabled={loading || !active || !canCollect}>{loading ? 'Collecting…' : 'Collect headlines'} <span>↗</span></button></div><div className="batch-row"><span>Publisher feeds are checked first at no Firecrawl cost. A quick source check opens three matching article pages. A complete scan checks every matching link returned by the listing and may take longer or use many credits.</span><button onClick={() => loadSource(activeId, true)} disabled={loading || !config?.firecrawlConfigured || !active}>Scan all listed articles</button><button onClick={loadVisible} disabled={loading || !collectionSources.length}>Scan visible sources fully ({collectionSources.length})</button></div>
           {!config?.firecrawlConfigured && <div className="notice"><p>{staticPreview ? 'This published page shows the prepared update. Live collection requires the server app; feeds work without Firecrawl, while other sources need an API key.' : <>Feed sources can be collected without an API key. Add <code>FIRECRAWL_API_KEY</code> for other sources.</>}</p></div>}
           {error && <div className="error-box" role="alert">{error}</div>}
           {loading && <div className="loading-box"><div className="spinner"/> {batchProgress ? `Collected ${batchProgress.done} of ${batchProgress.total} sources${batchProgress.failed ? ` · ${batchProgress.failed} failed` : ''}` : 'Collecting headlines and checking publication times…'}</div>}

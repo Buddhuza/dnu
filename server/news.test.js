@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { normalizeArticles, scrapeHeadlines, undatedCandidates, reviewedArticle, customSourceFromRequest, DEFAULT_INCLUDE } from './news.js';
+import { normalizeArticles, scrapeHeadlines, undatedCandidates, reviewedArticle, candidatePage, customSourceFromRequest, DEFAULT_INCLUDE } from './news.js';
 
 const source = { id: 'source-1', name: 'Test News', group: 'Test', url: 'https://example.com/news/' };
 const now = Date.parse('2026-10-09T12:00:00Z');
@@ -60,6 +60,20 @@ test('publisher article timestamps are taken from TASS and Izvestia pages', () =
   const izvestiaPage = { data: { html: '<div itemprop="datePublished">2026-10-13T12:59:04+03:00</div>', metadata: { ogTitle: 'В ФРГ задержали третьего подозреваемого в поджоге шлюза Starlink в Польше' } } };
   assert.equal(reviewedArticle(izvestiaPage, izvestia, izvestiaUrl, Date.parse('2026-10-13T12:00:00Z')).publishedAt, '2026-10-13T09:59:04.000Z');
   assert.deepEqual(undatedCandidates({ data: { json: { articles: [{ title: 'В ФРГ задержали третьего подозреваемого', url: izvestiaUrl }] } } }, izvestia, DEFAULT_INCLUDE).map(item => item.url), [izvestiaUrl]);
+});
+
+test('complete source scan pages through every matching article link', () => {
+  const candidates = Array.from({ length: 27 }, (_, index) => ({ url: `https://example.com/${index}` }));
+  const seen = [];
+  let cursor = 0;
+  do {
+    const page = candidatePage(candidates, cursor, true);
+    seen.push(...page.items);
+    cursor = page.nextCursor;
+  } while (cursor !== null);
+  assert.deepEqual(seen, candidates);
+  assert.equal(candidatePage(candidates).items.length, 3);
+  assert.equal(candidatePage(candidates, 0, false, true).items.length, 10);
 });
 
 test('manual source accepts a public HTTPS news site and rejects local targets', () => {

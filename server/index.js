@@ -2,7 +2,7 @@ import express from 'express';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { DEFAULT_INCLUDE, DEFAULT_EXCLUDE, normalizeArticles, parseWords, scrapeHeadlines, scrapeArticle, undatedCandidates, reviewedArticle, customSourceFromRequest } from './news.js';
+import { DEFAULT_INCLUDE, DEFAULT_EXCLUDE, normalizeArticles, parseWords, scrapeHeadlines, scrapeArticle, undatedCandidates, reviewedArticle, candidatePage, customSourceFromRequest } from './news.js';
 import { collectFeed, FEED_URLS } from './feeds.js';
 import { createReportDocx } from './report.js';
 import { currentDailyUpdate } from './daily.js';
@@ -43,9 +43,11 @@ app.post('/api/headlines', async (req, res) => {
   const include = parseWords(req.body?.include);
   const exclude = parseWords(req.body?.exclude);
   const cacheKey = JSON.stringify([source.id, source.url, include]);
+  const continuingScan = req.body?.fullScan === true && Number(req.body?.cursor) > 0;
   try {
     let entry = cache.get(cacheKey);
-    if (!entry || Date.now() - entry.at > 5 * 60 * 1000) {
+    if (continuingScan && !entry) return res.status(409).json({ error: 'This source scan expired. Start it again from the first page.' });
+    if (!entry || (!continuingScan && Date.now() - entry.at > 5 * 60 * 1000)) {
       let payload = null;
       try { payload = await collectFeed(source); } catch { /* Fall through to Firecrawl when a feed is unavailable. */ }
       if (!payload) {
@@ -58,8 +60,10 @@ app.post('/api/headlines', async (req, res) => {
     const fromFeed = entry.payload.collectionMethod === 'feed';
     const headlines = fromFeed ? normalizeArticles(entry.payload, source, Date.now(), include, exclude, true) : [];
     const candidates = fromFeed ? [] : undatedCandidates(entry.payload, source, include, exclude, true);
+    const fullScan = req.body?.fullScan === true;
+    const page = candidatePage(candidates, req.body?.cursor, fullScan, req.body?.deepScan === true);
     let checked = 0;
-    for (const candidate of candidates.slice(0, req.body?.deepScan === true ? 10 : 3)) {
+    for (const candidate of page.items) {
         checked++;
         try {
           let article = articleCache.get(candidate.url);
@@ -73,7 +77,8 @@ app.post('/api/headlines', async (req, res) => {
           headlines.push(...matched);
         } catch { /* Other candidates may still be verifiable. */ }
     }
-    res.json({ source, headlines: headlines.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date(entry.at).toISOString(), candidatesFound: candidates.length, candidatesChecked: checked, collectionMethod: fromFeed ? 'feed' : 'firecrawl', note: fromFeed ? 'Headlines and dates came from the publisher feed. Article pages were not independently checked.' : 'Article pages are checked when listing dates are missing or unreliable. No result is not proof that the source had no relevant news.' });
+    const nextCursor = fromFeed ? null : page.nextCursor;
+    res.json({ source, headlines: headlines.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date(entry.at).toISOString(), candidatesFound: candidates.length, candidatesChecked: checked, nextCursor, collectionMethod: fromFeed ? 'feed' : 'firecrawl', note: fromFeed ? 'Headlines and dates came from the publisher feed. Article pages were not independently checked.' : nextCursor === null && fullScan ? 'All relevant article links returned from this listing were checked; listings can still omit stories.' : 'Only some article pages were checked. No result is not proof that the source had no relevant news.' });
   } catch (error) {
     res.status(502).json({ error: `Could not collect ${source.name}: ${error.message}` });
   }

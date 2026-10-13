@@ -117,6 +117,13 @@ export function undatedCandidates(payload, source, include = DEFAULT_INCLUDE, ex
   return candidates;
 }
 
+export function candidatePage(candidates, cursor = 0, fullScan = false, deepScan = false) {
+  const offset = fullScan ? Math.min(candidates.length, Math.max(0, Math.trunc(Number(cursor) || 0))) : 0;
+  const limit = fullScan || deepScan ? 10 : 3;
+  const items = candidates.slice(offset, offset + limit);
+  return { items, nextCursor: fullScan && offset + items.length < candidates.length ? offset + items.length : null };
+}
+
 export function reviewedArticle(payload, source, url, now = Date.now()) {
   const data = payload?.data ?? {};
   const extracted = typeof data.json === 'string' ? JSON.parse(data.json) : data.json ?? {};
