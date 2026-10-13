@@ -1,6 +1,6 @@
 {
   "title": "DAILY NEWS UPDATE",
-  "checkedAt": "2026-10-13T19:06:17.585Z",
+  "checkedAt": "2026-10-13T19:21:58.060Z",
   "windowHours": 24,
   "windowStart": "2026-10-12T11:39:25.563Z",
   "windowEnd": "2026-10-13T11:39:25.563Z",
@@ -102,6 +102,18 @@
       "reviewed": true
     },
     {
+      "id": "https://english.gazetatema.net/politics/albania-moves-closer-to-eu-membership-i347620",
+      "url": "https://english.gazetatema.net/politics/albania-moves-closer-to-eu-membership-i347620",
+      "title": "Albania moves closer to EU membership",
+      "publishedAt": "2026-10-13T06:51:48.000Z",
+      "sourceId": "source-6",
+      "sourceName": "TemA",
+      "group": "South Eastern Europe",
+      "section": "South Eastern Europe",
+      "subsection": "Albania",
+      "reviewed": true
+    },
+    {
       "id": "https://sarajevotimes.com/cec-receives-diaspora-votes-counting-follows-which-could-change-election-results/",
       "url": "https://sarajevotimes.com/cec-receives-diaspora-votes-counting-follows-which-could-change-election-results/",
       "title": "CEC Receives Diaspora Votes: Counting Follows, Which Could Change Election Results",
@@ -162,12 +174,48 @@
       "reviewed": true
     },
     {
+      "id": "https://mia.mk/en/story/exdeputy-pm-grubi-walks-free-from-house-arrest-today",
+      "url": "https://mia.mk/en/story/exdeputy-pm-grubi-walks-free-from-house-arrest-today",
+      "title": "Ex-deputy PM Grubi walks free from house arrest today",
+      "publishedAt": "2026-10-13T10:28:03.000Z",
+      "sourceId": "source-14",
+      "sourceName": "MIA",
+      "group": "South Eastern Europe",
+      "section": "South Eastern Europe",
+      "subsection": "North Macedonia",
+      "reviewed": true
+    },
+    {
       "id": "https://www.tanjug.rs/english/politics/289145/brnabic-meets-with-pace-observation-mission-visiting-serbia/vest",
       "url": "https://www.tanjug.rs/english/politics/289145/brnabic-meets-with-pace-observation-mission-visiting-serbia/vest",
       "title": "Brnabic meets with PACE observation mission visiting Serbia",
       "publishedAt": "2026-10-13T09:56:00.000Z",
       "sourceId": "source-18",
       "sourceName": "Tanjug",
+      "group": "South Eastern Europe",
+      "section": "South Eastern Europe",
+      "subsection": "Serbia",
+      "reviewed": true
+    },
+    {
+      "id": "https://n1info.rs/english/news/no-quorum-for-vote-to-dismiss-belgrade-mayor/",
+      "url": "https://n1info.rs/english/news/no-quorum-for-vote-to-dismiss-belgrade-mayor/",
+      "title": "No quorum for vote to dismiss Belgrade mayor",
+      "publishedAt": "2026-10-13T08:52:27.327Z",
+      "sourceId": "source-17",
+      "sourceName": "N1",
+      "group": "South Eastern Europe",
+      "section": "South Eastern Europe",
+      "subsection": "Serbia",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.telegraf.rs/english/4413762-vucic-i-was-against-passing-the-law-on-foreign-agents-because-serbia-is-a-stable-country",
+      "url": "https://www.telegraf.rs/english/4413762-vucic-i-was-against-passing-the-law-on-foreign-agents-because-serbia-is-a-stable-country",
+      "title": "Vucic: I was against passing the law on foreign agents because Serbia is a stable country",
+      "publishedAt": "2026-10-13T08:40:00.000Z",
+      "sourceId": "source-19",
+      "sourceName": "Telegraf",
       "group": "South Eastern Europe",
       "section": "South Eastern Europe",
       "subsection": "Serbia",
@@ -192,6 +240,30 @@
       "publishedAt": "2026-10-12T22:20:28.000Z",
       "sourceId": "source-1",
       "sourceName": "DTT",
+      "group": "South Eastern Europe",
+      "section": "South Eastern Europe",
+      "subsection": "Serbia / Kosovo",
+      "reviewed": true
+    },
+    {
+      "id": "https://english.gazetatema.net/kosovo-region/kosovo-asks-us-to-restart-suspended-talks-i347626",
+      "url": "https://english.gazetatema.net/kosovo-region/kosovo-asks-us-to-restart-suspended-talks-i347626",
+      "title": "Kosovo asks US to restart suspended talks",
+      "publishedAt": "2026-10-13T10:20:51.000Z",
+      "sourceId": "source-6",
+      "sourceName": "TemA",
+      "group": "South Eastern Europe",
+      "section": "South Eastern Europe",
+      "subsection": "Serbia / Kosovo",
+      "reviewed": true
+    },
+    {
+      "id": "https://prishtinainsight.com/kosovo-media-regulator-grants-the-police-a-radio-licence/",
+      "url": "https://prishtinainsight.com/kosovo-media-regulator-grants-the-police-a-radio-licence/",
+      "title": "Kosovo Media Regulator Grants the Police a Radio Licence",
+      "publishedAt": "2026-10-12T13:43:24.000Z",
+      "sourceId": "source-20",
+      "sourceName": "Prishtina Insight",
       "group": "South Eastern Europe",
       "section": "South Eastern Europe",
       "subsection": "Serbia / Kosovo",
@@ -324,6 +396,18 @@
       "publishedAt": "2026-10-13T08:22:53.000Z",
       "sourceId": "source-39",
       "sourceName": "Kyiv Independent",
+      "group": "East Europe",
+      "section": "Eastern Europe",
+      "subsection": "Ukraine",
+      "reviewed": true
+    },
+    {
+      "id": "https://ukranews.com/en/news/1180875-russian-attack-damaged-a-medical-facility-in-the-khmelnytskyi-region-some-patients-were-injured",
+      "url": "https://ukranews.com/en/news/1180875-russian-attack-damaged-a-medical-facility-in-the-khmelnytskyi-region-some-patients-were-injured",
+      "title": "Russian attack damages medical facility in Khmelnytskyi Region: some patients injured",
+      "publishedAt": "2026-10-13T11:11:40.000Z",
+      "sourceId": "source-42",
+      "sourceName": "Ukranews",
       "group": "East Europe",
       "section": "Eastern Europe",
       "subsection": "Ukraine",
@@ -522,6 +606,18 @@
       "reviewed": true
     },
     {
+      "id": "https://www.defensenews.com/global/asia-pacific/2026/10/12/india-sells-air-defense-missiles-to-tajikistan-turkmenistan-in-central-asia-push/",
+      "url": "https://www.defensenews.com/global/asia-pacific/2026/10/12/india-sells-air-defense-missiles-to-tajikistan-turkmenistan-in-central-asia-push/",
+      "title": "India sells air defense missiles to Tajikistan, Turkmenistan in Central Asia push",
+      "publishedAt": "2026-10-12T16:49:35.406Z",
+      "sourceId": "source-161",
+      "sourceName": "Defense News",
+      "group": "Miscl",
+      "section": "Central Asia",
+      "subsection": "Turkmenistan",
+      "reviewed": true
+    },
+    {
       "id": "https://kun.uz/en/news/2026/10/12/botir-kudratkhojayev-replaces-shuhrat-kholmukhamedov-as-defense-minister",
       "url": "https://kun.uz/en/news/2026/10/12/botir-kudratkhojayev-replaces-shuhrat-kholmukhamedov-as-defense-minister",
       "title": "Botir Kudratkhojayev replaces Shuhrat Kholmukhamedov as defense minister",
@@ -531,6 +627,19 @@
       "group": "Central Asia",
       "section": "Central Asia",
       "subsection": "Uzbekistan",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.vrt.be/vrtnws/en/2026/10/12/arrests-as-rioting-youths-clash-with-police-at-brussels-south/",
+      "url": "https://www.vrt.be/vrtnws/en/2026/10/12/arrests-as-rioting-youths-clash-with-police-at-brussels-south/",
+      "title": "Arrests as rioting youths clash with police at Brussels South (VIDEO)",
+      "publishedAt": "2026-10-12T13:51:26.000Z",
+      "sourceId": "source-134",
+      "sourceName": "VRT",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Belgium",
       "reviewed": true
     },
     {
@@ -557,6 +666,19 @@
       "section": "Miscellaneous",
       "subsection": "WESTERN / CENTRAL EUROPE",
       "country": "Bulgaria",
+      "reviewed": true
+    },
+    {
+      "id": "https://cyprus-mail.com/2026/10/13/greco-examines-corruption-prevention-in-cyprus-local-government",
+      "url": "https://cyprus-mail.com/2026/10/13/greco-examines-corruption-prevention-in-cyprus-local-government",
+      "title": "Greco examines corruption prevention in Cyprus local government",
+      "publishedAt": "2026-10-13T09:45:10.000Z",
+      "sourceId": "source-109",
+      "sourceName": "Cyprus Mail",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Cyprus",
       "reviewed": true
     },
     {
@@ -639,6 +761,19 @@
       "reviewed": true
     },
     {
+      "id": "https://www.tovima.com/world/turkish-nationalist-leader-warns-greece-over-arms-buildup/",
+      "url": "https://www.tovima.com/world/turkish-nationalist-leader-warns-greece-over-arms-buildup/",
+      "title": "Turkish Nationalist Leader Warns Greece Over Arms Buildup",
+      "publishedAt": "2026-10-13T09:30:07.000Z",
+      "sourceId": "source-143",
+      "sourceName": "Tovima",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Greece",
+      "reviewed": true
+    },
+    {
       "id": "https://www.reuters.com/world/hungarys-orban-denies-ordering-ukrainian-cash-gold-seized-when-leader-2026-10-13/",
       "url": "https://www.reuters.com/world/hungarys-orban-denies-ordering-ukrainian-cash-gold-seized-when-leader-2026-10-13/",
       "title": "Hungary's Orban denies ordering Ukrainian cash and gold seized when leader",
@@ -649,6 +784,45 @@
       "section": "Miscellaneous",
       "subsection": "WESTERN / CENTRAL EUROPE",
       "country": "Hungary",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.icelandreview.com/news/volker-turk-iceland-human-rights-talks-october-2026/",
+      "url": "https://www.icelandreview.com/news/volker-turk-iceland-human-rights-talks-october-2026/",
+      "title": "UN Human Rights Chief Holds Talks With Icelandic Leaders",
+      "publishedAt": "2026-10-13T10:00:36.000Z",
+      "sourceId": "source-142",
+      "sourceName": "Iceland Review",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Iceland",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.thejournal.ie/jack-chambers-strike-7190805-Oct2026/?utm_source=thejournal&utm_content=story-card-headline",
+      "url": "https://www.thejournal.ie/jack-chambers-strike-7190805-Oct2026/?utm_source=thejournal&utm_content=story-card-headline",
+      "title": "Strike set to go ahead on Wednesday as unions reject minister's latest bid for WRC talks",
+      "publishedAt": "2026-10-12T19:00:00.000Z",
+      "sourceId": "source-139",
+      "sourceName": "The Journal",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Ireland",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.lrt.lt/en/news-in-english/19/3080239/lithuanian-pm-we-should-ask-ukraine-to-strike-more-russian-data-centres",
+      "url": "https://www.lrt.lt/en/news-in-english/19/3080239/lithuanian-pm-we-should-ask-ukraine-to-strike-more-russian-data-centres",
+      "title": "Lithuanian PM: We should ask Ukraine to strike more Russian data centres",
+      "publishedAt": "2026-10-12T12:00:00.000Z",
+      "sourceId": "source-95",
+      "sourceName": "LRT",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Lithuania",
       "reviewed": true
     },
     {
@@ -688,6 +862,45 @@
       "section": "Miscellaneous",
       "subsection": "WESTERN / CENTRAL EUROPE",
       "country": "Poland",
+      "reviewed": true
+    },
+    {
+      "id": "https://breakingdefense.com/2026/10/at-warsaw-security-forum-polands-tusk-raises-alarm-over-real-threat-from-russia/",
+      "url": "https://breakingdefense.com/2026/10/at-warsaw-security-forum-polands-tusk-raises-alarm-over-real-threat-from-russia/",
+      "title": "At Warsaw Security Forum, Poland’s Tusk raises alarm over ‘real threat’ from Russia",
+      "publishedAt": "2026-10-12T20:39:43.000Z",
+      "sourceId": "source-162",
+      "sourceName": "Breaking Defense",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Poland",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.romania-insider.com/society/romanias-pm-designate-sketches-technocratic-government-seeks-political",
+      "url": "https://www.romania-insider.com/society/romanias-pm-designate-sketches-technocratic-government-seeks-political",
+      "title": "Romania’s PM-designate sketches technocratic government but seeks political backing",
+      "publishedAt": "2026-10-13T06:51:33.503Z",
+      "sourceId": "source-108",
+      "sourceName": "Romania Insider",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Romania",
+      "reviewed": true
+    },
+    {
+      "id": "https://sloveniatimes.com/49396/embattled-truth-deputy-resigns",
+      "url": "https://sloveniatimes.com/49396/embattled-truth-deputy-resigns",
+      "title": "Embattled Truth deputy resigns",
+      "publishedAt": "2026-10-12T16:43:00.000Z",
+      "sourceId": "source-152",
+      "sourceName": "Slovenia Times",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Slovenia",
       "reviewed": true
     },
     {
@@ -796,6 +1009,32 @@
       "reviewed": true
     },
     {
+      "id": "https://www.iranintl.com/en/202610139633",
+      "url": "https://www.iranintl.com/en/202610139633",
+      "title": "Iran says six killed as armed clashes intensify in southeast",
+      "publishedAt": "2026-10-13T09:12:44.100Z",
+      "sourceId": "source-119",
+      "sourceName": "Iran International",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "country": "Iran",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.iranintl.com/en/202610138522",
+      "url": "https://www.iranintl.com/en/202610138522",
+      "title": "Gunfire heard as county-naming protest turns violent in central Iran",
+      "publishedAt": "2026-10-13T10:00:39.122Z",
+      "sourceId": "source-119",
+      "sourceName": "Iran International",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "country": "Iran",
+      "reviewed": true
+    },
+    {
       "id": "https://www.rfi.fr/en/international-news/20261013-ahead-of-israel-vote-desert-town-becomes-frontline-against-ultra-orthodox-expansion",
       "url": "https://www.rfi.fr/en/international-news/20261013-ahead-of-israel-vote-desert-town-becomes-frontline-against-ultra-orthodox-expansion",
       "title": "Ahead of Israel vote, desert town becomes frontline against ultra-Orthodox expansion",
@@ -822,6 +1061,32 @@
       "reviewed": true
     },
     {
+      "id": "https://today.lorientlejour.com/article/1550655/cpj-urges-pressure-on-israel-on-3-year-commemoration-of-attack-on-journalists-in-alma-al-shaab.html",
+      "url": "https://today.lorientlejour.com/article/1550655/cpj-urges-pressure-on-israel-on-3-year-commemoration-of-attack-on-journalists-in-alma-al-shaab.html",
+      "title": "CPJ urges pressure on Israel on 3-year commemoration of attack on journalists in Alma al-Shaab",
+      "publishedAt": "2026-10-13T10:02:00.000Z",
+      "sourceId": "source-121",
+      "sourceName": "L'Orient Today",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "country": "Lebanon",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.dailysabah.com/politics/turkish-government-ally-suggest-full-military-support-to-saudis/news",
+      "url": "https://www.dailysabah.com/politics/turkish-government-ally-suggest-full-military-support-to-saudis/news",
+      "title": "Turkish government ally suggest full military support to Saudis",
+      "publishedAt": "2026-10-13T11:00:00.000Z",
+      "sourceId": "source-148",
+      "sourceName": "Daily Sabah",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "country": "Türkiye",
+      "reviewed": true
+    },
+    {
       "id": "https://kyivindependent.com/french-navy-intercepts-russian-shadow-fleet-tanker-in-indian-ocean/",
       "url": "https://kyivindependent.com/french-navy-intercepts-russian-shadow-fleet-tanker-in-indian-ocean/",
       "title": "French Navy intercepts Russian shadow fleet tanker in Indian Ocean",
@@ -832,6 +1097,58 @@
       "section": "Miscellaneous",
       "subsection": "RUSSIA / EURASIA",
       "country": "Russia",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.themoscowtimes.com/2026/10/13/ukraine-holds-off-refinery-attacks-for-second-day-after-trump-ceasefire-claim-a93957",
+      "url": "https://www.themoscowtimes.com/2026/10/13/ukraine-holds-off-refinery-attacks-for-second-day-after-trump-ceasefire-claim-a93957",
+      "title": "Ukraine Holds Off Refinery Attacks for Second Day After Trump Ceasefire Claim",
+      "publishedAt": "2026-10-13T09:57:00.000Z",
+      "sourceId": "source-115",
+      "sourceName": "Moscow Times",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "RUSSIA / EURASIA",
+      "country": "Russia",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.ariananews.af/russia-warns-against-return-of-us-military-infrastructure-to-afghanistan/",
+      "url": "https://www.ariananews.af/russia-warns-against-return-of-us-military-infrastructure-to-afghanistan/",
+      "title": "Russia warns against return of US military infrastructure to Afghanistan",
+      "publishedAt": "2026-10-13T04:08:36.000Z",
+      "sourceId": "source-172",
+      "sourceName": "Ariana",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "AFGHANISTAN / PAKISTAN",
+      "country": "Afghanistan",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.internazionale.it/ultime-notizie-reuters/2026/10/13/former-right-hand-man-of-purged-chongqing-chief-bo-xilai-under-investigation-china-s-graft-watchdog-says",
+      "url": "https://www.internazionale.it/ultime-notizie-reuters/2026/10/13/former-right-hand-man-of-purged-chongqing-chief-bo-xilai-under-investigation-china-s-graft-watchdog-says",
+      "title": "Former right-hand man of purged Chongqing chief Bo Xilai under investigation, China’s graft watchdog says",
+      "publishedAt": "2026-10-13T11:35:29.000Z",
+      "sourceId": "source-173",
+      "sourceName": "Reuters",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "NORTH EAST ASIA",
+      "country": "China",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.stripes.com/branches/marine_corps/2026-10-13/okinawa-homicide-security-camera-footage-23138627.html",
+      "url": "https://www.stripes.com/branches/marine_corps/2026-10-13/okinawa-homicide-security-camera-footage-23138627.html",
+      "title": "Japanese prime minister calls US military curfew ‘insufficient’ after Okinawa homicide",
+      "publishedAt": "2026-10-13T08:46:55.000Z",
+      "sourceId": "source-163",
+      "sourceName": "Stars and Stripes",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "NORTH EAST ASIA",
+      "country": "Japan",
       "reviewed": true
     },
     {
@@ -854,6 +1171,19 @@
       "publishedAt": "2026-10-13T04:45:35.000Z",
       "sourceId": "source-125",
       "sourceName": "Korea Herald",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "NORTH EAST ASIA",
+      "country": "South Korea",
+      "reviewed": true
+    },
+    {
+      "id": "https://en.yna.co.kr/view/AEN20261013009100315",
+      "url": "https://en.yna.co.kr/view/AEN20261013009100315",
+      "title": "New law enforcement agencies to run smoothly by Dec.: minister",
+      "publishedAt": "2026-10-13T07:14:44.000Z",
+      "sourceId": "source-103",
+      "sourceName": "Yonhap",
       "group": "Miscl",
       "section": "Miscellaneous",
       "subsection": "NORTH EAST ASIA",
@@ -901,6 +1231,19 @@
       "reviewed": true
     },
     {
+      "id": "https://www.axios.com/2026/10/13/nnsa-nuclear-weapons-test-trump-china",
+      "url": "https://www.axios.com/2026/10/13/nnsa-nuclear-weapons-test-trump-china",
+      "title": "Nevada test sharpens U.S. nuke-detecting algorithms",
+      "publishedAt": "2026-10-13T10:15:05.000Z",
+      "sourceId": "source-157",
+      "sourceName": "Axios",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "NORTH AMERICA",
+      "country": "United States",
+      "reviewed": true
+    },
+    {
       "id": "https://www.moldpres.md/eng/eu-1/video-european-commissioner-for-enlargement-ahead-of-luxembourg-meeting-candidate-countries-are-fulfilling-their-commitments-let-us-prepare-to-welcome-new-members",
       "url": "https://www.moldpres.md/eng/eu-1/video-european-commissioner-for-enlargement-ahead-of-luxembourg-meeting-candidate-countries-are-fulfilling-their-commitments-let-us-prepare-to-welcome-new-members",
       "title": "VIDEO // European Commissioner for Enlargement, ahead of Luxembourg meeting: \"Candidate countries are fulfilling their commitments. Let us prepare to welcome new members\"",
@@ -927,12 +1270,38 @@
       "reviewed": true
     },
     {
+      "id": "https://nltimes.nl/2026/10/12/eu-seeks-dialogue-us-lift-icc-sanctions-within-6-months",
+      "url": "https://nltimes.nl/2026/10/12/eu-seeks-dialogue-us-lift-icc-sanctions-within-6-months",
+      "title": "EU seeks dialogue with U.S. to lift ICC sanctions within 6 months",
+      "publishedAt": "2026-10-12T17:30:00.000Z",
+      "sourceId": "source-131",
+      "sourceName": "NL Times",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "INTERNATIONAL ORGANISATIONS",
+      "country": "ICC",
+      "reviewed": true
+    },
+    {
       "id": "https://www.reuters.com/business/finance/nato-fund-targets-drone-defence-technologies-ukraine-reshapes-priorities-2026-10-13/",
       "url": "https://www.reuters.com/business/finance/nato-fund-targets-drone-defence-technologies-ukraine-reshapes-priorities-2026-10-13/",
       "title": "NATO fund targets drone defence technologies as Ukraine reshapes priorities",
       "publishedAt": "2026-10-13T06:01:36.442Z",
       "sourceId": "source-153",
       "sourceName": "Reuters",
+      "group": "Miscl",
+      "section": "Miscellaneous",
+      "subsection": "INTERNATIONAL ORGANISATIONS",
+      "country": "NATO",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.stripes.com/theaters/europe/2026-10-13/steadfast-noon-nato-exercise-23139099.html",
+      "url": "https://www.stripes.com/theaters/europe/2026-10-13/steadfast-noon-nato-exercise-23139099.html",
+      "title": "NATO begins annual nuclear exercise in Italy",
+      "publishedAt": "2026-10-13T10:39:49.000Z",
+      "sourceId": "source-163",
+      "sourceName": "Stars and Stripes",
       "group": "Miscl",
       "section": "Miscellaneous",
       "subsection": "INTERNATIONAL ORGANISATIONS",
@@ -962,8 +1331,8 @@
       "name": "EWB",
       "group": "South Eastern Europe",
       "url": "https://europeanwesternbalkans.com/latest/",
-      "status": "checked",
-      "reason": "12 article links extracted from the listing; 2 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "12 article links found on the listing; 2 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-4",
@@ -978,32 +1347,32 @@
       "name": "ADN",
       "group": "South Eastern Europe",
       "url": "https://albaniandailynews.com/category/politics",
-      "status": "checked",
-      "reason": "30 article links extracted from the listing; 9 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "30 article links found on the listing; 9 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-6",
       "name": "TemA",
       "group": "South Eastern Europe",
       "url": "https://english.gazetatema.net/category/politics/",
-      "status": "checked",
-      "reason": "65 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "2 articles selected after checking publication details on the original article pages."
     },
     {
       "id": "source-7",
       "name": "Tirana Times",
       "group": "South Eastern Europe",
       "url": "https://www.tiranatimes.com/",
-      "status": "checked",
-      "reason": "6 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "6 article links found on the listing; 1 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-8",
       "name": "N1",
       "group": "South Eastern Europe",
       "url": "https://n1info.ba/english/news",
-      "status": "checked",
-      "reason": "20 article links extracted from the listing; 13 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "20 article links found on the listing; 13 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-9",
@@ -1026,16 +1395,16 @@
       "name": "CdM",
       "group": "South Eastern Europe",
       "url": "https://www.cdm.me/english/",
-      "status": "checked",
-      "reason": "13 article links extracted from the listing; 12 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "13 article links found on the listing; 12 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-12",
       "name": "Vijesti.me",
       "group": "South Eastern Europe",
       "url": "https://en.vijesti.me/latest-news",
-      "status": "checked",
-      "reason": "30 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "30 article links found on the listing; 4 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-13",
@@ -1050,32 +1419,32 @@
       "name": "MIA",
       "group": "South Eastern Europe",
       "url": "https://mia.mk/en/latest-posts",
-      "status": "checked",
-      "reason": "15 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-15",
       "name": "Republika",
       "group": "South Eastern Europe",
       "url": "https://english.republika.mk/category/macedonia/",
-      "status": "checked",
-      "reason": "25 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "25 article links found on the listing; 4 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-16",
       "name": "Skopje Diem",
       "group": "South Eastern Europe",
       "url": "https://skopjediem.com/",
-      "status": "checked",
-      "reason": "10 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "10 article links found on the listing; 3 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-17",
       "name": "N1",
       "group": "South Eastern Europe",
       "url": "https://n1info.rs/english/news/",
-      "status": "checked",
-      "reason": "20 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-18",
@@ -1090,56 +1459,56 @@
       "name": "Telegraf",
       "group": "South Eastern Europe",
       "url": "https://www.telegraf.rs/english",
-      "status": "checked",
-      "reason": "21 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-20",
       "name": "Prishtina Insight",
       "group": "South Eastern Europe",
       "url": "https://prishtinainsight.com/category/news/",
-      "status": "checked",
-      "reason": "5 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-21",
       "name": "RTK",
       "group": "South Eastern Europe",
       "url": "https://www.rtklive.com/en/news-category.php?CatID=5",
-      "status": "checked",
-      "reason": "43 article links extracted from the listing; 7 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "43 article links found on the listing; 7 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-22",
       "name": "Gazeta Express",
       "group": "South Eastern Europe",
       "url": "https://www.gazetaexpress.com/news/",
-      "status": "checked",
-      "reason": "100 article links extracted from the listing; 30 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "100 article links found on the listing; 30 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-23",
       "name": "Fena",
       "group": "South Eastern Europe",
       "url": "https://www.fena.ba/category/32#1",
-      "status": "checked",
-      "reason": "13 article links extracted from the listing; 2 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "13 article links found on the listing; 2 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-24",
       "name": "ABC.al",
       "group": "South Eastern Europe",
       "url": "https://abcnews.al/kategoria/english/",
-      "status": "checked",
-      "reason": "20 article links extracted from the listing; 5 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "20 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-25",
       "name": "Kosovo Online",
       "group": "South Eastern Europe",
       "url": "https://www.kosovo-online.com/en",
-      "status": "checked",
-      "reason": "13 article links extracted from the listing; 10 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "13 article links found on the listing; 10 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-26",
@@ -1154,8 +1523,8 @@
       "name": "Belsat",
       "group": "East Europe",
       "url": "https://en.belsat.eu/79795236/news",
-      "status": "checked",
-      "reason": "19 article links extracted from the listing; 18 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "19 article links found on the listing; 18 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-28",
@@ -1170,8 +1539,8 @@
       "name": "Charter 97",
       "group": "East Europe",
       "url": "https://charter97.org/en/news/",
-      "status": "checked",
-      "reason": "14 article links extracted from the listing; 11 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "14 article links found on the listing; 11 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-30",
@@ -1186,16 +1555,16 @@
       "name": "Infotag",
       "group": "East Europe",
       "url": "https://www.infotag.md/news_arhive_en/",
-      "status": "checked",
-      "reason": "20 article links extracted from the listing; 9 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "20 article links found on the listing; 9 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-32",
       "name": "IPN",
       "group": "East Europe",
       "url": "https://ipn.md/en/all-news/",
-      "status": "checked",
-      "reason": "10 article links extracted from the listing; 3 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "10 article links found on the listing; 3 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-33",
@@ -1210,24 +1579,24 @@
       "name": "Ukrinform",
       "group": "East Europe",
       "url": "https://www.ukrinform.net/block-lastnews",
-      "status": "checked",
-      "reason": "30 article links extracted from the listing; 5 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "30 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-35",
       "name": "RBC.ua",
       "group": "East Europe",
       "url": "https://newsukraine.rbc.ua/news",
-      "status": "checked",
-      "reason": "60 article links extracted from the listing; 5 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "60 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-36",
       "name": "Pravda.ua",
       "group": "East Europe",
       "url": "https://www.pravda.com.ua/eng/news/",
-      "status": "checked",
-      "reason": "70 article links extracted from the listing; 5 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "70 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-37",
@@ -1266,56 +1635,56 @@
       "name": "KHPG",
       "group": "East Europe",
       "url": "https://khpg.org/en/page_1",
-      "status": "checked",
-      "reason": "12 article links extracted from the listing; 5 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "12 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-42",
       "name": "Ukranews",
       "group": "East Europe",
       "url": "https://ukranews.com/en/news",
-      "status": "checked",
-      "reason": "35 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-43",
       "name": "UNN",
       "group": "East Europe",
       "url": "https://unn.ua/en/news",
-      "status": "checked",
-      "reason": "10 article links extracted from the listing; 5 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "10 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-44",
       "name": "Euromaidan",
       "group": "East Europe",
       "url": "https://euromaidanpress.com/",
-      "status": "checked",
-      "reason": "10 article links extracted from the listing; 8 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "10 article links found on the listing; 8 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-45",
       "name": "TSN",
       "group": "East Europe",
       "url": "https://tsn.ua/en",
-      "status": "checked",
-      "reason": "15 article links extracted from the listing; 11 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "15 article links found on the listing; 11 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-46",
       "name": "Armenia Liberty",
       "group": "South Caucasus",
       "url": "https://www.azatutyun.am/z/1089",
-      "status": "checked",
-      "reason": "12 article links extracted from the listing; 5 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "12 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-47",
       "name": "PAN",
       "group": "South Caucasus",
       "url": "https://www.pan.am/en/newsfeed",
-      "status": "checked",
-      "reason": "35 article links extracted from the listing; 14 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "35 article links found on the listing; 14 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-48",
@@ -1330,48 +1699,48 @@
       "name": "Panorama",
       "group": "South Caucasus",
       "url": "https://www.panorama.am/en/news/",
-      "status": "checked",
-      "reason": "20 article links extracted from the listing; 9 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "20 article links found on the listing; 9 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-50",
       "name": "News.am",
       "group": "South Caucasus",
       "url": "https://news.am/eng/news/",
-      "status": "checked",
-      "reason": "34 article links extracted from the listing; 14 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "34 article links found on the listing; 14 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-51",
       "name": "Arminfo",
       "group": "South Caucasus",
       "url": "https://arminfo.info/allnews.php?lang=3",
-      "status": "checked",
-      "reason": "60 article links extracted from the listing; 14 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "60 article links found on the listing; 14 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-52",
       "name": "ARKA",
       "group": "South Caucasus",
       "url": "https://arka.am/en/news/",
-      "status": "checked",
-      "reason": "20 article links extracted from the listing; 7 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "20 article links found on the listing; 7 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-53",
       "name": "Civinet",
       "group": "South Caucasus",
       "url": "https://www.civilnet.am/en/",
-      "status": "checked",
-      "reason": "20 article links extracted from the listing; 8 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "20 article links found on the listing; 8 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-54",
       "name": "Hetq",
       "group": "South Caucasus",
       "url": "https://hetq.am/en/articles/",
-      "status": "checked",
-      "reason": "9 article links extracted from the listing; 3 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "9 article links found on the listing; 3 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-55",
@@ -1394,24 +1763,24 @@
       "name": "Azertag",
       "group": "South Caucasus",
       "url": "https://azertag.az/en/son-xeberler",
-      "status": "checked",
-      "reason": "15 article links extracted from the listing; 10 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "15 article links found on the listing; 10 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-58",
       "name": "Azernews",
       "group": "South Caucasus",
       "url": "https://www.azernews.az/latest/",
-      "status": "checked",
-      "reason": "12 article links extracted from the listing; 1 original article page was fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "12 article links found on the listing; 1 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-59",
       "name": "News.az",
       "group": "South Caucasus",
       "url": "https://news.az/news/latest",
-      "status": "checked",
-      "reason": "10 article links extracted from the listing; 4 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "10 article links found on the listing; 4 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-60",
@@ -1434,24 +1803,24 @@
       "name": "1TV",
       "group": "South Caucasus",
       "url": "https://1tv.ge/lang/en?s=&post_type=news",
-      "status": "checked",
-      "reason": "31 article links extracted from the listing; 5 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "31 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-63",
       "name": "IPN",
       "group": "South Caucasus",
       "url": "https://www.interpressnews.ge/en/latestnews",
-      "status": "checked",
-      "reason": "16 article links extracted from the listing; 5 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "16 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-64",
       "name": "GT",
       "group": "South Caucasus",
       "url": "https://georgiatoday.ge/category/news/",
-      "status": "checked",
-      "reason": "10 article links extracted from the listing; 5 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "10 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-65",
@@ -1466,8 +1835,8 @@
       "name": "JAMnews",
       "group": "South Caucasus",
       "url": "https://jam-news.net/",
-      "status": "checked",
-      "reason": "9 article links extracted from the listing; 3 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "9 article links found on the listing; 3 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-67",
@@ -1498,32 +1867,32 @@
       "name": "KazTAG",
       "group": "Central Asia",
       "url": "https://kaztag.kz/en/news/",
-      "status": "checked",
-      "reason": "12 article links extracted from the listing; 3 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "12 article links found on the listing; 3 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-71",
       "name": "Kazinform",
       "group": "Central Asia",
       "url": "https://qazinform.com/lenta",
-      "status": "checked",
-      "reason": "10 article links extracted from the listing; 2 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "10 article links found on the listing; 2 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-72",
       "name": "Interfax.kz",
       "group": "Central Asia",
       "url": "https://interfax.kz/?lang=eng&int_id=21",
-      "status": "checked",
-      "reason": "20 article links extracted from the listing; 2 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "20 article links found on the listing; 2 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-73",
       "name": "Astana Times",
       "group": "Central Asia",
       "url": "https://astanatimes.com/",
-      "status": "checked",
-      "reason": "11 article links extracted from the listing; 3 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "11 article links found on the listing; 3 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-74",
@@ -1538,16 +1907,16 @@
       "name": "Kabar",
       "group": "Central Asia",
       "url": "https://en.kabar.kg/news/",
-      "status": "checked",
-      "reason": "25 article links extracted from the listing; 5 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "25 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-76",
       "name": "AKIpress",
       "group": "Central Asia",
       "url": "https://akipress.com/allnews/",
-      "status": "checked",
-      "reason": "42 article links extracted from the listing; 5 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "42 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-77",
@@ -1578,8 +1947,8 @@
       "name": "DW",
       "group": "Miscl",
       "url": "https://www.dw.com/en/top-stories/s-9097",
-      "status": "checked",
-      "reason": "36 article links extracted from the listing; 5 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "36 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-81",
@@ -1626,16 +1995,16 @@
       "name": "dpa",
       "group": "Miscl",
       "url": "https://nordot.app/-/units/601684660556563553",
-      "status": "checked",
-      "reason": "10 article links extracted from the listing; 4 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "10 article links found on the listing; 4 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-87",
       "name": "dpa",
       "group": "Miscl",
       "url": "https://www.dpa-international.com/politics/",
-      "status": "checked",
-      "reason": "79 article links extracted from the listing; 5 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "79 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-88",
@@ -1690,32 +2059,32 @@
       "name": "LSM",
       "group": "Miscl",
       "url": "https://eng.lsm.lv/archive/",
-      "status": "checked",
-      "reason": "21 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "21 article links found on the listing; 3 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-95",
       "name": "LRT",
       "group": "Miscl",
       "url": "https://www.lrt.lt/en/news-in-english",
-      "status": "checked",
-      "reason": "16 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-96",
       "name": "Polskie Radio",
       "group": "Miscl",
       "url": "https://www.polskieradio.pl/395/7784",
-      "status": "checked",
-      "reason": "12 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "12 article links found on the listing; 4 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-97",
       "name": "TASS",
       "group": "Miscl",
       "url": "https://tass.com/politics",
-      "status": "checked",
-      "reason": "50 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "50 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-98",
@@ -1730,184 +2099,184 @@
       "name": "Sputnik",
       "group": "Miscl",
       "url": "https://sputnikglobe.com/russia/",
-      "status": "checked",
-      "reason": "21 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "21 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-100",
       "name": "Fox",
       "group": "Miscl",
       "url": "https://www.foxnews.com/us",
-      "status": "checked",
-      "reason": "57 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "57 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-101",
       "name": "CNN",
       "group": "Miscl",
       "url": "https://edition.cnn.com/us",
-      "status": "checked",
-      "reason": "28 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "28 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-102",
       "name": "Xinhua",
       "group": "Miscl",
       "url": "https://english.news.cn/list/china-chinaworld.htm",
-      "status": "checked",
-      "reason": "20 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "20 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-103",
       "name": "Yonhap",
       "group": "Miscl",
       "url": "https://en.yna.co.kr/news",
-      "status": "checked",
-      "reason": "19 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-104",
       "name": "AsiaOne",
       "group": "Miscl",
       "url": "https://www.asiaone.com/lite",
-      "status": "checked",
-      "reason": "10 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "10 article links found on the listing; 4 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-105",
       "name": "RFA",
       "group": "Miscl",
       "url": "https://www.rfa.org/english/",
-      "status": "checked",
-      "reason": "10 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "10 article links found on the listing; 1 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-106",
       "name": "Guardian",
       "group": "Miscl",
       "url": "https://www.theguardian.com/world",
-      "status": "checked",
-      "reason": "32 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "32 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-107",
       "name": "Novinite",
       "group": "Miscl",
       "url": "https://www.novinite.com/",
-      "status": "checked",
-      "reason": "19 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "19 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-108",
       "name": "Romania Insider",
       "group": "Miscl",
       "url": "https://www.romania-insider.com/",
-      "status": "checked",
-      "reason": "26 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-109",
       "name": "Cyprus Mail",
       "group": "Miscl",
       "url": "https://cyprus-mail.com/",
-      "status": "checked",
-      "reason": "32 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-110",
       "name": "NFP",
       "group": "Miscl",
       "url": "https://notesfrompoland.com/",
-      "status": "checked",
-      "reason": "10 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "10 article links found on the listing; 1 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-111",
       "name": "Baltic Times",
       "group": "Miscl",
       "url": "https://www.baltictimes.com/",
-      "status": "checked",
-      "reason": "25 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "25 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-112",
       "name": "NewsinEnglish.no",
       "group": "Miscl",
       "url": "https://www.newsinenglish.no/",
-      "status": "checked",
-      "reason": "19 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "19 article links found on the listing; 2 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-113",
       "name": "Copenhagen Post",
       "group": "Miscl",
       "url": "https://cphpost.dk/",
-      "status": "checked",
-      "reason": "14 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "14 article links found on the listing; 3 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-114",
       "name": "Local Sweden",
       "group": "Miscl",
       "url": "https://www.thelocal.se/",
-      "status": "checked",
-      "reason": "40 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "40 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-115",
       "name": "Moscow Times",
       "group": "Miscl",
       "url": "https://www.themoscowtimes.com/",
-      "status": "checked",
-      "reason": "24 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-116",
       "name": "Meduza",
       "group": "Miscl",
       "url": "https://meduza.io/en",
-      "status": "checked",
-      "reason": "20 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "20 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-117",
       "name": "Rudaw",
       "group": "Miscl",
       "url": "https://www.rudaw.net/english",
-      "status": "checked",
-      "reason": "8 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "8 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-118",
       "name": "Kurdistan 24",
       "group": "Miscl",
       "url": "https://www.kurdistan24.net/en",
-      "status": "checked",
-      "reason": "19 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "19 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-119",
       "name": "Iran International",
       "group": "Miscl",
       "url": "https://www.iranintl.com/en",
-      "status": "checked",
-      "reason": "29 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "2 articles selected after checking publication details on the original article pages."
     },
     {
       "id": "source-120",
       "name": "TOI",
       "group": "Miscl",
       "url": "https://www.timesofisrael.com/",
-      "status": "checked",
-      "reason": "10 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "10 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-121",
       "name": "L'Orient Today",
       "group": "Miscl",
       "url": "https://today.lorientlejour.com/",
-      "status": "checked",
-      "reason": "19 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-122",
@@ -1922,8 +2291,8 @@
       "name": "Dawn",
       "group": "Miscl",
       "url": "https://www.dawn.com/",
-      "status": "checked",
-      "reason": "17 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "17 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-124",
@@ -1946,8 +2315,8 @@
       "name": "CBC",
       "group": "Miscl",
       "url": "https://www.cbc.ca/news/politics",
-      "status": "checked",
-      "reason": "39 article links extracted from the listing; 15 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "39 article links found on the listing; 15 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-127",
@@ -1962,8 +2331,8 @@
       "name": "Local Germany",
       "group": "Miscl",
       "url": "https://www.thelocal.de/",
-      "status": "checked",
-      "reason": "48 article links extracted from the listing; 13 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "48 article links found on the listing; 13 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-129",
@@ -1986,8 +2355,8 @@
       "name": "NL Times",
       "group": "Miscl",
       "url": "https://nltimes.nl/",
-      "status": "checked",
-      "reason": "24 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-132",
@@ -2002,160 +2371,160 @@
       "name": "Belga",
       "group": "Miscl",
       "url": "https://www.belganewsagency.eu/",
-      "status": "checked",
-      "reason": "7 article links extracted from the listing; 4 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "7 article links found on the listing; 4 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-134",
       "name": "VRT",
       "group": "Miscl",
       "url": "https://www.vrt.be/vrtnws/en",
-      "status": "checked",
-      "reason": "30 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-135",
       "name": "Swissinfo",
       "group": "Miscl",
       "url": "https://www.swissinfo.ch/eng",
-      "status": "checked",
-      "reason": "26 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "26 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-136",
       "name": "Local Switzerland",
       "group": "Miscl",
       "url": "https://www.thelocal.ch/",
-      "status": "checked",
-      "reason": "26 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "26 article links found on the listing; 3 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-137",
       "name": "Local Austria",
       "group": "Miscl",
       "url": "https://www.thelocal.at/",
-      "status": "checked",
-      "reason": "26 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "26 article links found on the listing; 3 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-138",
       "name": "Vindobona",
       "group": "Miscl",
       "url": "https://www.vindobona.org/",
-      "status": "checked",
-      "reason": "14 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "14 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-139",
       "name": "The Journal",
       "group": "Miscl",
       "url": "https://www.thejournal.ie/",
-      "status": "checked",
-      "reason": "10 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-140",
       "name": "itv",
       "group": "Miscl",
       "url": "https://www.itv.com/news",
-      "status": "checked",
-      "reason": "19 article links extracted from the listing; 1 original article page was fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "19 article links found on the listing; 1 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-141",
       "name": "4 News",
       "group": "Miscl",
       "url": "https://www.channel4.com/news",
-      "status": "checked",
-      "reason": "32 article links extracted from the listing; 1 original article page was fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "32 article links found on the listing; 1 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-142",
       "name": "Iceland Review",
       "group": "Miscl",
       "url": "https://www.icelandreview.com/",
-      "status": "checked",
-      "reason": "34 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-143",
       "name": "Tovima",
       "group": "Miscl",
       "url": "https://www.tovima.com/",
-      "status": "checked",
-      "reason": "11 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-144",
       "name": "DNH",
       "group": "Miscl",
       "url": "https://dailynewshungary.com/",
-      "status": "checked",
-      "reason": "40 article links extracted from the listing; 2 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "40 article links found on the listing; 2 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-145",
       "name": "Malta Independent",
       "group": "Miscl",
       "url": "https://www.independent.com.mt/",
-      "status": "checked",
-      "reason": "19 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "19 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-146",
       "name": "Portugal News",
       "group": "Miscl",
       "url": "https://www.theportugalnews.com/",
-      "status": "checked",
-      "reason": "42 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "42 article links found on the listing; 1 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-147",
       "name": "Turkish Minute",
       "group": "Miscl",
       "url": "https://turkishminute.com/category/national/",
-      "status": "checked",
-      "reason": "11 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "11 article links found on the listing; 3 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-148",
       "name": "Daily Sabah",
       "group": "Miscl",
       "url": "https://www.dailysabah.com/",
-      "status": "checked",
-      "reason": "43 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-149",
       "name": "AA",
       "group": "Miscl",
       "url": "https://www.aa.com.tr/en",
-      "status": "checked",
-      "reason": "30 article links extracted from the listing; 5 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "30 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-150",
       "name": "Vatican News",
       "group": "Miscl",
       "url": "https://www.vaticannews.va/en.html",
-      "status": "checked",
-      "reason": "10 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "10 article links found on the listing; 1 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-151",
       "name": "Croatia Week",
       "group": "Miscl",
       "url": "https://www.croatiaweek.com/category/news-3/",
-      "status": "checked",
-      "reason": "10 article links extracted from the listing; 1 original article page was fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "10 article links found on the listing; 1 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-152",
       "name": "Slovenia Times",
       "group": "Miscl",
       "url": "https://sloveniatimes.com/c/latest-news",
-      "status": "checked",
-      "reason": "12 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-153",
@@ -2170,112 +2539,112 @@
       "name": "NPR",
       "group": "Miscl",
       "url": "https://www.npr.org/sections/world/",
-      "status": "checked",
-      "reason": "24 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "24 article links found on the listing; 3 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-155",
       "name": "PBS",
       "group": "Miscl",
       "url": "https://www.pbs.org/newshour/world",
-      "status": "checked",
-      "reason": "10 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "10 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-156",
       "name": "CBS",
       "group": "Miscl",
       "url": "https://www.cbsnews.com/world/",
-      "status": "checked",
-      "reason": "23 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "23 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-157",
       "name": "Axios",
       "group": "Miscl",
       "url": "https://www.axios.com/world",
-      "status": "checked",
-      "reason": "14 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-158",
       "name": "The Hill",
       "group": "Miscl",
       "url": "https://thehill.com/policy/international/",
-      "status": "checked",
-      "reason": "21 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "21 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-159",
       "name": "NBC",
       "group": "Miscl",
       "url": "https://www.nbcnews.com/world",
-      "status": "checked",
-      "reason": "25 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "25 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-160",
       "name": "USA Today",
       "group": "Miscl",
       "url": "https://www.usatoday.com/news/world/",
-      "status": "checked",
-      "reason": "34 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "34 article links found on the listing; 4 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-161",
       "name": "Defense News",
       "group": "Miscl",
       "url": "https://www.defensenews.com/",
-      "status": "checked",
-      "reason": "41 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-162",
       "name": "Breaking Defense",
       "group": "Miscl",
       "url": "https://breakingdefense.com/",
-      "status": "checked",
-      "reason": "20 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-163",
       "name": "Stars and Stripes",
       "group": "Miscl",
       "url": "https://www.stripes.com/",
-      "status": "checked",
-      "reason": "20 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "2 articles selected after checking publication details on the original article pages."
     },
     {
       "id": "source-164",
       "name": "Military Times",
       "group": "Miscl",
       "url": "https://www.militarytimes.com/news/",
-      "status": "checked",
-      "reason": "19 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "19 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-165",
       "name": "VOA",
       "group": "Miscl",
       "url": "https://www.voanews.com/",
-      "status": "checked",
-      "reason": "32 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "32 article links found on the listing; 3 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-166",
       "name": "Defense One",
       "group": "Miscl",
       "url": "https://www.defenseone.com/",
-      "status": "checked",
-      "reason": "24 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "24 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-167",
       "name": "FP",
       "group": "Miscl",
       "url": "https://foreignpolicy.com/category/latest/",
-      "status": "checked",
-      "reason": "15 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "15 article links found on the listing; 3 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-168",
@@ -2290,40 +2659,40 @@
       "name": "Tolo",
       "group": "Miscl",
       "url": "https://www.tolonews.com/afghanistan",
-      "status": "checked",
-      "reason": "24 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "24 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-170",
       "name": "Khaama",
       "group": "Miscl",
       "url": "https://www.khaama.com/category/afghanistan/",
-      "status": "checked",
-      "reason": "15 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "15 article links found on the listing; 4 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-171",
       "name": "Pajhwok",
       "group": "Miscl",
       "url": "https://pajhwok.com/",
-      "status": "checked",
-      "reason": "14 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "sampled",
+      "reason": "14 article links found on the listing; 5 original article pages fetched. No headline from this site was selected. Other links were not exhaustively reviewed."
     },
     {
       "id": "source-172",
       "name": "Ariana",
       "group": "Miscl",
       "url": "https://www.ariananews.af/category/latest-news/",
-      "status": "checked",
-      "reason": "20 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     },
     {
       "id": "source-173",
       "name": "Internazionale",
       "group": "Miscl",
       "url": "https://www.internazionale.it/ultime-notizie-reuters",
-      "status": "checked",
-      "reason": "20 article links extracted from the listing; 0 original article pages were fetched. No story was selected for this edition; this does not establish that the site had no relevant reporting."
+      "status": "collected",
+      "reason": "1 article selected after checking publication details on the original article pages."
     }
   ],
   "sourceChecks": []

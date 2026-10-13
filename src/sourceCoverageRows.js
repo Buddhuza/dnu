@@ -7,9 +7,11 @@ export function sourceCoverageRows(sources, articles, outcomes = [], extraChecks
   const rows = sources.map(source => {
     const count = counts.get(source.id) || 0;
     const outcome = results.get(source.id);
-    const status = count ? 'Included' : /^(collected|checked)$/.test(outcome?.status ?? '') ? 'Checked, no story selected'
-      : /failed|error|unreadable/i.test(outcome?.status ?? '') ? 'Fetch failed'
-        : outcome ? 'Checked, no verified story' : 'Not checked';
+    const status = count ? 'Included' : outcome?.status === 'listing-only' ? 'Listing only'
+      : outcome?.status === 'sampled' ? 'Article pages sampled'
+        : /^(collected|checked)$/.test(outcome?.status ?? '') ? 'Checked, no story selected'
+          : /failed|error|unreadable/i.test(outcome?.status ?? '') ? 'Fetch failed'
+            : outcome ? 'Checked, no verified story' : 'Not checked';
     const reason = count ? `${count} verified ${count === 1 ? 'story' : 'stories'} included in this edition.`
       : outcome?.reason || (outcome?.status === 'collected' ? 'This source was checked, but no article was selected for this edition.' : outcome?.status || notCheckedReason);
     return { ...source, status, reason, count };
