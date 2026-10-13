@@ -9,6 +9,7 @@ test('browser report download creates a readable Word file with country headings
   const template = readFileSync(new URL('../public/daily-update-template.docx', import.meta.url));
   const output = await createReportDocxFromTemplate(template, {
     title: 'DAILY NEWS UPDATE', windowStart: '2026-10-04T22:00:00Z', windowEnd: '2026-10-09T21:59:59Z', coverageNote: 'This coverage note must not appear.',
+    sourceOutcomes: [{ name: 'Uncollected agency', status: 'source page could not be fetched' }],
     articles: [
       { section: 'Lead stories', subsection: 'Middle East', title: 'Lead headline', summary: 'A factual lead sentence.', sourceName: 'Agency', url: 'https://example.com/lead' },
       { section: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Belgium', title: 'Exact headline', summary: 'A factual second sentence.', sourceName: 'Agency', url: 'https://example.com/story' }
@@ -27,6 +28,7 @@ test('browser report download creates a readable Word file with country headings
   assert.doesNotMatch(document, /A factual second sentence/);
   assert.doesNotMatch(document, /Exact headline\./);
   assert.doesNotMatch(document, /COVERAGE NOTE|This coverage note must not appear/);
+  assert.doesNotMatch(document, /Uncollected agency/);
   assert.match(document, /<w:tblpPr[^>]*w:tblpYSpec="bottom"/);
   assert.match(document, /<w:tblBorders><w:top w:val="single"/);
   assert.match(document, /Disclaimer:/);

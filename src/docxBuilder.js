@@ -17,10 +17,6 @@ function storyParagraph(item, relationshipId) {
   return `<w:p><w:pPr><w:spacing w:after="160"/><w:jc w:val="both"/></w:pPr>${textRun(String(item.title ?? '').trim(), `${calibri}<w:b/><w:sz w:val="24"/>`)}${textRun(' (', `${calibri}<w:sz w:val="24"/>`)}<w:hyperlink r:id="${relationshipId}">${textRun(item.sourceName, '<w:color w:val="0563C1"/><w:sz w:val="24"/><w:u w:val="single"/>')}</w:hyperlink>${textRun(')', `${calibri}<w:sz w:val="24"/>`)}</w:p>`;
 }
 
-function noteParagraph(value) {
-  return `<w:p><w:pPr><w:spacing w:after="120"/><w:jc w:val="both"/></w:pPr>${textRun(value, `${calibri}<w:color w:val="595959"/>`)}</w:p>`;
-}
-
 function reportDateParagraph(value) {
   return `<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="80" w:after="180"/></w:pPr>${textRun(value, `${calibri}<w:sz w:val="24"/>`)}</w:p>`;
 }
@@ -35,21 +31,9 @@ function disclaimerParagraphs() {
   return `<w:tbl><w:tblPr><w:tblW w:w="9638" w:type="dxa"/><w:tblpPr w:horzAnchor="margin" w:vertAnchor="margin" w:tblpXSpec="center" w:tblpYSpec="bottom" w:leftFromText="0" w:rightFromText="0" w:topFromText="0" w:bottomFromText="0"/><w:tblBorders><w:top w:val="single" w:sz="6" w:color="808080"/></w:tblBorders></w:tblPr><w:tblGrid><w:gridCol w:w="9638"/></w:tblGrid><w:tr><w:trPr><w:cantSplit/></w:trPr><w:tc><w:tcPr><w:tcW w:w="9638" w:type="dxa"/></w:tcPr>${first}${second}</w:tc></w:tr></w:tbl>`;
 }
 
-function sourceListParagraphs(items) {
-  const groups = new Map();
-  for (const item of items) {
-    const group = item.group || 'Other';
-    if (!groups.has(group)) groups.set(group, []);
-    let host = '';
-    try { host = new URL(item.url).hostname.replace(/^www\./, ''); } catch { /* Session-only outcomes may have no URL. */ }
-    groups.get(group).push(host ? `${item.name} (${host})` : item.name);
-  }
-  return [...groups].map(([group, names]) => noteParagraph(`${group.toUpperCase()}: ${names.join('; ')}.`));
-}
-
 const defaultTitle = () => 'DAILY NEWS UPDATE';
 
-export async function createReportDocxFromTemplate(templateBytes, { title, windowStart, windowEnd, articles, sourceOutcomes = [] }) {
+export async function createReportDocxFromTemplate(templateBytes, { title, windowStart, windowEnd, articles }) {
   const zip = await JSZip.loadAsync(templateBytes);
   const paragraphs = [];
   const reportDate = reportDateLabel(windowStart, windowEnd);
@@ -76,20 +60,6 @@ export async function createReportDocxFromTemplate(templateBytes, { title, windo
     const relationshipId = `rIdStory${index + 1}`;
     paragraphs.push(storyParagraph(item, relationshipId));
     relationships.push(`<Relationship Id="${relationshipId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="${escapeXml(item.url)}" TargetMode="External"/>`);
-  }
-  const blocked = sourceOutcomes.filter(item => /failed|unreadable|could not be fetched/i.test(item.status));
-  const unselected = sourceOutcomes.filter(item => item.status !== 'collected' && !/failed|unreadable|could not be fetched/i.test(item.status));
-  if (blocked.length || unselected.length) {
-    paragraphs.push(noteParagraph('AGENCIES FROM WHICH NO QUALIFYING ARTICLE WAS COLLECTED'));
-    paragraphs.push(noteParagraph('The lists below distinguish retrieval failures from sources whose articles were not fully reviewed. A fetched page without a selected story may still have relevant news.'));
-    if (blocked.length) {
-      paragraphs.push(noteParagraph('Access failed or page unreadable'));
-      paragraphs.push(...sourceListParagraphs(blocked));
-    }
-    if (unselected.length) {
-      paragraphs.push(noteParagraph('No article selected in this roundup'));
-      paragraphs.push(...sourceListParagraphs(unselected));
-    }
   }
   paragraphs.push(disclaimerParagraphs());
   let documentXml = await zip.file('word/document.xml').async('string');

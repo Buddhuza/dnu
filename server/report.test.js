@@ -19,11 +19,7 @@ test('Word report preserves article text, sections, and linked agency names', as
   assert.doesNotMatch(document, /A verified extra fact/);
   assert.doesNotMatch(document, /Exact headline\./);
   assert.match(document, /EASTERN EUROPE/);
-  assert.match(document, /Missing News/);
-  assert.match(document, /AGENCIES FROM WHICH NO QUALIFYING ARTICLE WAS COLLECTED/);
-  assert.match(document, /Access failed or page unreadable/);
-  assert.match(document, /No article selected in this roundup/);
-  assert.match(document, /Unselected News/);
+  assert.doesNotMatch(document, /Missing News|Unselected News|AGENCIES FROM WHICH NO QUALIFYING ARTICLE WAS COLLECTED/);
   assert.match(document, /w:fill="D9E2F3"/);
   assert.match(document, /w:val="0070C0"/);
   assert.match(document, /Organization for Security and Co-operation in Europe/);
