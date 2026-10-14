@@ -183,3 +183,6 @@
 @media(max-width:800px){.reading-layout.website-open{grid-template-columns:1fr;grid-template-rows:minmax(0,2fr) minmax(0,1fr);gap:8px}}
 @media(max-width:720px){.topbar{padding:7px 14px}.workspace,.workspace.no-sidebar{display:flex;flex-direction:column}.sidebar{flex:none}.sidebar-heading{padding:8px 16px 0}.sidebar-heading h2{font-size:17px}.search-box{height:32px;margin-bottom:5px}.group-select{height:30px;margin-bottom:5px}.source-list{flex:none;padding-bottom:5px}.source-row{height:42px}.main-panel{flex:1;padding:7px 10px}.daily-update{padding:0 12px 8px}.daily-heading{margin:0 -12px;padding:10px 12px 8px}}
 @media(max-width:720px){.topbar .brand-text small{display:none}.daily-heading-main{gap:6px}.daily-downloads{gap:6px;flex-wrap:nowrap;justify-content:space-between}.daily-downloads .daily-download{width:auto;flex:1 1 auto;font-size:14px}.daily-edit{flex:0 0 auto;font-size:14px}.daily-section-nav{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin-top:7px}.daily-section-nav a{font-size:9px}}
+.daily-title-row{display:flex;align-items:baseline;flex:1 1 auto;min-width:0;flex-wrap:wrap;column-gap:14px;row-gap:1px}
+.daily-title-row h2,.daily-title-row .report-date{flex:none;white-space:nowrap}
+.daily-title-row .report-date{margin:0}
