@@ -19,7 +19,6 @@
 .daily-downloads{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
 .daily-downloads .daily-download{border:0;cursor:pointer}
 .daily-downloads .daily-download:disabled{opacity:.5;cursor:not-allowed}
-.daily-bottom-actions{display:flex;justify-content:flex-end;margin-top:20px}
 .daily-disclaimer{border-top:1px solid #87979b;padding-top:14px;margin-top:30px;color:var(--site-text,#182a36);font-size:calc(var(--site-body-size,18px) - 3px);line-height:1.5}
 .daily-disclaimer p{margin:0 0 12px}
 .daily-disclaimer p:last-child{margin-bottom:0}
@@ -31,7 +30,7 @@
 .app-shell[data-mode="dark"] .daily-edit:hover{background:#263a43}
 .daily-original{font-size:10px;color:var(--site-section,#0070c0);white-space:nowrap}
 @media(max-width:720px){.manage-button{margin-left:auto}.brand-text small{display:none}}
-@media(max-width:720px){.daily-downloads{width:100%;flex-wrap:wrap}.daily-downloads .daily-download{width:100%;flex:1 0 100%}.daily-edit{flex:1}.daily-bottom-actions .daily-downloads{width:100%}}
+@media(max-width:720px){.daily-downloads{width:100%;flex-wrap:wrap}.daily-downloads .daily-download{width:100%;flex:1 0 100%}.daily-edit{flex:1}}
 
 .add-backdrop{position:fixed;inset:0;z-index:1300;display:grid;place-items:center;background:#102633a8;padding:16px}
 .add-dialog{width:min(100%,620px);max-height:min(90vh,850px);overflow:auto;background:var(--site-surface,#fff);color:var(--site-text,#182a36);border:1px solid #8ca7a4;border-radius:12px;box-shadow:0 20px 60px #071a2673;padding:24px}
