@@ -31,7 +31,27 @@
 .app-shell[data-mode="dark"] .daily-edit:hover{background:#263a43}
 .daily-original{font-size:10px;color:var(--site-section,#0070c0);white-space:nowrap}
 @media(max-width:720px){.manage-button{margin-left:auto}.brand-text small{display:none}}
-@media(max-width:720px){.daily-downloads{width:100%;flex-wrap:nowrap}.daily-downloads .daily-download{width:auto;flex:1}.daily-edit{flex:none}.daily-bottom-actions .daily-downloads{width:100%}}
+@media(max-width:720px){.daily-downloads{width:100%;flex-wrap:wrap}.daily-downloads .daily-download{width:100%;flex:1 0 100%}.daily-edit{flex:1}.daily-bottom-actions .daily-downloads{width:100%}}
+
+.add-backdrop{position:fixed;inset:0;z-index:1300;display:grid;place-items:center;background:#102633a8;padding:16px}
+.add-dialog{width:min(100%,620px);max-height:min(90vh,850px);overflow:auto;background:var(--site-surface,#fff);color:var(--site-text,#182a36);border:1px solid #8ca7a4;border-radius:12px;box-shadow:0 20px 60px #071a2673;padding:24px}
+.add-dialog-heading{display:flex;justify-content:space-between;align-items:start;gap:12px}
+.add-dialog-heading h2{font-size:calc(var(--site-body-size,18px) + 4px);margin:0}
+.add-dialog-heading button{border:0;background:transparent;color:inherit;font-size:28px;line-height:1;cursor:pointer}
+.add-dialog>p{font-size:var(--site-body-size,18px);line-height:1.5;margin:13px 0}
+.add-dialog .add-unavailable{background:var(--site-bg,#f4efe6);border-left:3px solid var(--site-section,#0070c0);padding:12px}
+.add-dialog form label{display:block;font-weight:800;margin:18px 0 8px}
+.add-dialog textarea,.add-dialog input{box-sizing:border-box;width:100%;border:1px solid #a7bbba;border-radius:8px;background:var(--site-surface,#fff);color:var(--site-text,#182a36);font:inherit;line-height:1.5;padding:12px}
+.add-dialog textarea{resize:vertical}
+.add-dialog-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:12px}
+.add-dialog-actions button{border:1px solid var(--site-primary,#123e47);border-radius:7px;padding:10px 14px;font:700 var(--site-body-size,18px) var(--site-font,'DM Sans',sans-serif);cursor:pointer}
+.add-dialog-actions button[type=submit]{background:var(--site-primary,#123e47);color:#fff}
+.add-dialog-actions button:disabled{opacity:.55;cursor:not-allowed}
+.add-results{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:8px}
+.add-results li{border-left:3px solid #ae6846;background:var(--site-bg,#f4efe6);padding:9px 12px;overflow-wrap:anywhere}
+.add-results li.success{border-left-color:#3b9667}
+.add-results strong,.add-results span{display:block;font-size:calc(var(--site-body-size,18px) - 2px)}
+.add-results strong{margin-bottom:3px}
 
 /* Two-column reading layout and adjustable text size. */
 .app-shell{font-size:var(--site-body-size,18px)}

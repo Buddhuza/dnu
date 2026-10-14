@@ -2,7 +2,8 @@ import express from 'express';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { DEFAULT_INCLUDE, DEFAULT_EXCLUDE, articleArray, fallbackListingUrl, normalizeArticles, parseWords, scrapeHeadlines, scrapeArticle, searchSourceArticles, undatedCandidates, reviewedArticle, reviewedArticleCheck, candidatePage, customSourceFromRequest } from './news.js';
+import { DEFAULT_INCLUDE, DEFAULT_EXCLUDE, articleArray, fallbackListingUrl, normalizeArticles, parseWords, scrapeHeadlines, scrapeArticle, scrapeImportedArticle, searchSourceArticles, undatedCandidates, reviewedArticle, reviewedArticleCheck, candidatePage, customSourceFromRequest } from './news.js';
+import { importedArticle, publicArticleUrl, sourceForArticle } from './importArticle.js';
 import { collectFeed, collectFallbackFeed, FEED_URLS } from './feeds.js';
 import { createReportDocx } from './report.js';
 import { currentDailyUpdate } from './daily.js';
@@ -130,6 +131,20 @@ app.post('/api/article', async (req, res) => {
     }
     res.json(check.article);
   } catch (error) { res.status(502).json({ error: `Could not review article: ${error.message}` }); }
+});
+
+app.post('/api/import-article', async (req, res) => {
+  const articleUrl = publicArticleUrl(req.body?.url);
+  if (!articleUrl) return res.status(400).json({ error: 'Enter a public HTTPS article URL.' });
+  if (!process.env.FIRECRAWL_API_KEY) return res.status(503).json({ error: 'Firecrawl is not configured on this server.' });
+  try {
+    let entry = articleCache.get(articleUrl.href);
+    if (!entry || Date.now() - entry.at > 10 * 60 * 1000) {
+      entry = { at: Date.now(), payload: await scrapeImportedArticle(articleUrl.href, process.env.FIRECRAWL_API_KEY) };
+      articleCache.set(articleUrl.href, entry);
+    }
+    res.json(importedArticle(entry.payload, articleUrl, sourceForArticle(articleUrl, sources)));
+  } catch (error) { res.status(422).json({ error: error.message || 'The article could not be imported.' }); }
 });
 
 app.post('/api/report.docx', async (req, res) => {

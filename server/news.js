@@ -1,4 +1,5 @@
 import { editorialScore, isEnglishArticle, passesSourcePolicy } from './editorialPolicy.js';
+import { IMPORT_PROMPT } from '../src/importPrompt.js';
 
 export const DEFAULT_INCLUDE = ['OSCE', 'cooperation', 'diplomacy', 'bilateral', 'foreign policy', 'talks', 'summit', 'peace', 'sanctions', 'NATO', 'EU', 'UN', 'security', 'defense', 'defence', 'conflict', 'war', 'terrorism', 'military', 'politics', 'political', 'election', 'Russia', 'Ukraine'];
 export const DEFAULT_EXCLUDE = [];
@@ -167,6 +168,10 @@ export async function scrapeHeadlines(source, include, apiKey, fetchImpl = fetch
 export async function scrapeArticle(url, apiKey, fetchImpl = fetch) {
   const prompt = 'Read the original English-language news article. Return an object with exactHeadline copied verbatim, publishedAt as an ISO 8601 timestamp with timezone only if explicitly available, and summary as one short factual sentence from the first two substantive paragraphs that adds the most important detail beyond the headline without repeating it. Do not translate a non-English article. Do not invent dates or facts, and do not add opinion or analysis.';
   return firecrawlPost({ url, formats: ['markdown', 'html', { type: 'json', prompt }], onlyMainContent: true, timeout: 30000 }, apiKey, fetchImpl);
+}
+
+export async function scrapeImportedArticle(url, apiKey, fetchImpl = fetch) {
+  return firecrawlPost({ url, formats: ['markdown', 'html', { type: 'json', prompt: IMPORT_PROMPT }], onlyMainContent: true, timeout: 30000 }, apiKey, fetchImpl);
 }
 
 export async function searchSourceArticles(source, include, apiKey, fetchImpl = fetch) {

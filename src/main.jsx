@@ -4,6 +4,7 @@ import preparedUpdate from '../data/daily-update-2026-10-13.json';
 import preparedSources from '../sources.json';
 import publishedSiteConfig from '../data/site-config.json';
 import SiteManager from './SiteManager.jsx';
+import AddArticlesDialog from './AddArticlesDialog.jsx';
 import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources } from './siteConfig.js';
 import { orderedSubsections } from './newsSections.js';
 import { createReportDocxFromTemplate } from './docxBuilder.js';
@@ -40,6 +41,7 @@ function App() {
   const [toast, setToast] = useState('');
   const [managing, setManaging] = useState(false);
   const [editingStories, setEditingStories] = useState(false);
+  const [addingArticles, setAddingArticles] = useState(false);
   const [excludedStoryIds, setExcludedStoryIds] = useState(() => {
     const saved = readStored('dnu-excluded-story-ids-v1', []);
     return new Set(Array.isArray(saved) ? saved.filter(id => typeof id === 'string') : []);
@@ -73,6 +75,14 @@ function App() {
   const displayedArticles = useMemo(() => displaySiteContent(daily?.articles ?? [], siteConfig), [daily, siteConfig]);
   const selectedArticles = useMemo(() => displayedArticles.filter(item => !excludedStoryIds.has(item.id)), [displayedArticles, excludedStoryIds]);
   const readingArticles = editingStories ? displayedArticles : selectedArticles;
+  const reportWindow = useMemo(() => {
+    if (!daily) return null;
+    const times = selectedArticles.map(item => Date.parse(item.publishedAt)).filter(Number.isFinite);
+    return { ...daily, windowStart: new Date(Math.min(Date.parse(daily.windowStart), ...times)).toISOString(), windowEnd: new Date(Math.max(Date.parse(daily.windowEnd), ...times)).toISOString() };
+  }, [daily, selectedArticles]);
+  const coverageNote = !daily ? '' : siteConfig.coverageText || (reportWindow?.windowStart
+    ? `Coverage: ${dateLabel(reportWindow.windowStart)} to ${dateLabel(reportWindow.windowEnd)} (Vienna time). Original snapshot prepared ${dateLabel(daily.checkedAt)} from selected article pages.${selectedArticles.some(item => item.id.startsWith('manual-')) ? ' Includes articles added in this browser.' : ''} The original snapshot does not refresh automatically.`
+    : `Prepared ${dateLabel(daily?.checkedAt)} from selected reporting in the preceding ${daily?.windowHours || 48} hours.`);
   const activeTheme = siteConfig.darkMode ? siteConfig.darkTheme : siteConfig.theme;
   const themeStyle = {
     '--site-primary': activeTheme.primary, '--site-accent': activeTheme.accent,
@@ -204,14 +214,14 @@ function App() {
       const response = await fetch(`${import.meta.env.BASE_URL}daily-update-template.docx`);
       if (!response.ok) throw new Error('The Word template is unavailable.');
       const templateBytes = await response.arrayBuffer();
-      const file = await createReportDocxFromTemplate(templateBytes, { title: siteConfig.updateTitle, windowStart: daily?.windowStart, windowEnd: daily?.windowEnd, articles: selectedArticles, sourceOutcomes: daily?.sourceOutcomes ?? [] });
+      const file = await createReportDocxFromTemplate(templateBytes, { title: siteConfig.updateTitle, windowStart: reportWindow?.windowStart, windowEnd: reportWindow?.windowEnd, articles: selectedArticles, sourceOutcomes: daily?.sourceOutcomes ?? [] });
       const url = URL.createObjectURL(new Blob([file], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }));
-      const a = document.createElement('a'); a.href = url; a.download = reportFilename(daily); document.body.appendChild(a); a.click(); a.remove();
+      const a = document.createElement('a'); a.href = url; a.download = reportFilename(reportWindow); document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 60_000);
     } catch (error) { setToast(error.message || 'Could not create the Word update.'); }
   }
 
-  const updateControls = () => daily?.articles?.length > 0 && <div className="daily-downloads"><button className="daily-download" disabled={!selectedArticles.length} onClick={downloadManagedDocx}>Download update</button><button className="daily-edit" type="button" aria-pressed={editingStories} onClick={() => setEditingStories(current => !current)}>{editingStories ? 'Save' : 'Edit'}</button></div>;
+  const updateControls = () => daily?.articles?.length > 0 && <div className="daily-downloads"><button className="daily-download" disabled={!selectedArticles.length} onClick={downloadManagedDocx}>Download update</button><button className="daily-edit" type="button" aria-pressed={editingStories} onClick={() => setEditingStories(current => !current)}>{editingStories ? 'Save' : 'Edit'}</button><button className="daily-edit" type="button" onClick={() => setAddingArticles(true)}>Add</button></div>;
 
   const collectionPanel = (
         <section className="headlines-section" id="live-collection"><div className="section-title"><div><h2>Live collection</h2></div><span className="time-filter">◷ &nbsp; LAST 48 HOURS</span></div><div className="source-banner"><div className="banner-icon">{active?.name?.[0] || 'S'}</div><div><strong>{active?.name || 'Select a source'}</strong><small>{active?.url || 'Choose an outlet from the left'}</small></div><button onClick={() => loadSource()} disabled={loading || !active || !canCollect || staticPreview}>{loading ? 'Collecting…' : 'Collect headlines'} <span>↗</span></button></div><div className="batch-row"><span>Each scan checks the extracted articles for every source, then tries an alternate feed, listing page, and recent site search if needed. Sources still without articles receive a reason and next step. Complete scans may take hours and use many Firecrawl credits.</span><button onClick={() => loadSource(activeId, true)} disabled={loading || !canCollect || !active || staticPreview}>Scan all listed articles</button><button onClick={() => loadVisible(collectionSources)} disabled={loading || !collectionSources.length || staticPreview}>Verify visible sources ({collectionSources.length})</button><button onClick={() => loadVisible(configuredSources)} disabled={loading || !configuredSources.length || staticPreview}>Verify all sources ({configuredSources.length})</button></div>
@@ -237,8 +247,8 @@ function App() {
       <main className={`main-panel ${websiteSource ? 'with-website' : ''}`}>
         <div className={`reading-layout ${websiteSource ? 'website-open' : ''}`}>
         {siteConfig.showUpdate && <section className={`daily-update ${siteConfig.sectionHeadingUppercase ? 'uppercase-headings' : ''}`} aria-labelledby="daily-update-title">
-          <div className="daily-heading"><div><h2 id="daily-update-title">{siteConfig.updateTitle}</h2>{daily?.windowStart && daily?.windowEnd && <p className="report-date">{reportDateLabel(daily.windowStart, daily.windowEnd)}</p>}</div>{updateControls()}</div>
-          {daily && <>{dailySections.map(({ section, subsections }) => <div className="daily-section" key={section}><h3>{section}</h3>{subsections.map(([subsection, items]) => <div key={subsection}>{subsection && <h4 className={section === 'Miscellaneous' ? 'plain-topic' : undefined}>{subsection}</h4>}{items.map((item, index) => <React.Fragment key={item.id}>{item.country && (index === 0 || items[index - 1].country !== item.country) && <h5 className="daily-country">{item.country}</h5>}<article className={`daily-story ${editingStories ? 'daily-story-editing' : ''}`}>{editingStories && <input className="daily-story-checkbox" type="checkbox" checked={!excludedStoryIds.has(item.id)} aria-label={`Include story: ${item.title}`} onChange={event => setExcludedStoryIds(current => { const next = new Set(current); if (event.target.checked) next.delete(item.id); else next.add(item.id); return next; })}/>}<p><strong>{reportStoryText(item).headline}</strong>{item.summary && <> {reportStoryText(item).summary}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{item.sourceName}</a>)</p></article></React.Fragment>)}</div>)}</div>)}{!readingArticles.length && <p className="daily-empty">{displayedArticles.length ? 'No stories are selected. Press Edit to choose stories for this update.' : 'There are no visible stories in this update. Use Manage site to show or add content.'}</p>}<div className="daily-disclaimer"><p><strong>Disclaimer:</strong> {disclaimerFirst}</p><p>{disclaimerSecond}</p></div>{siteConfig.showCoverage && <p className="daily-coverage">{siteConfig.coverageText || (daily.windowStart ? `Coverage: ${dateLabel(daily.windowStart)} to ${dateLabel(daily.windowEnd)} (Vienna time). Prepared ${dateLabel(daily.checkedAt)} from selected original articles. This static snapshot does not refresh automatically.` : `Prepared ${dateLabel(daily.checkedAt)} from selected reporting in the preceding ${daily.windowHours || 48} hours.`)}</p>}<div className="daily-bottom-actions">{updateControls()}</div></>}
+          <div className="daily-heading"><div><h2 id="daily-update-title">{siteConfig.updateTitle}</h2>{reportWindow?.windowStart && reportWindow?.windowEnd && <p className="report-date">{reportDateLabel(reportWindow.windowStart, reportWindow.windowEnd)}</p>}</div>{updateControls()}</div>
+          {daily && <>{dailySections.map(({ section, subsections }) => <div className="daily-section" key={section}><h3>{section}</h3>{subsections.map(([subsection, items]) => <div key={subsection}>{subsection && <h4 className={section === 'Miscellaneous' ? 'plain-topic' : undefined}>{subsection}</h4>}{items.map((item, index) => <React.Fragment key={item.id}>{item.country && (index === 0 || items[index - 1].country !== item.country) && <h5 className="daily-country">{item.country}</h5>}<article className={`daily-story ${editingStories ? 'daily-story-editing' : ''}`}>{editingStories && <input className="daily-story-checkbox" type="checkbox" checked={!excludedStoryIds.has(item.id)} aria-label={`Include story: ${item.title}`} onChange={event => setExcludedStoryIds(current => { const next = new Set(current); if (event.target.checked) next.delete(item.id); else next.add(item.id); return next; })}/>}<p><strong>{reportStoryText(item).headline}</strong>{item.summary && <> {reportStoryText(item).summary}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{item.sourceName}</a>)</p></article></React.Fragment>)}</div>)}</div>)}{!readingArticles.length && <p className="daily-empty">{displayedArticles.length ? 'No stories are selected. Press Edit to choose stories for this update.' : 'There are no visible stories in this update. Use Manage site to show or add content.'}</p>}<div className="daily-disclaimer"><p><strong>Disclaimer:</strong> {disclaimerFirst}</p><p>{disclaimerSecond}</p></div>{siteConfig.showCoverage && <p className="daily-coverage">{coverageNote}</p>}<div className="daily-bottom-actions">{updateControls()}</div></>}
         </section>}
         {websiteSource && <section className="website-panel" aria-label={`${websiteSource.name} website`}><div className="website-panel-heading"><div><span className="eyebrow">SOURCE WEBSITE</span><h2>{websiteSource.name}</h2></div><button onClick={() => setWebsiteSourceId('')} aria-label="Close source website">×</button></div><div className="website-panel-actions"><a href={websiteSource.url} target="_blank" rel="noopener noreferrer">Open website in new tab ↗</a><button onClick={() => { setManagerTab('Collect'); setManaging(true); }}>Collect headlines</button></div><p>Some publishers block display inside other websites. Use the link above if this panel stays blank.</p><iframe key={websiteSource.id} src={websiteSource.url} title={`${websiteSource.name} website`} referrerPolicy="no-referrer" loading="lazy"/></section>}
         </div>
@@ -246,6 +256,7 @@ function App() {
       </main>
     </div>{toast && <div className="toast" onClick={() => setToast('')}>{toast} ×</div>}
     {managing && <SiteManager initialTab={managerTab} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} includeText={includeText} setIncludeText={setIncludeText} excludeText={excludeText} setExcludeText={setExcludeText} applyScope={applyScope} onClose={() => setManaging(false)} onReset={() => setSiteConfig(defaultSiteConfig(daily?.articles ?? preparedUpdate.articles))}/>}
+    {addingArticles && <AddArticlesDialog serverAvailable={!staticPreview && Boolean(config?.firecrawlConfigured)} sources={configuredSources} existingUrls={[...(daily?.articles ?? []).map(item => item.url), ...siteConfig.customArticles.map(item => item.url)]} remainingSlots={100 - siteConfig.customArticles.length} onAdd={article => setSiteConfig(current => current.customArticles.some(item => item.url === article.url) ? current : { ...current, customArticles: [...current.customArticles, article] })} onClose={() => setAddingArticles(false)}/>}
   </div>;
 }
 

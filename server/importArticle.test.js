@@ -1,0 +1,40 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { articlePlacement, importedArticle, publicArticleUrl, publicationTimestamp, sourceForArticle } from './importArticle.js';
+
+test('custom article URLs must be public HTTPS pages', () => {
+  assert.equal(publicArticleUrl('https://news.example.org/story')?.href, 'https://news.example.org/story');
+  for (const value of ['http://news.example.org/story', 'https://localhost/story', 'https://127.0.0.1/story', 'https://name:password@news.example.org/story', 'https://news.example.org:8080/story']) assert.equal(publicArticleUrl(value), null);
+});
+
+test('placement uses the report taxonomy and rejects invented classifications', () => {
+  assert.deepEqual(articlePlacement({}, 'Kosovo and Serbia hold security talks', ''), { sectionId: 'South Eastern Europe', subsection: 'Serbia / Kosovo', country: '' });
+  assert.deepEqual(articlePlacement({}, 'EU launches new sanctions', ''), { sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'EU' });
+  assert.deepEqual(articlePlacement({ section: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'Mars' }, 'OSCE chair to visit Armenia', ''), { sectionId: 'South Caucasus', subsection: 'Armenia', country: '' });
+  assert.deepEqual(articlePlacement({}, 'Germany signs defence deal with France', ''), { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Germany' });
+});
+
+test('imported story has a reviewed headline, summary, source and placement', () => {
+  const url = publicArticleUrl('https://example.org/article');
+  const source = sourceForArticle(url, [{ id: 'source-1', name: 'Example News', url: 'https://example.org/latest' }]);
+  const payload = { data: { metadata: { ogTitle: 'OSCE chair to visit Armenia', publishedTime: '2026-10-14T10:00:00Z', language: 'en' }, json: { summary: 'The chair will discuss the peace process in Yerevan.', section: 'South Caucasus', subsection: 'Armenia' } } };
+  const story = importedArticle(payload, url, source);
+  assert.equal(story.sourceName, 'Example News');
+  assert.equal(story.subsection, 'Armenia');
+  assert.equal(story.reviewed, true);
+  assert.equal(story.summary, 'The chair will discuss the peace process in Yerevan.');
+  assert.equal(story.id, 'manual-https://example.org/article');
+});
+
+test('non-English and unverified article pages are refused', () => {
+  const url = publicArticleUrl('https://example.org/article');
+  const source = sourceForArticle(url, []);
+  const data = { metadata: { ogTitle: 'OSCE chair to visit Armenia', publishedTime: '2026-10-14T10:00:00Z', language: 'ru' }, json: { summary: 'The chair will discuss the peace process in Yerevan.' } };
+  assert.throws(() => importedArticle({ data }, url, source), /not in English/);
+  assert.throws(() => importedArticle({ data: { ...data, metadata: { ...data.metadata, language: 'en', publishedTime: undefined } } }, url, source), /publication time/);
+});
+
+test('publisher page timestamps with a space and timezone are verified', () => {
+  assert.equal(publicationTimestamp('2026-10-13 08:25:00 +02:00'), '2026-10-13T06:25:00.000Z');
+  assert.equal(publicationTimestamp('2026-10-13', '2026-10-13T08:25:00+02:00'), '2026-10-13T06:25:00.000Z');
+});
