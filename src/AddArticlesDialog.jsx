@@ -5,8 +5,8 @@ import { MISCELLANEOUS_COUNTRIES } from './newsSections.js';
 const firecrawlKeyStorage = 'dnu-firecrawl-api-key-v1';
 const savedFirecrawlKey = () => { try { return localStorage.getItem(firecrawlKeyStorage) || ''; } catch { return ''; } };
 
-export default function AddArticlesDialog({ serverAvailable, sources, sections, existingUrls, remainingSlots, initialUrls = '', grabSourceName = '', onAdd, onClose }) {
-  const [value, setValue] = useState(initialUrls);
+export default function AddArticlesDialog({ serverAvailable, sources, sections, existingUrls, remainingSlots, grabSourceName = '', onAdd, onClose }) {
+  const [value, setValue] = useState('');
   const [apiKey, setApiKey] = useState(savedFirecrawlKey);
   const [rememberKey, setRememberKey] = useState(() => Boolean(savedFirecrawlKey()));
   const [busy, setBusy] = useState(false);
@@ -99,7 +99,7 @@ export default function AddArticlesDialog({ serverAvailable, sources, sections, 
   return <div className="add-backdrop" onMouseDown={event => { if (!busy && event.target === event.currentTarget) onClose(); }}>
     <section className="add-dialog" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="add-dialog-title">
       <div className="add-dialog-heading"><h2 id="add-dialog-title">Add articles to the update</h2><button type="button" onClick={onClose} disabled={busy} aria-label="Close Add articles">×</button></div>
-      {grabSourceName && <p className="add-grab-hint">{initialUrls ? `Article link copied from ${grabSourceName}. Check the URL before scraping.` : `The browser could not read the article URL from ${grabSourceName}. Copy its article link, then paste it below.`}</p>}
+      {grabSourceName && <p className="add-grab-hint">Enter or paste the article URL from {grabSourceName} below. Grab does not access your clipboard.</p>}
       <p>Paste one English-language article URL per line. Review the suggested section and country for each scraped story before adding it. Articles of any age can be added. If the page lacks an exact publication time, Add estimates it from the article or URL; if no date is found, it stamps the import time. Times are shown in Vienna time (CET/CEST).</p>
       {!serverAvailable && <p className="add-unavailable">This static page sends your key directly to Firecrawl. Select “Remember key in this browser” to reuse it when you add articles later.</p>}
       {remainingSlots < 1 && <p className="add-unavailable" role="status">The browser has reached its 100 custom-story limit. Remove an added story in Manage site → Stories before importing another.</p>}
