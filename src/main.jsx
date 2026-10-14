@@ -14,6 +14,7 @@ import { reportStoryText } from './reportText.js';
 import { disclaimerFirst, disclaimerSecond } from './disclaimer.js';
 import { sourceAudit } from './collectionAudit.js';
 import { formatViennaDateTime, formatViennaCompactDateTime } from './viennaTime.js';
+import { droppedArticleUrl } from './droppedArticleUrl.js';
 import './styles.css';
 
 const readStored = (key, fallback, legacyKey) => {
@@ -50,6 +51,9 @@ function App() {
   const pointerDragRef = useRef(null);
   const [addingArticles, setAddingArticles] = useState(false);
   const [grabSourceName, setGrabSourceName] = useState('');
+  const [grabArticleUrl, setGrabArticleUrl] = useState('');
+  const [grabAutoScrape, setGrabAutoScrape] = useState(false);
+  const [sourceArticleUrl, setSourceArticleUrl] = useState('');
   const [updateSearchOpen, setUpdateSearchOpen] = useState(false);
   const [updateSearchText, setUpdateSearchText] = useState('');
   const [activeSearchResult, setActiveSearchResult] = useState(0);
@@ -292,8 +296,22 @@ function App() {
     setCompiledAt(new Date().toISOString());
   };
   const keepStoryTextInline = event => { if (event.key === 'Enter') event.preventDefault(); };
+  const openGrab = (source, url = '') => {
+    setGrabSourceName(source.name);
+    setGrabArticleUrl(url);
+    setGrabAutoScrape(Boolean(url));
+    setAddingArticles(true);
+  };
+  const droppedLink = event => droppedArticleUrl(event.dataTransfer.getData('text/uri-list'), event.dataTransfer.getData('text/plain'));
+  const acceptSourceArticle = (event, source, scrape = false) => {
+    event.preventDefault();
+    const url = droppedLink(event);
+    if (!url) { setToast('Drop an HTTPS article link.'); return; }
+    setSourceArticleUrl(url);
+    if (scrape) openGrab(source, url);
+  };
   const updateControls = () => daily?.articles?.length > 0 && <div className="daily-downloads">
-    <button className="daily-action daily-edit" type="button" aria-label="Add articles" title="Add article URLs" onClick={() => { setGrabSourceName(''); setAddingArticles(true); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M4 12h16"/></svg></button>
+    <button className="daily-action daily-edit" type="button" aria-label="Add articles" title="Add article URLs" onClick={() => { setGrabSourceName(''); setGrabArticleUrl(''); setGrabAutoScrape(false); setAddingArticles(true); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M4 12h16"/></svg></button>
     <button className="daily-action daily-edit" type="button" aria-label={editingStories ? 'Save edits' : 'Edit update'} title={editingStories ? 'Save text and story choices' : 'Edit text and story choices'} aria-pressed={editingStories} onClick={toggleStoryEditing}><svg viewBox="0 0 24 24" aria-hidden="true">{editingStories ? <path d="m4 12 5 5L20 6"/> : <><path d="m4 20 4.2-.9L19 8.3 15.7 5 4.9 15.8 4 20Z"/><path d="m13.9 6.8 3.3 3.3"/></>}</svg></button>
     <button className={`daily-action daily-edit ${headlineOnly ? 'is-active' : ''}`} type="button" aria-label={headlineOnly ? 'Show summaries' : 'Show headlines only'} title={editingStories ? 'Save edits before switching views' : headlineOnly ? 'Show headlines and summaries' : 'Show headlines only'} aria-pressed={headlineOnly} disabled={editingStories} onClick={() => setHeadlineOnly(current => !current)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16"/>{!headlineOnly && <path d="M4 15h16"/>}</svg></button>
     <button className="daily-action daily-download" type="button" aria-label="Download update" title={editingStories ? 'Save edits before downloading' : headlineOnly ? 'Download headlines-only Word update' : 'Download Word update with summaries'} disabled={!selectedArticles.length || editingStories} onClick={downloadManagedDocx}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 17v3h16v-3"/></svg></button>
@@ -373,7 +391,7 @@ function App() {
         <div className="sidebar-heading"><span className="eyebrow">DISCOVER</span><h2>Sources <em>{sources.length}</em></h2></div>
         <label className="search-box"><span>⌕</span><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search sources" aria-label="Search sources"/><kbd>⌘ K</kbd></label>
         <select className="group-select" value={group} onChange={e => setGroup(e.target.value)} aria-label="Filter source region">{groups.map(x => <option key={x}>{x}</option>)}</select>
-        <div className="source-list">{visibleSources.map(x => <button key={x.id} className={`source-row ${websiteSourceId === x.id ? 'active' : ''}`} onClick={() => { setActiveId(x.id); setWebsiteSourceId(x.id); setResult(null); setError(''); }} aria-label={`Show ${x.name} website beside the daily news update`}><span className="source-icon">{x.name[0]}</span><span className="source-copy"><strong>{x.name}</strong></span><span className="source-arrow">›</span></button>)}{!visibleSources.length && <p className="no-sources">No sources match this search.</p>}</div>
+        <div className="source-list">{visibleSources.map(x => <button key={x.id} className={`source-row ${websiteSourceId === x.id ? 'active' : ''}`} onClick={() => { setActiveId(x.id); setWebsiteSourceId(x.id); setSourceArticleUrl(''); setResult(null); setError(''); }} aria-label={`Show ${x.name} website beside the daily news update`}><span className="source-icon">{x.name[0]}</span><span className="source-copy"><strong>{x.name}</strong></span><span className="source-arrow">›</span></button>)}{!visibleSources.length && <p className="no-sources">No sources match this search.</p>}</div>
         <div className="sidebar-foot"><span className="pulse"/> {sources.length} visible sources</div>
       </aside>}
       <main className={`main-panel ${websiteSource ? 'with-website' : ''}`}>
@@ -402,13 +420,13 @@ function App() {
             {siteConfig.showCoverage && <p className="daily-coverage">{coverageNote}</p>}
           </div>}
         </section>}
-        {websiteSource && <section className="website-panel" aria-label={`${websiteSource.name} website`}><div className="website-panel-heading"><div><span className="eyebrow">SOURCE WEBSITE</span><h2>{websiteSource.name}</h2></div><button onClick={() => setWebsiteSourceId('')} aria-label="Close source website">×</button></div><div className="website-panel-actions"><a href={websiteSource.url} target="_blank" rel="noopener noreferrer">Open website in new tab ↗</a><button type="button" className="grab-button" onClick={() => { setGrabSourceName(websiteSource.name); setAddingArticles(true); }} title="Enter an article URL from this source">Grab</button>{managementEnabled && <button onClick={() => { setManagerTab('Collect'); setManaging(true); }}>Collect headlines</button>}</div><p>Press Grab to enter an article URL. Some publishers block display inside other websites; use the link above if this panel stays blank.</p><iframe key={websiteSource.id} src={websiteSource.url} title={`${websiteSource.name} website`} referrerPolicy="no-referrer" loading="lazy"/></section>}
+        {websiteSource && <section className="website-panel" aria-label={`${websiteSource.name} website`}><div className="website-panel-heading"><div><span className="eyebrow">SOURCE WEBSITE</span><h2>{websiteSource.name}</h2></div><button onClick={() => setWebsiteSourceId('')} aria-label="Close source website">×</button></div><div className="website-panel-actions"><a href={websiteSource.url} target="_blank" rel="noopener noreferrer">Open website in new tab ↗</a><span className="website-grab-controls"><span className="article-link-target" onDragOver={event => event.preventDefault()} onDrop={event => acceptSourceArticle(event, websiteSource)}>{sourceArticleUrl ? <a href={sourceArticleUrl} draggable="true" target="_blank" rel="noopener noreferrer" title={sourceArticleUrl}>Article link ↗</a> : 'Drop article link here'}</span><button type="button" className="grab-button" onClick={() => openGrab(websiteSource, sourceArticleUrl)} onDragOver={event => event.preventDefault()} onDrop={event => acceptSourceArticle(event, websiteSource, true)} title="Drop an article link here to scrape it">Grab</button></span>{managementEnabled && <button onClick={() => { setManagerTab('Collect'); setManaging(true); }}>Collect headlines</button>}</div><p>Drag an article link from the publisher page onto Article link or Grab. Dropping it on Grab starts scraping automatically. Some publishers block display inside other websites; use the link above if this panel stays blank.</p><iframe key={websiteSource.id} src={websiteSource.url} title={`${websiteSource.name} website`} referrerPolicy="no-referrer" loading="lazy"/></section>}
         </div>
 
       </main>
     </div>{toast && <div className="toast" onClick={() => setToast('')}>{toast} ×</div>}
     {managementEnabled && managing && <SiteManager initialTab={managerTab} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} includeText={includeText} setIncludeText={setIncludeText} excludeText={setExcludeText} setExcludeText={setExcludeText} applyScope={applyScope} onClose={() => setManaging(false)} onReset={() => setSiteConfig(defaultSiteConfig(daily?.articles ?? preparedUpdate.articles))}/>}
-    {addingArticles && <AddArticlesDialog grabSourceName={grabSourceName} serverAvailable={!staticPreview && Boolean(config?.firecrawlConfigured)} sources={configuredSources} sections={siteConfig.sections} existingUrls={[...(daily?.articles ?? []).map(item => item.url), ...siteConfig.customArticles.map(item => item.url)]} remainingSlots={100 - siteConfig.customArticles.length} onAdd={article => { setSiteConfig(current => current.customArticles.some(item => item.url === article.url) ? current : { ...current, customArticles: [...current.customArticles, article] }); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}
+    {addingArticles && <AddArticlesDialog initialUrl={grabArticleUrl} autoScrape={grabAutoScrape} grabSourceName={grabSourceName} serverAvailable={!staticPreview && Boolean(config?.firecrawlConfigured)} sources={configuredSources} sections={siteConfig.sections} existingUrls={[...(daily?.articles ?? []).map(item => item.url), ...siteConfig.customArticles.map(item => item.url)]} remainingSlots={100 - siteConfig.customArticles.length} onAdd={article => { setSiteConfig(current => current.customArticles.some(item => item.url === article.url) ? current : { ...current, customArticles: [...current.customArticles, article] }); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}
   </div>;
 }
 

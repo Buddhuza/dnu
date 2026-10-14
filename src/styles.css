@@ -256,3 +256,8 @@
 .website-panel-actions .grab-button{border-color:var(--site-section,#0070c0);font-weight:800}
 .website-panel-actions .grab-button:focus-visible{outline:2px solid var(--site-section,#0070c0);outline-offset:2px}
 .add-dialog .add-grab-hint{padding:10px 12px;border-left:3px solid var(--site-section,#0070c0);background:var(--site-bg,#f4efe6)}
+.website-grab-controls{display:inline-flex;align-items:stretch;gap:6px;max-width:100%}
+.website-panel-actions .article-link-target{display:inline-flex;align-items:center;min-height:34px;max-width:180px;padding:6px 9px;border:1px dashed #9bb0bc;border-radius:6px;color:var(--site-text,#182a36);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.website-panel-actions .article-link-target:has(a){border-style:solid}
+.website-panel-actions .article-link-target a{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:grab}
+.website-panel-actions .article-link-target a:active{cursor:grabbing}
