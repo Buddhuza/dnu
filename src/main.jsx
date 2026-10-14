@@ -43,6 +43,9 @@ function App() {
   const [managing, setManaging] = useState(false);
   const [editingStories, setEditingStories] = useState(false);
   const [addingArticles, setAddingArticles] = useState(false);
+  const [updateSearchOpen, setUpdateSearchOpen] = useState(false);
+  const [updateSearchText, setUpdateSearchText] = useState('');
+  const [activeSearchResult, setActiveSearchResult] = useState(0);
   const [excludedStoryIds, setExcludedStoryIds] = useState(() => {
     const saved = readStored('dnu-excluded-story-ids-v1', []);
     return new Set(Array.isArray(saved) ? saved.filter(id => typeof id === 'string') : []);
@@ -76,6 +79,22 @@ function App() {
   const displayedArticles = useMemo(() => displaySiteContent(daily?.articles ?? [], siteConfig), [daily, siteConfig]);
   const selectedArticles = useMemo(() => displayedArticles.filter(item => !excludedStoryIds.has(item.id)), [displayedArticles, excludedStoryIds]);
   const readingArticles = editingStories ? displayedArticles : selectedArticles;
+  const updateSearchQuery = updateSearchText.trim().toLocaleLowerCase();
+  const updateSearchResults = useMemo(() => updateSearchQuery ? readingArticles.filter(item => {
+    const story = reportStoryText(item);
+    return [item.section, item.subsection, item.country, story.headline, story.summary, item.sourceName]
+      .some(value => String(value || '').toLocaleLowerCase().includes(updateSearchQuery));
+  }) : [], [readingArticles, updateSearchQuery]);
+  const updateSearchIds = useMemo(() => new Set(updateSearchResults.map(item => item.id)), [updateSearchResults]);
+  useEffect(() => { setActiveSearchResult(0); }, [updateSearchQuery]);
+  useEffect(() => {
+    if (!updateSearchOpen || !updateSearchResults.length) return;
+    const item = updateSearchResults[Math.min(activeSearchResult, updateSearchResults.length - 1)];
+    const target = [...document.querySelectorAll('.daily-scroll .daily-story')].find(node => node.dataset.storyId === item.id);
+    if (!target) return;
+    const scroller = target.closest('.daily-scroll');
+    scroller.scrollTo({ top: scroller.scrollTop + target.getBoundingClientRect().top - scroller.getBoundingClientRect().top - 20, behavior: 'smooth' });
+  }, [updateSearchOpen, updateSearchResults, activeSearchResult]);
   const reportWindow = useMemo(() => {
     if (!daily) return null;
     const times = selectedArticles.map(item => Date.parse(item.publishedAt)).filter(Number.isFinite);
@@ -222,7 +241,22 @@ function App() {
     } catch (error) { setToast(error.message || 'Could not create the Word update.'); }
   }
 
-  const updateControls = () => daily?.articles?.length > 0 && <div className="daily-downloads"><button className="daily-download" disabled={!selectedArticles.length} onClick={downloadManagedDocx}>Download</button><button className="daily-edit" type="button" aria-pressed={editingStories} onClick={() => setEditingStories(current => !current)}>{editingStories ? 'Save' : 'Edit'}</button><button className="daily-edit" type="button" onClick={() => setAddingArticles(true)}>Add</button></div>;
+  const updateControls = () => daily?.articles?.length > 0 && <div className="daily-downloads"><button className="daily-download" disabled={!selectedArticles.length} onClick={downloadManagedDocx}>Download</button><button className="daily-edit" type="button" aria-pressed={editingStories} onClick={() => setEditingStories(current => !current)}>{editingStories ? 'Save' : 'Edit'}</button><button className="daily-edit" type="button" onClick={() => setAddingArticles(true)}>Add</button><button className="daily-edit daily-search-toggle" type="button" aria-label="Search update" aria-expanded={updateSearchOpen} onClick={() => setUpdateSearchOpen(current => !current)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"/><path d="m16 16 5 5"/></svg></button></div>;
+  const highlightSearch = value => {
+    const text = String(value || '');
+    if (!updateSearchOpen || !updateSearchQuery) return text;
+    const lower = text.toLocaleLowerCase();
+    const parts = [];
+    let from = 0;
+    let match = lower.indexOf(updateSearchQuery, from);
+    while (match !== -1) {
+      parts.push(text.slice(from, match), <mark key={match}>{text.slice(match, match + updateSearchQuery.length)}</mark>);
+      from = match + updateSearchQuery.length;
+      match = lower.indexOf(updateSearchQuery, from);
+    }
+    parts.push(text.slice(from));
+    return parts;
+  };
   const jumpToSection = (event, index) => {
     const target = document.getElementById(`daily-section-${index}`);
     if (!target) return;
@@ -256,8 +290,8 @@ function App() {
       <main className={`main-panel ${websiteSource ? 'with-website' : ''}`}>
         <div className={`reading-layout ${websiteSource ? 'website-open' : ''}`}>
         {siteConfig.showUpdate && <section className={`daily-update ${siteConfig.sectionHeadingUppercase ? 'uppercase-headings' : ''}`} aria-labelledby="daily-update-title">
-          <div className="daily-heading"><div className="daily-heading-main"><div className="daily-title-row"><h2 id="daily-update-title">{siteConfig.updateTitle}</h2>{reportWindow?.windowStart && reportWindow?.windowEnd && <p className="report-date">{reportDateLabel(reportWindow.windowStart, reportWindow.windowEnd)}</p>}</div>{updateControls()}</div>{dailySections.length > 0 && <nav className="daily-section-nav" aria-label="Update sections" style={{ '--section-count': Math.min(dailySections.length, 6) }}>{dailySections.map(({ section }, index) => <a key={section} href={`#daily-section-${index}`} onClick={event => jumpToSection(event, index)}>{section}</a>)}</nav>}</div>
-          {daily && <div className="daily-scroll" role="region" aria-label="Daily update stories" tabIndex={0}>{dailySections.map(({ section, subsections }, index) => <div className="daily-section" id={`daily-section-${index}`} key={section}><h3>{section}</h3>{subsections.map(([subsection, items]) => <div key={subsection}>{subsection && <h4 className={section === 'Miscellaneous' ? 'plain-topic' : undefined}>{subsection}</h4>}{items.map((item, index) => <React.Fragment key={item.id}>{item.country && (index === 0 || items[index - 1].country !== item.country) && <h5 className="daily-country">{item.country}</h5>}<article className={`daily-story ${editingStories ? 'daily-story-editing' : ''}`}>{editingStories && <input className="daily-story-checkbox" type="checkbox" checked={!excludedStoryIds.has(item.id)} aria-label={`Include story: ${item.title}`} onChange={event => setExcludedStoryIds(current => { const next = new Set(current); if (event.target.checked) next.delete(item.id); else next.add(item.id); return next; })}/>}<p><strong>{reportStoryText(item).headline}</strong>{item.summary && <> {reportStoryText(item).summary}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{item.sourceName}</a>)</p></article></React.Fragment>)}</div>)}</div>)}{!readingArticles.length && <p className="daily-empty">{displayedArticles.length ? 'No stories are selected. Press Edit to choose stories for this update.' : 'There are no visible stories in this update. Use Manage site to show or add content.'}</p>}<div className="daily-disclaimer"><p><strong>Disclaimer:</strong> {disclaimerFirst}</p><p>{disclaimerSecond}</p></div>{siteConfig.showCoverage && <p className="daily-coverage">{coverageNote}</p>}</div>}
+          <div className="daily-heading"><div className="daily-heading-main"><div><h2 id="daily-update-title">{siteConfig.updateTitle}</h2>{reportWindow?.windowStart && reportWindow?.windowEnd && <p className="report-date">{reportDateLabel(reportWindow.windowStart, reportWindow.windowEnd)}</p>}</div>{updateControls()}</div>{updateSearchOpen && <div className="update-search" role="search" aria-label="Search update"><input autoFocus type="search" value={updateSearchText} onChange={event => setUpdateSearchText(event.target.value)} onKeyDown={event => { if (event.key === 'Escape') setUpdateSearchOpen(false); if (event.key === 'Enter' && updateSearchResults.length) { event.preventDefault(); setActiveSearchResult(current => (current + (event.shiftKey ? -1 : 1) + updateSearchResults.length) % updateSearchResults.length); } }} placeholder="Find text in update" aria-label="Find text in update"/><span role="status">{updateSearchQuery ? updateSearchResults.length ? `${Math.min(activeSearchResult + 1, updateSearchResults.length)} of ${updateSearchResults.length} stories` : 'No matches' : 'Search headlines, summaries, sources and sections'}</span><button type="button" aria-label="Previous match" disabled={!updateSearchResults.length} onClick={() => setActiveSearchResult(current => (current - 1 + updateSearchResults.length) % updateSearchResults.length)}>↑</button><button type="button" aria-label="Next match" disabled={!updateSearchResults.length} onClick={() => setActiveSearchResult(current => (current + 1) % updateSearchResults.length)}>↓</button><button type="button" aria-label="Close search" onClick={() => setUpdateSearchOpen(false)}>×</button></div>}{dailySections.length > 0 && <nav className="daily-section-nav" aria-label="Update sections" style={{ '--section-count': Math.min(dailySections.length, 6) }}>{dailySections.map(({ section }, index) => <a key={section} href={`#daily-section-${index}`} onClick={event => jumpToSection(event, index)}>{section}</a>)}</nav>}</div>
+          {daily && <div className="daily-scroll" role="region" aria-label="Daily update stories" tabIndex={0}>{dailySections.map(({ section, subsections }, index) => <div className="daily-section" id={`daily-section-${index}`} key={section}><h3>{highlightSearch(section)}</h3>{subsections.map(([subsection, items]) => <div key={subsection}>{subsection && <h4 className={section === 'Miscellaneous' ? 'plain-topic' : undefined}>{highlightSearch(subsection)}</h4>}{items.map((item, index) => <React.Fragment key={item.id}>{item.country && (index === 0 || items[index - 1].country !== item.country) && <h5 className="daily-country">{highlightSearch(item.country)}</h5>}<article data-story-id={item.id} className={`daily-story ${editingStories ? 'daily-story-editing' : ''} ${updateSearchOpen && updateSearchIds.has(item.id) ? 'search-match' : ''} ${updateSearchOpen && updateSearchResults[Math.min(activeSearchResult, updateSearchResults.length - 1)]?.id === item.id ? 'active-search-match' : ''}`}>{editingStories && <input className="daily-story-checkbox" type="checkbox" checked={!excludedStoryIds.has(item.id)} aria-label={`Include story: ${item.title}`} onChange={event => setExcludedStoryIds(current => { const next = new Set(current); if (event.target.checked) next.delete(item.id); else next.add(item.id); return next; })}/>}<p><strong>{highlightSearch(reportStoryText(item).headline)}</strong>{item.summary && <> {highlightSearch(reportStoryText(item).summary)}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{highlightSearch(item.sourceName)}</a>)</p></article></React.Fragment>)}</div>)}</div>)}{!readingArticles.length && <p className="daily-empty">{displayedArticles.length ? 'No stories are selected. Press Edit to choose stories for this update.' : 'There are no visible stories in this update. Use Manage site to show or add content.'}</p>}<div className="daily-disclaimer"><p><strong>Disclaimer:</strong> {disclaimerFirst}</p><p>{disclaimerSecond}</p></div>{siteConfig.showCoverage && <p className="daily-coverage">{coverageNote}</p>}</div>}
         </section>}
         {websiteSource && <section className="website-panel" aria-label={`${websiteSource.name} website`}><div className="website-panel-heading"><div><span className="eyebrow">SOURCE WEBSITE</span><h2>{websiteSource.name}</h2></div><button onClick={() => setWebsiteSourceId('')} aria-label="Close source website">×</button></div><div className="website-panel-actions"><a href={websiteSource.url} target="_blank" rel="noopener noreferrer">Open website in new tab ↗</a><button onClick={() => { setManagerTab('Collect'); setManaging(true); }}>Collect headlines</button></div><p>Some publishers block display inside other websites. Use the link above if this panel stays blank.</p><iframe key={websiteSource.id} src={websiteSource.url} title={`${websiteSource.name} website`} referrerPolicy="no-referrer" loading="lazy"/></section>}
         </div>
