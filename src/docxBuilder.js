@@ -14,7 +14,9 @@ function subsectionParagraph(value, plainTopic = false) {
 }
 
 function storyParagraph(item, relationshipId) {
-  return `<w:p><w:pPr><w:spacing w:after="160"/><w:jc w:val="both"/></w:pPr>${textRun(String(item.title ?? '').trim(), `${calibri}<w:b/><w:sz w:val="24"/>`)}${textRun(' (', `${calibri}<w:sz w:val="24"/>`)}<w:hyperlink r:id="${relationshipId}">${textRun(item.sourceName, '<w:color w:val="0563C1"/><w:sz w:val="24"/><w:u w:val="single"/>')}</w:hyperlink>${textRun(')', `${calibri}<w:sz w:val="24"/>`)}</w:p>`;
+  const summary = String(item.summary ?? '').trim();
+  const detail = summary ? `<w:r><w:br/></w:r>${textRun(summary, `${calibri}<w:sz w:val="24"/>`)}` : '';
+  return `<w:p><w:pPr><w:spacing w:after="160"/><w:jc w:val="both"/></w:pPr>${textRun(String(item.title ?? '').trim(), `${calibri}<w:b/><w:sz w:val="24"/>`)}${detail}${textRun(' (', `${calibri}<w:sz w:val="24"/>`)}<w:hyperlink r:id="${relationshipId}">${textRun(item.sourceName, '<w:color w:val="0563C1"/><w:sz w:val="24"/><w:u w:val="single"/>')}</w:hyperlink>${textRun(')', `${calibri}<w:sz w:val="24"/>`)}</w:p>`;
 }
 
 function reportDateParagraph(value) {

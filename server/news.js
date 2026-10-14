@@ -146,6 +146,6 @@ export async function scrapeHeadlines(source, include, apiKey, fetchImpl = fetch
 }
 
 export async function scrapeArticle(url, apiKey, fetchImpl = fetch) {
-  const prompt = 'Read the original news article. Return an object with exactHeadline copied verbatim from the article and publishedAt as an ISO 8601 timestamp with timezone only if explicitly available. Do not invent or rewrite the headline or publication time.';
+  const prompt = 'Read the original news article. Return an object with exactHeadline copied verbatim, publishedAt as an ISO 8601 timestamp with timezone only if explicitly available, and summary as one factual sentence from the first two substantive paragraphs that adds information beyond the headline. Do not invent dates or facts, and do not add opinion or analysis.';
   return firecrawlPost({ url, formats: ['markdown', 'html', { type: 'json', prompt }], onlyMainContent: true, timeout: 30000 }, apiKey, fetchImpl);
 }
