@@ -179,8 +179,8 @@ export function displaySiteContent(articles, config) {
       sourceName: edit?.sourceName?.trim() || article.sourceName,
       section: sectionById.get(sectionId)?.name || sectionId,
       sectionId,
-      subsection: edit ? edit.subsection : legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : article.subsection,
-      country: edit && typeof edit.country === 'string' ? edit.country : article.country || ''
+      subsection: edit?.sectionId ? edit.subsection : edit?.subsection || (legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : article.subsection),
+      country: edit?.sectionId ? edit.country : edit?.country || article.country || ''
     });
   }
   for (const article of config.customArticles) {

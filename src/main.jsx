@@ -43,7 +43,6 @@ function App() {
   const [toast, setToast] = useState('');
   const [managing, setManaging] = useState(false);
   const [editingStories, setEditingStories] = useState(false);
-  const [storyTextDrafts, setStoryTextDrafts] = useState({});
   const [dropTarget, setDropTarget] = useState('');
   const pointerDragRef = useRef(null);
   const [addingArticles, setAddingArticles] = useState(false);
@@ -263,25 +262,31 @@ function App() {
     } catch (error) { setToast(error.message || 'Could not create the Word update.'); }
   }
 
-  const invalidStoryText = Object.values(storyTextDrafts).some(draft => !draft.title.trim() || !draft.sourceName.trim());
   const toggleStoryEditing = () => {
     if (!editingStories) {
-      setStoryTextDrafts(Object.fromEntries(displayedArticles.map(item => [item.id, { title: item.title, summary: item.summary || '', sourceName: item.sourceName || '' }])));
       setEditingStories(true);
       return;
     }
-    if (invalidStoryText) return;
+    const drafts = Object.fromEntries([...document.querySelectorAll('.daily-scroll .daily-story[data-story-id]')].map(story => [story.dataset.storyId, {
+      title: story.querySelector('[data-edit-field="title"]')?.innerText.trim() || '',
+      summary: story.querySelector('[data-edit-field="summary"]')?.innerText.trim() || '',
+      sourceName: story.querySelector('[data-edit-field="sourceName"]')?.innerText.trim() || ''
+    }]));
+    if (Object.values(drafts).some(draft => !draft.title || !draft.sourceName)) {
+      setToast('Each story needs a headline and agency before saving.');
+      return;
+    }
     setSiteConfig(current => ({
       ...current,
-      articleEdits: Object.fromEntries([...Object.entries(current.articleEdits), ...Object.entries(storyTextDrafts)
+      articleEdits: Object.fromEntries([...Object.entries(current.articleEdits), ...Object.entries(drafts)
         .filter(([id]) => !(current.customArticles.some(item => item.id === id)))
         .map(([id, draft]) => [id, { ...(current.articleEdits[id] || {}), title: draft.title.trim(), summary: draft.summary.trim(), summaryEdited: true, sourceName: draft.sourceName.trim() }])]),
-      customArticles: current.customArticles.map(item => storyTextDrafts[item.id] ? { ...item, title: storyTextDrafts[item.id].title.trim(), summary: storyTextDrafts[item.id].summary.trim(), sourceName: storyTextDrafts[item.id].sourceName.trim() } : item)
+      customArticles: current.customArticles.map(item => drafts[item.id] ? { ...item, title: drafts[item.id].title, summary: drafts[item.id].summary, sourceName: drafts[item.id].sourceName } : item)
     }));
-    setStoryTextDrafts({});
     setEditingStories(false);
   };
-  const updateControls = () => daily?.articles?.length > 0 && <div className="daily-downloads"><button className="daily-download" disabled={!selectedArticles.length} onClick={downloadManagedDocx}>Download</button><button className="daily-edit" type="button" aria-pressed={editingStories} disabled={editingStories && invalidStoryText} title={editingStories && invalidStoryText ? 'Enter a headline and agency for every story before saving' : undefined} onClick={toggleStoryEditing}>{editingStories ? 'Save' : 'Edit'}</button><button className="daily-edit" type="button" onClick={() => setAddingArticles(true)}>Add</button><button className="daily-edit daily-search-toggle" type="button" aria-label="Search update" aria-expanded={updateSearchOpen} onClick={() => setUpdateSearchOpen(current => !current)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"/><path d="m16 16 5 5"/></svg></button></div>;
+  const keepStoryTextInline = event => { if (event.key === 'Enter') event.preventDefault(); };
+  const updateControls = () => daily?.articles?.length > 0 && <div className="daily-downloads"><button className="daily-download" disabled={!selectedArticles.length} onClick={downloadManagedDocx}>Download</button><button className="daily-edit" type="button" aria-pressed={editingStories} onClick={toggleStoryEditing}>{editingStories ? 'Save' : 'Edit'}</button><button className="daily-edit" type="button" onClick={() => setAddingArticles(true)}>Add</button><button className="daily-edit daily-search-toggle" type="button" aria-label="Search update" aria-expanded={updateSearchOpen} onClick={() => setUpdateSearchOpen(current => !current)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"/><path d="m16 16 5 5"/></svg></button></div>;
   const highlightSearch = value => {
     const text = String(value || '');
     if (!updateSearchOpen || !updateSearchQuery) return text;
@@ -372,15 +377,10 @@ function App() {
                 {items.map((item, index) => <React.Fragment key={item.id}>
                   {item.country && (index === 0 || items[index - 1].country !== item.country) && <h5 data-drop-kind="country" data-section-id={sectionId} data-subsection={subsection} data-country={item.country} className={`daily-country ${dropTarget === `country:${sectionId}:${subsection}:${item.country}` ? 'story-drop-target' : ''}`}>{highlightSearch(item.country)}</h5>}
                   <article data-drop-kind="story" data-section-id={item.sectionId} data-subsection={item.subsection || ''} data-country={item.country || ''} data-story-id={item.id} className={`daily-story ${editingStories ? 'daily-story-editing' : ''} ${updateSearchOpen && updateSearchIds.has(item.id) ? 'search-match' : ''} ${updateSearchOpen && updateSearchResults[Math.min(activeSearchResult, updateSearchResults.length - 1)]?.id === item.id ? 'active-search-match' : ''} ${dropTarget === `story:${item.id}:before` ? 'story-drop-before' : ''} ${dropTarget === `story:${item.id}:after` ? 'story-drop-after' : ''}`}
-                    onPointerDown={event => { if (!editingStories || (event.target.closest('input,textarea,select,a,button') && !event.target.closest('.story-drag-handle')) || (event.pointerType !== 'mouse' && !event.target.closest('.story-drag-handle'))) return; event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId); pointerDragRef.current = item.id; }}
+                    onPointerDown={event => { if (!editingStories || (event.target.closest('input,textarea,select,a,button,[contenteditable="true"]') && !event.target.closest('.story-drag-handle')) || (event.pointerType !== 'mouse' && !event.target.closest('.story-drag-handle'))) return; event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId); pointerDragRef.current = item.id; }}
                     onPointerMove={movePointerStory} onPointerUp={finishPointerStory} onPointerCancel={() => { pointerDragRef.current = null; setDropTarget(''); }}>
                     {editingStories && <><input className="daily-story-checkbox" type="checkbox" checked={!excludedStoryIds.has(item.id)} aria-label={`Include story: ${item.title}`} onChange={event => setExcludedStoryIds(current => { const next = new Set(current); if (event.target.checked) next.delete(item.id); else next.add(item.id); return next; })}/><button type="button" className="story-drag-handle" aria-label={`Drag story: ${item.title}`} title="Drag to reorder or move">⋮⋮</button></>}
-                    <div className="daily-story-content">{editingStories ? <div className="daily-story-fields">
-                      <label>Headline<input value={storyTextDrafts[item.id]?.title ?? item.title} maxLength={400} onChange={event => setStoryTextDrafts(current => ({ ...current, [item.id]: { ...(current[item.id] || { title: item.title, summary: item.summary || '', sourceName: item.sourceName || '' }), title: event.target.value } }))} required/></label>
-                      <label>Summary<textarea value={storyTextDrafts[item.id]?.summary ?? item.summary ?? ''} maxLength={1200} rows={2} onChange={event => setStoryTextDrafts(current => ({ ...current, [item.id]: { ...(current[item.id] || { title: item.title, summary: item.summary || '', sourceName: item.sourceName || '' }), summary: event.target.value } }))}/></label>
-                      <label>Agency<input value={storyTextDrafts[item.id]?.sourceName ?? item.sourceName} maxLength={100} onChange={event => setStoryTextDrafts(current => ({ ...current, [item.id]: { ...(current[item.id] || { title: item.title, summary: item.summary || '', sourceName: item.sourceName || '' }), sourceName: event.target.value } }))} required/></label>
-                      {Number.isFinite(Date.parse(item.publishedAt)) && <time className="daily-story-time" dateTime={item.publishedAt} title={dateLabel(item.publishedAt)}>{formatViennaCompactDateTime(item.publishedAt)}</time>}
-                    </div> : <p><strong>{highlightSearch(reportStoryText(item).headline)}</strong>{item.summary && <> {highlightSearch(reportStoryText(item).summary)}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{highlightSearch(item.sourceName)}</a>){Number.isFinite(Date.parse(item.publishedAt)) && <> <time className="daily-story-time" dateTime={item.publishedAt} title={dateLabel(item.publishedAt)}>{highlightSearch(formatViennaCompactDateTime(item.publishedAt))}</time></>}</p>}</div>
+                    <div className="daily-story-content">{editingStories ? <p className="daily-story-inline-edit"><strong contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit headline" data-edit-field="title" onKeyDown={keepStoryTextInline}>{reportStoryText(item).headline}</strong>{' '}<span contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit summary" data-edit-field="summary" data-placeholder="Add summary" onKeyDown={keepStoryTextInline}>{reportStoryText(item).summary}</span>{' '}(<span contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit agency" data-edit-field="sourceName" onKeyDown={keepStoryTextInline}>{item.sourceName}</span>){Number.isFinite(Date.parse(item.publishedAt)) && <> <time className="daily-story-time" dateTime={item.publishedAt} title={dateLabel(item.publishedAt)}>{formatViennaCompactDateTime(item.publishedAt)}</time></>}</p> : <p><strong>{highlightSearch(reportStoryText(item).headline)}</strong>{item.summary && <> {highlightSearch(reportStoryText(item).summary)}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{highlightSearch(item.sourceName)}</a>){Number.isFinite(Date.parse(item.publishedAt)) && <> <time className="daily-story-time" dateTime={item.publishedAt} title={dateLabel(item.publishedAt)}>{highlightSearch(formatViennaCompactDateTime(item.publishedAt))}</time></>}</p>}</div>
                   </article>
                 </React.Fragment>)}
               </div>)}

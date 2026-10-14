@@ -43,6 +43,14 @@ test('headline, empty summary, and agency edits survive saved settings', () => {
   assert.equal(story.sourceName, 'New agency');
 });
 
+test('old text-only edits restore the original country and subsection', () => {
+  const stories = [{ id: 'italy', section: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Italy', title: 'Original', sourceName: 'Agency' }];
+  const config = normalizeSiteConfig({ ...defaultSiteConfig(stories), articleEdits: { italy: { title: 'Edited', summary: '', summaryEdited: true, sourceName: 'New agency', sectionId: '', subsection: '', country: '' } } }, stories);
+  const [story] = displaySiteContent(stories, config);
+  assert.equal(story.subsection, 'WESTERN / CENTRAL EUROPE');
+  assert.equal(story.country, 'Italy');
+});
+
 test('import rejects unsafe links and invalid colors', () => {
   const config = normalizeSiteConfig({
     version: 1,
