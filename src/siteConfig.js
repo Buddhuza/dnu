@@ -106,6 +106,7 @@ export function normalizeSiteConfig(input, articles = []) {
       sourceId: 'manual', sourceName: clean(item.sourceName, 'Manual entry', 100),
       title, summary: clean(item.summary, '', 1200),
       publishedAt: Number.isFinite(Date.parse(item.publishedAt)) ? new Date(item.publishedAt).toISOString() : new Date().toISOString(),
+      timeSource: ['page', 'inferred', 'current'].includes(item.timeSource) ? item.timeSource : 'page',
       sectionId: legacyOrganisations ? 'Miscellaneous' : sectionIds.has(item.sectionId) ? item.sectionId : sections[0]?.id || 'Miscellaneous',
       subsection: legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : item.sectionId === 'Lead stories' && item.subsection === 'Middle East / North Africa' ? 'Middle East' : clean(item.subsection, '', 100),
       country: clean(item.country, '', 100),

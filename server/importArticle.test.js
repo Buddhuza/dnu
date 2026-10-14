@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { articlePlacement, importedArticle, publicArticleUrl, publicationTimestamp, sourceForArticle } from './importArticle.js';
+import { articlePlacement, importedArticle, publicArticleUrl, publicationTimestamp, resolveArticleTime, sourceForArticle } from './importArticle.js';
+import { formatViennaDateTime } from '../src/viennaTime.js';
 
 test('custom article URLs must be public HTTPS pages', () => {
   assert.equal(publicArticleUrl('https://news.example.org/story')?.href, 'https://news.example.org/story');
@@ -26,15 +27,39 @@ test('imported story has a reviewed headline, summary, source and placement', ()
   assert.equal(story.id, 'manual-https://example.org/article');
 });
 
-test('non-English and unverified article pages are refused', () => {
+test('non-English pages are refused, while an undated page uses the import time', () => {
   const url = publicArticleUrl('https://example.org/article');
   const source = sourceForArticle(url, []);
   const data = { metadata: { ogTitle: 'OSCE chair to visit Armenia', publishedTime: '2026-10-14T10:00:00Z', language: 'ru' }, json: { summary: 'The chair will discuss the peace process in Yerevan.' } };
   assert.throws(() => importedArticle({ data }, url, source), /not in English/);
-  assert.throws(() => importedArticle({ data: { ...data, metadata: { ...data.metadata, language: 'en', publishedTime: undefined } } }, url, source), /publication time/);
+  const before = Date.now();
+  const story = importedArticle({ data: { ...data, metadata: { ...data.metadata, language: 'en', publishedTime: undefined } } }, url, source);
+  assert.equal(story.timeSource, 'current');
+  assert.ok(Date.parse(story.publishedAt) >= before && Date.parse(story.publishedAt) <= Date.now());
 });
 
 test('publisher page timestamps with a space and timezone are verified', () => {
   assert.equal(publicationTimestamp('2026-10-13 08:25:00 +02:00'), '2026-10-13T06:25:00.000Z');
   assert.equal(publicationTimestamp('2026-10-13', '2026-10-13T08:25:00+02:00'), '2026-10-13T06:25:00.000Z');
+});
+
+test('imported article times accept old dates and convert offsets to Vienna time', () => {
+  const url = publicArticleUrl('https://example.org/story');
+  const time = resolveArticleTime({ data: { metadata: { publishedTime: '2020-01-14T09:30:00-05:00' } } }, url);
+  assert.deepEqual(time, { publishedAt: '2020-01-14T14:30:00.000Z', timeSource: 'page' });
+  assert.match(formatViennaDateTime(time.publishedAt), /15:30 CET$/);
+  assert.equal(publicationTimestamp('2026-10-14 09:30 EDT'), '2026-10-14T13:30:00.000Z');
+  assert.equal(publicationTimestamp('2026-10-14 09:30 America/New_York'), '2026-10-14T13:30:00.000Z');
+  assert.equal(publicationTimestamp('13 October 2026 at 08:25 CET'), '2026-10-13T07:25:00.000Z');
+  assert.equal(publicationTimestamp('2026-10-13 08:25 GMT+2'), '2026-10-13T06:25:00.000Z');
+});
+
+test('Add infers a missing timezone, a date-only page, or a date in the URL', () => {
+  const now = Date.parse('2026-10-14T12:00:00Z');
+  const plainUrl = publicArticleUrl('https://example.org/story');
+  assert.deepEqual(resolveArticleTime({ data: { metadata: { publishedTime: '2026-10-13 08:25:00' } } }, plainUrl, now), { publishedAt: '2026-10-13T06:25:00.000Z', timeSource: 'inferred' });
+  assert.deepEqual(resolveArticleTime({ data: { metadata: { publishedTime: '2026-10-13' }, json: { publicationClue: '13 October 2026 at 08:25' } } }, plainUrl, now), { publishedAt: '2026-10-13T06:25:00.000Z', timeSource: 'inferred' });
+  assert.deepEqual(resolveArticleTime({ data: {} }, publicArticleUrl('https://example.org/news/2026/10/12/story'), now), { publishedAt: '2026-10-12T10:00:00.000Z', timeSource: 'inferred' });
+  assert.deepEqual(resolveArticleTime({ data: {} }, plainUrl, now), { publishedAt: '2026-10-14T12:00:00.000Z', timeSource: 'current' });
+  assert.match(formatViennaDateTime('2026-10-14T12:00:00Z'), /14:00 CEST$/);
 });

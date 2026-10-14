@@ -65,3 +65,9 @@ test('old organisation stories move into Miscellaneous', () => {
     ['Miscellaneous', 'INTERNATIONAL ORGANISATIONS']
   ]);
 });
+
+test('estimated import time remains identified after browser settings reload', () => {
+  const config = normalizeSiteConfig({ version: 1, customArticles: [{ id: 'manual-estimated', title: 'OSCE chair visits Armenia', url: 'https://example.com/article', sourceName: 'Agency', summary: 'The chair met the foreign minister.', sectionId: 'South Caucasus', subsection: 'Armenia', publishedAt: '2026-10-13T10:00:00Z', timeSource: 'inferred' }] }, []);
+  assert.equal(config.customArticles[0].timeSource, 'inferred');
+  assert.equal(displaySiteContent([], config)[0].timeSource, 'inferred');
+});

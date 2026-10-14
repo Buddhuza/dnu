@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { formatViennaDateTime } from './viennaTime.js';
 
 export default function AddArticlesDialog({ serverAvailable, sources, existingUrls, remainingSlots, onAdd, onClose }) {
   const [value, setValue] = useState('');
@@ -40,7 +41,8 @@ export default function AddArticlesDialog({ serverAvailable, sources, existingUr
         onAdd(result);
         added++;
         seen.add(url.href);
-        next.push({ url: line, message: `Added: ${result.title} → ${result.sectionId} / ${result.subsection}${result.country ? ` / ${result.country}` : ''}`, success: true });
+        const timeLabel = result.timeSource === 'current' ? 'No article date found; stamped when added' : result.timeSource === 'inferred' ? 'Date/time inferred from article' : 'Article date/time';
+        next.push({ url: line, message: `Added: ${result.title} → ${result.sectionId} / ${result.subsection}${result.country ? ` / ${result.country}` : ''}. ${timeLabel}: ${formatViennaDateTime(result.publishedAt)}.`, success: true });
       } catch (error) { next.push({ url: line, message: error.message || 'Could not add this article.' }); }
     }
     setResults(next);
@@ -51,7 +53,7 @@ export default function AddArticlesDialog({ serverAvailable, sources, existingUr
   return <div className="add-backdrop" onMouseDown={event => { if (!busy && event.target === event.currentTarget) onClose(); }}>
     <section className="add-dialog" role="dialog" aria-modal="true" aria-labelledby="add-dialog-title">
       <div className="add-dialog-heading"><h2 id="add-dialog-title">Add articles to the update</h2><button type="button" onClick={onClose} disabled={busy} aria-label="Close Add articles">×</button></div>
-      <p>Paste one English-language article URL per line. Each page is checked for its headline, publication time and summary, then placed under the relevant country or organisation.</p>
+      <p>Paste one English-language article URL per line. Articles of any age can be added. If the page lacks an exact publication time, Add estimates it from the article or URL; if no date is found, it stamps the import time. Times are shown in Vienna time (CET/CEST).</p>
       {!serverAvailable && <p className="add-unavailable">This static page needs your Firecrawl API key to scrape articles. It is sent directly to Firecrawl for this import and is not saved by the site.</p>}
       {remainingSlots < 1 && <p className="add-unavailable" role="status">The browser has reached its 100 custom-story limit. Remove an added story in Manage site → Stories before importing another.</p>}
       <form onSubmit={importUrls}>{!serverAvailable && <><label htmlFor="add-api-key">Firecrawl API key</label><input id="add-api-key" type="password" autoComplete="off" value={apiKey} onChange={event => setApiKey(event.target.value)} placeholder="fc-…" disabled={busy}/></>}<label htmlFor="add-urls">Article URLs</label><textarea id="add-urls" rows="7" value={value} onChange={event => setValue(event.target.value)} placeholder={'https://example.com/article-one\nhttps://example.com/article-two'} autoFocus disabled={busy}/><div className="add-dialog-actions"><button type="button" onClick={onClose} disabled={busy}>Close</button><button type="submit" disabled={(!serverAvailable && !apiKey.trim()) || busy || remainingSlots < 1}>{busy ? progress : 'Scrape and add'}</button></div></form>
