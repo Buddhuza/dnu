@@ -199,7 +199,7 @@
 .daily-title-row h2,.daily-title-row .report-date{flex:none;white-space:nowrap}
 .daily-title-row .report-date{margin:0;font-size:16px}
 .daily-heading-main .daily-downloads{margin-left:auto}
-.daily-story-time{display:block;margin-top:4px;color:#647178;font-size:calc(var(--site-body-size,18px) - 4px);line-height:1.35}
+.daily-story-time{display:inline;color:#647178;font-size:calc(var(--site-body-size,18px) - 4px);line-height:inherit;white-space:nowrap}
 .app-shell[data-mode="dark"] .daily-story-time{color:#b7c2c7}
 @media(max-width:720px){.daily-title-row{flex-wrap:wrap;gap:2px 10px}.daily-heading-main .daily-downloads{margin-left:0}}
 .daily-story-content{flex:1;min-width:0}

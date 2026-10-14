@@ -13,7 +13,7 @@ import { reportDateLabel } from './reportDate.js';
 import { reportStoryText } from './reportText.js';
 import { disclaimerFirst, disclaimerSecond } from './disclaimer.js';
 import { sourceAudit } from './collectionAudit.js';
-import { formatViennaDateTime } from './viennaTime.js';
+import { formatViennaDateTime, formatViennaCompactDateTime } from './viennaTime.js';
 import './styles.css';
 
 const readStored = (key, fallback, legacyKey) => {
@@ -24,6 +24,7 @@ const defaultScope = 'OSCE, cooperation, diplomacy, bilateral, foreign policy, t
 const dateLabel = formatViennaDateTime;
 
 function App() {
+  const [currentTime, setCurrentTime] = useState(() => new Date());
   const [config, setConfig] = useState(null);
   const [daily, setDaily] = useState(null);
   const [staticPreview, setStaticPreview] = useState(false);
@@ -62,6 +63,15 @@ function App() {
 
   useEffect(() => { fetch('/api/config').then(r => { if (!r.ok) throw new Error('API unavailable'); return r.json(); }).then(setConfig).catch(() => setConfig({ sources: preparedSources, firecrawlConfigured: false })); }, []);
   useEffect(() => {
+    let timer;
+    const refreshClock = () => {
+      setCurrentTime(new Date());
+      timer = setTimeout(refreshClock, 60_000 - Date.now() % 60_000 + 50);
+    };
+    timer = setTimeout(refreshClock, 60_000 - Date.now() % 60_000 + 50);
+    return () => clearTimeout(timer);
+  }, []);
+  useEffect(() => {
     const refresh = () => fetch('/api/daily-update').then(r => { if (!r.ok) throw new Error('API unavailable'); return r.json(); }).then(data => { setDaily(data); setStaticPreview(false); }).catch(() => { setDaily(preparedUpdate); setStaticPreview(true); });
     refresh();
     const timer = setInterval(refresh, 60_000);
@@ -84,7 +94,7 @@ function App() {
   const updateSearchQuery = updateSearchText.trim().toLocaleLowerCase();
   const updateSearchResults = useMemo(() => updateSearchQuery ? readingArticles.filter(item => {
     const story = reportStoryText(item);
-    return [item.section, item.subsection, item.country, story.headline, story.summary, item.sourceName, dateLabel(item.publishedAt)]
+    return [item.section, item.subsection, item.country, story.headline, story.summary, item.sourceName, formatViennaCompactDateTime(item.publishedAt)]
       .some(value => String(value || '').toLocaleLowerCase().includes(updateSearchQuery));
   }) : [], [readingArticles, updateSearchQuery]);
   const updateSearchIds = useMemo(() => new Set(updateSearchResults.map(item => item.id)), [updateSearchResults]);
@@ -321,7 +331,7 @@ function App() {
   );
 
   return <div className="app-shell" data-mode={siteConfig.darkMode ? 'dark' : 'light'} style={themeStyle}>
-    <header className="topbar"><div className="brand-text"><strong>{siteConfig.brandName}</strong><small>{siteConfig.brandTagline}</small></div><span className="topbar-spacer"/><button className="mode-button" aria-pressed={siteConfig.darkMode} onClick={() => setSiteConfig(current => ({ ...current, darkMode: !current.darkMode }))}>{siteConfig.darkMode ? '☀ Light mode' : '☾ Dark mode'}</button><button className="manage-button" onClick={() => { setManagerTab('Content'); setManaging(true); }}>⚙ Manage site</button><div className="topbar-date">{new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Vienna', weekday: 'short', month: 'short', day: 'numeric' }).format(new Date())}</div></header>
+    <header className="topbar"><div className="brand-text"><strong>{siteConfig.brandName}</strong><small>{siteConfig.brandTagline}</small></div><span className="topbar-spacer"/><button className="mode-button" aria-pressed={siteConfig.darkMode} onClick={() => setSiteConfig(current => ({ ...current, darkMode: !current.darkMode }))}>{siteConfig.darkMode ? '☀ Light mode' : '☾ Dark mode'}</button><button className="manage-button" onClick={() => { setManagerTab('Content'); setManaging(true); }}>⚙ Manage site</button><time className="topbar-date" dateTime={currentTime.toISOString()} title="Vienna time">{formatViennaCompactDateTime(currentTime)}</time></header>
     <div className={`workspace ${siteConfig.showSources ? '' : 'no-sidebar'}`}>
       {siteConfig.showSources && <aside className="sidebar">
         <div className="sidebar-heading"><span className="eyebrow">DISCOVER</span><h2>Sources <em>{sources.length}</em></h2></div>
@@ -346,7 +356,7 @@ function App() {
                     onPointerDown={event => { if (!editingStories || event.target.closest('input,a') || (event.pointerType !== 'mouse' && !event.target.closest('.story-drag-handle'))) return; event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId); pointerDragRef.current = item.id; }}
                     onPointerMove={movePointerStory} onPointerUp={finishPointerStory} onPointerCancel={() => { pointerDragRef.current = null; setDropTarget(''); }}>
                     {editingStories && <><input className="daily-story-checkbox" type="checkbox" checked={!excludedStoryIds.has(item.id)} aria-label={`Include story: ${item.title}`} onChange={event => setExcludedStoryIds(current => { const next = new Set(current); if (event.target.checked) next.delete(item.id); else next.add(item.id); return next; })}/><button type="button" className="story-drag-handle" aria-label={`Drag story: ${item.title}`} title="Drag to reorder or move">⋮⋮</button></>}
-                    <div className="daily-story-content"><p><strong>{highlightSearch(reportStoryText(item).headline)}</strong>{item.summary && <> {highlightSearch(reportStoryText(item).summary)}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{highlightSearch(item.sourceName)}</a>)</p>{Number.isFinite(Date.parse(item.publishedAt)) && <time className="daily-story-time" dateTime={item.publishedAt}>{highlightSearch(dateLabel(item.publishedAt))}{(item.timeSource === 'inferred' || item.timeSource === 'current') && ' · estimated'}</time>}</div>
+                    <div className="daily-story-content"><p><strong>{highlightSearch(reportStoryText(item).headline)}</strong>{item.summary && <> {highlightSearch(reportStoryText(item).summary)}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{highlightSearch(item.sourceName)}</a>){Number.isFinite(Date.parse(item.publishedAt)) && <> <time className="daily-story-time" dateTime={item.publishedAt} title={dateLabel(item.publishedAt)}>{highlightSearch(formatViennaCompactDateTime(item.publishedAt))}{(item.timeSource === 'inferred' || item.timeSource === 'current') && ' · estimated'}</time></>}</p></div>
                   </article>
                 </React.Fragment>)}
               </div>)}
