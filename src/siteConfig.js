@@ -29,6 +29,7 @@ const defaults = {
   darkTheme: DARK_THEME,
   sections: [],
   articleEdits: {},
+  articleOrder: [],
   customArticles: [],
   customSources: [],
   sourceListingOverrides: {},
@@ -143,7 +144,9 @@ export function normalizeSiteConfig(input, articles = []) {
     sectionHeadingSize: Number.isFinite(Number(input.sectionHeadingSize)) ? Math.max(20, Math.min(40, Number(input.sectionHeadingSize))) : 26,
     sectionHeadingUppercase: input.sectionHeadingUppercase !== false,
     updateWidth: Number.isFinite(Number(input.updateWidth)) ? Math.max(480, Math.min(1400, Number(input.updateWidth) === 600 ? 900 : Number(input.updateWidth))) : 900,
-    theme, darkTheme, sections, articleEdits, customArticles, customSources, sourceListingOverrides,
+    theme, darkTheme, sections, articleEdits,
+    articleOrder: [...new Set((Array.isArray(input.articleOrder) ? input.articleOrder : []).filter(id => typeof id === 'string' && id.length <= 500))].slice(0, 1000),
+    customArticles, customSources, sourceListingOverrides,
     hiddenSourceIds: (Array.isArray(input.hiddenSourceIds) ? input.hiddenSourceIds : []).filter(id => typeof id === 'string').slice(0, 500)
   };
 }
@@ -174,7 +177,7 @@ export function displaySiteContent(articles, config) {
       section: sectionById.get(sectionId)?.name || sectionId,
       sectionId,
       subsection: edit ? edit.subsection : legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : article.subsection,
-      country: edit?.country || article.country || ''
+      country: edit && typeof edit.country === 'string' ? edit.country : article.country || ''
     });
   }
   for (const article of config.customArticles) {
@@ -182,5 +185,30 @@ export function displaySiteContent(articles, config) {
     items.push({ ...article, section: sectionById.get(article.sectionId)?.name || article.sectionId });
   }
   const order = new Map(config.sections.map((section, index) => [section.id, index]));
-  return items.sort((a, b) => (order.get(a.sectionId) ?? 999) - (order.get(b.sectionId) ?? 999));
+  const articleOrder = new Map((config.articleOrder ?? []).map((id, index) => [id, index]));
+  const subsectionOrder = new Map(config.sections.map(section => [section.id, new Map((section.subsections ?? []).map((name, index) => [name, index]))]));
+  return items.sort((a, b) => (order.get(a.sectionId) ?? 999) - (order.get(b.sectionId) ?? 999)
+    || (subsectionOrder.get(a.sectionId)?.get(a.subsection) ?? 999) - (subsectionOrder.get(b.sectionId)?.get(b.subsection) ?? 999)
+    || (articleOrder.get(a.id) ?? 9999) - (articleOrder.get(b.id) ?? 9999));
+}
+
+export function moveArticleInConfig(config, articles, movedId, destination) {
+  const current = displaySiteContent(articles, config);
+  const moved = current.find(item => item.id === movedId);
+  const section = config.sections.find(item => item.id === destination.sectionId && item.visible);
+  if (!moved || !section || movedId === destination.anchorId) return config;
+  const subsection = destination.subsection || '';
+  const country = destination.country || '';
+  const articleOrder = [...new Set([...(config.articleOrder ?? []), ...current.map(item => item.id)])].filter(id => id !== movedId);
+  let anchorId = destination.anchorId;
+  if (!anchorId) {
+    anchorId = [...current].reverse().find(item => item.id !== movedId && item.sectionId === section.id && item.subsection === subsection && (item.country || '') === country)?.id;
+  }
+  const anchorIndex = articleOrder.indexOf(anchorId);
+  const insertAt = anchorIndex < 0 ? articleOrder.length : anchorIndex + (destination.after === false ? 0 : 1);
+  articleOrder.splice(insertAt, 0, movedId);
+  if (config.customArticles.some(item => item.id === movedId)) {
+    return { ...config, articleOrder, customArticles: config.customArticles.map(item => item.id === movedId ? { ...item, sectionId: section.id, subsection, country } : item) };
+  }
+  return { ...config, articleOrder, articleEdits: { ...config.articleEdits, [movedId]: { ...(config.articleEdits[movedId] ?? {}), sectionId: section.id, subsection, country } } };
 }

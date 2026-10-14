@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import preparedUpdate from '../data/daily-update-2026-10-13.json';
 import preparedSources from '../sources.json';
 import publishedSiteConfig from '../data/site-config.json';
 import SiteManager from './SiteManager.jsx';
 import AddArticlesDialog from './AddArticlesDialog.jsx';
-import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources } from './siteConfig.js';
+import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig } from './siteConfig.js';
 import { orderedSubsections } from './newsSections.js';
 import { createReportDocxFromTemplate } from './docxBuilder.js';
 import { reportFilename } from './reportFilename.js';
@@ -42,6 +42,9 @@ function App() {
   const [toast, setToast] = useState('');
   const [managing, setManaging] = useState(false);
   const [editingStories, setEditingStories] = useState(false);
+  const [draggedStoryId, setDraggedStoryId] = useState('');
+  const [dropTarget, setDropTarget] = useState('');
+  const touchDragRef = useRef(null);
   const [addingArticles, setAddingArticles] = useState(false);
   const [updateSearchOpen, setUpdateSearchOpen] = useState(false);
   const [updateSearchText, setUpdateSearchText] = useState('');
@@ -116,17 +119,26 @@ function App() {
   const dailySections = useMemo(() => {
     const sections = new Map();
     for (const item of readingArticles) {
-      if (!sections.has(item.section)) sections.set(item.section, new Map());
-      const subsections = sections.get(item.section);
+      const sectionId = item.sectionId || item.section;
+      if (!sections.has(sectionId)) sections.set(sectionId, new Map());
+      const subsections = sections.get(sectionId);
       const label = item.subsection || '';
       if (!subsections.has(label)) subsections.set(label, []);
       subsections.get(label).push(item);
     }
-    return [...sections].map(([section, subsections]) => ({
-      section,
-      subsections: orderedSubsections(siteConfig.sections.find(item => item.name === section), subsections.keys()).map(label => [label, subsections.get(label)])
+    if (editingStories) for (const section of siteConfig.sections.filter(item => item.visible)) {
+      if (!sections.has(section.id)) sections.set(section.id, new Map());
+      const subsections = sections.get(section.id);
+      for (const label of section.subsections ?? []) if (!subsections.has(label)) subsections.set(label, []);
+      if (!subsections.size) subsections.set('', []);
+    }
+    const sectionOrder = new Map(siteConfig.sections.map((section, index) => [section.id, index]));
+    return [...sections].sort(([a], [b]) => (sectionOrder.get(a) ?? 999) - (sectionOrder.get(b) ?? 999)).map(([sectionId, subsections]) => ({
+      sectionId,
+      section: siteConfig.sections.find(item => item.id === sectionId)?.name || sectionId,
+      subsections: orderedSubsections(siteConfig.sections.find(item => item.id === sectionId), subsections.keys()).map(label => [label, subsections.get(label)])
     }));
-  }, [readingArticles, siteConfig.sections]);
+  }, [readingArticles, siteConfig.sections, editingStories]);
   const selectedSourceStories = selectedArticles.filter(item => item.sourceId === activeId);
   const sourceRequest = source => ({ sourceId: source.id, ...(source.id.startsWith('manual-source-') ? { customSource: source } : {}), ...(source.listingUrl ? { listingUrlOverride: source.listingUrl } : {}), ...scope });
 
@@ -265,6 +277,58 @@ function App() {
     scroller.scrollTo({ top: scroller.scrollTop + target.getBoundingClientRect().top - scroller.getBoundingClientRect().top - 12, behavior: 'smooth' });
     history.replaceState(null, '', `#daily-section-${index}`);
   };
+  const beginStoryDrag = (event, id) => {
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', id);
+    setDraggedStoryId(id);
+  };
+  const allowStoryDrop = (event, key) => {
+    if (!editingStories || !draggedStoryId) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+    setDropTarget(key);
+  };
+  const dropStory = (event, destination) => {
+    if (!editingStories || !draggedStoryId) return;
+    event.preventDefault();
+    event.stopPropagation();
+    setSiteConfig(current => moveArticleInConfig(current, daily?.articles ?? [], draggedStoryId, destination));
+    setDraggedStoryId('');
+    setDropTarget('');
+  };
+  const dropAtPoint = (x, y, movedId) => {
+    const element = document.elementFromPoint(x, y)?.closest('[data-drop-kind]');
+    if (!element) return null;
+    const { dropKind, sectionId, subsection = '', country = '', storyId } = element.dataset;
+    if (dropKind === 'story') {
+      if (storyId === movedId) return null;
+      const after = y > element.getBoundingClientRect().top + element.getBoundingClientRect().height / 2;
+      return { key: `story:${storyId}:${after ? 'after' : 'before'}`, destination: { sectionId, subsection, country, anchorId: storyId, after } };
+    }
+    const key = dropKind === 'section' ? `section:${sectionId}` : `${dropKind}:${sectionId}:${subsection}${dropKind === 'country' ? `:${country}` : ''}`;
+    return { key, destination: { sectionId, subsection, country } };
+  };
+  const moveTouchStory = event => {
+    if (!touchDragRef.current) return;
+    event.preventDefault();
+    const hit = dropAtPoint(event.clientX, event.clientY, touchDragRef.current);
+    setDropTarget(hit?.key || '');
+    const scroller = document.querySelector('.daily-scroll');
+    if (scroller) {
+      const box = scroller.getBoundingClientRect();
+      if (event.clientY < box.top + 48) scroller.scrollTop -= 18;
+      if (event.clientY > box.bottom - 48) scroller.scrollTop += 18;
+    }
+  };
+  const finishTouchStory = event => {
+    if (!touchDragRef.current) return;
+    const movedId = touchDragRef.current;
+    const hit = dropAtPoint(event.clientX, event.clientY, movedId);
+    if (hit) setSiteConfig(current => moveArticleInConfig(current, daily?.articles ?? [], movedId, hit.destination));
+    touchDragRef.current = null;
+    setDraggedStoryId('');
+    setDropTarget('');
+  };
 
   const collectionPanel = (
         <section className="headlines-section" id="live-collection"><div className="section-title"><div><h2>Live collection</h2></div><span className="time-filter">◷ &nbsp; LAST 48 HOURS</span></div><div className="source-banner"><div className="banner-icon">{active?.name?.[0] || 'S'}</div><div><strong>{active?.name || 'Select a source'}</strong><small>{active?.url || 'Choose an outlet from the left'}</small></div><button onClick={() => loadSource()} disabled={loading || !active || !canCollect || staticPreview}>{loading ? 'Collecting…' : 'Collect headlines'} <span>↗</span></button></div><div className="batch-row"><span>Each scan checks the extracted articles for every source, then tries an alternate feed, listing page, and recent site search if needed. Sources still without articles receive a reason and next step. Complete scans may take hours and use many Firecrawl credits.</span><button onClick={() => loadSource(activeId, true)} disabled={loading || !canCollect || !active || staticPreview}>Scan all listed articles</button><button onClick={() => loadVisible(collectionSources)} disabled={loading || !collectionSources.length || staticPreview}>Verify visible sources ({collectionSources.length})</button><button onClick={() => loadVisible(configuredSources)} disabled={loading || !configuredSources.length || staticPreview}>Verify all sources ({configuredSources.length})</button></div>
@@ -291,7 +355,48 @@ function App() {
         <div className={`reading-layout ${websiteSource ? 'website-open' : ''}`}>
         {siteConfig.showUpdate && <section className={`daily-update ${siteConfig.sectionHeadingUppercase ? 'uppercase-headings' : ''}`} aria-labelledby="daily-update-title">
           <div className="daily-heading"><div className="daily-heading-main"><div className="daily-title-row"><h2 id="daily-update-title">{siteConfig.updateTitle}</h2>{reportWindow?.windowStart && reportWindow?.windowEnd && <p className="report-date">{reportDateLabel(reportWindow.windowStart, reportWindow.windowEnd)}</p>}</div>{updateControls()}</div>{updateSearchOpen && <div className="update-search" role="search" aria-label="Search update"><input autoFocus type="search" value={updateSearchText} onChange={event => setUpdateSearchText(event.target.value)} onKeyDown={event => { if (event.key === 'Escape') setUpdateSearchOpen(false); if (event.key === 'Enter' && updateSearchResults.length) { event.preventDefault(); setActiveSearchResult(current => (current + (event.shiftKey ? -1 : 1) + updateSearchResults.length) % updateSearchResults.length); } }} placeholder="Find text in update" aria-label="Find text in update"/><span role="status">{updateSearchQuery ? updateSearchResults.length ? `${Math.min(activeSearchResult + 1, updateSearchResults.length)} of ${updateSearchResults.length} stories` : 'No matches' : 'Search headlines, summaries, sources and sections'}</span><button type="button" aria-label="Previous match" disabled={!updateSearchResults.length} onClick={() => setActiveSearchResult(current => (current - 1 + updateSearchResults.length) % updateSearchResults.length)}>↑</button><button type="button" aria-label="Next match" disabled={!updateSearchResults.length} onClick={() => setActiveSearchResult(current => (current + 1) % updateSearchResults.length)}>↓</button><button type="button" aria-label="Close search" onClick={() => setUpdateSearchOpen(false)}>×</button></div>}{dailySections.length > 0 && <nav className="daily-section-nav" aria-label="Update sections" style={{ '--section-count': Math.min(dailySections.length, 6) }}>{dailySections.map(({ section }, index) => <a key={section} href={`#daily-section-${index}`} onClick={event => jumpToSection(event, index)}>{section}</a>)}</nav>}</div>
-          {daily && <div className="daily-scroll" role="region" aria-label="Daily update stories" tabIndex={0}>{dailySections.map(({ section, subsections }, index) => <div className="daily-section" id={`daily-section-${index}`} key={section}><h3>{highlightSearch(section)}</h3>{subsections.map(([subsection, items]) => <div key={subsection}>{subsection && <h4 className={section === 'Miscellaneous' ? 'plain-topic' : undefined}>{highlightSearch(subsection)}</h4>}{items.map((item, index) => <React.Fragment key={item.id}>{item.country && (index === 0 || items[index - 1].country !== item.country) && <h5 className="daily-country">{highlightSearch(item.country)}</h5>}<article data-story-id={item.id} className={`daily-story ${editingStories ? 'daily-story-editing' : ''} ${updateSearchOpen && updateSearchIds.has(item.id) ? 'search-match' : ''} ${updateSearchOpen && updateSearchResults[Math.min(activeSearchResult, updateSearchResults.length - 1)]?.id === item.id ? 'active-search-match' : ''}`}>{editingStories && <input className="daily-story-checkbox" type="checkbox" checked={!excludedStoryIds.has(item.id)} aria-label={`Include story: ${item.title}`} onChange={event => setExcludedStoryIds(current => { const next = new Set(current); if (event.target.checked) next.delete(item.id); else next.add(item.id); return next; })}/>}<p><strong>{highlightSearch(reportStoryText(item).headline)}</strong>{item.summary && <> {highlightSearch(reportStoryText(item).summary)}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{highlightSearch(item.sourceName)}</a>)</p>{Number.isFinite(Date.parse(item.publishedAt)) && <time className="daily-story-time" dateTime={item.publishedAt}>{highlightSearch(dateLabel(item.publishedAt))}{(item.timeSource === 'inferred' || item.timeSource === 'current') && ' · estimated'}</time>}</article></React.Fragment>)}</div>)}</div>)}{!readingArticles.length && <p className="daily-empty">{displayedArticles.length ? 'No stories are selected. Press Edit to choose stories for this update.' : 'There are no visible stories in this update. Use Manage site to show or add content.'}</p>}<div className="daily-disclaimer"><p><strong>Disclaimer:</strong> {disclaimerFirst}</p><p>{disclaimerSecond}</p></div>{siteConfig.showCoverage && <p className="daily-coverage">{coverageNote}</p>}</div>}
+          {daily && <div className="daily-scroll" role="region" aria-label="Daily update stories" tabIndex={0} onDragOver={event => {
+            if (!draggedStoryId) return;
+            const box = event.currentTarget.getBoundingClientRect();
+            if (event.clientY < box.top + 48) event.currentTarget.scrollTop -= 18;
+            if (event.clientY > box.bottom - 48) event.currentTarget.scrollTop += 18;
+          }}>
+            {dailySections.map(({ sectionId, section, subsections }, sectionIndex) => <div className="daily-section" id={`daily-section-${sectionIndex}`} key={sectionId}>
+              <h3 data-drop-kind="section" data-section-id={sectionId} data-subsection={subsections[0]?.[0] || ''} className={dropTarget === `section:${sectionId}` ? 'story-drop-target' : ''}
+                onDragOver={event => allowStoryDrop(event, `section:${sectionId}`)}
+                onDrop={event => dropStory(event, { sectionId, subsection: subsections[0]?.[0] || '', country: '' })}>{highlightSearch(section)}</h3>
+              {subsections.map(([subsection, items]) => <div key={subsection || 'direct'}>
+                {subsection && <h4 data-drop-kind="subsection" data-section-id={sectionId} data-subsection={subsection} className={`${section === 'Miscellaneous' ? 'plain-topic' : ''} ${dropTarget === `subsection:${sectionId}:${subsection}` ? 'story-drop-target' : ''}`}
+                  onDragOver={event => allowStoryDrop(event, `subsection:${sectionId}:${subsection}`)}
+                  onDrop={event => dropStory(event, { sectionId, subsection, country: '' })}>{highlightSearch(subsection)}</h4>}
+                {editingStories && !items.length && <div data-drop-kind="empty" data-section-id={sectionId} data-subsection={subsection} className={`daily-empty-drop ${dropTarget === `empty:${sectionId}:${subsection}` ? 'story-drop-target' : ''}`}
+                  onDragOver={event => allowStoryDrop(event, `empty:${sectionId}:${subsection}`)}
+                  onDrop={event => dropStory(event, { sectionId, subsection, country: '' })}>Drag a story here</div>}
+                {items.map((item, index) => <React.Fragment key={item.id}>
+                  {item.country && (index === 0 || items[index - 1].country !== item.country) && <h5 data-drop-kind="country" data-section-id={sectionId} data-subsection={subsection} data-country={item.country} className={`daily-country ${dropTarget === `country:${sectionId}:${subsection}:${item.country}` ? 'story-drop-target' : ''}`}
+                    onDragOver={event => allowStoryDrop(event, `country:${sectionId}:${subsection}:${item.country}`)}
+                    onDrop={event => dropStory(event, { sectionId, subsection, country: item.country })}>{highlightSearch(item.country)}</h5>}
+                  <article data-drop-kind="story" data-section-id={item.sectionId} data-subsection={item.subsection || ''} data-country={item.country || ''} data-story-id={item.id} className={`daily-story ${editingStories ? 'daily-story-editing' : ''} ${updateSearchOpen && updateSearchIds.has(item.id) ? 'search-match' : ''} ${updateSearchOpen && updateSearchResults[Math.min(activeSearchResult, updateSearchResults.length - 1)]?.id === item.id ? 'active-search-match' : ''} ${dropTarget === `story:${item.id}:before` ? 'story-drop-before' : ''} ${dropTarget === `story:${item.id}:after` ? 'story-drop-after' : ''}`}
+                    onDragOver={event => {
+                      if (!editingStories || !draggedStoryId || draggedStoryId === item.id) return;
+                      const after = event.clientY > event.currentTarget.getBoundingClientRect().top + event.currentTarget.getBoundingClientRect().height / 2;
+                      allowStoryDrop(event, `story:${item.id}:${after ? 'after' : 'before'}`);
+                    }}
+                    onDrop={event => {
+                      if (draggedStoryId === item.id) return;
+                      const after = event.clientY > event.currentTarget.getBoundingClientRect().top + event.currentTarget.getBoundingClientRect().height / 2;
+                      dropStory(event, { sectionId: item.sectionId, subsection: item.subsection, country: item.country, anchorId: item.id, after });
+                    }}>
+                    {editingStories && <><input className="daily-story-checkbox" type="checkbox" checked={!excludedStoryIds.has(item.id)} aria-label={`Include story: ${item.title}`} onChange={event => setExcludedStoryIds(current => { const next = new Set(current); if (event.target.checked) next.delete(item.id); else next.add(item.id); return next; })}/><button type="button" className="story-drag-handle" draggable aria-label={`Drag story: ${item.title}`} title="Drag to reorder or move" onDragStart={event => beginStoryDrag(event, item.id)} onDragEnd={() => { setDraggedStoryId(''); setDropTarget(''); }} onPointerDown={event => { if (event.pointerType === 'mouse') return; event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId); touchDragRef.current = item.id; setDraggedStoryId(item.id); }} onPointerMove={moveTouchStory} onPointerUp={finishTouchStory} onPointerCancel={() => { touchDragRef.current = null; setDraggedStoryId(''); setDropTarget(''); }}>⋮⋮</button></>}
+                    <div className="daily-story-content"><p><strong>{highlightSearch(reportStoryText(item).headline)}</strong>{item.summary && <> {highlightSearch(reportStoryText(item).summary)}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{highlightSearch(item.sourceName)}</a>)</p>{Number.isFinite(Date.parse(item.publishedAt)) && <time className="daily-story-time" dateTime={item.publishedAt}>{highlightSearch(dateLabel(item.publishedAt))}{(item.timeSource === 'inferred' || item.timeSource === 'current') && ' · estimated'}</time>}</div>
+                  </article>
+                </React.Fragment>)}
+              </div>)}
+            </div>)}
+            {!readingArticles.length && <p className="daily-empty">{displayedArticles.length ? 'No stories are selected. Press Edit to choose stories for this update.' : 'There are no visible stories in this update. Use Manage site to show or add content.'}</p>}
+            <div className="daily-disclaimer"><p><strong>Disclaimer:</strong> {disclaimerFirst}</p><p>{disclaimerSecond}</p></div>
+            {siteConfig.showCoverage && <p className="daily-coverage">{coverageNote}</p>}
+          </div>}
         </section>}
         {websiteSource && <section className="website-panel" aria-label={`${websiteSource.name} website`}><div className="website-panel-heading"><div><span className="eyebrow">SOURCE WEBSITE</span><h2>{websiteSource.name}</h2></div><button onClick={() => setWebsiteSourceId('')} aria-label="Close source website">×</button></div><div className="website-panel-actions"><a href={websiteSource.url} target="_blank" rel="noopener noreferrer">Open website in new tab ↗</a><button onClick={() => { setManagerTab('Collect'); setManaging(true); }}>Collect headlines</button></div><p>Some publishers block display inside other websites. Use the link above if this panel stays blank.</p><iframe key={websiteSource.id} src={websiteSource.url} title={`${websiteSource.name} website`} referrerPolicy="no-referrer" loading="lazy"/></section>}
         </div>

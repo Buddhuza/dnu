@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources } from './siteConfig.js';
+import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig } from './siteConfig.js';
 
 const articles = [
   { id: 'a', section: 'Europe', subsection: 'Poland', title: 'Original headline', summary: 'Original summary.', sourceName: 'Agency', url: 'https://example.com/a' },
@@ -70,4 +70,27 @@ test('estimated import time remains identified after browser settings reload', (
   const config = normalizeSiteConfig({ version: 1, customArticles: [{ id: 'manual-estimated', title: 'OSCE chair visits Armenia', url: 'https://example.com/article', sourceName: 'Agency', summary: 'The chair met the foreign minister.', sectionId: 'South Caucasus', subsection: 'Armenia', publishedAt: '2026-10-13T10:00:00Z', timeSource: 'inferred' }] }, []);
   assert.equal(config.customArticles[0].timeSource, 'inferred');
   assert.equal(displaySiteContent([], config)[0].timeSource, 'inferred');
+});
+
+test('dragging a story changes its section, subsection, and order after settings reload', () => {
+  const stories = [
+    { id: 'one', section: 'Lead stories', subsection: 'Ukraine', title: 'One' },
+    { id: 'two', section: 'Lead stories', subsection: 'Ukraine', title: 'Two' },
+    { id: 'three', section: 'Eastern Europe', subsection: 'Belarus', country: 'Minsk', title: 'Three' }
+  ];
+  const config = defaultSiteConfig(stories);
+  const moved = moveArticleInConfig(config, stories, 'three', { sectionId: 'Lead stories', subsection: 'Ukraine', country: '', anchorId: 'one', after: true });
+  assert.deepEqual(displaySiteContent(stories, normalizeSiteConfig(moved, stories)).map(item => [item.id, item.section, item.subsection]), [
+    ['one', 'Lead stories', 'Ukraine'], ['three', 'Lead stories', 'Ukraine'], ['two', 'Lead stories', 'Ukraine']
+  ]);
+  assert.equal(displaySiteContent(stories, normalizeSiteConfig(moved, stories))[1].country, '');
+  assert.equal(stories[2].section, 'Eastern Europe');
+});
+
+test('dragging a custom story into an empty subsection retains its new placement', () => {
+  const config = defaultSiteConfig([]);
+  config.customArticles = [{ id: 'manual-a', title: 'Custom', url: 'https://example.com/a', sectionId: 'Lead stories', subsection: 'Ukraine' }];
+  const moved = moveArticleInConfig(config, [], 'manual-a', { sectionId: 'South Caucasus', subsection: 'Armenia', country: '' });
+  assert.deepEqual(displaySiteContent([], normalizeSiteConfig(moved, []))[0].subsection, 'Armenia');
+  assert.equal(moved.customArticles[0].sectionId, 'South Caucasus');
 });
