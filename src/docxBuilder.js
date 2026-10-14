@@ -1,6 +1,7 @@
 import JSZip from 'jszip';
 import { reportDateLabel } from './reportDate.js';
 import { reportStoryText } from './reportText.js';
+import { disclaimerFirst, disclaimerSecond } from './disclaimer.js';
 
 const escapeXml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[char]);
 const textRun = (value, properties = '') => `<w:r><w:rPr>${properties}</w:rPr><w:t xml:space="preserve">${escapeXml(value)}</w:t></w:r>`;
@@ -23,9 +24,6 @@ function storyParagraph(item, relationshipId) {
 function reportDateParagraph(value) {
   return `<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="80" w:after="180"/></w:pPr>${textRun(value, `${calibri}<w:sz w:val="24"/>`)}</w:p>`;
 }
-
-const disclaimerFirst = 'This product is based on open media sources only and the material used is not always fully validated. Items selected are abridged from the original or are "verbatim". All views, opinions and accounts contained herein are those of the original authors, and do not imply official endorsement or acceptance by the OSCE.';
-const disclaimerSecond = 'We would like to remind all our recipients that SitRoom News Updates are for internal use only and is not intended for further dissemination or distribution. Thank you for your understanding and co-operation regarding this matter.';
 
 function disclaimerParagraphs() {
   const style = `${calibri}<w:sz w:val="18"/>`;
