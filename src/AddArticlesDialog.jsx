@@ -5,8 +5,8 @@ import { MISCELLANEOUS_COUNTRIES } from './newsSections.js';
 const firecrawlKeyStorage = 'dnu-firecrawl-api-key-v1';
 const savedFirecrawlKey = () => { try { return localStorage.getItem(firecrawlKeyStorage) || ''; } catch { return ''; } };
 
-export default function AddArticlesDialog({ serverAvailable, sources, sections, existingUrls, remainingSlots, initialUrl = '', autoScrape = false, grabSourceName = '', onAdd, onClose }) {
-  const [value, setValue] = useState(initialUrl);
+export default function AddArticlesDialog({ serverAvailable, sources, sections, existingUrls, remainingSlots, onAdd, onClose }) {
+  const [value, setValue] = useState('');
   const [apiKey, setApiKey] = useState(savedFirecrawlKey);
   const [rememberKey, setRememberKey] = useState(() => Boolean(savedFirecrawlKey()));
   const [busy, setBusy] = useState(false);
@@ -18,8 +18,6 @@ export default function AddArticlesDialog({ serverAvailable, sources, sections, 
   const draftsRef = useRef(null);
   const resultsRef = useRef(null);
   const scrollTargetRef = useRef('drafts');
-  const autoScrapeStarted = useRef(false);
-  const savedKeyAtOpen = useRef(Boolean(savedFirecrawlKey()));
   const availableSections = sections.filter(section => section.visible);
 
   useEffect(() => {
@@ -56,7 +54,7 @@ export default function AddArticlesDialog({ serverAvailable, sources, sections, 
   }
 
   async function importUrls(event) {
-    event?.preventDefault();
+    event.preventDefault();
     const lines = value.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
     if (!lines.length) { setResults([{ url: '', message: 'Paste at least one article URL.' }]); scrollTargetRef.current = 'results'; setCompletedScans(count => count + 1); return; }
     if (lines.length > 10) { setResults([{ url: '', message: 'Import up to 10 URLs at a time.' }]); scrollTargetRef.current = 'results'; setCompletedScans(count => count + 1); return; }
@@ -98,16 +96,9 @@ export default function AddArticlesDialog({ serverAvailable, sources, sections, 
     setCompletedScans(count => count + 1);
   }
 
-  useEffect(() => {
-    if (!autoScrape || !initialUrl || autoScrapeStarted.current || (!serverAvailable && !savedKeyAtOpen.current)) return;
-    autoScrapeStarted.current = true;
-    void importUrls();
-  }, [autoScrape, initialUrl, serverAvailable]);
-
   return <div className="add-backdrop" onMouseDown={event => { if (!busy && event.target === event.currentTarget) onClose(); }}>
     <section className="add-dialog" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="add-dialog-title">
       <div className="add-dialog-heading"><h2 id="add-dialog-title">Add articles to the update</h2><button type="button" onClick={onClose} disabled={busy} aria-label="Close Add articles">×</button></div>
-      {grabSourceName && <p className="add-grab-hint">{initialUrl ? `Selected article from ${grabSourceName}. ${serverAvailable || savedKeyAtOpen.current ? 'Scraping starts automatically; review the result before adding it.' : 'Enter your Firecrawl key, then press Scrape articles.'}` : `Choose an article in the ${grabSourceName} link list before pressing Grab, or enter its URL below. Grab does not access your clipboard.`}</p>}
       <p>Paste one English-language article URL per line. Review the suggested section and country for each scraped story before adding it. Articles of any age can be added. If the page lacks an exact publication time, Add estimates it from the article or URL; if no date is found, it stamps the import time. Times are shown in Vienna time (CET/CEST).</p>
       {!serverAvailable && <p className="add-unavailable">This static page sends your key directly to Firecrawl. Select “Remember key in this browser” to reuse it when you add articles later.</p>}
       {remainingSlots < 1 && <p className="add-unavailable" role="status">The browser has reached its 100 custom-story limit. Remove an added story in Manage site → Stories before importing another.</p>}

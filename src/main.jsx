@@ -14,7 +14,6 @@ import { reportStoryText } from './reportText.js';
 import { disclaimerFirst, disclaimerSecond } from './disclaimer.js';
 import { sourceAudit } from './collectionAudit.js';
 import { formatViennaDateTime, formatViennaCompactDateTime } from './viennaTime.js';
-import { articleLinksFromHtml } from './sourceLinks.js';
 import './styles.css';
 
 const readStored = (key, fallback, legacyKey) => {
@@ -50,17 +49,6 @@ function App() {
   const [dropTarget, setDropTarget] = useState('');
   const pointerDragRef = useRef(null);
   const [addingArticles, setAddingArticles] = useState(false);
-  const [grabSourceName, setGrabSourceName] = useState('');
-  const [grabArticleUrl, setGrabArticleUrl] = useState('');
-  const [grabAutoScrape, setGrabAutoScrape] = useState(false);
-  const [sourceArticleUrl, setSourceArticleUrl] = useState('');
-  const [sourceFrameUrl, setSourceFrameUrl] = useState('');
-  const [sourceLinks, setSourceLinks] = useState([]);
-  const [sourceLinksLoading, setSourceLinksLoading] = useState(false);
-  const [sourceLinksError, setSourceLinksError] = useState('');
-  const [sourceLinkSearch, setSourceLinkSearch] = useState('');
-  const [sourceApiKey, setSourceApiKey] = useState(() => { try { return localStorage.getItem('dnu-firecrawl-api-key-v1') || ''; } catch { return ''; } });
-  const sourceLoadRef = useRef(0);
   const [updateSearchOpen, setUpdateSearchOpen] = useState(false);
   const [updateSearchText, setUpdateSearchText] = useState('');
   const [activeSearchResult, setActiveSearchResult] = useState(0);
@@ -165,10 +153,6 @@ function App() {
     }));
   }, [readingArticles, siteConfig.sections, editingStories]);
   const selectedSourceStories = selectedArticles.filter(item => item.sourceId === activeId);
-  const websiteArticleLinks = websiteSource ? [...new Map([
-    ...selectedArticles.filter(item => item.sourceId === websiteSource.id && item.url).map(item => [item.url, { url: item.url, title: item.title }]),
-    ...sourceLinks.map(item => [item.url, item])
-  ]).values()].filter(item => `${item.title} ${item.url}`.toLowerCase().includes(sourceLinkSearch.toLowerCase())) : [];
   const sourceRequest = source => ({ sourceId: source.id, ...(source.id.startsWith('manual-source-') ? { customSource: source } : {}), ...(source.listingUrl ? { listingUrlOverride: source.listingUrl } : {}), ...scope });
 
   async function scanSource(source, fullScan, onPage = () => {}) {
@@ -307,45 +291,8 @@ function App() {
     setCompiledAt(new Date().toISOString());
   };
   const keepStoryTextInline = event => { if (event.key === 'Enter') event.preventDefault(); };
-  const openGrab = (source, url = '') => {
-    setGrabSourceName(source.name);
-    setGrabArticleUrl(url);
-    setGrabAutoScrape(Boolean(url));
-    setAddingArticles(true);
-  };
-  const selectSourceArticle = url => {
-    setSourceArticleUrl(url);
-    setSourceFrameUrl(url);
-  };
-  const loadSourceArticleLinks = async source => {
-    const key = sourceApiKey.trim() || localStorage.getItem('dnu-firecrawl-api-key-v1') || '';
-    if (!key) { setSourceLinksError('Enter your Firecrawl API key to load article links.'); return; }
-    localStorage.setItem('dnu-firecrawl-api-key-v1', key);
-    const loadId = ++sourceLoadRef.current;
-    setSourceLinksLoading(true);
-    setSourceLinksError('');
-    try {
-      const pageUrl = sourceFrameUrl || source.url;
-      const response = await fetch('https://api.firecrawl.dev/v2/scrape', {
-        method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: pageUrl, formats: ['html'], onlyMainContent: false, timeout: 30000 }),
-        signal: AbortSignal.timeout(45000)
-      });
-      const payload = await response.json();
-      if (!response.ok || payload.success === false) throw new Error(payload.error || payload.message || `Firecrawl returned HTTP ${response.status}`);
-      const html = payload.data?.html || payload.html || '';
-      const links = articleLinksFromHtml(html, pageUrl, source.url);
-      if (loadId !== sourceLoadRef.current) return;
-      setSourceLinks(links);
-      if (!links.length) setSourceLinksError('No article links were found on this page. Try another source page or use Add with an article URL.');
-    } catch (error) {
-      if (loadId === sourceLoadRef.current) setSourceLinksError(error.message || 'Could not load article links.');
-    } finally {
-      if (loadId === sourceLoadRef.current) setSourceLinksLoading(false);
-    }
-  };
   const updateControls = () => daily?.articles?.length > 0 && <div className="daily-downloads">
-    <button className="daily-action daily-edit" type="button" aria-label="Add articles" title="Add article URLs" onClick={() => { setGrabSourceName(''); setGrabArticleUrl(''); setGrabAutoScrape(false); setAddingArticles(true); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M4 12h16"/></svg></button>
+    <button className="daily-action daily-edit" type="button" aria-label="Add articles" title="Add article URLs" onClick={() => setAddingArticles(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M4 12h16"/></svg></button>
     <button className="daily-action daily-edit" type="button" aria-label={editingStories ? 'Save edits' : 'Edit update'} title={editingStories ? 'Save text and story choices' : 'Edit text and story choices'} aria-pressed={editingStories} onClick={toggleStoryEditing}><svg viewBox="0 0 24 24" aria-hidden="true">{editingStories ? <path d="m4 12 5 5L20 6"/> : <><path d="m4 20 4.2-.9L19 8.3 15.7 5 4.9 15.8 4 20Z"/><path d="m13.9 6.8 3.3 3.3"/></>}</svg></button>
     <button className={`daily-action daily-edit ${headlineOnly ? 'is-active' : ''}`} type="button" aria-label={headlineOnly ? 'Show summaries' : 'Show headlines only'} title={editingStories ? 'Save edits before switching views' : headlineOnly ? 'Show headlines and summaries' : 'Show headlines only'} aria-pressed={headlineOnly} disabled={editingStories} onClick={() => setHeadlineOnly(current => !current)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16"/>{!headlineOnly && <path d="M4 15h16"/>}</svg></button>
     <button className="daily-action daily-download" type="button" aria-label="Download update" title={editingStories ? 'Save edits before downloading' : headlineOnly ? 'Download headlines-only Word update' : 'Download Word update with summaries'} disabled={!selectedArticles.length || editingStories} onClick={downloadManagedDocx}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 17v3h16v-3"/></svg></button>
@@ -425,7 +372,7 @@ function App() {
         <div className="sidebar-heading"><span className="eyebrow">DISCOVER</span><h2>Sources <em>{sources.length}</em></h2></div>
         <label className="search-box"><span>⌕</span><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search sources" aria-label="Search sources"/><kbd>⌘ K</kbd></label>
         <select className="group-select" value={group} onChange={e => setGroup(e.target.value)} aria-label="Filter source region">{groups.map(x => <option key={x}>{x}</option>)}</select>
-        <div className="source-list">{visibleSources.map(x => <button key={x.id} className={`source-row ${websiteSourceId === x.id ? 'active' : ''}`} onClick={() => { sourceLoadRef.current++; setActiveId(x.id); setWebsiteSourceId(x.id); setSourceArticleUrl(''); setSourceFrameUrl(''); setSourceLinks([]); setSourceLinksError(''); setSourceLinkSearch(''); setSourceApiKey(localStorage.getItem('dnu-firecrawl-api-key-v1') || ''); setResult(null); setError(''); }} aria-label={`Show ${x.name} website beside the daily news update`}><span className="source-icon">{x.name[0]}</span><span className="source-copy"><strong>{x.name}</strong></span><span className="source-arrow">›</span></button>)}{!visibleSources.length && <p className="no-sources">No sources match this search.</p>}</div>
+        <div className="source-list">{visibleSources.map(x => <button key={x.id} className={`source-row ${websiteSourceId === x.id ? 'active' : ''}`} onClick={() => { setActiveId(x.id); setWebsiteSourceId(x.id); setResult(null); setError(''); }} aria-label={`Show ${x.name} website beside the daily news update`}><span className="source-icon">{x.name[0]}</span><span className="source-copy"><strong>{x.name}</strong></span><span className="source-arrow">›</span></button>)}{!visibleSources.length && <p className="no-sources">No sources match this search.</p>}</div>
         <div className="sidebar-foot"><span className="pulse"/> {sources.length} visible sources</div>
       </aside>}
       <main className={`main-panel ${websiteSource ? 'with-website' : ''}`}>
@@ -454,13 +401,13 @@ function App() {
             {siteConfig.showCoverage && <p className="daily-coverage">{coverageNote}</p>}
           </div>}
         </section>}
-        {websiteSource && <section className="website-panel" aria-label={`${websiteSource.name} website`}><div className="website-panel-heading"><div><span className="eyebrow">SOURCE WEBSITE</span><h2>{websiteSource.name}</h2></div><button onClick={() => { sourceLoadRef.current++; setWebsiteSourceId(''); }} aria-label="Close source website">×</button></div><div className="website-panel-actions"><a href={websiteSource.url} target="_blank" rel="noopener noreferrer">Open website in new tab ↗</a>{sourceArticleUrl && <a className="selected-article-link" href={sourceArticleUrl} target="_blank" rel="noopener noreferrer" title={sourceArticleUrl}>Selected article ↗</a>}<button type="button" className="grab-button" onClick={() => openGrab(websiteSource, sourceArticleUrl)} title={sourceArticleUrl ? 'Scrape the selected article' : 'Select an article link below first'}>Grab</button>{managementEnabled && <button onClick={() => { setManagerTab('Collect'); setManaging(true); }}>Collect headlines</button>}</div><div className="website-link-browser"><div className="website-link-tools"><strong>Article links</strong><button type="button" onClick={() => loadSourceArticleLinks(websiteSource)} disabled={sourceLinksLoading}>{sourceLinksLoading ? 'Loading…' : 'Load links with Firecrawl'}</button></div>{!sourceApiKey && <input type="password" value={sourceApiKey} onChange={event => setSourceApiKey(event.target.value)} placeholder="Firecrawl API key" aria-label="Firecrawl API key for article links" autoComplete="off"/>}{sourceLinksError && <p role="alert">{sourceLinksError}</p>}{websiteArticleLinks.length > 0 && <><input type="search" value={sourceLinkSearch} onChange={event => setSourceLinkSearch(event.target.value)} placeholder="Find an article" aria-label="Find an article link"/><div className="website-link-list">{websiteArticleLinks.map(item => <button type="button" key={item.url} className={sourceArticleUrl === item.url ? 'selected' : ''} onClick={() => selectSourceArticle(item.url)} title={item.url}>{item.title}</button>)}</div></>}</div><p>Select an article link above, then press Grab. Links clicked inside the publisher frame cannot update the selection. Loading new links uses Firecrawl. If the frame stays blank, use the external link above.</p><iframe key={websiteSource.id} src={sourceFrameUrl || websiteSource.url} title={`${websiteSource.name} website`} referrerPolicy="no-referrer" loading="lazy"/></section>}
+        {websiteSource && <section className="website-panel" aria-label={`${websiteSource.name} website`}><div className="website-panel-heading"><div><span className="eyebrow">SOURCE WEBSITE</span><h2>{websiteSource.name}</h2></div><button onClick={() => setWebsiteSourceId('')} aria-label="Close source website">×</button></div><div className="website-panel-actions"><a href={websiteSource.url} target="_blank" rel="noopener noreferrer">Open website in new tab ↗</a></div><p>Some publishers block display inside other websites. Use the link above if this panel stays blank.</p><iframe key={websiteSource.id} src={websiteSource.url} title={`${websiteSource.name} website`} referrerPolicy="no-referrer" loading="lazy"/></section>}
         </div>
 
       </main>
     </div>{toast && <div className="toast" onClick={() => setToast('')}>{toast} ×</div>}
     {managementEnabled && managing && <SiteManager initialTab={managerTab} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} includeText={includeText} setIncludeText={setIncludeText} excludeText={setExcludeText} setExcludeText={setExcludeText} applyScope={applyScope} onClose={() => setManaging(false)} onReset={() => setSiteConfig(defaultSiteConfig(daily?.articles ?? preparedUpdate.articles))}/>}
-    {addingArticles && <AddArticlesDialog initialUrl={grabArticleUrl} autoScrape={grabAutoScrape} grabSourceName={grabSourceName} serverAvailable={!staticPreview && Boolean(config?.firecrawlConfigured)} sources={configuredSources} sections={siteConfig.sections} existingUrls={[...(daily?.articles ?? []).map(item => item.url), ...siteConfig.customArticles.map(item => item.url)]} remainingSlots={100 - siteConfig.customArticles.length} onAdd={article => { setSiteConfig(current => current.customArticles.some(item => item.url === article.url) ? current : { ...current, customArticles: [...current.customArticles, article] }); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}
+    {addingArticles && <AddArticlesDialog serverAvailable={!staticPreview && Boolean(config?.firecrawlConfigured)} sources={configuredSources} sections={siteConfig.sections} existingUrls={[...(daily?.articles ?? []).map(item => item.url), ...siteConfig.customArticles.map(item => item.url)]} remainingSlots={100 - siteConfig.customArticles.length} onAdd={article => { setSiteConfig(current => current.customArticles.some(item => item.url === article.url) ? current : { ...current, customArticles: [...current.customArticles, article] }); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}
   </div>;
 }
 
