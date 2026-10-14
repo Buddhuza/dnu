@@ -90,6 +90,8 @@ export function normalizeSiteConfig(input, articles = []) {
       articleEdits[id] = {
         title: clean(edit.title, '', 400),
         summary: clean(edit.summary, '', 1200),
+        summaryEdited: edit.summaryEdited === true,
+        sourceName: clean(edit.sourceName, '', 100),
         subsection: legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : edit.sectionId === 'Lead stories' && edit.subsection === 'Middle East / North Africa' ? 'Middle East' : clean(edit.subsection, '', 100),
         country: clean(edit.country, '', 100),
         sectionId: legacyOrganisations ? 'Miscellaneous' : sectionIds.has(edit.sectionId) ? edit.sectionId : '',
@@ -173,7 +175,8 @@ export function displaySiteContent(articles, config) {
     items.push({
       ...article,
       title: edit?.title?.trim() || article.title,
-      summary: edit?.summary?.trim() || article.summary,
+      summary: edit?.summaryEdited ? edit.summary : edit?.summary?.trim() || article.summary,
+      sourceName: edit?.sourceName?.trim() || article.sourceName,
       section: sectionById.get(sectionId)?.name || sectionId,
       sectionId,
       subsection: edit ? edit.subsection : legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : article.subsection,
@@ -187,8 +190,10 @@ export function displaySiteContent(articles, config) {
   const order = new Map(config.sections.map((section, index) => [section.id, index]));
   const articleOrder = new Map((config.articleOrder ?? []).map((id, index) => [id, index]));
   const subsectionOrder = new Map(config.sections.map(section => [section.id, new Map((section.subsections ?? []).map((name, index) => [name, index]))]));
+  const alphabetical = new Intl.Collator('en', { sensitivity: 'base', ignorePunctuation: true });
   return items.sort((a, b) => (order.get(a.sectionId) ?? 999) - (order.get(b.sectionId) ?? 999)
     || (subsectionOrder.get(a.sectionId)?.get(a.subsection) ?? 999) - (subsectionOrder.get(b.sectionId)?.get(b.subsection) ?? 999)
+    || alphabetical.compare(a.country || '', b.country || '')
     || (articleOrder.get(a.id) ?? 9999) - (articleOrder.get(b.id) ?? 9999));
 }
 

@@ -21,6 +21,28 @@ test('section edits reorder, rename, and hide news without changing source data'
   assert.equal(articles[1].title, 'Second headline');
 });
 
+test('countries stay alphabetical even when a manually added story has a later article order', () => {
+  const stories = [
+    { id: 'uk', section: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'United Kingdom', title: 'UK story' },
+    { id: 'italy', section: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Italy', title: 'Italy story' },
+    { id: 'germany', section: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Germany', title: 'Germany story' }
+  ];
+  const config = defaultSiteConfig(stories);
+  config.articleOrder = ['uk', 'italy', 'germany'];
+  config.customArticles = [{ id: 'manual-italy', title: 'New Italy story', url: 'https://example.com/italy', sourceName: 'Agency', sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Italy' }];
+  assert.deepEqual(displaySiteContent(stories, config).map(item => item.country), ['Germany', 'Italy', 'Italy', 'United Kingdom']);
+});
+
+test('headline, empty summary, and agency edits survive saved settings', () => {
+  const config = defaultSiteConfig(articles);
+  config.articleEdits.a = { title: 'Edited headline', summary: '', summaryEdited: true, sourceName: 'New agency', sectionId: 'Europe', subsection: 'Poland' };
+  const restored = normalizeSiteConfig(config, articles);
+  const story = displaySiteContent(articles, restored).find(item => item.id === 'a');
+  assert.equal(story.title, 'Edited headline');
+  assert.equal(story.summary, '');
+  assert.equal(story.sourceName, 'New agency');
+});
+
 test('import rejects unsafe links and invalid colors', () => {
   const config = normalizeSiteConfig({
     version: 1,
