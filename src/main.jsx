@@ -42,9 +42,8 @@ function App() {
   const [toast, setToast] = useState('');
   const [managing, setManaging] = useState(false);
   const [editingStories, setEditingStories] = useState(false);
-  const [draggedStoryId, setDraggedStoryId] = useState('');
   const [dropTarget, setDropTarget] = useState('');
-  const touchDragRef = useRef(null);
+  const pointerDragRef = useRef(null);
   const [addingArticles, setAddingArticles] = useState(false);
   const [updateSearchOpen, setUpdateSearchOpen] = useState(false);
   const [updateSearchText, setUpdateSearchText] = useState('');
@@ -277,25 +276,6 @@ function App() {
     scroller.scrollTo({ top: scroller.scrollTop + target.getBoundingClientRect().top - scroller.getBoundingClientRect().top - 12, behavior: 'smooth' });
     history.replaceState(null, '', `#daily-section-${index}`);
   };
-  const beginStoryDrag = (event, id) => {
-    event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('text/plain', id);
-    setDraggedStoryId(id);
-  };
-  const allowStoryDrop = (event, key) => {
-    if (!editingStories || !draggedStoryId) return;
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
-    setDropTarget(key);
-  };
-  const dropStory = (event, destination) => {
-    if (!editingStories || !draggedStoryId) return;
-    event.preventDefault();
-    event.stopPropagation();
-    setSiteConfig(current => moveArticleInConfig(current, daily?.articles ?? [], draggedStoryId, destination));
-    setDraggedStoryId('');
-    setDropTarget('');
-  };
   const dropAtPoint = (x, y, movedId) => {
     const element = document.elementFromPoint(x, y)?.closest('[data-drop-kind]');
     if (!element) return null;
@@ -308,10 +288,10 @@ function App() {
     const key = dropKind === 'section' ? `section:${sectionId}` : `${dropKind}:${sectionId}:${subsection}${dropKind === 'country' ? `:${country}` : ''}`;
     return { key, destination: { sectionId, subsection, country } };
   };
-  const moveTouchStory = event => {
-    if (!touchDragRef.current) return;
+  const movePointerStory = event => {
+    if (!pointerDragRef.current) return;
     event.preventDefault();
-    const hit = dropAtPoint(event.clientX, event.clientY, touchDragRef.current);
+    const hit = dropAtPoint(event.clientX, event.clientY, pointerDragRef.current);
     setDropTarget(hit?.key || '');
     const scroller = document.querySelector('.daily-scroll');
     if (scroller) {
@@ -320,13 +300,12 @@ function App() {
       if (event.clientY > box.bottom - 48) scroller.scrollTop += 18;
     }
   };
-  const finishTouchStory = event => {
-    if (!touchDragRef.current) return;
-    const movedId = touchDragRef.current;
+  const finishPointerStory = event => {
+    if (!pointerDragRef.current) return;
+    const movedId = pointerDragRef.current;
     const hit = dropAtPoint(event.clientX, event.clientY, movedId);
     if (hit) setSiteConfig(current => moveArticleInConfig(current, daily?.articles ?? [], movedId, hit.destination));
-    touchDragRef.current = null;
-    setDraggedStoryId('');
+    pointerDragRef.current = null;
     setDropTarget('');
   };
 
@@ -355,39 +334,18 @@ function App() {
         <div className={`reading-layout ${websiteSource ? 'website-open' : ''}`}>
         {siteConfig.showUpdate && <section className={`daily-update ${siteConfig.sectionHeadingUppercase ? 'uppercase-headings' : ''}`} aria-labelledby="daily-update-title">
           <div className="daily-heading"><div className="daily-heading-main"><div className="daily-title-row"><h2 id="daily-update-title">{siteConfig.updateTitle}</h2>{reportWindow?.windowStart && reportWindow?.windowEnd && <p className="report-date">{reportDateLabel(reportWindow.windowStart, reportWindow.windowEnd)}</p>}</div>{updateControls()}</div>{updateSearchOpen && <div className="update-search" role="search" aria-label="Search update"><input autoFocus type="search" value={updateSearchText} onChange={event => setUpdateSearchText(event.target.value)} onKeyDown={event => { if (event.key === 'Escape') setUpdateSearchOpen(false); if (event.key === 'Enter' && updateSearchResults.length) { event.preventDefault(); setActiveSearchResult(current => (current + (event.shiftKey ? -1 : 1) + updateSearchResults.length) % updateSearchResults.length); } }} placeholder="Find text in update" aria-label="Find text in update"/><span role="status">{updateSearchQuery ? updateSearchResults.length ? `${Math.min(activeSearchResult + 1, updateSearchResults.length)} of ${updateSearchResults.length} stories` : 'No matches' : 'Search headlines, summaries, sources and sections'}</span><button type="button" aria-label="Previous match" disabled={!updateSearchResults.length} onClick={() => setActiveSearchResult(current => (current - 1 + updateSearchResults.length) % updateSearchResults.length)}>↑</button><button type="button" aria-label="Next match" disabled={!updateSearchResults.length} onClick={() => setActiveSearchResult(current => (current + 1) % updateSearchResults.length)}>↓</button><button type="button" aria-label="Close search" onClick={() => setUpdateSearchOpen(false)}>×</button></div>}{dailySections.length > 0 && <nav className="daily-section-nav" aria-label="Update sections" style={{ '--section-count': Math.min(dailySections.length, 6) }}>{dailySections.map(({ section }, index) => <a key={section} href={`#daily-section-${index}`} onClick={event => jumpToSection(event, index)}>{section}</a>)}</nav>}</div>
-          {daily && <div className="daily-scroll" role="region" aria-label="Daily update stories" tabIndex={0} onDragOver={event => {
-            if (!draggedStoryId) return;
-            const box = event.currentTarget.getBoundingClientRect();
-            if (event.clientY < box.top + 48) event.currentTarget.scrollTop -= 18;
-            if (event.clientY > box.bottom - 48) event.currentTarget.scrollTop += 18;
-          }}>
+          {daily && <div className="daily-scroll" role="region" aria-label="Daily update stories" tabIndex={0}>
             {dailySections.map(({ sectionId, section, subsections }, sectionIndex) => <div className="daily-section" id={`daily-section-${sectionIndex}`} key={sectionId}>
-              <h3 data-drop-kind="section" data-section-id={sectionId} data-subsection={subsections[0]?.[0] || ''} className={dropTarget === `section:${sectionId}` ? 'story-drop-target' : ''}
-                onDragOver={event => allowStoryDrop(event, `section:${sectionId}`)}
-                onDrop={event => dropStory(event, { sectionId, subsection: subsections[0]?.[0] || '', country: '' })}>{highlightSearch(section)}</h3>
+              <h3 data-drop-kind="section" data-section-id={sectionId} data-subsection={subsections[0]?.[0] || ''} className={dropTarget === `section:${sectionId}` ? 'story-drop-target' : ''}>{highlightSearch(section)}</h3>
               {subsections.map(([subsection, items]) => <div key={subsection || 'direct'}>
-                {subsection && <h4 data-drop-kind="subsection" data-section-id={sectionId} data-subsection={subsection} className={`${section === 'Miscellaneous' ? 'plain-topic' : ''} ${dropTarget === `subsection:${sectionId}:${subsection}` ? 'story-drop-target' : ''}`}
-                  onDragOver={event => allowStoryDrop(event, `subsection:${sectionId}:${subsection}`)}
-                  onDrop={event => dropStory(event, { sectionId, subsection, country: '' })}>{highlightSearch(subsection)}</h4>}
-                {editingStories && !items.length && <div data-drop-kind="empty" data-section-id={sectionId} data-subsection={subsection} className={`daily-empty-drop ${dropTarget === `empty:${sectionId}:${subsection}` ? 'story-drop-target' : ''}`}
-                  onDragOver={event => allowStoryDrop(event, `empty:${sectionId}:${subsection}`)}
-                  onDrop={event => dropStory(event, { sectionId, subsection, country: '' })}>Drag a story here</div>}
+                {subsection && <h4 data-drop-kind="subsection" data-section-id={sectionId} data-subsection={subsection} className={`${section === 'Miscellaneous' ? 'plain-topic' : ''} ${dropTarget === `subsection:${sectionId}:${subsection}` ? 'story-drop-target' : ''}`}>{highlightSearch(subsection)}</h4>}
+                {editingStories && !items.length && <div data-drop-kind="empty" data-section-id={sectionId} data-subsection={subsection} className={`daily-empty-drop ${dropTarget === `empty:${sectionId}:${subsection}` ? 'story-drop-target' : ''}`}>Drag a story here</div>}
                 {items.map((item, index) => <React.Fragment key={item.id}>
-                  {item.country && (index === 0 || items[index - 1].country !== item.country) && <h5 data-drop-kind="country" data-section-id={sectionId} data-subsection={subsection} data-country={item.country} className={`daily-country ${dropTarget === `country:${sectionId}:${subsection}:${item.country}` ? 'story-drop-target' : ''}`}
-                    onDragOver={event => allowStoryDrop(event, `country:${sectionId}:${subsection}:${item.country}`)}
-                    onDrop={event => dropStory(event, { sectionId, subsection, country: item.country })}>{highlightSearch(item.country)}</h5>}
+                  {item.country && (index === 0 || items[index - 1].country !== item.country) && <h5 data-drop-kind="country" data-section-id={sectionId} data-subsection={subsection} data-country={item.country} className={`daily-country ${dropTarget === `country:${sectionId}:${subsection}:${item.country}` ? 'story-drop-target' : ''}`}>{highlightSearch(item.country)}</h5>}
                   <article data-drop-kind="story" data-section-id={item.sectionId} data-subsection={item.subsection || ''} data-country={item.country || ''} data-story-id={item.id} className={`daily-story ${editingStories ? 'daily-story-editing' : ''} ${updateSearchOpen && updateSearchIds.has(item.id) ? 'search-match' : ''} ${updateSearchOpen && updateSearchResults[Math.min(activeSearchResult, updateSearchResults.length - 1)]?.id === item.id ? 'active-search-match' : ''} ${dropTarget === `story:${item.id}:before` ? 'story-drop-before' : ''} ${dropTarget === `story:${item.id}:after` ? 'story-drop-after' : ''}`}
-                    onDragOver={event => {
-                      if (!editingStories || !draggedStoryId || draggedStoryId === item.id) return;
-                      const after = event.clientY > event.currentTarget.getBoundingClientRect().top + event.currentTarget.getBoundingClientRect().height / 2;
-                      allowStoryDrop(event, `story:${item.id}:${after ? 'after' : 'before'}`);
-                    }}
-                    onDrop={event => {
-                      if (draggedStoryId === item.id) return;
-                      const after = event.clientY > event.currentTarget.getBoundingClientRect().top + event.currentTarget.getBoundingClientRect().height / 2;
-                      dropStory(event, { sectionId: item.sectionId, subsection: item.subsection, country: item.country, anchorId: item.id, after });
-                    }}>
-                    {editingStories && <><input className="daily-story-checkbox" type="checkbox" checked={!excludedStoryIds.has(item.id)} aria-label={`Include story: ${item.title}`} onChange={event => setExcludedStoryIds(current => { const next = new Set(current); if (event.target.checked) next.delete(item.id); else next.add(item.id); return next; })}/><button type="button" className="story-drag-handle" draggable aria-label={`Drag story: ${item.title}`} title="Drag to reorder or move" onDragStart={event => beginStoryDrag(event, item.id)} onDragEnd={() => { setDraggedStoryId(''); setDropTarget(''); }} onPointerDown={event => { if (event.pointerType === 'mouse') return; event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId); touchDragRef.current = item.id; setDraggedStoryId(item.id); }} onPointerMove={moveTouchStory} onPointerUp={finishTouchStory} onPointerCancel={() => { touchDragRef.current = null; setDraggedStoryId(''); setDropTarget(''); }}>⋮⋮</button></>}
+                    onPointerDown={event => { if (!editingStories || event.target.closest('input,a') || (event.pointerType !== 'mouse' && !event.target.closest('.story-drag-handle'))) return; event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId); pointerDragRef.current = item.id; }}
+                    onPointerMove={movePointerStory} onPointerUp={finishPointerStory} onPointerCancel={() => { pointerDragRef.current = null; setDropTarget(''); }}>
+                    {editingStories && <><input className="daily-story-checkbox" type="checkbox" checked={!excludedStoryIds.has(item.id)} aria-label={`Include story: ${item.title}`} onChange={event => setExcludedStoryIds(current => { const next = new Set(current); if (event.target.checked) next.delete(item.id); else next.add(item.id); return next; })}/><button type="button" className="story-drag-handle" aria-label={`Drag story: ${item.title}`} title="Drag to reorder or move">⋮⋮</button></>}
                     <div className="daily-story-content"><p><strong>{highlightSearch(reportStoryText(item).headline)}</strong>{item.summary && <> {highlightSearch(reportStoryText(item).summary)}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{highlightSearch(item.sourceName)}</a>)</p>{Number.isFinite(Date.parse(item.publishedAt)) && <time className="daily-story-time" dateTime={item.publishedAt}>{highlightSearch(dateLabel(item.publishedAt))}{(item.timeSource === 'inferred' || item.timeSource === 'current') && ' · estimated'}</time>}</div>
                   </article>
                 </React.Fragment>)}
