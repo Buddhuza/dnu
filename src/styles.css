@@ -158,3 +158,28 @@
 .collection-audit-list summary span{font-size:12px;opacity:.75;text-align:right}
 .collection-audit-list details p{margin:9px 0;line-height:1.45;overflow-wrap:anywhere}
 .collection-audit-list button{border:1px solid #b9cbd5;border-radius:5px;background:transparent;color:var(--site-section,#0070c0);padding:6px 9px;cursor:pointer}
+
+/* Keep the workspace frame in place and scroll only the report body. */
+.app-shell{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{flex:none;min-height:64px;padding:7px 22px}
+.topbar .brand-text strong{font-size:max(27px,calc(var(--section-heading-size,26px) + 2px))}
+.topbar .brand-text small{font-size:10px}
+.workspace{flex:1;min-height:0;overflow:hidden}
+.sidebar{min-height:0;overflow:hidden}
+.main-panel{display:flex;flex-direction:column;min-height:0;overflow:hidden;padding:8px clamp(16px,3.6vw,58px)}
+.reading-layout{height:100%;min-height:0}
+.daily-update{height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding:0 20px 12px}
+.daily-heading{position:relative;top:auto;flex:none;margin:0 -20px;padding:11px 20px 9px}
+.daily-heading h2{font-size:max(30px,calc(var(--section-heading-size,26px) + 4px));margin:0}
+.daily-heading .report-date{margin-top:2px;line-height:1.25}
+.daily-downloads .daily-download,.daily-edit{padding:6px 10px;line-height:1.2}
+.daily-section-nav{margin-top:9px}
+.daily-section-nav a{min-height:27px;padding:4px}
+.daily-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-right:4px}
+.reading-layout.website-open{height:100%;align-items:stretch}
+.reading-layout.website-open .daily-update{min-height:0}
+.website-panel{height:100%;min-height:0;display:flex;flex-direction:column;position:static;overflow:hidden}
+.website-panel iframe{flex:1;min-height:0;height:auto}
+@media(max-width:800px){.reading-layout.website-open{grid-template-columns:1fr;grid-template-rows:minmax(0,2fr) minmax(0,1fr);gap:8px}}
+@media(max-width:720px){.topbar{padding:7px 14px}.workspace,.workspace.no-sidebar{display:flex;flex-direction:column}.sidebar{flex:none}.sidebar-heading{padding:8px 16px 0}.sidebar-heading h2{font-size:17px}.search-box{height:32px;margin-bottom:5px}.group-select{height:30px;margin-bottom:5px}.source-list{flex:none;padding-bottom:5px}.source-row{height:42px}.main-panel{flex:1;padding:7px 10px}.daily-update{padding:0 12px 8px}.daily-heading{margin:0 -12px;padding:10px 12px 8px}}
+@media(max-width:720px){.topbar .brand-text small{display:none}.daily-heading-main{gap:6px}.daily-downloads{gap:6px;flex-wrap:nowrap;justify-content:space-between}.daily-downloads .daily-download{width:auto;flex:1 1 auto;font-size:14px}.daily-edit{flex:0 0 auto;font-size:14px}.daily-section-nav{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin-top:7px}.daily-section-nav a{font-size:9px}}
