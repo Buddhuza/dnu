@@ -222,7 +222,7 @@ function App() {
     } catch (error) { setToast(error.message || 'Could not create the Word update.'); }
   }
 
-  const updateControls = () => daily?.articles?.length > 0 && <div className="daily-downloads"><button className="daily-download" disabled={!selectedArticles.length} onClick={downloadManagedDocx}>Download update</button><button className="daily-edit" type="button" aria-pressed={editingStories} onClick={() => setEditingStories(current => !current)}>{editingStories ? 'Save' : 'Edit'}</button><button className="daily-edit" type="button" onClick={() => setAddingArticles(true)}>Add</button></div>;
+  const updateControls = () => daily?.articles?.length > 0 && <div className="daily-downloads"><button className="daily-download" disabled={!selectedArticles.length} onClick={downloadManagedDocx}>Download</button><button className="daily-edit" type="button" aria-pressed={editingStories} onClick={() => setEditingStories(current => !current)}>{editingStories ? 'Save' : 'Edit'}</button><button className="daily-edit" type="button" onClick={() => setAddingArticles(true)}>Add</button></div>;
   const jumpToSection = (event, index) => {
     const target = document.getElementById(`daily-section-${index}`);
     if (!target) return;
