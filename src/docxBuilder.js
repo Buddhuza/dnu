@@ -1,5 +1,6 @@
 import JSZip from 'jszip';
 import { reportDateLabel } from './reportDate.js';
+import { reportStoryText } from './reportText.js';
 
 const escapeXml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[char]);
 const textRun = (value, properties = '') => `<w:r><w:rPr>${properties}</w:rPr><w:t xml:space="preserve">${escapeXml(value)}</w:t></w:r>`;
@@ -14,9 +15,9 @@ function subsectionParagraph(value, plainTopic = false) {
 }
 
 function storyParagraph(item, relationshipId) {
-  const summary = String(item.summary ?? '').trim();
-  const detail = summary ? `<w:r><w:br/></w:r>${textRun(summary, `${calibri}<w:sz w:val="24"/>`)}` : '';
-  return `<w:p><w:pPr><w:spacing w:after="160"/><w:jc w:val="both"/></w:pPr>${textRun(String(item.title ?? '').trim(), `${calibri}<w:b/><w:sz w:val="24"/>`)}${detail}${textRun(' (', `${calibri}<w:sz w:val="24"/>`)}<w:hyperlink r:id="${relationshipId}">${textRun(item.sourceName, '<w:color w:val="0563C1"/><w:sz w:val="24"/><w:u w:val="single"/>')}</w:hyperlink>${textRun(')', `${calibri}<w:sz w:val="24"/>`)}</w:p>`;
+  const { headline, summary } = reportStoryText(item);
+  const detail = summary ? textRun(` ${summary}`, `${calibri}<w:sz w:val="24"/>`) : '';
+  return `<w:p><w:pPr><w:spacing w:after="160"/><w:jc w:val="both"/></w:pPr>${textRun(headline, `${calibri}<w:b/><w:sz w:val="24"/>`)}${detail}${textRun(' (', `${calibri}<w:sz w:val="24"/>`)}<w:hyperlink r:id="${relationshipId}">${textRun(item.sourceName, '<w:color w:val="0563C1"/><w:sz w:val="24"/><w:u w:val="single"/>')}</w:hyperlink>${textRun(')', `${calibri}<w:sz w:val="24"/>`)}</w:p>`;
 }
 
 function reportDateParagraph(value) {

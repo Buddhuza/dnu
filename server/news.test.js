@@ -69,7 +69,7 @@ test('alternate collection checks the source homepage after a section fails', ()
   assert.equal(fallbackListingUrl({ ...source, listingUrl: 'https://example.com/section' }), source.url);
 });
 
-test('publisher article timestamps are taken from TASS and Izvestia pages', () => {
+test('publisher article timestamps are taken from TASS and non-English pages are rejected', () => {
   const tass = { id: 'tass', name: 'TASS', url: 'https://tass.com/politics', group: 'Miscl' };
   const tassUrl = 'https://tass.com/politics/2201383';
   const tassPage = { data: { html: '<dateformat time="1791890077" mode="abs"></dateformat>', metadata: { ogTitle: 'Russia to cooperate with ASEAN on marine security — Lavrov' } } };
@@ -79,8 +79,8 @@ test('publisher article timestamps are taken from TASS and Izvestia pages', () =
   const izvestia = { id: 'izvestia', name: 'Izvestia', url: 'https://iz.ru/rubric/mir', group: 'Miscl' };
   const izvestiaUrl = 'https://iz.ru/2183304/v-frg-zaderzhali-tretego-podozrevaemogo-v-podzhoge-shliuza-starlink-v-polshe-izi';
   const izvestiaPage = { data: { html: '<div itemprop="datePublished">2026-10-13T12:59:04+03:00</div>', metadata: { ogTitle: 'В ФРГ задержали третьего подозреваемого в поджоге шлюза Starlink в Польше' } } };
-  assert.equal(reviewedArticle(izvestiaPage, izvestia, izvestiaUrl, Date.parse('2026-10-13T12:00:00Z')).publishedAt, '2026-10-13T09:59:04.000Z');
-  assert.deepEqual(undatedCandidates({ data: { json: { articles: [{ title: 'В ФРГ задержали третьего подозреваемого', url: izvestiaUrl }] } } }, izvestia, DEFAULT_INCLUDE).map(item => item.url), [izvestiaUrl]);
+  assert.equal(reviewedArticleCheck(izvestiaPage, izvestia, izvestiaUrl, Date.parse('2026-10-13T12:00:00Z')).reason, 'nonEnglish');
+  assert.deepEqual(undatedCandidates({ data: { json: { articles: [{ title: 'В ФРГ задержали третьего подозреваемого', url: izvestiaUrl }] } } }, izvestia, DEFAULT_INCLUDE).map(item => item.url), []);
 });
 
 test('complete source scan pages through every matching article link', () => {

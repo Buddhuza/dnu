@@ -82,7 +82,7 @@ app.post('/api/headlines', async (req, res) => {
     const candidates = verifyFeedArticles ? feedHeadlines.map(item => ({ title: item.title, url: item.url, feedArticle: item })) : fromFeed ? [] : undatedCandidates(entry.payload, source, include, exclude, true);
     const page = candidatePage(candidates, req.body?.cursor, fullScan, req.body?.deepScan === true);
     let checked = 0;
-    const rejectionCounts = { pageError: 0, missingHeadlineOrTime: 0, outsideWindow: 0, outsideScope: 0 };
+    const rejectionCounts = { pageError: 0, missingHeadlineOrTime: 0, outsideWindow: 0, outsideScope: 0, nonEnglish: 0 };
     const pageErrors = [];
     for (const candidate of page.items) {
         checked++;
@@ -123,9 +123,12 @@ app.post('/api/article', async (req, res) => {
       entry = { at: Date.now(), payload: await scrapeArticle(articleUrl.href, process.env.FIRECRAWL_API_KEY) };
       articleCache.set(articleUrl.href, entry);
     }
-    const reviewed = reviewedArticle(entry.payload, source, articleUrl.href);
-    if (!reviewed) return res.status(422).json({ error: 'This article has no verifiable publication time within the last 48 hours.' });
-    res.json(reviewed);
+    const check = reviewedArticleCheck(entry.payload, source, articleUrl.href);
+    if (!check.article) {
+      const reasons = { nonEnglish: 'The article is not in English.', outsideScope: 'This Russian outlet can only be used for Russia-focused reporting.', outsideWindow: 'The article is outside the last 48 hours.', missingHeadlineOrTime: 'The article has no verifiable headline or publication time.' };
+      return res.status(422).json({ error: reasons[check.reason] || 'The article could not be reviewed.' });
+    }
+    res.json(check.article);
   } catch (error) { res.status(502).json({ error: `Could not review article: ${error.message}` }); }
 });
 

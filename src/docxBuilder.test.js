@@ -26,8 +26,8 @@ test('browser report download creates a readable Word file with country headings
   assert.match(document.split('BELGIUM')[0].split('<w:p>').at(-1), /<w:shd[^>]*w:fill="D9E2F3"/);
   assert.match(document, /Exact headline/);
   assert.match(document, /A factual second sentence/);
-  assert.match(document, /Exact headline[\s\S]*?<w:br\/>[\s\S]*?A factual second sentence/);
-  assert.doesNotMatch(document, /Exact headline\./);
+  assert.match(document, /Exact headline\.[\s\S]*?A factual second sentence\.[\s\S]*?Agency/);
+  assert.doesNotMatch(document, /Exact headline\.[\s\S]*?<w:br\/>[\s\S]*?A factual second sentence/);
   assert.doesNotMatch(document, /COVERAGE NOTE|This coverage note must not appear/);
   assert.doesNotMatch(document, /Uncollected agency/);
   assert.match(document, /<w:tblpPr[^>]*w:tblpYSpec="bottom"/);

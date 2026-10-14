@@ -9,6 +9,7 @@ import { orderedSubsections } from './newsSections.js';
 import { createReportDocxFromTemplate } from './docxBuilder.js';
 import { reportFilename } from './reportFilename.js';
 import { reportDateLabel } from './reportDate.js';
+import { reportStoryText } from './reportText.js';
 import { sourceAudit } from './collectionAudit.js';
 import './styles.css';
 
@@ -16,7 +17,7 @@ const readStored = (key, fallback, legacyKey) => {
   try { return JSON.parse(localStorage.getItem(key) ?? (legacyKey ? localStorage.getItem(legacyKey) : null)) ?? fallback; } catch { return fallback; }
 };
 const words = text => [...new Set(text.split(/[,\n]/).map(x => x.trim()).filter(Boolean))].slice(0, 40);
-const defaultScope = 'security, politics, political, defense, diplomacy, election, conflict, war, terrorism, parliament, government, minister, president, police, military, NATO, Russia, Ukraine, attack, sanctions, protest, полит, воен, войн, террор, санкц, росси, украин, атак, задерж';
+const defaultScope = 'OSCE, cooperation, diplomacy, bilateral, foreign policy, talks, summit, peace, sanctions, NATO, EU, UN, security, defense, defence, conflict, war, terrorism, military, politics, political, election, Russia, Ukraine';
 const dateLabel = iso => new Intl.DateTimeFormat(undefined, { timeZone: 'Europe/Vienna', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
 
 function App() {
@@ -37,6 +38,11 @@ function App() {
   const [error, setError] = useState('');
   const [toast, setToast] = useState('');
   const [managing, setManaging] = useState(false);
+  const [editingStories, setEditingStories] = useState(false);
+  const [excludedStoryIds, setExcludedStoryIds] = useState(() => {
+    const saved = readStored('dnu-excluded-story-ids-v1', []);
+    return new Set(Array.isArray(saved) ? saved.filter(id => typeof id === 'string') : []);
+  });
   const [managerTab, setManagerTab] = useState('Content');
   const [siteConfig, setSiteConfig] = useState(() => {
     const stored = readStored('dnu-site-settings-v1', publishedSiteConfig, 'signal-site-settings-v1');
@@ -54,6 +60,7 @@ function App() {
   }, []);
   useEffect(() => { localStorage.setItem('dnu-site-settings-v1', JSON.stringify(siteConfig)); document.title = siteConfig.brandName || 'SITUATION ROOM'; }, [siteConfig]);
   useEffect(() => { localStorage.setItem('dnu-source-audit-v1', JSON.stringify(auditRows)); }, [auditRows]);
+  useEffect(() => { localStorage.setItem('dnu-excluded-story-ids-v1', JSON.stringify([...excludedStoryIds])); }, [excludedStoryIds]);
   const configuredSources = useMemo(() => displaySources(config?.sources ?? [], { ...siteConfig, hiddenSourceIds: [] }), [config, siteConfig]);
   const sources = useMemo(() => displaySources(config?.sources ?? [], siteConfig), [config, siteConfig]);
   const active = configuredSources.find(x => x.id === activeId);
@@ -63,6 +70,8 @@ function App() {
   const visibleSources = useMemo(() => sources.filter(x => (group === 'All sources' || x.group === group) && `${x.name} ${x.group} ${x.url}`.toLowerCase().includes(search.toLowerCase())), [sources, group, search]);
   const collectionSources = useMemo(() => [...visibleSources].sort((a, b) => Number(config?.feedSourceIds?.includes(b.id)) - Number(config?.feedSourceIds?.includes(a.id))), [visibleSources, config]);
   const displayedArticles = useMemo(() => displaySiteContent(daily?.articles ?? [], siteConfig), [daily, siteConfig]);
+  const selectedArticles = useMemo(() => displayedArticles.filter(item => !excludedStoryIds.has(item.id)), [displayedArticles, excludedStoryIds]);
+  const readingArticles = editingStories ? displayedArticles : selectedArticles;
   const activeTheme = siteConfig.darkMode ? siteConfig.darkTheme : siteConfig.theme;
   const themeStyle = {
     '--site-primary': activeTheme.primary, '--site-accent': activeTheme.accent,
@@ -75,7 +84,7 @@ function App() {
   };
   const dailySections = useMemo(() => {
     const sections = new Map();
-    for (const item of displayedArticles) {
+    for (const item of readingArticles) {
       if (!sections.has(item.section)) sections.set(item.section, new Map());
       const subsections = sections.get(item.section);
       const label = item.subsection || '';
@@ -86,8 +95,8 @@ function App() {
       section,
       subsections: orderedSubsections(siteConfig.sections.find(item => item.name === section), subsections.keys()).map(label => [label, subsections.get(label)])
     }));
-  }, [displayedArticles, siteConfig.sections]);
-  const selectedSourceStories = displayedArticles.filter(item => item.sourceId === activeId);
+  }, [readingArticles, siteConfig.sections]);
+  const selectedSourceStories = selectedArticles.filter(item => item.sourceId === activeId);
   const sourceRequest = source => ({ sourceId: source.id, ...(source.id.startsWith('manual-source-') ? { customSource: source } : {}), ...(source.listingUrl ? { listingUrlOverride: source.listingUrl } : {}), ...scope });
 
   async function scanSource(source, fullScan, onPage = () => {}) {
@@ -194,7 +203,7 @@ function App() {
       const response = await fetch(`${import.meta.env.BASE_URL}daily-update-template.docx`);
       if (!response.ok) throw new Error('The Word template is unavailable.');
       const templateBytes = await response.arrayBuffer();
-      const file = await createReportDocxFromTemplate(templateBytes, { title: siteConfig.updateTitle, windowStart: daily?.windowStart, windowEnd: daily?.windowEnd, articles: displayedArticles, sourceOutcomes: daily?.sourceOutcomes ?? [] });
+      const file = await createReportDocxFromTemplate(templateBytes, { title: siteConfig.updateTitle, windowStart: daily?.windowStart, windowEnd: daily?.windowEnd, articles: selectedArticles, sourceOutcomes: daily?.sourceOutcomes ?? [] });
       const url = URL.createObjectURL(new Blob([file], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }));
       const a = document.createElement('a'); a.href = url; a.download = reportFilename(daily); document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 60_000);
@@ -206,7 +215,7 @@ function App() {
           {!config?.firecrawlConfigured && <div className="notice"><p>{staticPreview ? 'This published page shows the prepared update. Live collection requires the server app; feeds work without Firecrawl, while other sources need an API key.' : <>Feed sources can be collected without an API key. Add <code>FIRECRAWL_API_KEY</code> for other sources.</>}</p></div>}
           {error && <div className="error-box" role="alert">{error}</div>}
           {loading && <div className="loading-box"><div className="spinner"/> {batchProgress ? `Collected ${batchProgress.done} of ${batchProgress.total} sources${batchProgress.failed ? ` · ${batchProgress.failed} failed` : ''}` : 'Collecting headlines and checking publication times…'}</div>}
-          {result && <><div className="result-meta">{result.headlines.length} headlines · Checked {dateLabel(result.fetchedAt)}{result.collectionMethod ? ` · ${result.collectionMethod === 'feed' ? 'Publisher feed, 0 Firecrawl credits' : 'Firecrawl'}` : ''}{!result.batch && result.candidatesFound ? ` · ${result.candidatesChecked} of ${result.candidatesFound} article candidates checked` : ''}</div>{result.headlines.length ? <div className="headline-list">{result.headlines.map(item => <article className="headline-card" key={item.id}><div className="headline-top"><span className="category-label">{item.sourceName}</span><span>{dateLabel(item.publishedAt)}</span></div><h3><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title} ↗</a></h3>{item.summary && <p>{item.summary} ({item.sourceName})</p>}</article>)}</div> : <div className="empty-result">No matching headline was found in this scan. This does not mean the source had no relevant news. Try broader keywords.</div>}</>}
+          {result && <><div className="result-meta">{result.headlines.length} headlines · Checked {dateLabel(result.fetchedAt)}{result.collectionMethod ? ` · ${result.collectionMethod === 'feed' ? 'Publisher feed, 0 Firecrawl credits' : 'Firecrawl'}` : ''}{!result.batch && result.candidatesFound ? ` · ${result.candidatesChecked} of ${result.candidatesFound} article candidates checked` : ''}</div>{result.headlines.length ? <div className="headline-list">{result.headlines.map(item => <article className="headline-card" key={item.id}><div className="headline-top"><span className="category-label">{item.sourceName}</span><span>{dateLabel(item.publishedAt)}</span></div><p><strong>{reportStoryText(item).headline}</strong>{item.summary && <> {reportStoryText(item).summary}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{item.sourceName}</a>)</p></article>)}</div> : <div className="empty-result">No matching headline was found in this scan. This does not mean the source had no relevant news. Try broader keywords.</div>}</>}
           {auditRows.length > 0 && <section className="collection-audit" aria-label="Source verification"><h3>Source verification</h3><p>{auditRows.filter(row => row.status === 'extracted').length} of {auditRows.length} checked sources yielded articles. The remaining rows explain what was checked and what to try next.</p><div className="collection-audit-list">{auditRows.map(row => <details key={row.sourceId}><summary><strong>{row.name}</strong><span>{row.status === 'extracted' ? 'Articles extracted' : row.status === 'unavailable' ? 'Needs server access' : 'Needs follow-up'}</span></summary><p>{row.reason}</p>{row.attempts?.length > 0 && <p>Checked: {row.attempts.map(item => `${item.collectionMethod === 'feed' ? 'publisher feed' : item.listingUrl} (${item.listedCount ?? 0} listed, ${item.candidatesChecked ?? 0} article pages checked)`).join('; ')}.</p>}{row.errors?.length > 0 && <p>Errors: {row.errors.join('; ')}</p>}{row.attempts?.some(item => item.pageErrors?.length) && <p>Article errors: {row.attempts.flatMap(item => item.pageErrors || []).slice(0, 3).join('; ')}</p>}{row.remedy && <p>Next step: {row.remedy}</p>}<button onClick={() => loadSource(row.sourceId, true)} disabled={loading || staticPreview || (!config?.firecrawlConfigured && !config?.feedSourceIds?.includes(row.sourceId))}>Retry complete scan</button></details>)}</div></section>}
           {!loading && !result && !error && (staticPreview ? <div className="snapshot-results"><p>{selectedSourceStories.length ? `${selectedSourceStories.length} prepared update stories from ${active?.name}` : `No ${active?.name || 'source'} stories were selected for this prepared update.`}</p>{selectedSourceStories.map(item => <article className="headline-card" key={item.id}><h3><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title} ↗</a></h3></article>)}</div> : <div className="empty-result"><span className="empty-symbol">◎</span><strong>Your next story starts here.</strong><p>Choose a source or collect all visible sources. Results are filtered to the past 48 hours.</p></div>)}
         </section>
@@ -225,8 +234,8 @@ function App() {
       <main className={`main-panel ${websiteSource ? 'with-website' : ''}`}>
         <div className={`reading-layout ${websiteSource ? 'website-open' : ''}`}>
         {siteConfig.showUpdate && <section className={`daily-update ${siteConfig.sectionHeadingUppercase ? 'uppercase-headings' : ''}`} aria-labelledby="daily-update-title">
-          <div className="daily-heading"><div><h2 id="daily-update-title">{siteConfig.updateTitle}</h2>{daily?.windowStart && daily?.windowEnd && <p className="report-date">{reportDateLabel(daily.windowStart, daily.windowEnd)}</p>}</div>{daily?.articles?.length > 0 && <button className="daily-download" disabled={!displayedArticles.length} onClick={downloadManagedDocx}>Download report</button>}</div>
-          {daily && <>{dailySections.map(({ section, subsections }) => <div className="daily-section" key={section}><h3>{section}</h3>{subsections.map(([subsection, items]) => <div key={subsection}>{subsection && <h4 className={section === 'Miscellaneous' ? 'plain-topic' : undefined}>{subsection}</h4>}{items.map((item, index) => <React.Fragment key={item.id}>{item.country && (index === 0 || items[index - 1].country !== item.country) && <h5 className="daily-country">{item.country}</h5>}<article className="daily-story"><p><strong>{item.title}</strong>{item.summary && <><br/>{item.summary}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{item.sourceName}</a>)</p></article></React.Fragment>)}</div>)}</div>)}{!displayedArticles.length && <p className="daily-empty">There are no visible stories in this update. Use Manage site to show or add content.</p>}{siteConfig.showCoverage && <p className="daily-coverage">{siteConfig.coverageText || (daily.windowStart ? `Coverage: ${dateLabel(daily.windowStart)} to ${dateLabel(daily.windowEnd)} (Vienna time). Prepared ${dateLabel(daily.checkedAt)} from selected original articles. This static snapshot does not refresh automatically.` : `Prepared ${dateLabel(daily.checkedAt)} from selected reporting in the preceding ${daily.windowHours || 48} hours.`)}</p>}</>}
+          <div className="daily-heading"><div><h2 id="daily-update-title">{siteConfig.updateTitle}</h2>{daily?.windowStart && daily?.windowEnd && <p className="report-date">{reportDateLabel(daily.windowStart, daily.windowEnd)}</p>}</div>{daily?.articles?.length > 0 && <div className="daily-downloads"><button className="daily-download" disabled={!selectedArticles.length} onClick={downloadManagedDocx}>Download report</button><button className="daily-edit" type="button" aria-pressed={editingStories} onClick={() => setEditingStories(current => !current)}>{editingStories ? 'Save' : 'Edit'}</button></div>}</div>
+          {daily && <>{dailySections.map(({ section, subsections }) => <div className="daily-section" key={section}><h3>{section}</h3>{subsections.map(([subsection, items]) => <div key={subsection}>{subsection && <h4 className={section === 'Miscellaneous' ? 'plain-topic' : undefined}>{subsection}</h4>}{items.map((item, index) => <React.Fragment key={item.id}>{item.country && (index === 0 || items[index - 1].country !== item.country) && <h5 className="daily-country">{item.country}</h5>}<article className={`daily-story ${editingStories ? 'daily-story-editing' : ''}`}>{editingStories && <input className="daily-story-checkbox" type="checkbox" checked={!excludedStoryIds.has(item.id)} aria-label={`Include story: ${item.title}`} onChange={event => setExcludedStoryIds(current => { const next = new Set(current); if (event.target.checked) next.delete(item.id); else next.add(item.id); return next; })}/>}<p><strong>{reportStoryText(item).headline}</strong>{item.summary && <> {reportStoryText(item).summary}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{item.sourceName}</a>)</p></article></React.Fragment>)}</div>)}</div>)}{!readingArticles.length && <p className="daily-empty">{displayedArticles.length ? 'No stories are selected. Press Edit to choose stories for this update.' : 'There are no visible stories in this update. Use Manage site to show or add content.'}</p>}{siteConfig.showCoverage && <p className="daily-coverage">{siteConfig.coverageText || (daily.windowStart ? `Coverage: ${dateLabel(daily.windowStart)} to ${dateLabel(daily.windowEnd)} (Vienna time). Prepared ${dateLabel(daily.checkedAt)} from selected original articles. This static snapshot does not refresh automatically.` : `Prepared ${dateLabel(daily.checkedAt)} from selected reporting in the preceding ${daily.windowHours || 48} hours.`)}</p>}</>}
         </section>}
         {websiteSource && <section className="website-panel" aria-label={`${websiteSource.name} website`}><div className="website-panel-heading"><div><span className="eyebrow">SOURCE WEBSITE</span><h2>{websiteSource.name}</h2></div><button onClick={() => setWebsiteSourceId('')} aria-label="Close source website">×</button></div><div className="website-panel-actions"><a href={websiteSource.url} target="_blank" rel="noopener noreferrer">Open website in new tab ↗</a><button onClick={() => { setManagerTab('Collect'); setManaging(true); }}>Collect headlines</button></div><p>Some publishers block display inside other websites. Use the link above if this panel stays blank.</p><iframe key={websiteSource.id} src={websiteSource.url} title={`${websiteSource.name} website`} referrerPolicy="no-referrer" loading="lazy"/></section>}
         </div>

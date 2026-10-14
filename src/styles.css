@@ -19,8 +19,15 @@
 .daily-downloads{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
 .daily-downloads .daily-download{border:0;cursor:pointer}
 .daily-downloads .daily-download:disabled{opacity:.5;cursor:not-allowed}
+.daily-edit{border:1px solid var(--site-primary,#123e47);border-radius:7px;background:var(--site-surface,#fff);color:var(--site-primary,#123e47);padding:10px 13px;font-size:var(--site-body-size,18px);font-weight:800;cursor:pointer}
+.daily-edit:hover{background:var(--site-bg,#f4efe6)}
+.daily-story-editing{display:flex;align-items:flex-start;gap:12px}
+.daily-story-checkbox{flex:none;width:19px;height:19px;margin:5px 0 0;accent-color:var(--site-section,#0070c0);cursor:pointer}
+.app-shell[data-mode="dark"] .daily-edit{color:var(--site-text,#eaf1ef);border-color:#6c949f}
+.app-shell[data-mode="dark"] .daily-edit:hover{background:#263a43}
 .daily-original{font-size:10px;color:var(--site-section,#0070c0);white-space:nowrap}
 @media(max-width:720px){.manage-button{margin-left:auto}.brand-text small{display:none}}
+@media(max-width:720px){.daily-downloads{width:100%;flex-wrap:nowrap}.daily-downloads .daily-download{width:auto;flex:1}.daily-edit{flex:none}}
 
 /* Two-column reading layout and adjustable text size. */
 .app-shell{font-size:var(--site-body-size,18px)}

@@ -1,4 +1,6 @@
-export const DEFAULT_INCLUDE = ['security', 'politics', 'political', 'defense', 'diplomacy', 'election', 'conflict', 'war', 'terrorism', 'parliament', 'government', 'minister', 'president', 'police', 'military', 'NATO', 'Russia', 'Ukraine', 'attack', 'sanctions', 'protest', 'полит', 'воен', 'войн', 'террор', 'санкц', 'росси', 'украин', 'атак', 'задерж'];
+import { editorialScore, isEnglishArticle, passesSourcePolicy } from './editorialPolicy.js';
+
+export const DEFAULT_INCLUDE = ['OSCE', 'cooperation', 'diplomacy', 'bilateral', 'foreign policy', 'talks', 'summit', 'peace', 'sanctions', 'NATO', 'EU', 'UN', 'security', 'defense', 'defence', 'conflict', 'war', 'terrorism', 'military', 'politics', 'political', 'election', 'Russia', 'Ukraine'];
 export const DEFAULT_EXCLUDE = [];
 
 let nextFirecrawlSlot = 0;
@@ -93,10 +95,11 @@ export function normalizeArticles(payload, source, now = Date.now(), include = D
     const haystack = `${title} ${summary}`.toLocaleLowerCase();
     if (include.length && !include.some(w => haystack.includes(w.toLocaleLowerCase()))) continue;
     if (exclude.some(w => haystack.includes(w.toLocaleLowerCase()))) continue;
+    if (!passesSourcePolicy(source, title, summary)) continue;
     seen.add(key);
     result.push({ id: key, title, summary, url: key, publishedAt: new Date(timestamp).toISOString(), sourceId: source.id, sourceName: source.agencyName || source.name, group: source.group });
   }
-  return result.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)).slice(0, 40);
+  return result.sort((a, b) => editorialScore(b.title, b.summary) - editorialScore(a.title, a.summary) || b.publishedAt.localeCompare(a.publishedAt)).slice(0, 40);
 }
 
 export function undatedCandidates(payload, source, include = DEFAULT_INCLUDE, exclude = DEFAULT_EXCLUDE, verifyAll = false) {
@@ -112,6 +115,7 @@ export function undatedCandidates(payload, source, include = DEFAULT_INCLUDE, ex
     const haystack = `${title} ${summary}`.toLocaleLowerCase();
     if (include.length && !include.some(w => haystack.includes(w.toLocaleLowerCase()))) continue;
     if (exclude.some(w => haystack.includes(w.toLocaleLowerCase()))) continue;
+    if (!passesSourcePolicy(source, title, summary)) continue;
     let url;
     try {
       url = new URL(String(raw.url ?? raw.absoluteUrl ?? raw.link ?? ''), source.url);
@@ -121,7 +125,7 @@ export function undatedCandidates(payload, source, include = DEFAULT_INCLUDE, ex
     seen.add(url.href);
     candidates.push({ title, url: url.href });
   }
-  return candidates;
+  return candidates.sort((a, b) => editorialScore(b.title) - editorialScore(a.title));
 }
 
 export function candidatePage(candidates, cursor = 0, fullScan = false, deepScan = false) {
@@ -144,7 +148,10 @@ export function reviewedArticleCheck(payload, source, url, now = Date.now()) {
   if (time < now - 48 * 60 * 60 * 1000 || time > now + 300000) return { article: null, reason: 'outsideWindow' };
   const title = String(data.metadata?.ogTitle ?? extracted.exactHeadline ?? data.metadata?.title ?? '').trim();
   if (!title) return { article: null, reason: 'missingHeadlineOrTime' };
-  return { article: { id: url, url, sourceId: source.id, sourceName: source.agencyName || source.name, group: source.group, title, summary: String(extracted.summary ?? '').trim(), publishedAt: new Date(time).toISOString() }, reason: null };
+  const summary = String(extracted.summary ?? '').trim();
+  if (!isEnglishArticle(payload, title, summary)) return { article: null, reason: 'nonEnglish' };
+  if (!passesSourcePolicy(source, title, summary)) return { article: null, reason: 'outsideScope' };
+  return { article: { id: url, url, sourceId: source.id, sourceName: source.agencyName || source.name, group: source.group, title, summary, publishedAt: new Date(time).toISOString() }, reason: null };
 }
 
 export function reviewedArticle(payload, source, url, now = Date.now()) {
@@ -153,12 +160,12 @@ export function reviewedArticle(payload, source, url, now = Date.now()) {
 
 export async function scrapeHeadlines(source, include, apiKey, fetchImpl = fetch) {
   const targetUrl = source.listingUrl || source.url;
-  const prompt = 'Extract exact news article headlines linked from this page. Return an object with an articles array. For each article return title, url (absolute article URL), and publishedAt as an ISO 8601 timestamp with timezone only when the exact time and timezone are visible. Include article links even when the date or time is not visible; omit publishedAt for those. Do not turn a date-only label into a midnight timestamp. Do not invent dates, titles, or URLs. Do not include navigation links.';
+  const prompt = 'Extract English-language news article headlines linked from this page. Prioritize OSCE and external cooperation, diplomacy, and security between countries or international organisations. Return an object with an articles array. For each article return title, url (absolute article URL), and publishedAt as an ISO 8601 timestamp with timezone only when the exact time and timezone are visible. Include article links even when the date or time is not visible; omit publishedAt for those. Do not turn a date-only label into a midnight timestamp. Do not invent dates, titles, or URLs. Do not include navigation links.';
   return firecrawlPost({ url: targetUrl, formats: [{ type: 'json', prompt }], onlyMainContent: true, timeout: 30000 }, apiKey, fetchImpl);
 }
 
 export async function scrapeArticle(url, apiKey, fetchImpl = fetch) {
-  const prompt = 'Read the original news article. Return an object with exactHeadline copied verbatim, publishedAt as an ISO 8601 timestamp with timezone only if explicitly available, and summary as one factual sentence from the first two substantive paragraphs that adds information beyond the headline. Do not invent dates or facts, and do not add opinion or analysis.';
+  const prompt = 'Read the original English-language news article. Return an object with exactHeadline copied verbatim, publishedAt as an ISO 8601 timestamp with timezone only if explicitly available, and summary as one short factual sentence from the first two substantive paragraphs that adds the most important detail beyond the headline without repeating it. Do not translate a non-English article. Do not invent dates or facts, and do not add opinion or analysis.';
   return firecrawlPost({ url, formats: ['markdown', 'html', { type: 'json', prompt }], onlyMainContent: true, timeout: 30000 }, apiKey, fetchImpl);
 }
 

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { currentDailyUpdate } from './daily.js';
 import { NEWS_SECTIONS } from '../src/newsSections.js';
+import { passesSourcePolicy } from './editorialPolicy.js';
 
 test('daily stream drops articles outside the rolling 24-hour window', () => {
   const now = Date.parse('2026-10-09T22:00:00Z');
@@ -118,6 +119,9 @@ test('13 October edition contains verified headlines inside its fixed 24-hour wi
     assert.ok(article.title && article.url.startsWith('https://') && article.reviewed);
     if (article.section === 'Miscellaneous') assert.ok(article.country, article.title);
     if (article.timePrecision === 'date') assert.ok(article.url.includes('/2026/10/13/'), article.url);
+    assert.ok(passesSourcePolicy({ id: article.sourceId }, article.title, article.summary), article.title);
   }
+  const armenia = update.articles.filter(item => item.section === 'South Caucasus' && item.subsection === 'Armenia');
+  assert.match(armenia[0].title, /OSCE/);
   assert.equal(currentDailyUpdate(update, end + 86400000).articles.length, update.articles.length);
 });
