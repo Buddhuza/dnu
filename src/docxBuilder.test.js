@@ -20,8 +20,8 @@ test('browser report download creates a readable Word file with country headings
   const document = await zip.file('word/document.xml').async('string');
   assert.match(document, /BELGIUM/);
   assert.match(document.split('MIDDLE EAST')[0].split('<w:p>').at(-1), /<w:shd[^>]*w:fill="D9E2F3"/);
-  assert.match(document, /5–9 October 2026/);
-  assert.ok(document.indexOf('DAILY NEWS UPDATE') < document.indexOf('5–9 October 2026'));
+  assert.match(document, /9 October 2026/);
+  assert.ok(document.indexOf('DAILY NEWS UPDATE') < document.indexOf('9 October 2026'));
   assert.doesNotMatch(document.split('WESTERN / CENTRAL EUROPE')[0].split('<w:p>').at(-1), /<w:shd/);
   assert.match(document.split('BELGIUM')[0].split('<w:p>').at(-1), /<w:shd[^>]*w:fill="D9E2F3"/);
   assert.match(document, /Exact headline/);

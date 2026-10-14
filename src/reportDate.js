@@ -11,3 +11,9 @@ export function reportDateLabel(windowStart, windowEnd) {
   if (start.year === end.year) return `${start.day} ${start.month} – ${end.day} ${end.month} ${end.year}`;
   return `${start.day} ${start.month} ${start.year} – ${end.day} ${end.month} ${end.year}`;
 }
+
+export function reportEndDateLabel(windowEnd) {
+  if (!Number.isFinite(Date.parse(windowEnd))) return '';
+  const end = dateParts(windowEnd);
+  return `${end.day} ${end.month} ${end.year}`;
+}

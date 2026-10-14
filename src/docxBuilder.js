@@ -1,5 +1,5 @@
 import JSZip from 'jszip';
-import { reportDateLabel } from './reportDate.js';
+import { reportEndDateLabel } from './reportDate.js';
 import { reportStoryText } from './reportText.js';
 import { disclaimerFirst, disclaimerSecond } from './disclaimer.js';
 
@@ -37,7 +37,7 @@ const defaultTitle = () => 'DAILY NEWS UPDATE';
 export async function createReportDocxFromTemplate(templateBytes, { title, windowStart, windowEnd, articles }) {
   const zip = await JSZip.loadAsync(templateBytes);
   const paragraphs = [];
-  const reportDate = reportDateLabel(windowStart, windowEnd);
+  const reportDate = reportEndDateLabel(windowEnd);
   if (reportDate) paragraphs.push(reportDateParagraph(reportDate));
   const relationships = [];
   let currentSection = '', currentSubsection = '', currentCountry = '';

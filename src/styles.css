@@ -42,6 +42,10 @@
 .add-dialog form label{display:block;font-weight:800;margin:18px 0 8px}
 .add-dialog textarea,.add-dialog input{box-sizing:border-box;width:100%;border:1px solid #a7bbba;border-radius:8px;background:var(--site-surface,#fff);color:var(--site-text,#182a36);font:inherit;line-height:1.5;padding:12px}
 .add-dialog textarea{resize:vertical}
+.add-key-controls{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:7px}
+.add-dialog form .add-key-controls label{display:flex;align-items:center;gap:8px;margin:0;font-size:calc(var(--site-body-size,18px) - 3px);font-weight:500}
+.add-dialog .add-key-controls input[type="checkbox"]{width:18px;height:18px;margin:0;accent-color:var(--site-section,#0070c0)}
+.add-key-controls button{border:0;background:transparent;color:var(--site-section,#0070c0);font-size:calc(var(--site-body-size,18px) - 3px);cursor:pointer;text-decoration:underline}
 .add-dialog-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:12px}
 .add-dialog-actions button{border:1px solid var(--site-primary,#123e47);border-radius:7px;padding:10px 14px;font:700 var(--site-body-size,18px) var(--site-font,'DM Sans',sans-serif);cursor:pointer}
 .add-dialog-actions button[type=submit]{background:var(--site-primary,#123e47);color:#fff}
@@ -174,6 +178,8 @@
 .topbar{flex:none;min-height:64px;padding:7px 22px}
 .topbar .brand-text strong{font-size:max(27px,calc(var(--section-heading-size,26px) + 2px))}
 .topbar .brand-text small{font-size:10px}
+.topbar-date{font-size:14px;font-weight:800;color:var(--site-primary,#123e47);white-space:nowrap}
+.app-shell[data-mode="dark"] .topbar-date{color:var(--site-text,#eaf1ef)}
 .workspace{flex:1;min-height:0;overflow:hidden;grid-template-rows:minmax(0,1fr)}
 .sidebar{min-height:0;overflow:hidden;grid-row:auto}
 .main-panel{display:flex;flex-direction:column;min-height:0;overflow:hidden;padding:8px clamp(16px,3.6vw,58px)}
@@ -227,3 +233,4 @@
 .daily-story.story-drop-before{border-top:3px solid var(--site-section,#0070c0)}
 .daily-story.story-drop-after{border-bottom:3px solid var(--site-section,#0070c0)}
 .app-shell[data-mode="dark"] .daily-empty-drop{color:#b7c2c7;border-color:#64818d}
+@media(max-width:720px){.topbar{height:auto;display:grid;grid-template-columns:minmax(0,1fr) auto auto;grid-template-rows:auto auto}.topbar-spacer{display:none}.topbar .brand-text{grid-column:1;grid-row:1/3}.topbar-date{display:block;grid-column:2/4;grid-row:1;justify-self:end;border-left:0;padding-left:0;font-size:12px}.topbar .mode-button{grid-column:2;grid-row:2}.topbar .manage-button{grid-column:3;grid-row:2;margin-left:0}}

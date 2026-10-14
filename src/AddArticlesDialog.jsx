@@ -1,15 +1,43 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { formatViennaDateTime } from './viennaTime.js';
 import { MISCELLANEOUS_COUNTRIES } from './newsSections.js';
 
+const firecrawlKeyStorage = 'dnu-firecrawl-api-key-v1';
+const savedFirecrawlKey = () => { try { return localStorage.getItem(firecrawlKeyStorage) || ''; } catch { return ''; } };
+
 export default function AddArticlesDialog({ serverAvailable, sources, sections, existingUrls, remainingSlots, onAdd, onClose }) {
   const [value, setValue] = useState('');
-  const [apiKey, setApiKey] = useState('');
+  const [apiKey, setApiKey] = useState(savedFirecrawlKey);
+  const [rememberKey, setRememberKey] = useState(() => Boolean(savedFirecrawlKey()));
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState('');
   const [results, setResults] = useState([]);
   const [drafts, setDrafts] = useState([]);
+  const [completedScans, setCompletedScans] = useState(0);
+  const dialogRef = useRef(null);
+  const draftsRef = useRef(null);
+  const resultsRef = useRef(null);
+  const scrollTargetRef = useRef('drafts');
   const availableSections = sections.filter(section => section.visible);
+
+  useEffect(() => {
+    try {
+      if (rememberKey && apiKey.trim()) localStorage.setItem(firecrawlKeyStorage, apiKey.trim());
+      else localStorage.removeItem(firecrawlKeyStorage);
+    } catch { /* Browser storage may be disabled. */ }
+  }, [apiKey, rememberKey]);
+
+  useEffect(() => {
+    if (!completedScans) return;
+    const frame = requestAnimationFrame(() => {
+      const dialog = dialogRef.current;
+      const target = scrollTargetRef.current === 'drafts' ? draftsRef.current : resultsRef.current;
+      if (!dialog || !target) return;
+      const top = dialog.scrollTop + target.getBoundingClientRect().top - dialog.getBoundingClientRect().top - 18;
+      dialog.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [completedScans]);
 
   function changeDraft(id, change) {
     setDrafts(current => current.map(draft => draft.id === id ? { ...draft, ...change } : draft));
@@ -28,8 +56,8 @@ export default function AddArticlesDialog({ serverAvailable, sources, sections, 
   async function importUrls(event) {
     event.preventDefault();
     const lines = value.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
-    if (!lines.length) { setResults([{ url: '', message: 'Paste at least one article URL.' }]); return; }
-    if (lines.length > 10) { setResults([{ url: '', message: 'Import up to 10 URLs at a time.' }]); return; }
+    if (!lines.length) { setResults([{ url: '', message: 'Paste at least one article URL.' }]); scrollTargetRef.current = 'results'; setCompletedScans(count => count + 1); return; }
+    if (lines.length > 10) { setResults([{ url: '', message: 'Import up to 10 URLs at a time.' }]); scrollTargetRef.current = 'results'; setCompletedScans(count => count + 1); return; }
     setBusy(true);
     const next = [];
     const pending = [];
@@ -64,16 +92,18 @@ export default function AddArticlesDialog({ serverAvailable, sources, sections, 
     setResults(next);
     setProgress('');
     setBusy(false);
+    scrollTargetRef.current = pending.length ? 'drafts' : 'results';
+    setCompletedScans(count => count + 1);
   }
 
   return <div className="add-backdrop" onMouseDown={event => { if (!busy && event.target === event.currentTarget) onClose(); }}>
-    <section className="add-dialog" role="dialog" aria-modal="true" aria-labelledby="add-dialog-title">
+    <section className="add-dialog" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="add-dialog-title">
       <div className="add-dialog-heading"><h2 id="add-dialog-title">Add articles to the update</h2><button type="button" onClick={onClose} disabled={busy} aria-label="Close Add articles">×</button></div>
       <p>Paste one English-language article URL per line. Review the suggested section and country for each scraped story before adding it. Articles of any age can be added. If the page lacks an exact publication time, Add estimates it from the article or URL; if no date is found, it stamps the import time. Times are shown in Vienna time (CET/CEST).</p>
-      {!serverAvailable && <p className="add-unavailable">This static page needs your Firecrawl API key to scrape articles. It is sent directly to Firecrawl for this import and is not saved by the site.</p>}
+      {!serverAvailable && <p className="add-unavailable">This static page sends your key directly to Firecrawl. Select “Remember key in this browser” to reuse it when you add articles later.</p>}
       {remainingSlots < 1 && <p className="add-unavailable" role="status">The browser has reached its 100 custom-story limit. Remove an added story in Manage site → Stories before importing another.</p>}
-      <form onSubmit={importUrls}>{!serverAvailable && <><label htmlFor="add-api-key">Firecrawl API key</label><input id="add-api-key" type="password" autoComplete="off" value={apiKey} onChange={event => setApiKey(event.target.value)} placeholder="fc-…" disabled={busy}/></>}<label htmlFor="add-urls">Article URLs</label><textarea id="add-urls" rows="7" value={value} onChange={event => setValue(event.target.value)} placeholder={'https://example.com/article-one\nhttps://example.com/article-two'} autoFocus disabled={busy}/><div className="add-dialog-actions"><button type="button" onClick={onClose} disabled={busy}>Close</button><button type="submit" disabled={(!serverAvailable && !apiKey.trim()) || busy || remainingSlots < 1}>{busy ? progress : 'Scrape articles'}</button></div></form>
-      {drafts.length > 0 && <div className="add-drafts" aria-live="polite"><h3>Review placement</h3>{drafts.map(draft => {
+      <form onSubmit={importUrls}>{!serverAvailable && <><label htmlFor="add-api-key">Firecrawl API key</label><input id="add-api-key" type="password" autoComplete="off" value={apiKey} onChange={event => setApiKey(event.target.value)} placeholder="fc-…" disabled={busy}/><div className="add-key-controls"><label><input type="checkbox" checked={rememberKey} onChange={event => setRememberKey(event.target.checked)} disabled={busy}/> Remember key in this browser</label>{rememberKey && <button type="button" onClick={() => { setRememberKey(false); setApiKey(''); }} disabled={busy}>Forget key</button>}</div></>}<label htmlFor="add-urls">Article URLs</label><textarea id="add-urls" rows="7" value={value} onChange={event => setValue(event.target.value)} placeholder={'https://example.com/article-one\nhttps://example.com/article-two'} autoFocus disabled={busy}/><div className="add-dialog-actions"><button type="button" onClick={onClose} disabled={busy}>Close</button><button type="submit" disabled={(!serverAvailable && !apiKey.trim()) || busy || remainingSlots < 1}>{busy ? progress : 'Scrape articles'}</button></div></form>
+      {drafts.length > 0 && <div className="add-drafts" ref={draftsRef} aria-live="polite"><h3>Review placement</h3>{drafts.map(draft => {
         const section = availableSections.find(item => item.id === draft.sectionId);
         const subsections = section?.subsections || [];
         const countries = draft.sectionId === 'Miscellaneous' ? MISCELLANEOUS_COUNTRIES[draft.subsection] || [] : [];
@@ -84,7 +114,7 @@ export default function AddArticlesDialog({ serverAvailable, sources, sections, 
           {draft.sectionId === 'Miscellaneous' && <label>Country / organisation{MISCELLANEOUS_COUNTRIES[draft.subsection] ? <select value={draft.country} onChange={event => changeDraft(draft.id, { country: event.target.value })} disabled={draft.added || !countries.length}><option value="">Choose country or organisation</option>{countries.map(name => <option key={name} value={name}>{name}</option>)}</select> : <input value={draft.country} maxLength={100} onChange={event => changeDraft(draft.id, { country: event.target.value })} disabled={draft.added || !draft.subsection} placeholder="Country or organisation"/>}</label>}
         </div><button type="button" onClick={() => addDraft(draft)} disabled={draft.added || !valid || remainingSlots < 1}>{draft.added ? 'Added to update' : 'Add to update'}</button></div>;
       })}</div>}
-      {results.length > 0 && <ul className="add-results" aria-live="polite">{results.map((result, index) => <li key={`${result.url}-${index}`} className={result.success ? 'success' : 'failure'}><strong>{result.url}</strong><span>{result.message}</span></li>)}</ul>}
+      {results.length > 0 && <ul className="add-results" ref={resultsRef} aria-live="polite">{results.map((result, index) => <li key={`${result.url}-${index}`} className={result.success ? 'success' : 'failure'}><strong>{result.url}</strong><span>{result.message}</span></li>)}</ul>}
     </section>
   </div>;
 }
