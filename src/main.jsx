@@ -22,9 +22,11 @@ const readStored = (key, fallback, legacyKey) => {
 const words = text => [...new Set(text.split(/[,\n]/).map(x => x.trim()).filter(Boolean))].slice(0, 40);
 const defaultScope = 'OSCE, cooperation, diplomacy, bilateral, foreign policy, talks, summit, peace, sanctions, NATO, EU, UN, security, defense, defence, conflict, war, terrorism, military, politics, political, election, Russia, Ukraine';
 const dateLabel = formatViennaDateTime;
+const managementEnabled = import.meta.env.DEV;
 
 function App() {
   const [currentTime, setCurrentTime] = useState(() => new Date());
+  const [compiledAt, setCompiledAt] = useState(() => new Date().toISOString());
   const [config, setConfig] = useState(null);
   const [daily, setDaily] = useState(null);
   const [staticPreview, setStaticPreview] = useState(false);
@@ -257,7 +259,7 @@ function App() {
       const response = await fetch(`${import.meta.env.BASE_URL}daily-update-template.docx`);
       if (!response.ok) throw new Error('The Word template is unavailable.');
       const templateBytes = await response.arrayBuffer();
-      const file = await createReportDocxFromTemplate(templateBytes, { title: siteConfig.updateTitle, windowStart: reportWindow?.windowStart, windowEnd: daily?.windowEnd, articles: selectedArticles, headlineOnly, sourceOutcomes: daily?.sourceOutcomes ?? [] });
+      const file = await createReportDocxFromTemplate(templateBytes, { title: siteConfig.updateTitle, windowStart: reportWindow?.windowStart, windowEnd: daily?.windowEnd, compiledAt, articles: selectedArticles, headlineOnly, sourceOutcomes: daily?.sourceOutcomes ?? [] });
       const url = URL.createObjectURL(new Blob([file], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }));
       const a = document.createElement('a'); a.href = url; a.download = reportFilename(reportWindow); document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 60_000);
@@ -286,6 +288,7 @@ function App() {
       customArticles: current.customArticles.map(item => drafts[item.id] ? { ...item, title: drafts[item.id].title, summary: drafts[item.id].summary, sourceName: drafts[item.id].sourceName } : item)
     }));
     setEditingStories(false);
+    setCompiledAt(new Date().toISOString());
   };
   const keepStoryTextInline = event => { if (event.key === 'Enter') event.preventDefault(); };
   const updateControls = () => daily?.articles?.length > 0 && <div className="daily-downloads">
@@ -363,7 +366,7 @@ function App() {
   );
 
   return <div className="app-shell" data-mode={siteConfig.darkMode ? 'dark' : 'light'} style={themeStyle}>
-    <header className="topbar"><div className="brand-text"><strong>{siteConfig.brandName}</strong><small>{siteConfig.brandTagline}</small></div><span className="topbar-spacer"/><button className="mode-button" aria-pressed={siteConfig.darkMode} onClick={() => setSiteConfig(current => ({ ...current, darkMode: !current.darkMode }))}>{siteConfig.darkMode ? '☀ Light mode' : '☾ Dark mode'}</button><button className="manage-button" onClick={() => { setManagerTab('Content'); setManaging(true); }}>⚙ Manage site</button><time className="topbar-date" dateTime={currentTime.toISOString()} title="Vienna time">{formatViennaCompactDateTime(currentTime)}</time></header>
+    <header className="topbar"><div className="brand-text"><strong>{siteConfig.brandName}</strong><small>{siteConfig.brandTagline}</small></div><span className="topbar-spacer"/><button className="mode-button" aria-pressed={siteConfig.darkMode} onClick={() => setSiteConfig(current => ({ ...current, darkMode: !current.darkMode }))}>{siteConfig.darkMode ? '☀ Light mode' : '☾ Dark mode'}</button>{managementEnabled && <button className="manage-button" onClick={() => { setManagerTab('Content'); setManaging(true); }}>⚙ Manage site</button>}<time className="topbar-date" dateTime={currentTime.toISOString()} title="Vienna time">{formatViennaCompactDateTime(currentTime)}</time></header>
     <div className={`workspace ${siteConfig.showSources ? '' : 'no-sidebar'}`}>
       {siteConfig.showSources && <aside className="sidebar">
         <div className="sidebar-heading"><span className="eyebrow">DISCOVER</span><h2>Sources <em>{sources.length}</em></h2></div>
@@ -375,7 +378,7 @@ function App() {
       <main className={`main-panel ${websiteSource ? 'with-website' : ''}`}>
         <div className={`reading-layout ${websiteSource ? 'website-open' : ''}`}>
         {siteConfig.showUpdate && <section className={`daily-update ${siteConfig.sectionHeadingUppercase ? 'uppercase-headings' : ''}`} aria-labelledby="daily-update-title">
-          <div className="daily-heading"><div className="daily-heading-main"><div className="daily-title-row"><h2 id="daily-update-title">{siteConfig.updateTitle}</h2>{daily?.windowEnd && <p className="report-date">{reportEndDateLabel(daily.windowEnd)}</p>}</div>{updateControls()}</div>{updateSearchOpen && <div className="update-search" role="search" aria-label="Search update"><input autoFocus type="search" value={updateSearchText} onChange={event => setUpdateSearchText(event.target.value)} onKeyDown={event => { if (event.key === 'Escape') setUpdateSearchOpen(false); if (event.key === 'Enter' && updateSearchResults.length) { event.preventDefault(); setActiveSearchResult(current => (current + (event.shiftKey ? -1 : 1) + updateSearchResults.length) % updateSearchResults.length); } }} placeholder="Find text in update" aria-label="Find text in update"/><span role="status">{updateSearchQuery ? updateSearchResults.length ? `${Math.min(activeSearchResult + 1, updateSearchResults.length)} of ${updateSearchResults.length} stories` : 'No matches' : 'Search headlines, summaries, sources and sections'}</span><button type="button" aria-label="Previous match" disabled={!updateSearchResults.length} onClick={() => setActiveSearchResult(current => (current - 1 + updateSearchResults.length) % updateSearchResults.length)}>↑</button><button type="button" aria-label="Next match" disabled={!updateSearchResults.length} onClick={() => setActiveSearchResult(current => (current + 1) % updateSearchResults.length)}>↓</button><button type="button" aria-label="Close search" onClick={() => setUpdateSearchOpen(false)}>×</button></div>}{dailySections.length > 0 && <nav className="daily-section-nav" aria-label="Update sections" style={{ '--section-count': Math.min(dailySections.length, 6) }}>{dailySections.map(({ section }, index) => <a key={section} href={`#daily-section-${index}`} onClick={event => jumpToSection(event, index)}>{section}</a>)}</nav>}</div>
+          <div className="daily-heading"><div className="daily-heading-main"><div className="daily-title-row"><h2 id="daily-update-title">{siteConfig.updateTitle}</h2><p className="report-date">{reportEndDateLabel(compiledAt)}</p></div>{updateControls()}</div>{updateSearchOpen && <div className="update-search" role="search" aria-label="Search update"><input autoFocus type="search" value={updateSearchText} onChange={event => setUpdateSearchText(event.target.value)} onKeyDown={event => { if (event.key === 'Escape') setUpdateSearchOpen(false); if (event.key === 'Enter' && updateSearchResults.length) { event.preventDefault(); setActiveSearchResult(current => (current + (event.shiftKey ? -1 : 1) + updateSearchResults.length) % updateSearchResults.length); } }} placeholder="Find text in update" aria-label="Find text in update"/><span role="status">{updateSearchQuery ? updateSearchResults.length ? `${Math.min(activeSearchResult + 1, updateSearchResults.length)} of ${updateSearchResults.length} stories` : 'No matches' : 'Search headlines, summaries, sources and sections'}</span><button type="button" aria-label="Previous match" disabled={!updateSearchResults.length} onClick={() => setActiveSearchResult(current => (current - 1 + updateSearchResults.length) % updateSearchResults.length)}>↑</button><button type="button" aria-label="Next match" disabled={!updateSearchResults.length} onClick={() => setActiveSearchResult(current => (current + 1) % updateSearchResults.length)}>↓</button><button type="button" aria-label="Close search" onClick={() => setUpdateSearchOpen(false)}>×</button></div>}{dailySections.length > 0 && <nav className="daily-section-nav" aria-label="Update sections" style={{ '--section-count': Math.min(dailySections.length, 6) }}>{dailySections.map(({ section }, index) => <a key={section} href={`#daily-section-${index}`} onClick={event => jumpToSection(event, index)}>{section}</a>)}</nav>}</div>
           {daily && <div className="daily-scroll" role="region" aria-label="Daily update stories" tabIndex={0}>
             {dailySections.map(({ sectionId, section, subsections }, sectionIndex) => <div className="daily-section" id={`daily-section-${sectionIndex}`} key={sectionId}>
               <h3 data-drop-kind="section" data-section-id={sectionId} data-subsection={subsections[0]?.[0] || ''} className={dropTarget === `section:${sectionId}` ? 'story-drop-target' : ''}>{highlightSearch(section)}</h3>
@@ -393,18 +396,18 @@ function App() {
                 </React.Fragment>)}
               </div>)}
             </div>)}
-            {!readingArticles.length && <p className="daily-empty">{displayedArticles.length ? 'No stories are selected. Press Edit to choose stories for this update.' : 'There are no visible stories in this update. Use Manage site to show or add content.'}</p>}
+            {!readingArticles.length && <p className="daily-empty">{displayedArticles.length ? 'No stories are selected. Press Edit to choose stories for this update.' : 'There are no visible stories in this update.'}</p>}
             <div className="daily-disclaimer"><p><strong>Disclaimer:</strong> {disclaimerFirst}</p><p>{disclaimerSecond}</p></div>
             {siteConfig.showCoverage && <p className="daily-coverage">{coverageNote}</p>}
           </div>}
         </section>}
-        {websiteSource && <section className="website-panel" aria-label={`${websiteSource.name} website`}><div className="website-panel-heading"><div><span className="eyebrow">SOURCE WEBSITE</span><h2>{websiteSource.name}</h2></div><button onClick={() => setWebsiteSourceId('')} aria-label="Close source website">×</button></div><div className="website-panel-actions"><a href={websiteSource.url} target="_blank" rel="noopener noreferrer">Open website in new tab ↗</a><button onClick={() => { setManagerTab('Collect'); setManaging(true); }}>Collect headlines</button></div><p>Some publishers block display inside other websites. Use the link above if this panel stays blank.</p><iframe key={websiteSource.id} src={websiteSource.url} title={`${websiteSource.name} website`} referrerPolicy="no-referrer" loading="lazy"/></section>}
+        {websiteSource && <section className="website-panel" aria-label={`${websiteSource.name} website`}><div className="website-panel-heading"><div><span className="eyebrow">SOURCE WEBSITE</span><h2>{websiteSource.name}</h2></div><button onClick={() => setWebsiteSourceId('')} aria-label="Close source website">×</button></div><div className="website-panel-actions"><a href={websiteSource.url} target="_blank" rel="noopener noreferrer">Open website in new tab ↗</a>{managementEnabled && <button onClick={() => { setManagerTab('Collect'); setManaging(true); }}>Collect headlines</button>}</div><p>Some publishers block display inside other websites. Use the link above if this panel stays blank.</p><iframe key={websiteSource.id} src={websiteSource.url} title={`${websiteSource.name} website`} referrerPolicy="no-referrer" loading="lazy"/></section>}
         </div>
 
       </main>
     </div>{toast && <div className="toast" onClick={() => setToast('')}>{toast} ×</div>}
-    {managing && <SiteManager initialTab={managerTab} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} includeText={includeText} setIncludeText={setIncludeText} excludeText={excludeText} setExcludeText={setExcludeText} applyScope={applyScope} onClose={() => setManaging(false)} onReset={() => setSiteConfig(defaultSiteConfig(daily?.articles ?? preparedUpdate.articles))}/>}
-    {addingArticles && <AddArticlesDialog serverAvailable={!staticPreview && Boolean(config?.firecrawlConfigured)} sources={configuredSources} sections={siteConfig.sections} existingUrls={[...(daily?.articles ?? []).map(item => item.url), ...siteConfig.customArticles.map(item => item.url)]} remainingSlots={100 - siteConfig.customArticles.length} onAdd={article => setSiteConfig(current => current.customArticles.some(item => item.url === article.url) ? current : { ...current, customArticles: [...current.customArticles, article] })} onClose={() => setAddingArticles(false)}/>}
+    {managementEnabled && managing && <SiteManager initialTab={managerTab} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} includeText={includeText} setIncludeText={setIncludeText} excludeText={setExcludeText} setExcludeText={setExcludeText} applyScope={applyScope} onClose={() => setManaging(false)} onReset={() => setSiteConfig(defaultSiteConfig(daily?.articles ?? preparedUpdate.articles))}/>}
+    {addingArticles && <AddArticlesDialog serverAvailable={!staticPreview && Boolean(config?.firecrawlConfigured)} sources={configuredSources} sections={siteConfig.sections} existingUrls={[...(daily?.articles ?? []).map(item => item.url), ...siteConfig.customArticles.map(item => item.url)]} remainingSlots={100 - siteConfig.customArticles.length} onAdd={article => { setSiteConfig(current => current.customArticles.some(item => item.url === article.url) ? current : { ...current, customArticles: [...current.customArticles, article] }); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}
   </div>;
 }
 

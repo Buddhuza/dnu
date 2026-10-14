@@ -46,12 +46,13 @@ test('download filename uses coverage dates and Vienna times', () => {
 test('headline-only Word download omits summaries but keeps agencies and links', async () => {
   const template = readFileSync(new URL('../public/daily-update-template.docx', import.meta.url));
   const output = await createReportDocxFromTemplate(template, {
-    title: 'DAILY NEWS UPDATE', windowEnd: '2026-10-14T21:59:59Z', headlineOnly: true,
+    title: 'DAILY NEWS UPDATE', windowEnd: '2026-10-14T21:59:59Z', compiledAt: '2026-10-15T09:00:00Z', headlineOnly: true,
     articles: [{ section: 'South Caucasus', subsection: 'Armenia', title: 'OSCE chair visits Armenia', summary: 'A meeting took place in Yerevan.', sourceName: 'Agency', url: 'https://example.com/story' }]
   });
   const zip = await JSZip.loadAsync(output);
   const document = await zip.file('word/document.xml').async('string');
   assert.match(document, /OSCE chair visits Armenia\./);
+  assert.match(document, /15 October 2026/);
   assert.doesNotMatch(document, /A meeting took place in Yerevan/);
   assert.match(document, /Agency/);
   assert.match(await zip.file('word/_rels/document.xml.rels').async('string'), /https:\/\/example.com\/story/);

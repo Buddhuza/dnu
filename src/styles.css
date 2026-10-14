@@ -242,3 +242,7 @@
 .daily-downloads .daily-action:disabled{opacity:.5;cursor:not-allowed}
 .daily-downloads .daily-action:focus-visible{outline:2px solid var(--site-section,#0070c0);outline-offset:2px}
 @media(max-width:720px){.daily-downloads{width:auto;justify-content:flex-start}.daily-downloads .daily-action,.daily-downloads .daily-action.daily-download{width:34px;height:34px;min-width:34px;flex:none;padding:6px}.daily-downloads .daily-action svg{width:18px;height:18px}}
+.daily-title-row{flex-direction:column;align-items:flex-start;gap:2px}
+.daily-title-row .report-date{margin:0;font-size:var(--site-body-size,18px)}
+.daily-story{border-bottom:0;padding:3px 0 7px}
+.daily-story p{line-height:1.45}

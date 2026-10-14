@@ -34,10 +34,10 @@ function disclaimerParagraphs() {
 
 const defaultTitle = () => 'DAILY NEWS UPDATE';
 
-export async function createReportDocxFromTemplate(templateBytes, { title, windowStart, windowEnd, articles, headlineOnly = false }) {
+export async function createReportDocxFromTemplate(templateBytes, { title, windowStart, windowEnd, compiledAt, articles, headlineOnly = false }) {
   const zip = await JSZip.loadAsync(templateBytes);
   const paragraphs = [];
-  const reportDate = reportEndDateLabel(windowEnd);
+  const reportDate = reportEndDateLabel(compiledAt || windowEnd);
   if (reportDate) paragraphs.push(reportDateParagraph(reportDate));
   const relationships = [];
   let currentSection = '', currentSubsection = '', currentCountry = '';
