@@ -46,6 +46,13 @@ test('custom sources, visibility, and dark appearance survive settings import', 
   assert.deepEqual(displaySources([{ id: 'provided', name: 'Old outlet' }], config).map(item => item.name), ['New outlet']);
 });
 
+test('a provided source can use a reviewed collection page on the same website', () => {
+  const config = normalizeSiteConfig({ version: 1, sourceListingOverrides: { 'source-1': 'https://example.com/politics', 'source-2': 'javascript:alert(1)' } }, articles);
+  const displayed = displaySources([{ id: 'source-1', name: 'Example', url: 'https://example.com/' }, { id: 'source-2', name: 'Other', url: 'https://other.com/' }], config);
+  assert.equal(displayed[0].listingUrl, 'https://example.com/politics');
+  assert.equal(displayed[1].listingUrl, undefined);
+});
+
 test('old organisation stories move into Miscellaneous', () => {
   const article = { ...articles[0], section: 'Lead stories', subsection: 'International organisations' };
   const config = normalizeSiteConfig({

@@ -2,8 +2,8 @@ import express from 'express';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { DEFAULT_INCLUDE, DEFAULT_EXCLUDE, normalizeArticles, parseWords, scrapeHeadlines, scrapeArticle, undatedCandidates, reviewedArticle, candidatePage, customSourceFromRequest } from './news.js';
-import { collectFeed, FEED_URLS } from './feeds.js';
+import { DEFAULT_INCLUDE, DEFAULT_EXCLUDE, articleArray, fallbackListingUrl, normalizeArticles, parseWords, scrapeHeadlines, scrapeArticle, searchSourceArticles, undatedCandidates, reviewedArticle, reviewedArticleCheck, candidatePage, customSourceFromRequest } from './news.js';
+import { collectFeed, collectFallbackFeed, FEED_URLS } from './feeds.js';
 import { createReportDocx } from './report.js';
 import { currentDailyUpdate } from './daily.js';
 import { reportFilename } from '../src/reportFilename.js';
@@ -37,32 +37,53 @@ app.get('/api/daily-update.docx', async (_req, res) => {
 });
 
 app.post('/api/headlines', async (req, res) => {
-  const source = sourceById.get(req.body?.sourceId) ?? customSourceFromRequest(req.body?.customSource);
+  let source = sourceById.get(req.body?.sourceId) ?? customSourceFromRequest(req.body?.customSource);
   if (source?.id !== req.body?.sourceId) return res.status(400).json({ error: 'Choose a valid source from the list.' });
   if (!source) return res.status(400).json({ error: 'Choose a source from the list.' });
+  if (req.body?.listingUrlOverride && sourceById.has(source.id)) {
+    try {
+      const alternate = new URL(String(req.body.listingUrlOverride));
+      if (alternate.protocol !== 'https:' || alternate.origin !== new URL(source.url).origin || alternate.username || alternate.password) throw new Error();
+      source = { ...source, listingUrl: alternate.href };
+    } catch { return res.status(400).json({ error: 'Use an HTTPS news-section URL on the source website.' }); }
+  }
   const include = parseWords(req.body?.include);
   const exclude = parseWords(req.body?.exclude);
-  const cacheKey = JSON.stringify([source.id, source.url, include]);
+  const fallback = req.body?.fallback === true;
+  const search = req.body?.search === true;
+  if (fallback && search) return res.status(400).json({ error: 'Choose one collection method.' });
+  const alternateUrl = fallbackListingUrl(source);
+  if ((fallback || search) && !process.env.FIRECRAWL_API_KEY) return res.status(503).json({ error: 'Firecrawl is required to check alternate links.' });
+  const cacheKey = JSON.stringify([source.id, source.url, source.listingUrl, include, fallback, search]);
   const continuingScan = req.body?.fullScan === true && Number(req.body?.cursor) > 0;
   try {
     let entry = cache.get(cacheKey);
     if (continuingScan && !entry) return res.status(409).json({ error: 'This source scan expired. Start it again from the first page.' });
     if (!entry || (!continuingScan && Date.now() - entry.at > 5 * 60 * 1000)) {
       let payload = null;
-      try { payload = await collectFeed(source); } catch { /* Fall through to Firecrawl when a feed is unavailable. */ }
+      if (search) payload = await searchSourceArticles(source, include, process.env.FIRECRAWL_API_KEY);
+      if (!fallback && !search) try { payload = await collectFeed(source); } catch { /* Fall through to Firecrawl when a feed is unavailable. */ }
+      if (fallback) try {
+        payload = await collectFallbackFeed(source, fetch, feed => normalizeArticles(feed, source, Date.now(), include, exclude, true).length > 0);
+      } catch { /* A publisher feed may not exist. */ }
       if (!payload) {
         if (!process.env.FIRECRAWL_API_KEY) return res.status(503).json({ error: 'No usable feed was available. Set FIRECRAWL_API_KEY on the server to collect this source.' });
-        payload = await scrapeHeadlines(source, include, process.env.FIRECRAWL_API_KEY);
+        if (fallback && !alternateUrl) return res.status(422).json({ error: 'No matching dated publisher feed or alternate listing page was found. Add a working news-section URL for this source.' });
+        payload = await scrapeHeadlines(fallback ? { ...source, listingUrl: alternateUrl } : source, include, process.env.FIRECRAWL_API_KEY);
       }
       entry = { at: Date.now(), payload };
       cache.set(cacheKey, entry);
     }
     const fromFeed = entry.payload.collectionMethod === 'feed';
-    const headlines = fromFeed ? normalizeArticles(entry.payload, source, Date.now(), include, exclude, true) : [];
-    const candidates = fromFeed ? [] : undatedCandidates(entry.payload, source, include, exclude, true);
     const fullScan = req.body?.fullScan === true;
+    const feedHeadlines = fromFeed ? normalizeArticles(entry.payload, source, Date.now(), include, exclude, true) : [];
+    const verifyFeedArticles = fromFeed && fullScan && Boolean(process.env.FIRECRAWL_API_KEY);
+    const headlines = verifyFeedArticles ? [] : feedHeadlines;
+    const candidates = verifyFeedArticles ? feedHeadlines.map(item => ({ title: item.title, url: item.url, feedArticle: item })) : fromFeed ? [] : undatedCandidates(entry.payload, source, include, exclude, true);
     const page = candidatePage(candidates, req.body?.cursor, fullScan, req.body?.deepScan === true);
     let checked = 0;
+    const rejectionCounts = { pageError: 0, missingHeadlineOrTime: 0, outsideWindow: 0, outsideScope: 0 };
+    const pageErrors = [];
     for (const candidate of page.items) {
         checked++;
         try {
@@ -71,14 +92,16 @@ app.post('/api/headlines', async (req, res) => {
             article = { at: Date.now(), payload: await scrapeArticle(candidate.url, process.env.FIRECRAWL_API_KEY) };
             articleCache.set(candidate.url, article);
           }
-          const reviewed = reviewedArticle(article.payload, source, candidate.url);
-          if (!reviewed) continue;
+          const check = reviewedArticleCheck(article.payload, source, candidate.url);
+          const reviewed = check.article;
+          if (!reviewed) { rejectionCounts[check.reason]++; continue; }
           const matched = normalizeArticles({ data: { json: { articles: [reviewed] } } }, source, Date.now(), include, exclude, true);
+          if (!matched.length) rejectionCounts.outsideScope++;
           headlines.push(...matched);
-        } catch { /* Other candidates may still be verifiable. */ }
+        } catch (error) { rejectionCounts.pageError++; if (pageErrors.length < 3) pageErrors.push(`${candidate.url}: ${error.message}`); /* Other candidates may still be verifiable. */ }
     }
-    const nextCursor = fromFeed ? null : page.nextCursor;
-    res.json({ source, headlines: headlines.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date(entry.at).toISOString(), candidatesFound: candidates.length, candidatesChecked: checked, nextCursor, collectionMethod: fromFeed ? 'feed' : 'firecrawl', note: fromFeed ? 'Headlines and dates came from the publisher feed. Article pages were not independently checked.' : nextCursor === null && fullScan ? 'All relevant article links returned from this listing were checked; listings can still omit stories.' : 'Only some article pages were checked. No result is not proof that the source had no relevant news.' });
+    const nextCursor = fromFeed && !verifyFeedArticles ? null : page.nextCursor;
+    res.json({ source, headlines: headlines.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date(entry.at).toISOString(), listedCount: articleArray(entry.payload).length, candidatesFound: candidates.length, candidatesChecked: checked, rejectionCounts, pageErrors, nextCursor, collectionMethod: verifyFeedArticles ? 'feed+firecrawl' : fromFeed ? 'feed' : entry.payload.collectionMethod || 'firecrawl', listingUrl: entry.payload.feedUrl || entry.payload.searchQuery || (fallback ? alternateUrl : source.listingUrl || source.url), note: verifyFeedArticles ? 'Publisher feed entries were checked against their original article pages.' : fromFeed ? 'Headlines and dates came from the publisher feed. Article pages were not independently checked.' : nextCursor === null && fullScan ? 'All relevant article links returned from this listing were checked; listings can still omit stories.' : 'Only some article pages were checked. No result is not proof that the source had no relevant news.' });
   } catch (error) {
     res.status(502).json({ error: `Could not collect ${source.name}: ${error.message}` });
   }

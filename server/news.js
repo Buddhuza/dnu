@@ -3,14 +3,14 @@ export const DEFAULT_EXCLUDE = [];
 
 let nextFirecrawlSlot = 0;
 let queue = Promise.resolve();
-async function firecrawlPost(payload, apiKey, fetchImpl = fetch) {
+async function firecrawlPost(payload, apiKey, fetchImpl = fetch, endpoint = 'scrape') {
   const task = queue.then(async () => {
     for (let attempt = 0; attempt < 2; attempt++) {
       const delay = Math.max(0, nextFirecrawlSlot - Date.now());
       if (delay) await new Promise(resolve => setTimeout(resolve, delay));
       // Keep the shared standard-plan limit below ten requests per minute.
       nextFirecrawlSlot = Date.now() + 6500;
-      const response = await fetchImpl('https://api.firecrawl.dev/v2/scrape', {
+      const response = await fetchImpl(`https://api.firecrawl.dev/v2/${endpoint}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -49,11 +49,18 @@ export function customSourceFromRequest(value) {
   } catch { return null; }
 }
 
-function articleArray(payload) {
+export function articleArray(payload) {
   const json = payload?.data?.json ?? payload?.json;
   const value = typeof json === 'string' ? JSON.parse(json) : json;
   if (Array.isArray(value)) return value;
   return value?.articles ?? value?.headlines ?? [];
+}
+
+export function fallbackListingUrl(source) {
+  if (source.listingUrl && source.listingUrl !== source.url) return source.url;
+  const url = new URL(source.url);
+  const home = `${url.origin}/`;
+  return url.href === home ? null : home;
 }
 
 function permittedArticleUrl(url, source) {
@@ -124,19 +131,24 @@ export function candidatePage(candidates, cursor = 0, fullScan = false, deepScan
   return { items, nextCursor: fullScan && offset + items.length < candidates.length ? offset + items.length : null };
 }
 
-export function reviewedArticle(payload, source, url, now = Date.now()) {
+export function reviewedArticleCheck(payload, source, url, now = Date.now()) {
   const data = payload?.data ?? {};
   const extracted = typeof data.json === 'string' ? JSON.parse(data.json) : data.json ?? {};
   const html = data.html ?? '';
   const tassTime = new URL(url).hostname === 'tass.com' ? html.match(/<dateformat\s+time="(\d{10})"\s+mode="abs"/)?.[1] : null;
   const izvestiaTime = new URL(url).hostname === 'iz.ru' ? html.match(/itemprop="datePublished">([^<]+)/)?.[1] : null;
   const publishedAt = data.metadata?.publishedTime ?? data.metadata?.['article:published_time'] ?? izvestiaTime ?? (tassTime ? new Date(Number(tassTime) * 1000).toISOString() : null) ?? extracted.publishedAt;
-  if (!publishedAt || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})$/i.test(publishedAt)) return null;
+  if (!publishedAt || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})$/i.test(publishedAt)) return { article: null, reason: 'missingHeadlineOrTime' };
   const time = Date.parse(publishedAt);
-  if (!Number.isFinite(time) || time < now - 48 * 60 * 60 * 1000 || time > now + 300000) return null;
+  if (!Number.isFinite(time)) return { article: null, reason: 'missingHeadlineOrTime' };
+  if (time < now - 48 * 60 * 60 * 1000 || time > now + 300000) return { article: null, reason: 'outsideWindow' };
   const title = String(data.metadata?.ogTitle ?? extracted.exactHeadline ?? data.metadata?.title ?? '').trim();
-  if (!title) return null;
-  return { id: url, url, sourceId: source.id, sourceName: source.agencyName || source.name, group: source.group, title, summary: String(extracted.summary ?? '').trim(), publishedAt: new Date(time).toISOString() };
+  if (!title) return { article: null, reason: 'missingHeadlineOrTime' };
+  return { article: { id: url, url, sourceId: source.id, sourceName: source.agencyName || source.name, group: source.group, title, summary: String(extracted.summary ?? '').trim(), publishedAt: new Date(time).toISOString() }, reason: null };
+}
+
+export function reviewedArticle(payload, source, url, now = Date.now()) {
+  return reviewedArticleCheck(payload, source, url, now).article;
 }
 
 export async function scrapeHeadlines(source, include, apiKey, fetchImpl = fetch) {
@@ -148,4 +160,13 @@ export async function scrapeHeadlines(source, include, apiKey, fetchImpl = fetch
 export async function scrapeArticle(url, apiKey, fetchImpl = fetch) {
   const prompt = 'Read the original news article. Return an object with exactHeadline copied verbatim, publishedAt as an ISO 8601 timestamp with timezone only if explicitly available, and summary as one factual sentence from the first two substantive paragraphs that adds information beyond the headline. Do not invent dates or facts, and do not add opinion or analysis.';
   return firecrawlPost({ url, formats: ['markdown', 'html', { type: 'json', prompt }], onlyMainContent: true, timeout: 30000 }, apiKey, fetchImpl);
+}
+
+export async function searchSourceArticles(source, include, apiKey, fetchImpl = fetch) {
+  const host = new URL(source.url).hostname.replace(/^www\./, '');
+  const terms = include.length ? include.slice(0, 8) : ['politics', 'security', 'war', 'election'];
+  const query = `site:${host} (${terms.map(term => `"${term.replace(/[^\p{L}\p{N}\s-]/gu, '')}"`).join(' OR ')})`;
+  const payload = await firecrawlPost({ query, limit: 10, tbs: 'qdr:d2' }, apiKey, fetchImpl, 'search');
+  const results = payload.data?.web ?? [];
+  return { data: { json: { articles: results.map(item => ({ title: item.title, url: item.url, summary: item.description })) } }, collectionMethod: 'firecrawl-search', searchQuery: query };
 }

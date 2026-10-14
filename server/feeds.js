@@ -61,8 +61,8 @@ export function parseFeed(xml) {
   return articles;
 }
 
-export async function collectFeed(source, fetchImpl = fetch) {
-  const url = FEED_URLS[source.id];
+export async function collectFeed(source, fetchImpl = fetch, feedUrl = FEED_URLS[source.id]) {
+  const url = feedUrl;
   if (!url) return null;
   const response = await fetchImpl(url, { headers: { Accept: 'application/rss+xml, application/atom+xml, application/xml, text/xml' }, signal: AbortSignal.timeout(15000) });
   if (!response.ok) throw new Error(`Feed returned HTTP ${response.status}`);
@@ -71,4 +71,11 @@ export async function collectFeed(source, fetchImpl = fetch) {
   const articles = parseFeed(xml);
   if (!articles.length) throw new Error('Feed contained no timestamped articles');
   return { data: { json: { articles } }, collectionMethod: 'feed' };
+}
+
+export async function collectFallbackFeed(source, fetchImpl = fetch, accept = () => true) {
+  const origin = new URL(source.url).origin;
+  const candidates = [`${origin}/feed/`, `${origin}/rss.xml`];
+  const results = await Promise.allSettled(candidates.map(async url => ({ ...(await collectFeed(source, fetchImpl, url)), feedUrl: url })));
+  return results.find(result => result.status === 'fulfilled' && accept(result.value))?.value ?? null;
 }

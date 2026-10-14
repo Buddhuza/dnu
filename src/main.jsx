@@ -9,6 +9,7 @@ import { orderedSubsections } from './newsSections.js';
 import { createReportDocxFromTemplate } from './docxBuilder.js';
 import { reportFilename } from './reportFilename.js';
 import { reportDateLabel } from './reportDate.js';
+import { sourceAudit } from './collectionAudit.js';
 import './styles.css';
 
 const readStored = (key, fallback, legacyKey) => {
@@ -32,6 +33,7 @@ function App() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [batchProgress, setBatchProgress] = useState(null);
+  const [auditRows, setAuditRows] = useState(() => { const saved = readStored('dnu-source-audit-v1', []); return Array.isArray(saved) ? saved : []; });
   const [error, setError] = useState('');
   const [toast, setToast] = useState('');
   const [managing, setManaging] = useState(false);
@@ -51,13 +53,15 @@ function App() {
     return () => clearInterval(timer);
   }, []);
   useEffect(() => { localStorage.setItem('dnu-site-settings-v1', JSON.stringify(siteConfig)); document.title = siteConfig.brandName || 'SITUATION ROOM'; }, [siteConfig]);
+  useEffect(() => { localStorage.setItem('dnu-source-audit-v1', JSON.stringify(auditRows)); }, [auditRows]);
+  const configuredSources = useMemo(() => displaySources(config?.sources ?? [], { ...siteConfig, hiddenSourceIds: [] }), [config, siteConfig]);
   const sources = useMemo(() => displaySources(config?.sources ?? [], siteConfig), [config, siteConfig]);
-  const active = sources.find(x => x.id === activeId);
+  const active = configuredSources.find(x => x.id === activeId);
   const websiteSource = sources.find(x => x.id === websiteSourceId);
   const canCollect = Boolean(config?.firecrawlConfigured || config?.feedSourceIds?.includes(activeId));
   const groups = ['All sources', ...new Set(sources.map(x => x.group))];
   const visibleSources = useMemo(() => sources.filter(x => (group === 'All sources' || x.group === group) && `${x.name} ${x.group} ${x.url}`.toLowerCase().includes(search.toLowerCase())), [sources, group, search]);
-  const collectionSources = useMemo(() => visibleSources.filter(x => config?.firecrawlConfigured || config?.feedSourceIds?.includes(x.id)).sort((a, b) => Number(config?.feedSourceIds?.includes(b.id)) - Number(config?.feedSourceIds?.includes(a.id))), [visibleSources, config]);
+  const collectionSources = useMemo(() => [...visibleSources].sort((a, b) => Number(config?.feedSourceIds?.includes(b.id)) - Number(config?.feedSourceIds?.includes(a.id))), [visibleSources, config]);
   const displayedArticles = useMemo(() => displaySiteContent(daily?.articles ?? [], siteConfig), [daily, siteConfig]);
   const activeTheme = siteConfig.darkMode ? siteConfig.darkTheme : siteConfig.theme;
   const themeStyle = {
@@ -84,7 +88,40 @@ function App() {
     }));
   }, [displayedArticles, siteConfig.sections]);
   const selectedSourceStories = displayedArticles.filter(item => item.sourceId === activeId);
-  const sourceRequest = source => ({ sourceId: source.id, ...(source.id.startsWith('manual-source-') ? { customSource: source } : {}), ...scope });
+  const sourceRequest = source => ({ sourceId: source.id, ...(source.id.startsWith('manual-source-') ? { customSource: source } : {}), ...(source.listingUrl ? { listingUrlOverride: source.listingUrl } : {}), ...scope });
+
+  async function scanSource(source, fullScan, onPage = () => {}) {
+    const headlines = [];
+    const attempts = [];
+    const errors = [];
+    for (const strategy of ['primary', 'alternate', 'search']) {
+      if (strategy !== 'primary' && !config?.firecrawlConfigured) break;
+      if (strategy !== 'primary' && headlines.length) break;
+      let cursor = 0;
+      do {
+        try {
+          const response = await fetch('/api/headlines', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...sourceRequest(source), fullScan, cursor, fallback: strategy === 'alternate', search: strategy === 'search' }) });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || 'Collection failed');
+          headlines.push(...data.headlines);
+          attempts.push({ ...data, headlines: data.headlines.length });
+          cursor = data.nextCursor;
+          onPage(headlines, data);
+        } catch (error) { errors.push(error.message); cursor = null; }
+      } while (fullScan && cursor !== null);
+    }
+    return { headlines: [...new Map(headlines.map(item => [item.url, item])).values()].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), audit: sourceAudit(source, attempts, errors), lastPage: attempts.at(-1) };
+  }
+
+  function saveAudit(row) {
+    setAuditRows(current => [row, ...current.filter(item => item.sourceId !== row.sourceId)]);
+  }
+
+  function rememberWorkingListing(source, audit) {
+    const working = audit.attempts?.find(attempt => attempt.headlines > 0 && attempt.collectionMethod === 'firecrawl' && attempt.listingUrl && attempt.listingUrl !== (source.listingUrl || source.url));
+    if (!working || !/^source-\d+$/.test(source.id)) return;
+    setSiteConfig(current => ({ ...current, sourceListingOverrides: { ...current.sourceListingOverrides, [source.id]: working.listingUrl } }));
+  }
 
   function applyScope() {
     const next = { include: words(includeText), exclude: words(excludeText) };
@@ -96,7 +133,7 @@ function App() {
     setToast('Scope updated. Refresh a source to collect matching headlines.');
   }
   async function loadSource(id = activeId, fullScan = false) {
-    const source = sources.find(item => item.id === id);
+    const source = configuredSources.find(item => item.id === id);
     if (!source) return;
     setBatchProgress(null);
     setActiveId(id);
@@ -104,51 +141,51 @@ function App() {
     setError('');
     setResult(null);
     try {
-      const headlines = [];
-      let cursor = 0;
-      do {
-        const response = await fetch('/api/headlines', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...sourceRequest(source), fullScan, cursor }) });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Collection failed');
-        headlines.push(...data.headlines);
-        cursor = data.nextCursor;
-        setResult({ ...data, headlines: [...headlines].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), candidatesChecked: fullScan ? cursor ?? data.candidatesFound : data.candidatesChecked });
-      } while (fullScan && cursor !== null);
+      const scan = await scanSource(source, fullScan, (headlines, page) => setResult({ ...page, headlines: [...headlines] }));
+      saveAudit(scan.audit);
+      rememberWorkingListing(source, scan.audit);
+      setResult(scan.lastPage ? { ...scan.lastPage, headlines: scan.headlines } : null);
+      if (scan.audit.status === 'failed') setError(scan.audit.reason);
     } catch (e) { setError(e.message); }
     finally { setLoading(false); }
   }
-  async function loadVisible() {
-    if (!collectionSources.length) return;
+  async function loadVisible(targetSources = collectionSources) {
+    if (!targetSources.length) return;
     setLoading(true);
     setError('');
     setResult({ headlines: [], fetchedAt: new Date().toISOString(), batch: true });
-    setBatchProgress({ done: 0, total: collectionSources.length, failed: 0 });
+    setBatchProgress({ done: 0, total: targetSources.length, failed: 0 });
     let done = 0, failed = 0;
     const gathered = [];
+    setAuditRows([]);
     const collectGroup = async groupSources => {
       let cursor = 0;
       const worker = async () => {
       while (cursor < groupSources.length) {
         const source = groupSources[cursor++];
         try {
-          let cursor = 0;
-          do {
-            const response = await fetch('/api/headlines', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...sourceRequest(source), fullScan: true, cursor }) });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error);
-            gathered.push(...data.headlines);
+          if (!config?.firecrawlConfigured && !config?.feedSourceIds?.includes(source.id)) {
+            saveAudit({ sourceId: source.id, name: source.name, status: 'unavailable', reason: 'No publisher feed is configured and Firecrawl is not connected to the server.', remedy: 'Set FIRECRAWL_API_KEY on the server, then retry this source.', attempts: [], errors: [] });
+          } else {
+            const scan = await scanSource(source, true, (headlines, page) => {
+              const previous = gathered.filter(item => item.sourceId !== source.id);
+              setResult({ headlines: [...previous, ...headlines].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date().toISOString(), batch: true });
+            });
+            gathered.push(...scan.headlines);
+            saveAudit(scan.audit);
+            rememberWorkingListing(source, scan.audit);
+            if (scan.audit.status === 'failed') failed++;
             setResult({ headlines: [...gathered].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date().toISOString(), batch: true });
-            cursor = data.nextCursor;
-          } while (cursor !== null);
-        } catch { failed++; }
+          }
+        } catch (error) { failed++; saveAudit(sourceAudit(source, [], [error.message])); }
         done++;
-        setBatchProgress({ done, total: collectionSources.length, failed });
+        setBatchProgress({ done, total: targetSources.length, failed });
       }
     };
       await Promise.all(Array.from({ length: Math.min(4, groupSources.length) }, worker));
     };
-    await collectGroup(collectionSources.filter(source => config?.feedSourceIds?.includes(source.id)));
-    await collectGroup(collectionSources.filter(source => !config?.feedSourceIds?.includes(source.id)));
+    await collectGroup(targetSources.filter(source => config?.feedSourceIds?.includes(source.id)));
+    await collectGroup(targetSources.filter(source => !config?.feedSourceIds?.includes(source.id)));
     setLoading(false);
     if (failed) setError(`${failed} source${failed === 1 ? '' : 's'} could not be collected. Other results are shown below.`);
   }
@@ -165,11 +202,12 @@ function App() {
   }
 
   const collectionPanel = (
-        <section className="headlines-section" id="live-collection"><div className="section-title"><div><h2>Live collection</h2></div><span className="time-filter">◷ &nbsp; LAST 48 HOURS</span></div><div className="source-banner"><div className="banner-icon">{active?.name?.[0] || 'S'}</div><div><strong>{active?.name || 'Select a source'}</strong><small>{active?.url || 'Choose an outlet from the left'}</small></div><button onClick={() => loadSource()} disabled={loading || !active || !canCollect}>{loading ? 'Collecting…' : 'Collect headlines'} <span>↗</span></button></div><div className="batch-row"><span>Publisher feeds are checked first at no Firecrawl cost. A quick source check opens three matching article pages. A complete scan checks every matching link returned by the listing and may take longer or use many credits.</span><button onClick={() => loadSource(activeId, true)} disabled={loading || !config?.firecrawlConfigured || !active}>Scan all listed articles</button><button onClick={loadVisible} disabled={loading || !collectionSources.length}>Scan visible sources fully ({collectionSources.length})</button></div>
+        <section className="headlines-section" id="live-collection"><div className="section-title"><div><h2>Live collection</h2></div><span className="time-filter">◷ &nbsp; LAST 48 HOURS</span></div><div className="source-banner"><div className="banner-icon">{active?.name?.[0] || 'S'}</div><div><strong>{active?.name || 'Select a source'}</strong><small>{active?.url || 'Choose an outlet from the left'}</small></div><button onClick={() => loadSource()} disabled={loading || !active || !canCollect || staticPreview}>{loading ? 'Collecting…' : 'Collect headlines'} <span>↗</span></button></div><div className="batch-row"><span>Each scan checks the extracted articles for every source, then tries an alternate feed, listing page, and recent site search if needed. Sources still without articles receive a reason and next step. Complete scans may take hours and use many Firecrawl credits.</span><button onClick={() => loadSource(activeId, true)} disabled={loading || !canCollect || !active || staticPreview}>Scan all listed articles</button><button onClick={() => loadVisible(collectionSources)} disabled={loading || !collectionSources.length || staticPreview}>Verify visible sources ({collectionSources.length})</button><button onClick={() => loadVisible(configuredSources)} disabled={loading || !configuredSources.length || staticPreview}>Verify all sources ({configuredSources.length})</button></div>
           {!config?.firecrawlConfigured && <div className="notice"><p>{staticPreview ? 'This published page shows the prepared update. Live collection requires the server app; feeds work without Firecrawl, while other sources need an API key.' : <>Feed sources can be collected without an API key. Add <code>FIRECRAWL_API_KEY</code> for other sources.</>}</p></div>}
           {error && <div className="error-box" role="alert">{error}</div>}
           {loading && <div className="loading-box"><div className="spinner"/> {batchProgress ? `Collected ${batchProgress.done} of ${batchProgress.total} sources${batchProgress.failed ? ` · ${batchProgress.failed} failed` : ''}` : 'Collecting headlines and checking publication times…'}</div>}
           {result && <><div className="result-meta">{result.headlines.length} headlines · Checked {dateLabel(result.fetchedAt)}{result.collectionMethod ? ` · ${result.collectionMethod === 'feed' ? 'Publisher feed, 0 Firecrawl credits' : 'Firecrawl'}` : ''}{!result.batch && result.candidatesFound ? ` · ${result.candidatesChecked} of ${result.candidatesFound} article candidates checked` : ''}</div>{result.headlines.length ? <div className="headline-list">{result.headlines.map(item => <article className="headline-card" key={item.id}><div className="headline-top"><span className="category-label">{item.sourceName}</span><span>{dateLabel(item.publishedAt)}</span></div><h3><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title} ↗</a></h3>{item.summary && <p>{item.summary} ({item.sourceName})</p>}</article>)}</div> : <div className="empty-result">No matching headline was found in this scan. This does not mean the source had no relevant news. Try broader keywords.</div>}</>}
+          {auditRows.length > 0 && <section className="collection-audit" aria-label="Source verification"><h3>Source verification</h3><p>{auditRows.filter(row => row.status === 'extracted').length} of {auditRows.length} checked sources yielded articles. The remaining rows explain what was checked and what to try next.</p><div className="collection-audit-list">{auditRows.map(row => <details key={row.sourceId}><summary><strong>{row.name}</strong><span>{row.status === 'extracted' ? 'Articles extracted' : row.status === 'unavailable' ? 'Needs server access' : 'Needs follow-up'}</span></summary><p>{row.reason}</p>{row.attempts?.length > 0 && <p>Checked: {row.attempts.map(item => `${item.collectionMethod === 'feed' ? 'publisher feed' : item.listingUrl} (${item.listedCount ?? 0} listed, ${item.candidatesChecked ?? 0} article pages checked)`).join('; ')}.</p>}{row.errors?.length > 0 && <p>Errors: {row.errors.join('; ')}</p>}{row.attempts?.some(item => item.pageErrors?.length) && <p>Article errors: {row.attempts.flatMap(item => item.pageErrors || []).slice(0, 3).join('; ')}</p>}{row.remedy && <p>Next step: {row.remedy}</p>}<button onClick={() => loadSource(row.sourceId, true)} disabled={loading || staticPreview || (!config?.firecrawlConfigured && !config?.feedSourceIds?.includes(row.sourceId))}>Retry complete scan</button></details>)}</div></section>}
           {!loading && !result && !error && (staticPreview ? <div className="snapshot-results"><p>{selectedSourceStories.length ? `${selectedSourceStories.length} prepared update stories from ${active?.name}` : `No ${active?.name || 'source'} stories were selected for this prepared update.`}</p>{selectedSourceStories.map(item => <article className="headline-card" key={item.id}><h3><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title} ↗</a></h3></article>)}</div> : <div className="empty-result"><span className="empty-symbol">◎</span><strong>Your next story starts here.</strong><p>Choose a source or collect all visible sources. Results are filtered to the past 48 hours.</p></div>)}
         </section>
   );

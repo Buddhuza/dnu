@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { normalizeArticles, scrapeHeadlines, undatedCandidates, reviewedArticle, candidatePage, customSourceFromRequest, DEFAULT_INCLUDE } from './news.js';
+import { normalizeArticles, scrapeHeadlines, searchSourceArticles, undatedCandidates, reviewedArticle, reviewedArticleCheck, fallbackListingUrl, candidatePage, customSourceFromRequest, DEFAULT_INCLUDE } from './news.js';
 
 const source = { id: 'source-1', name: 'Test News', group: 'Test', url: 'https://example.com/news/' };
 const now = Date.parse('2026-10-09T12:00:00Z');
@@ -32,6 +32,19 @@ test('Firecrawl request sends the fixed source URL and bearer credential', async
   assert.equal(JSON.parse(called.options.body).url, source.url);
 });
 
+test('recent Firecrawl site search supplies article candidates for verification', async () => {
+  let called;
+  const fetchStub = async (url, options) => {
+    called = { url, body: JSON.parse(options.body) };
+    return { ok: true, json: async () => ({ success: true, data: { web: [{ title: 'Security talks', url: 'https://example.com/article', description: 'Ministers met.' }] } }) };
+  };
+  const payload = await searchSourceArticles(source, ['security', 'politics'], 'test-key', fetchStub);
+  assert.equal(called.url, 'https://api.firecrawl.dev/v2/search');
+  assert.equal(called.body.tbs, 'qdr:d2');
+  assert.equal(payload.collectionMethod, 'firecrawl-search');
+  assert.deepEqual(undatedCandidates(payload, source, ['security']).map(item => item.url), ['https://example.com/article']);
+});
+
 test('undated matching links can be checked on their original article pages', () => {
   const payload = { data: { json: { articles: [
     { title: 'Security talks continue', url: '/story-1' },
@@ -46,6 +59,14 @@ test('undated matching links can be checked on their original article pages', ()
   assert.equal(verified.publishedAt, '2026-10-09T10:00:00.000Z');
   assert.equal(verified.summary, 'The ministers agreed to meet again.');
   assert.equal(reviewedArticle({ data: { metadata: { publishedTime: '2026-10-07T10:00:00Z', ogTitle: 'Old story' } } }, source, candidates[0].url, now), null);
+  assert.equal(reviewedArticleCheck({ data: { metadata: { publishedTime: '2026-10-07T10:00:00Z', ogTitle: 'Old story' } } }, source, candidates[0].url, now).reason, 'outsideWindow');
+  assert.equal(reviewedArticleCheck({ data: { metadata: { ogTitle: 'No date' } } }, source, candidates[0].url, now).reason, 'missingHeadlineOrTime');
+});
+
+test('alternate collection checks the source homepage after a section fails', () => {
+  assert.equal(fallbackListingUrl(source), 'https://example.com/');
+  assert.equal(fallbackListingUrl({ ...source, url: 'https://example.com/' }), null);
+  assert.equal(fallbackListingUrl({ ...source, listingUrl: 'https://example.com/section' }), source.url);
 });
 
 test('publisher article timestamps are taken from TASS and Izvestia pages', () => {
@@ -103,4 +124,10 @@ test('Internazionale collects its Reuters feed and credits Reuters articles', as
   assert.equal(result.length, 1);
   assert.equal(result[0].sourceName, 'Reuters');
   assert.deepEqual(undatedCandidates(payload, source, ['security'], [], true).map(item => item.url), [result[0].url]);
+});
+
+test('Montsame uses its working English politics listing', async () => {
+  const source = JSON.parse(readFileSync(new URL('../sources.json', import.meta.url), 'utf8')).find(item => item.name === 'Montsame');
+  assert.equal(source.listingUrl, 'https://montsame.mn/en/more/302');
+  assert.equal(fallbackListingUrl(source), source.url);
 });

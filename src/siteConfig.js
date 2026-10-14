@@ -31,6 +31,7 @@ const defaults = {
   articleEdits: {},
   customArticles: [],
   customSources: [],
+  sourceListingOverrides: {},
   hiddenSourceIds: []
 };
 
@@ -121,6 +122,10 @@ export function normalizeSiteConfig(input, articles = []) {
       name, group: clean(item.group, 'Custom', 80).trim() || 'Custom', url
     }];
   });
+  const sourceListingOverrides = Object.fromEntries(Object.entries(input.sourceListingOverrides && typeof input.sourceListingOverrides === 'object' ? input.sourceListingOverrides : {}).slice(0, 200).flatMap(([id, value]) => {
+    const url = httpsUrl(value);
+    return /^source-\d+$/.test(id) && url ? [[id, url]] : [];
+  }));
   return {
     version: 1,
     brandName: ['SIGNAL DESK', 'DNU'].includes(input.brandName) ? base.brandName : clean(input.brandName, base.brandName, 80),
@@ -137,14 +142,20 @@ export function normalizeSiteConfig(input, articles = []) {
     sectionHeadingSize: Number.isFinite(Number(input.sectionHeadingSize)) ? Math.max(20, Math.min(40, Number(input.sectionHeadingSize))) : 26,
     sectionHeadingUppercase: input.sectionHeadingUppercase !== false,
     updateWidth: Number.isFinite(Number(input.updateWidth)) ? Math.max(480, Math.min(1400, Number(input.updateWidth) === 600 ? 900 : Number(input.updateWidth))) : 900,
-    theme, darkTheme, sections, articleEdits, customArticles, customSources,
+    theme, darkTheme, sections, articleEdits, customArticles, customSources, sourceListingOverrides,
     hiddenSourceIds: (Array.isArray(input.hiddenSourceIds) ? input.hiddenSourceIds : []).filter(id => typeof id === 'string').slice(0, 500)
   };
 }
 
 export function displaySources(baseSources, config) {
   const hidden = new Set(config.hiddenSourceIds);
-  return [...baseSources, ...config.customSources].filter(source => !hidden.has(source.id));
+  return [...baseSources.map(source => {
+    const alternate = config.sourceListingOverrides?.[source.id];
+    try {
+      if (alternate && new URL(alternate).origin === new URL(source.url).origin) return { ...source, listingUrl: alternate };
+    } catch { /* Ignore an invalid local override. */ }
+    return source;
+  }), ...config.customSources].filter(source => !hidden.has(source.id));
 }
 
 export function displaySiteContent(articles, config) {

@@ -110,3 +110,12 @@
 @media(max-width:1250px){.reading-layout.website-open{grid-template-columns:1fr}.website-panel{position:static}}
 .daily-heading .report-date{font-size:var(--site-body-size,18px);line-height:1.5;color:var(--site-text,#182a36);margin:5px 0 0}
 .main-panel .daily-update,.main-panel .website-panel{margin-top:0}
+.collection-audit{margin-top:24px;padding:18px;border:1px solid #d6dfdf;border-radius:10px;background:var(--site-surface,#fff);color:var(--site-text,#182a36)}
+.collection-audit h3{margin:0 0 6px;font-size:19px}
+.collection-audit>p{margin:0 0 12px;font-size:14px;line-height:1.45}
+.collection-audit-list{max-height:400px;overflow:auto}
+.collection-audit-list details{border-top:1px solid #d6dfdf;padding:10px 0;font-size:14px}
+.collection-audit-list summary{display:flex;justify-content:space-between;gap:12px;cursor:pointer}
+.collection-audit-list summary span{font-size:12px;opacity:.75;text-align:right}
+.collection-audit-list details p{margin:9px 0;line-height:1.45;overflow-wrap:anywhere}
+.collection-audit-list button{border:1px solid #b9cbd5;border-radius:5px;background:transparent;color:var(--site-section,#0070c0);padding:6px 9px;cursor:pointer}
