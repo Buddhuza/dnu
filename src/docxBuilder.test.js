@@ -42,3 +42,17 @@ test('browser report download creates a readable Word file with country headings
 test('download filename uses coverage dates and Vienna times', () => {
   assert.equal(reportFilename({ windowStart: '2026-10-04T22:00:00Z', windowEnd: '2026-10-09T21:59:59Z' }), 'Daily news update - 2026-10-05 00-00 to 2026-10-09 23-59.docx');
 });
+
+test('headline-only Word download omits summaries but keeps agencies and links', async () => {
+  const template = readFileSync(new URL('../public/daily-update-template.docx', import.meta.url));
+  const output = await createReportDocxFromTemplate(template, {
+    title: 'DAILY NEWS UPDATE', windowEnd: '2026-10-14T21:59:59Z', headlineOnly: true,
+    articles: [{ section: 'South Caucasus', subsection: 'Armenia', title: 'OSCE chair visits Armenia', summary: 'A meeting took place in Yerevan.', sourceName: 'Agency', url: 'https://example.com/story' }]
+  });
+  const zip = await JSZip.loadAsync(output);
+  const document = await zip.file('word/document.xml').async('string');
+  assert.match(document, /OSCE chair visits Armenia\./);
+  assert.doesNotMatch(document, /A meeting took place in Yerevan/);
+  assert.match(document, /Agency/);
+  assert.match(await zip.file('word/_rels/document.xml.rels').async('string'), /https:\/\/example.com\/story/);
+});

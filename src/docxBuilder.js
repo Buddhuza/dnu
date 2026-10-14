@@ -15,9 +15,9 @@ function subsectionParagraph(value, plainTopic = false) {
   return `<w:p><w:pPr><w:keepNext/>${plainTopic ? '' : '<w:shd w:val="clear" w:color="auto" w:fill="D9E2F3"/>'}<w:spacing w:before="200" w:after="120"/><w:jc w:val="both"/></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:color w:val="0070C0"/><w:sz w:val="24"/>`)}</w:p>`;
 }
 
-function storyParagraph(item, relationshipId) {
+function storyParagraph(item, relationshipId, headlineOnly = false) {
   const { headline, summary } = reportStoryText(item);
-  const detail = summary ? textRun(` ${summary}`, `${calibri}<w:sz w:val="24"/>`) : '';
+  const detail = !headlineOnly && summary ? textRun(` ${summary}`, `${calibri}<w:sz w:val="24"/>`) : '';
   return `<w:p><w:pPr><w:spacing w:after="160"/><w:jc w:val="both"/></w:pPr>${textRun(headline, `${calibri}<w:b/><w:sz w:val="24"/>`)}${detail}${textRun(' (', `${calibri}<w:sz w:val="24"/>`)}<w:hyperlink r:id="${relationshipId}">${textRun(item.sourceName, '<w:color w:val="0563C1"/><w:sz w:val="24"/><w:u w:val="single"/>')}</w:hyperlink>${textRun(')', `${calibri}<w:sz w:val="24"/>`)}</w:p>`;
 }
 
@@ -34,7 +34,7 @@ function disclaimerParagraphs() {
 
 const defaultTitle = () => 'DAILY NEWS UPDATE';
 
-export async function createReportDocxFromTemplate(templateBytes, { title, windowStart, windowEnd, articles }) {
+export async function createReportDocxFromTemplate(templateBytes, { title, windowStart, windowEnd, articles, headlineOnly = false }) {
   const zip = await JSZip.loadAsync(templateBytes);
   const paragraphs = [];
   const reportDate = reportEndDateLabel(windowEnd);
@@ -59,7 +59,7 @@ export async function createReportDocxFromTemplate(templateBytes, { title, windo
       paragraphs.push(subsectionParagraph(item.country));
     }
     const relationshipId = `rIdStory${index + 1}`;
-    paragraphs.push(storyParagraph(item, relationshipId));
+    paragraphs.push(storyParagraph(item, relationshipId, headlineOnly));
     relationships.push(`<Relationship Id="${relationshipId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="${escapeXml(item.url)}" TargetMode="External"/>`);
   }
   paragraphs.push(disclaimerParagraphs());

@@ -43,6 +43,7 @@ function App() {
   const [toast, setToast] = useState('');
   const [managing, setManaging] = useState(false);
   const [editingStories, setEditingStories] = useState(false);
+  const [headlineOnly, setHeadlineOnly] = useState(() => readStored('dnu-headline-only-v1', false) === true);
   const [dropTarget, setDropTarget] = useState('');
   const pointerDragRef = useRef(null);
   const [addingArticles, setAddingArticles] = useState(false);
@@ -80,6 +81,7 @@ function App() {
   useEffect(() => { localStorage.setItem('dnu-site-settings-v1', JSON.stringify(siteConfig)); document.title = siteConfig.brandName || 'SITUATION ROOM'; }, [siteConfig]);
   useEffect(() => { localStorage.setItem('dnu-source-audit-v1', JSON.stringify(auditRows)); }, [auditRows]);
   useEffect(() => { localStorage.setItem('dnu-excluded-story-ids-v1', JSON.stringify([...excludedStoryIds])); }, [excludedStoryIds]);
+  useEffect(() => { localStorage.setItem('dnu-headline-only-v1', JSON.stringify(headlineOnly)); }, [headlineOnly]);
   const configuredSources = useMemo(() => displaySources(config?.sources ?? [], { ...siteConfig, hiddenSourceIds: [] }), [config, siteConfig]);
   const sources = useMemo(() => displaySources(config?.sources ?? [], siteConfig), [config, siteConfig]);
   const active = configuredSources.find(x => x.id === activeId);
@@ -94,9 +96,9 @@ function App() {
   const updateSearchQuery = updateSearchText.trim().toLocaleLowerCase();
   const updateSearchResults = useMemo(() => updateSearchQuery ? readingArticles.filter(item => {
     const story = reportStoryText(item);
-    return [item.section, item.subsection, item.country, story.headline, story.summary, item.sourceName, formatViennaCompactDateTime(item.publishedAt)]
+    return [item.section, item.subsection, item.country, story.headline, ...(headlineOnly && !editingStories ? [] : [story.summary]), item.sourceName, formatViennaCompactDateTime(item.publishedAt)]
       .some(value => String(value || '').toLocaleLowerCase().includes(updateSearchQuery));
-  }) : [], [readingArticles, updateSearchQuery]);
+  }) : [], [readingArticles, updateSearchQuery, headlineOnly, editingStories]);
   const updateSearchIds = useMemo(() => new Set(updateSearchResults.map(item => item.id)), [updateSearchResults]);
   useEffect(() => { setActiveSearchResult(0); }, [updateSearchQuery]);
   useEffect(() => {
@@ -255,7 +257,7 @@ function App() {
       const response = await fetch(`${import.meta.env.BASE_URL}daily-update-template.docx`);
       if (!response.ok) throw new Error('The Word template is unavailable.');
       const templateBytes = await response.arrayBuffer();
-      const file = await createReportDocxFromTemplate(templateBytes, { title: siteConfig.updateTitle, windowStart: reportWindow?.windowStart, windowEnd: daily?.windowEnd, articles: selectedArticles, sourceOutcomes: daily?.sourceOutcomes ?? [] });
+      const file = await createReportDocxFromTemplate(templateBytes, { title: siteConfig.updateTitle, windowStart: reportWindow?.windowStart, windowEnd: daily?.windowEnd, articles: selectedArticles, headlineOnly, sourceOutcomes: daily?.sourceOutcomes ?? [] });
       const url = URL.createObjectURL(new Blob([file], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }));
       const a = document.createElement('a'); a.href = url; a.download = reportFilename(reportWindow); document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 60_000);
@@ -286,7 +288,13 @@ function App() {
     setEditingStories(false);
   };
   const keepStoryTextInline = event => { if (event.key === 'Enter') event.preventDefault(); };
-  const updateControls = () => daily?.articles?.length > 0 && <div className="daily-downloads"><button className="daily-download" disabled={!selectedArticles.length} onClick={downloadManagedDocx}>Download</button><button className="daily-edit" type="button" aria-pressed={editingStories} onClick={toggleStoryEditing}>{editingStories ? 'Save' : 'Edit'}</button><button className="daily-edit" type="button" onClick={() => setAddingArticles(true)}>Add</button><button className="daily-edit daily-search-toggle" type="button" aria-label="Search update" aria-expanded={updateSearchOpen} onClick={() => setUpdateSearchOpen(current => !current)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"/><path d="m16 16 5 5"/></svg></button></div>;
+  const updateControls = () => daily?.articles?.length > 0 && <div className="daily-downloads">
+    <button className="daily-action daily-edit" type="button" aria-label="Add articles" title="Add article URLs" onClick={() => setAddingArticles(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M4 12h16"/></svg></button>
+    <button className="daily-action daily-edit" type="button" aria-label={editingStories ? 'Save edits' : 'Edit update'} title={editingStories ? 'Save text and story choices' : 'Edit text and story choices'} aria-pressed={editingStories} onClick={toggleStoryEditing}><svg viewBox="0 0 24 24" aria-hidden="true">{editingStories ? <path d="m4 12 5 5L20 6"/> : <><path d="m4 20 4.2-.9L19 8.3 15.7 5 4.9 15.8 4 20Z"/><path d="m13.9 6.8 3.3 3.3"/></>}</svg></button>
+    <button className={`daily-action daily-edit ${headlineOnly ? 'is-active' : ''}`} type="button" aria-label={headlineOnly ? 'Show summaries' : 'Show headlines only'} title={editingStories ? 'Save edits before switching views' : headlineOnly ? 'Show headlines and summaries' : 'Show headlines only'} aria-pressed={headlineOnly} disabled={editingStories} onClick={() => setHeadlineOnly(current => !current)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16"/>{!headlineOnly && <path d="M4 15h16"/>}</svg></button>
+    <button className="daily-action daily-download" type="button" aria-label="Download update" title={editingStories ? 'Save edits before downloading' : headlineOnly ? 'Download headlines-only Word update' : 'Download Word update with summaries'} disabled={!selectedArticles.length || editingStories} onClick={downloadManagedDocx}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 17v3h16v-3"/></svg></button>
+    <button className="daily-action daily-edit daily-search-toggle" type="button" aria-label="Search update" title="Search within the update" aria-expanded={updateSearchOpen} onClick={() => setUpdateSearchOpen(current => !current)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"/><path d="m16 16 5 5"/></svg></button>
+  </div>;
   const highlightSearch = value => {
     const text = String(value || '');
     if (!updateSearchOpen || !updateSearchQuery) return text;
@@ -380,7 +388,7 @@ function App() {
                     onPointerDown={event => { if (!editingStories || (event.target.closest('input,textarea,select,a,button,[contenteditable="true"]') && !event.target.closest('.story-drag-handle')) || (event.pointerType !== 'mouse' && !event.target.closest('.story-drag-handle'))) return; event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId); pointerDragRef.current = item.id; }}
                     onPointerMove={movePointerStory} onPointerUp={finishPointerStory} onPointerCancel={() => { pointerDragRef.current = null; setDropTarget(''); }}>
                     {editingStories && <><input className="daily-story-checkbox" type="checkbox" checked={!excludedStoryIds.has(item.id)} aria-label={`Include story: ${item.title}`} onChange={event => setExcludedStoryIds(current => { const next = new Set(current); if (event.target.checked) next.delete(item.id); else next.add(item.id); return next; })}/><button type="button" className="story-drag-handle" aria-label={`Drag story: ${item.title}`} title="Drag to reorder or move">⋮⋮</button></>}
-                    <div className="daily-story-content">{editingStories ? <p className="daily-story-inline-edit"><strong contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit headline" data-edit-field="title" onKeyDown={keepStoryTextInline}>{reportStoryText(item).headline}</strong>{' '}<span contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit summary" data-edit-field="summary" data-placeholder="Add summary" onKeyDown={keepStoryTextInline}>{reportStoryText(item).summary}</span>{' '}(<span contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit agency" data-edit-field="sourceName" onKeyDown={keepStoryTextInline}>{item.sourceName}</span>){Number.isFinite(Date.parse(item.publishedAt)) && <> <time className="daily-story-time" dateTime={item.publishedAt} title={dateLabel(item.publishedAt)}>{formatViennaCompactDateTime(item.publishedAt)}</time></>}</p> : <p><strong>{highlightSearch(reportStoryText(item).headline)}</strong>{item.summary && <> {highlightSearch(reportStoryText(item).summary)}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{highlightSearch(item.sourceName)}</a>){Number.isFinite(Date.parse(item.publishedAt)) && <> <time className="daily-story-time" dateTime={item.publishedAt} title={dateLabel(item.publishedAt)}>{highlightSearch(formatViennaCompactDateTime(item.publishedAt))}</time></>}</p>}</div>
+                    <div className="daily-story-content">{editingStories ? <p className="daily-story-inline-edit"><strong contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit headline" data-edit-field="title" onKeyDown={keepStoryTextInline}>{reportStoryText(item).headline}</strong>{' '}<span contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit summary" data-edit-field="summary" data-placeholder="Add summary" onKeyDown={keepStoryTextInline}>{reportStoryText(item).summary}</span>{' '}(<span contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit agency" data-edit-field="sourceName" onKeyDown={keepStoryTextInline}>{item.sourceName}</span>){Number.isFinite(Date.parse(item.publishedAt)) && <> <time className="daily-story-time" dateTime={item.publishedAt} title={dateLabel(item.publishedAt)}>{formatViennaCompactDateTime(item.publishedAt)}</time></>}</p> : <p><strong>{highlightSearch(reportStoryText(item).headline)}</strong>{!headlineOnly && item.summary && <> {highlightSearch(reportStoryText(item).summary)}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{highlightSearch(item.sourceName)}</a>){Number.isFinite(Date.parse(item.publishedAt)) && <> <time className="daily-story-time" dateTime={item.publishedAt} title={dateLabel(item.publishedAt)}>{highlightSearch(formatViennaCompactDateTime(item.publishedAt))}</time></>}</p>}</div>
                   </article>
                 </React.Fragment>)}
               </div>)}
