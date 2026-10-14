@@ -143,7 +143,7 @@ app.post('/api/import-article', async (req, res) => {
       entry = { at: Date.now(), payload: await scrapeImportedArticle(articleUrl.href, process.env.FIRECRAWL_API_KEY) };
       articleCache.set(articleUrl.href, entry);
     }
-    res.json(importedArticle(entry.payload, articleUrl, sourceForArticle(articleUrl, sources)));
+    res.json(importedArticle(entry.payload, articleUrl, sourceForArticle(articleUrl, sources), { allowUnplaced: req.body?.allowUnplaced === true }));
   } catch (error) { res.status(422).json({ error: error.message || 'The article could not be imported.' }); }
 });
 

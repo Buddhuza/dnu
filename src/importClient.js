@@ -1,7 +1,7 @@
 import { IMPORT_PROMPT } from './importPrompt.js';
 import { importedArticle, publicArticleUrl, sourceForArticle } from '../server/importArticle.js';
 
-export async function importDirectArticle(value, apiKey, sources, fetchImpl = fetch) {
+export async function importDirectArticle(value, apiKey, sources, fetchImpl = fetch, options = {}) {
   const url = publicArticleUrl(value);
   if (!url) throw new Error('Enter a public HTTPS article URL.');
   const response = await fetchImpl('https://api.firecrawl.dev/v2/scrape', {
@@ -12,5 +12,5 @@ export async function importDirectArticle(value, apiKey, sources, fetchImpl = fe
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok || payload.success === false) throw new Error(payload.error || payload.message || `Firecrawl returned HTTP ${response.status}`);
-  return importedArticle(payload, url, sourceForArticle(url, sources));
+  return importedArticle(payload, url, sourceForArticle(url, sources), options);
 }

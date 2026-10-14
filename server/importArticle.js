@@ -1,4 +1,4 @@
-import { NEWS_SECTIONS } from '../src/newsSections.js';
+import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES } from '../src/newsSections.js';
 import { viennaWallTimeToIso, wallTimeToIso } from '../src/viennaTime.js';
 import { isEnglishArticle, isRussianSource, isRussiaFocused } from './editorialPolicy.js';
 
@@ -33,15 +33,7 @@ const miscellaneous = [
   ['NORTH AMERICA', 'United States', /\bUnited States|\bU\.S\.|\bUS\b|American|Washington|Trump\b/i]
 ];
 const organisations = ['OSCE', 'EU', 'NATO', 'UN', 'G7', 'G20', 'ICC', 'WTO', 'IMF', 'CIS', 'CSTO'];
-const miscCountries = new Map([
-  ['WESTERN / CENTRAL EUROPE', western.filter(country => !['UK', 'Britain', 'England', 'Scotland', 'Wales'].includes(country))],
-  ['MIDDLE EAST / NORTH AFRICA', ['Iran', 'Israel', 'Lebanon', 'Libya', 'Syria', 'Türkiye']],
-  ['RUSSIA / EURASIA', ['Russia']],
-  ['AFGHANISTAN / PAKISTAN', ['Afghanistan']],
-  ['NORTH EAST ASIA', ['China', 'Japan', 'Mongolia', 'South Korea', 'North Korea']],
-  ['NORTH AMERICA', ['Canada', 'United States']],
-  ['INTERNATIONAL ORGANISATIONS', organisations]
-].map(([label, names]) => [label, new Set(names)]));
+const miscCountries = new Map(Object.entries(MISCELLANEOUS_COUNTRIES).map(([label, names]) => [label, new Set(names)]));
 
 export function publicArticleUrl(value) {
   try {
@@ -152,7 +144,7 @@ export function resolveArticleTime(payload, url, now = Date.now()) {
   return { publishedAt: new Date(now).toISOString(), timeSource: 'current' };
 }
 
-export function importedArticle(payload, url, source) {
+export function importedArticle(payload, url, source, { allowUnplaced = false } = {}) {
   const data = payload?.data ?? {};
   const extracted = typeof data.json === 'string' ? JSON.parse(data.json) : data.json ?? {};
   const title = String(data.metadata?.ogTitle ?? extracted.exactHeadline ?? data.metadata?.title ?? '').trim();
@@ -161,9 +153,12 @@ export function importedArticle(payload, url, source) {
   if (!isEnglishArticle(payload, title, summary)) throw new Error('The original article is not in English.');
   const { publishedAt, timeSource } = resolveArticleTime(payload, url);
   if (isRussianSource(source) && !isRussiaFocused(title, summary)) throw new Error('Russian outlets are limited to Russia-focused stories.');
-  const placement = articlePlacement(extracted, title, summary);
-  if (!placement) throw new Error('The article could not be placed in a configured country or organisation. Add it manually in Manage site.');
-  if (isRussianSource(source) && (placement.sectionId !== 'Miscellaneous' || placement.subsection !== 'RUSSIA / EURASIA')) throw new Error('Russian outlets are limited to the Russia section.');
+  let placement = articlePlacement(extracted, title, summary);
+  if (!placement && !allowUnplaced) throw new Error('The article could not be placed in a configured country or organisation.');
+  if (isRussianSource(source) && placement && (placement.sectionId !== 'Miscellaneous' || placement.subsection !== 'RUSSIA / EURASIA')) {
+    if (!allowUnplaced) throw new Error('Russian outlets are limited to the Russia section.');
+    placement = { sectionId: 'Miscellaneous', subsection: 'RUSSIA / EURASIA', country: 'Russia' };
+  }
   const agency = String(source.agencyName || source.name || data.metadata?.ogSiteName || data.metadata?.siteName || url.hostname).trim();
-  return { id: `manual-${url.href}`, url: url.href, sourceId: 'manual', sourceName: agency, title, summary, publishedAt, timeSource, reviewed: true, hidden: false, ...placement };
+  return { id: `manual-${url.href}`, url: url.href, sourceId: 'manual', sourceName: agency, title, summary, publishedAt, timeSource, reviewed: true, hidden: false, russianSource: isRussianSource(source), ...(placement || { sectionId: '', subsection: '', country: '' }) };
 }

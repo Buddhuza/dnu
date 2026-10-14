@@ -7,6 +7,16 @@ export const NEWS_SECTIONS = [
   { id: 'Miscellaneous', subsections: ['WESTERN / CENTRAL EUROPE', 'MIDDLE EAST / NORTH AFRICA', 'RUSSIA / EURASIA', 'AFGHANISTAN / PAKISTAN', 'NORTH EAST ASIA', 'NORTH AMERICA', 'INTERNATIONAL ORGANISATIONS'] }
 ];
 
+export const MISCELLANEOUS_COUNTRIES = {
+  'WESTERN / CENTRAL EUROPE': ['Austria', 'Belgium', 'Bulgaria', 'Croatia', 'Cyprus', 'Czechia', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Greece', 'Hungary', 'Iceland', 'Ireland', 'Italy', 'Latvia', 'Lithuania', 'Luxembourg', 'Malta', 'Netherlands', 'Norway', 'Poland', 'Portugal', 'Romania', 'Slovakia', 'Slovenia', 'Spain', 'Sweden', 'Switzerland', 'United Kingdom'],
+  'MIDDLE EAST / NORTH AFRICA': ['Iran', 'Israel', 'Lebanon', 'Libya', 'Syria', 'Türkiye'],
+  'RUSSIA / EURASIA': ['Russia'],
+  'AFGHANISTAN / PAKISTAN': ['Afghanistan'],
+  'NORTH EAST ASIA': ['China', 'Japan', 'Mongolia', 'South Korea', 'North Korea'],
+  'NORTH AMERICA': ['Canada', 'United States'],
+  'INTERNATIONAL ORGANISATIONS': ['OSCE', 'EU', 'NATO', 'UN', 'G7', 'G20', 'ICC', 'WTO', 'IMF', 'CIS', 'CSTO']
+};
+
 export const EDITORIAL_GUIDANCE = [
   'Any international news agency can supply stories in any report section. The source-list category is only for browsing outlets; place each article by the location or organisation it covers.',
   'Lead stories contain three or four major Ukraine headlines and one or two major Middle East headlines. Prefer Reuters, AP, AFP, DW, Politico, Euronews, BBC or dpa for Ukraine leads; place an international organisation here only for an exceptional OSCE story.',

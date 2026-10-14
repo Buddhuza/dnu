@@ -15,6 +15,15 @@ test('placement uses the report taxonomy and rejects invented classifications', 
   assert.deepEqual(articlePlacement({}, 'Germany signs defence deal with France', ''), { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Germany' });
 });
 
+test('review flow can keep a scraped article whose location is unknown', () => {
+  const url = new URL('https://example.org/story');
+  const payload = { data: { metadata: { ogTitle: 'New security talks announced', publishedTime: '2026-10-14T10:00:00Z', language: 'en' }, json: { summary: 'The foreign ministers will meet next month.' } } };
+  assert.throws(() => importedArticle(payload, url, { id: 'manual', name: 'Example News', url: url.href }), /could not be placed/);
+  const draft = importedArticle(payload, url, { id: 'manual', name: 'Example News', url: url.href }, { allowUnplaced: true });
+  assert.equal(draft.sectionId, '');
+  assert.equal(draft.subsection, '');
+});
+
 test('imported story has a reviewed headline, summary, source and placement', () => {
   const url = publicArticleUrl('https://example.org/article');
   const source = sourceForArticle(url, [{ id: 'source-1', name: 'Example News', url: 'https://example.org/latest' }]);
