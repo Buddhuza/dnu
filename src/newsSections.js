@@ -19,7 +19,7 @@ export const MISCELLANEOUS_COUNTRIES = {
 
 export const EDITORIAL_GUIDANCE = [
   'Any international news agency can supply stories in any report section. The source-list category is only for browsing outlets; place each article by the location or organisation it covers.',
-  'Lead stories contain three or four major Ukraine headlines and one or two major Middle East headlines. Prefer Reuters, AP, AFP, DW, Politico, Euronews, BBC or dpa for Ukraine leads; place an international organisation here only for an exceptional OSCE story.',
+  'Lead stories contain three or four major Ukraine headlines and one or two major Middle East headlines. Use Reuters, AP, AFP, DW, Politico, Euronews, BBC or dpa for Ukraine leads. Do not place Ukrainian outlets under Ukraine in any section; place an international organisation here only for an exceptional OSCE story.',
   'Use Serbia / Kosovo for Kosovo coverage and Moldova / Transdniestria for Transdniestria coverage. Use Georgia / Abkhazia / South Ossetia for Georgia’s breakaway republics.',
   'Western / Central Europe includes Iceland and the UK, while Belarus, Moldova and Ukraine belong in Eastern Europe. Middle East / North Africa focuses especially on the Iran war and the Strait of Hormuz.',
   'Afghanistan / Pakistan is reserved for Afghanistan stories connected to Russia or Central Asian countries. Russia / Eurasia covers Russia only.',

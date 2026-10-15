@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { MISCELLANEOUS_COUNTRIES } from './newsSections.js';
+import { disallowedUkraineSource } from './sourcePolicy.js';
 
 const NEW = '__new__';
 
@@ -19,7 +20,8 @@ export default function MoveStoryDialog({ story, sections, articles, customCount
     ...(story.country && story.subsection === subsection ? [story.country] : [])
   ])].sort((a, b) => a.localeCompare(b, 'en')), [articles, customCountries, sectionId, subsection, story.country, story.subsection]);
   const country = countryChoice === NEW ? newCountry.trim() : countryChoice;
-  const valid = Boolean(section && subsection && (!miscellaneous || country));
+  const sourceRestricted = disallowedUkraineSource(story, { sectionId, subsection });
+  const valid = Boolean(section && subsection && (!miscellaneous || country) && !sourceRestricted);
 
   const submit = event => {
     event.preventDefault();
@@ -48,6 +50,7 @@ export default function MoveStoryDialog({ story, sections, articles, customCount
         </select></label>
         {countryChoice === NEW && <label>New country or organisation<input value={newCountry} onChange={event => setNewCountry(event.target.value)} maxLength={100} placeholder="Enter a name"/></label>}
       </>}
+      {sourceRestricted && <p>Ukraine stories in this update use international outlets.</p>}
       <div className="move-dialog-actions"><button type="button" onClick={onClose}>Cancel</button><button type="submit" disabled={!valid}>Move story</button></div>
     </form>
   </div>;

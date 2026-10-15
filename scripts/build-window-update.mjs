@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { articlePlacement } from '../server/importArticle.js';
 import { editorialScore, isRussianSource } from '../server/editorialPolicy.js';
 import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES } from '../src/newsSections.js';
+import { disallowedUkraineSource } from '../src/sourcePolicy.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const sources = JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'));
@@ -136,6 +137,7 @@ for (const article of raw) {
   let placement = inferred || (article.section ? { sectionId: article.section, subsection: article.subsection, country: article.country } : null);
   if (source && isRussianSource(source)) placement = { sectionId: 'Miscellaneous', subsection: 'RUSSIA / EURASIA', country: 'Russia' };
   if (!placement?.sectionId || !placement.subsection) { excluded.push({ ...article, reason: 'country or organisation needs editorial placement' }); continue; }
+  if (disallowedUkraineSource(article, placement)) { excluded.push({ ...article, reason: 'Ukrainian outlet excluded from Ukraine coverage' }); continue; }
   if (placement.subsection === 'AFGHANISTAN / PAKISTAN' && !/\b(?:Russia|Russian|Kazakh\w*|Kyrgyz\w*|Tajik\w*|Turkmen\w*|Uzbek\w*|Central Asia\w*)\b/i.test(`${article.title} ${article.summary}`)) { excluded.push({ ...article, reason: 'Afghanistan story has no stated Russia or Central Asia connection' }); continue; }
   if (placement.sectionId === 'Miscellaneous' && !MISCELLANEOUS_COUNTRIES[placement.subsection]?.includes(placement.country)) { excluded.push({ ...article, reason: 'country or organisation outside configured sections' }); continue; }
   seenUrls.add(article.url);
@@ -147,7 +149,7 @@ function leadScore(article, middleEast = false) {
   const impact = middleEast && /\b(?:Hormuz|Iranian attack|Iran war|Israeli strike|ceasefire|shipping|missile)\b/i.test(`${article.title} ${article.summary}`) ? 200 : 0;
   return editorialScore(article.title, article.summary) + impact + (agencyPriority.test(article.sourceName) ? (middleEast ? 75 : 1000) : 0) + articleDate(article) / 1e13;
 }
-const ukrainian = accepted.filter(article => article.section === 'Eastern Europe' && article.subsection === 'Ukraine').sort((a, b) => leadScore(b) - leadScore(a)).slice(0, 4);
+const ukrainian = accepted.filter(article => article.section === 'Eastern Europe' && article.subsection === 'Ukraine' && agencyPriority.test(article.sourceName)).sort((a, b) => leadScore(b) - leadScore(a)).slice(0, 4);
 const middleEast = accepted.filter(article => article.section === 'Miscellaneous' && article.subsection === 'MIDDLE EAST / NORTH AFRICA').sort((a, b) => leadScore(b, true) - leadScore(a, true)).slice(0, 2);
 for (const article of ukrainian) { article.section = 'Lead stories'; article.subsection = 'Ukraine'; article.country = ''; }
 for (const article of middleEast) { article.section = 'Lead stories'; article.subsection = 'Middle East'; article.country = ''; }
@@ -161,6 +163,7 @@ const sourceOutcomes = sources.map(source => {
   const recovered = recovery.sources[source.id];
   if (!result) return { ...source, status: 'not checked', reason: 'This source has not been checked yet.' };
   const count = accepted.filter(article => article.sourceId === source.id).length;
+  const excludedUkraineCount = excluded.filter(article => article.sourceId === source.id && article.reason === 'Ukrainian outlet excluded from Ukraine coverage').length;
   const pages = result.checkedUrls.length + (extra?.checkedUrls.length || 0) + (recovered?.checkedUrls.length || 0);
   const listed = [...result.attempts, ...(extra?.attempts || []), ...(recovered?.attempts || [])].reduce((total, attempt) => total + (attempt.listed || 0), 0);
   const errors = [...result.errors, ...result.attempts.flatMap(attempt => attempt.errors || []), ...(extra?.errors || []), ...(recovered?.errors || [])];
@@ -173,9 +176,10 @@ const sourceOutcomes = sources.map(source => {
   const newestListing = visibleDates.length ? new Date(Math.max(...visibleDates.map(Date.parse))).toISOString().slice(0, 10) : '';
   const status = count ? 'collected' : pages ? 'checked' : errors.length ? 'failed' : listed ? 'checked' : 'failed';
   const unverifiedTimes = new Set([...(result.articles || []).filter(article => /T00:00:00(?:\.000)?Z$/.test(article.publishedAt)).map(article => article.url), ...(recovered?.dateOnly || []).map(article => article.url)]).size;
-  const reason = count
+  const reason = (count
     ? `${count} verified ${count === 1 ? 'article' : 'articles'} included; ${pages} original article pages checked.`
-    : `${listed} links listed and ${pages} original article pages checked across ${result.attempts.length + (extra?.attempts.length || 0) + (recovered?.attempts.length || 0)} collection methods; ${status === 'failed' ? 'no usable original article page could be obtained' : 'no article from this outlet was verified and included for the requested window'}.${unverifiedTimes ? ` ${unverifiedTimes} candidate article timestamps were date-only or midnight values and could not verify the full window.` : ''}${newestListing ? ` Newest dated listing: ${newestListing}.` : ''}${rejectionDetails ? ` Article checks: ${rejectionDetails}.` : ''}${errors.length ? ` Errors: ${errors.slice(0, 2).join('; ')}` : ''}`;
+    : `${listed} links listed and ${pages} original article pages checked across ${result.attempts.length + (extra?.attempts.length || 0) + (recovered?.attempts.length || 0)} collection methods; ${status === 'failed' ? 'no usable original article page could be obtained' : 'no article from this outlet was verified and included for the requested window'}.${unverifiedTimes ? ` ${unverifiedTimes} candidate article timestamps were date-only or midnight values and could not verify the full window.` : ''}${newestListing ? ` Newest dated listing: ${newestListing}.` : ''}${rejectionDetails ? ` Article checks: ${rejectionDetails}.` : ''}${errors.length ? ` Errors: ${errors.slice(0, 2).join('; ')}` : ''}`)
+    + (excludedUkraineCount ? ` ${excludedUkraineCount} Ukraine-placed ${excludedUkraineCount === 1 ? 'article was' : 'articles were'} excluded under the outlet policy.` : '');
   return { id: source.id, name: source.name, group: source.group, url: source.url, status, reason };
 });
 const update = { title: 'DAILY NEWS UPDATE', checkedAt: new Date().toISOString(), windowHours: 24, windowStart: state.windowStart, windowEnd: state.windowEnd, articles: accepted, sourceOutcomes };
