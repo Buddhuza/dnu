@@ -61,6 +61,10 @@ test('undated matching links can be checked on their original article pages', ()
   assert.equal(reviewedArticle({ data: { metadata: { publishedTime: '2026-10-07T10:00:00Z', ogTitle: 'Old story' } } }, source, candidates[0].url, now), null);
   assert.equal(reviewedArticleCheck({ data: { metadata: { publishedTime: '2026-10-07T10:00:00Z', ogTitle: 'Old story' } } }, source, candidates[0].url, now).reason, 'outsideWindow');
   assert.equal(reviewedArticleCheck({ data: { metadata: { ogTitle: 'No date' } } }, source, candidates[0].url, now).reason, 'missingHeadlineOrTime');
+  const mediatorPage = { data: { metadata: { publishedTime: '2026-10-09 10:00:00', mediator_published_time: '2026-10-09T10:00:00+00:00', ogTitle: 'Belarus calls for international disaster cooperation' }, json: { summary: 'The proposal was presented at the United Nations.' } } };
+  assert.equal(reviewedArticle(mediatorPage, source, candidates[0].url, now).publishedAt, '2026-10-09T10:00:00.000Z');
+  const spacedZonePage = { data: { metadata: { 'article:published_time': '2026-10-09 12:25:11 +02:00', ogTitle: 'NATO allies discuss more air defence for Ukraine' }, json: { summary: 'The secretary general asked members to step up deliveries.' } } };
+  assert.equal(reviewedArticle(spacedZonePage, source, candidates[0].url, now).publishedAt, '2026-10-09T10:25:11.000Z');
 });
 
 test('alternate collection checks the source homepage after a section fails', () => {

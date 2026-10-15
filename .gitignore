@@ -1,5 +1,9 @@
 node_modules/
 dist/
+data/collection-*-working.json
+data/collection-*-fallback.json
+data/collection-*-review.json
+data/collection-*-summary-fixes.json
 .env
 .env.*
 !.env.example

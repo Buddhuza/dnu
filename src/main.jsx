@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import preparedUpdate from '../data/daily-update-2026-10-13.json';
+import preparedUpdate from '../data/daily-update-2026-10-14-15.json';
 import preparedSources from '../sources.json';
 import publishedSiteConfig from '../data/site-config.json';
 import SiteManager from './SiteManager.jsx';
@@ -26,7 +26,7 @@ const managementEnabled = import.meta.env.DEV;
 
 function App() {
   const [currentTime, setCurrentTime] = useState(() => new Date());
-  const [compiledAt, setCompiledAt] = useState(() => new Date().toISOString());
+  const [compiledAt, setCompiledAt] = useState(() => preparedUpdate.checkedAt || new Date().toISOString());
   const [config, setConfig] = useState(null);
   const [daily, setDaily] = useState(null);
   const [staticPreview, setStaticPreview] = useState(false);
@@ -75,7 +75,7 @@ function App() {
     return () => clearTimeout(timer);
   }, []);
   useEffect(() => {
-    const refresh = () => fetch('/api/daily-update').then(r => { if (!r.ok) throw new Error('API unavailable'); return r.json(); }).then(data => { setDaily(data); setStaticPreview(false); }).catch(() => { setDaily(preparedUpdate); setStaticPreview(true); });
+    const refresh = () => fetch('/api/daily-update').then(r => { if (!r.ok) throw new Error('API unavailable'); return r.json(); }).then(data => { setDaily(data); setCompiledAt(data.checkedAt || new Date().toISOString()); setStaticPreview(false); }).catch(() => { setDaily(preparedUpdate); setCompiledAt(preparedUpdate.checkedAt || new Date().toISOString()); setStaticPreview(true); });
     refresh();
     const timer = setInterval(refresh, 60_000);
     return () => clearInterval(timer);

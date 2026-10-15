@@ -1,5 +1,6 @@
 import { editorialScore, isEnglishArticle, passesSourcePolicy } from './editorialPolicy.js';
 import { IMPORT_PROMPT } from '../src/importPrompt.js';
+import { publicationTimestamp } from './importArticle.js';
 
 export const DEFAULT_INCLUDE = ['OSCE', 'cooperation', 'diplomacy', 'bilateral', 'foreign policy', 'talks', 'summit', 'peace', 'sanctions', 'NATO', 'EU', 'UN', 'security', 'defense', 'defence', 'conflict', 'war', 'terrorism', 'military', 'politics', 'political', 'election', 'Russia', 'Ukraine'];
 export const DEFAULT_EXCLUDE = [];
@@ -142,8 +143,13 @@ export function reviewedArticleCheck(payload, source, url, now = Date.now()) {
   const html = data.html ?? '';
   const tassTime = new URL(url).hostname === 'tass.com' ? html.match(/<dateformat\s+time="(\d{10})"\s+mode="abs"/)?.[1] : null;
   const izvestiaTime = new URL(url).hostname === 'iz.ru' ? html.match(/itemprop="datePublished">([^<]+)/)?.[1] : null;
-  const publishedAt = data.metadata?.publishedTime ?? data.metadata?.['article:published_time'] ?? izvestiaTime ?? (tassTime ? new Date(Number(tassTime) * 1000).toISOString() : null) ?? extracted.publishedAt;
-  if (!publishedAt || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})$/i.test(publishedAt)) return { article: null, reason: 'missingHeadlineOrTime' };
+  const publishedAt = publicationTimestamp(
+    data.metadata?.publishedTime, data.metadata?.['article:published_time'], data.metadata?.['og:article:published_time'], data.metadata?.mediator_published_time,
+    data.metadata?.datePublished, data.metadata?.['date.available'],
+    ...[...html.matchAll(/["']datePublished["']\s*:\s*["']([^"']+)/gi)].map(match => match[1]),
+    izvestiaTime, tassTime ? new Date(Number(tassTime) * 1000).toISOString() : null, extracted.publishedAt
+  );
+  if (!publishedAt) return { article: null, reason: 'missingHeadlineOrTime' };
   const time = Date.parse(publishedAt);
   if (!Number.isFinite(time)) return { article: null, reason: 'missingHeadlineOrTime' };
   if (time < now - 48 * 60 * 60 * 1000 || time > now + 300000) return { article: null, reason: 'outsideWindow' };
