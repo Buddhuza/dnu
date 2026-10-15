@@ -277,7 +277,7 @@ function App() {
       setToast('This browser cannot copy formatted email text. Try a current browser on the secure website.');
       return;
     }
-    const content = { title: siteConfig.updateTitle, compiledAt, articles: selectedArticles, headlineOnly };
+    const content = { title: siteConfig.updateTitle, compiledAt, articles: selectedArticles, headlineOnly, logoUrl: new URL(`${import.meta.env.BASE_URL}osce-logo.png`, window.location.href).href };
     try {
       await navigator.clipboard.write([new ClipboardItem({
         'text/html': new Blob([emailUpdateHtml(content)], { type: 'text/html' }),

@@ -9,8 +9,9 @@ export function emailSubject(compiledAt) {
   return `OSCE SITROOM DAILY NEWS UPDATE, ${date.replace(/^(\d)\s/, '0$1 ')}`;
 }
 
-export function emailUpdateHtml({ title = 'DAILY NEWS UPDATE', compiledAt, articles, headlineOnly = false }) {
-  const paragraphs = [`<div style="font-family:Calibri,Arial,sans-serif;color:#182a36;max-width:640px"><h1 style="font-size:20pt;color:#183b65;margin:0 0 5pt">${escapeHtml(title)}</h1><p style="font-size:12pt;margin:0 0 14pt">${escapeHtml(reportEndDateLabel(compiledAt))}</p>`];
+export function emailUpdateHtml({ title = 'DAILY NEWS UPDATE', compiledAt, articles, headlineOnly = false, logoUrl = '' }) {
+  const logo = logoUrl ? `<img src="${escapeHtml(logoUrl)}" alt="OSCE" width="122" height="38" style="display:block;width:122px;height:38px;margin:0 auto 9pt">` : '';
+  const paragraphs = [`<div style="font-family:Calibri,Arial,sans-serif;color:#000;max-width:640px;background:#fff"><div style="text-align:center">${logo}<p style="font-size:16pt;margin:0 0 2pt">Organization for Security and Co-operation in Europe</p><p style="font-size:14pt;margin:0 0 2pt">Conflict Prevention Centre</p><p style="font-size:14pt;margin:0 0 2pt">Operations Service</p><p style="font-size:18pt;margin:0 0 13pt">Situation / Communications Room</p><h1 style="font-size:20pt;color:#000;margin:0 0 5pt">${escapeHtml(title)}</h1><p style="font-size:12pt;margin:0 0 14pt">${escapeHtml(reportEndDateLabel(compiledAt))}</p></div>`];
   let section = '', subsection = '', country = '';
   for (const article of articles) {
     const nextSection = article.section || 'Miscellaneous';
@@ -39,7 +40,7 @@ export function emailUpdateHtml({ title = 'DAILY NEWS UPDATE', compiledAt, artic
 }
 
 export function emailUpdateText({ title = 'DAILY NEWS UPDATE', compiledAt, articles, headlineOnly = false }) {
-  const lines = [title, reportEndDateLabel(compiledAt), ''];
+  const lines = ['OSCE', 'Organization for Security and Co-operation in Europe', 'Conflict Prevention Centre', 'Operations Service', 'Situation / Communications Room', '', title, reportEndDateLabel(compiledAt), ''];
   let section = '', subsection = '', country = '';
   for (const article of articles) {
     const nextSection = article.section || 'Miscellaneous';
