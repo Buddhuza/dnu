@@ -7,18 +7,18 @@ const escapeXml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&
 const textRun = (value, properties = '') => `<w:r><w:rPr>${properties}</w:rPr><w:t xml:space="preserve">${escapeXml(value)}</w:t></w:r>`;
 const calibri = '<w:rFonts w:eastAsia="Calibri" w:cs="Calibri"/>';
 
-function sectionParagraph(value) {
-  return `<w:p><w:pPr><w:pStyle w:val="Heading1"/><w:keepNext/><w:spacing w:before="360" w:after="120"/><w:rPr><w:b/><w:bCs/></w:rPr></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:bCs/>`)}</w:p>`;
+function sectionParagraph(value, headlineOnly = false) {
+  return `<w:p><w:pPr><w:pStyle w:val="Heading1"/><w:keepNext/><w:spacing w:before="${headlineOnly ? 240 : 360}" w:after="${headlineOnly ? 80 : 120}"/><w:rPr><w:b/><w:bCs/></w:rPr></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:bCs/>`)}</w:p>`;
 }
 
-function subsectionParagraph(value, plainTopic = false) {
-  return `<w:p><w:pPr><w:keepNext/>${plainTopic ? '' : '<w:shd w:val="clear" w:color="auto" w:fill="D9E2F3"/>'}<w:spacing w:before="200" w:after="120"/><w:jc w:val="both"/></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:color w:val="0070C0"/><w:sz w:val="24"/>`)}</w:p>`;
+function subsectionParagraph(value, plainTopic = false, headlineOnly = false) {
+  return `<w:p><w:pPr><w:keepNext/>${plainTopic ? '' : '<w:shd w:val="clear" w:color="auto" w:fill="D9E2F3"/>'}<w:spacing w:before="${headlineOnly ? 130 : 200}" w:after="${headlineOnly ? 70 : 120}"/><w:jc w:val="both"/></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:color w:val="0070C0"/><w:sz w:val="24"/>`)}</w:p>`;
 }
 
 function storyParagraph(item, relationshipId, headlineOnly = false) {
   const { headline, summary } = reportStoryText(item);
   const detail = !headlineOnly && summary ? textRun(` ${summary}`, `${calibri}<w:sz w:val="24"/>`) : '';
-  return `<w:p><w:pPr><w:spacing w:after="160"/><w:jc w:val="both"/></w:pPr>${textRun(headline, `${calibri}<w:b/><w:sz w:val="24"/>`)}${detail}${textRun(' (', `${calibri}<w:sz w:val="24"/>`)}<w:hyperlink r:id="${relationshipId}">${textRun(item.sourceName, '<w:color w:val="0563C1"/><w:sz w:val="24"/><w:u w:val="single"/>')}</w:hyperlink>${textRun(')', `${calibri}<w:sz w:val="24"/>`)}</w:p>`;
+  return `<w:p><w:pPr><w:spacing w:after="${headlineOnly ? 60 : 160}"${headlineOnly ? ' w:line="260" w:lineRule="auto"' : ''}/><w:jc w:val="both"/></w:pPr>${textRun(headline, `${calibri}<w:b/><w:sz w:val="24"/>`)}${detail}${textRun(' (', `${calibri}<w:sz w:val="24"/>`)}<w:hyperlink r:id="${relationshipId}">${textRun(item.sourceName, '<w:color w:val="0563C1"/><w:sz w:val="24"/><w:u w:val="single"/>')}</w:hyperlink>${textRun(')', `${calibri}<w:sz w:val="24"/>`)}</w:p>`;
 }
 
 function reportDateParagraph(value) {
@@ -47,16 +47,16 @@ export async function createReportDocxFromTemplate(templateBytes, { title, windo
       currentSection = section;
       currentSubsection = '';
       currentCountry = '';
-      paragraphs.push(sectionParagraph(section));
+      paragraphs.push(sectionParagraph(section, headlineOnly));
     }
     if (item.subsection && item.subsection !== currentSubsection) {
       currentSubsection = item.subsection;
       currentCountry = '';
-      paragraphs.push(subsectionParagraph(item.subsection, section === 'Miscellaneous'));
+      paragraphs.push(subsectionParagraph(item.subsection, section === 'Miscellaneous', headlineOnly));
     }
     if (item.country && item.country !== currentCountry) {
       currentCountry = item.country;
-      paragraphs.push(subsectionParagraph(item.country));
+      paragraphs.push(subsectionParagraph(item.country, false, headlineOnly));
     }
     const relationshipId = `rIdStory${index + 1}`;
     paragraphs.push(storyParagraph(item, relationshipId, headlineOnly));

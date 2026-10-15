@@ -54,6 +54,9 @@ test('headline-only Word download omits summaries but keeps agencies and links',
   assert.match(document, /OSCE chair visits Armenia\./);
   assert.match(document, /15 October 2026/);
   assert.doesNotMatch(document, /A meeting took place in Yerevan/);
+  assert.match(document, /<w:spacing w:after="60" w:line="260" w:lineRule="auto"\/>/);
+  assert.match(document, /<w:spacing w:before="240" w:after="80"\/>/);
+  assert.match(document, /<w:spacing w:before="130" w:after="70"\/>/);
   assert.match(document, /Agency/);
   assert.match(await zip.file('word/_rels/document.xml.rels').async('string'), /https:\/\/example.com\/story/);
 });
