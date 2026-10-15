@@ -277,6 +277,14 @@
 .daily-downloads .daily-action:disabled{opacity:.5;cursor:not-allowed}
 .daily-downloads .daily-action:focus-visible{outline:2px solid var(--site-section,#0070c0);outline-offset:2px}
 @media(max-width:720px){.daily-downloads{width:auto;justify-content:flex-start}.daily-downloads .daily-action,.daily-downloads .daily-action.daily-download{width:34px;height:34px;min-width:34px;flex:none;padding:6px}.daily-downloads .daily-action svg{width:18px;height:18px}}
+.daily-downloads{gap:4px}
+.daily-downloads .daily-action,.daily-downloads .daily-action.daily-download{width:32px;height:32px;min-width:32px;flex:none;padding:6px;border:1px solid #0064a7;border-radius:6px;background:#0064a7;color:#fff}
+.daily-downloads .daily-action svg{width:17px;height:17px}
+.daily-downloads .daily-action:hover:not(:disabled),.daily-downloads .daily-action.daily-download:hover:not(:disabled){background:#004d83;border-color:#004d83;color:#fff}
+.daily-downloads .daily-action.is-active{background:#0b3a64;border-color:#0b3a64;color:#fff}
+.app-shell[data-mode="dark"] .daily-downloads .daily-action,.app-shell[data-mode="dark"] .daily-downloads .daily-action.daily-download{background:#0064a7;border-color:#0064a7;color:#fff}
+.app-shell[data-mode="dark"] .daily-downloads .daily-action:hover:not(:disabled),.app-shell[data-mode="dark"] .daily-downloads .daily-action.is-active{background:#0b3a64;border-color:#9ac7e8;color:#fff}
+@media(max-width:720px){.daily-downloads .daily-action,.daily-downloads .daily-action.daily-download{width:30px;height:30px;min-width:30px;padding:5px}.daily-downloads .daily-action svg{width:16px;height:16px}}
 .daily-title-row{flex-direction:column;align-items:flex-start;gap:2px}
 .daily-title-row .report-date{margin:0;font-size:var(--site-body-size,18px)}
 .daily-story{border-bottom:0;padding:3px 0 7px}

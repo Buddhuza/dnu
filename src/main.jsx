@@ -15,6 +15,7 @@ import { reportStoryText } from './reportText.js';
 import { disclaimerFirst, disclaimerSecond } from './disclaimer.js';
 import { sourceAudit } from './collectionAudit.js';
 import { formatViennaDateTime, formatViennaCompactDateTime } from './viennaTime.js';
+import { emailSubject, emailUpdateHtml, emailUpdateText } from './emailUpdate.js';
 import './styles.css';
 
 const readStored = (key, fallback, legacyKey) => {
@@ -271,6 +272,24 @@ function App() {
     } catch (error) { setToast(error.message || 'Could not create the Word update.'); }
   }
 
+  async function emailManagedUpdate() {
+    if (!navigator.clipboard?.write || typeof ClipboardItem === 'undefined') {
+      setToast('This browser cannot copy formatted email text. Try a current browser on the secure website.');
+      return;
+    }
+    const content = { title: siteConfig.updateTitle, compiledAt, articles: selectedArticles, headlineOnly };
+    try {
+      await navigator.clipboard.write([new ClipboardItem({
+        'text/html': new Blob([emailUpdateHtml(content)], { type: 'text/html' }),
+        'text/plain': new Blob([emailUpdateText(content)], { type: 'text/plain' })
+      })]);
+      setToast('Formatted update copied. Paste it into the new email body.');
+      window.location.href = `mailto:?subject=${encodeURIComponent(emailSubject(compiledAt))}`;
+    } catch {
+      setToast('Could not copy the formatted update. Allow clipboard write access, then try Email again.');
+    }
+  }
+
   const readStoryDrafts = () => Object.fromEntries([...document.querySelectorAll('.daily-scroll .daily-story[data-story-id]')].map(story => [story.dataset.storyId, {
     title: story.querySelector('[data-edit-field="title"]')?.innerText.trim() || '',
     summary: story.querySelector('[data-edit-field="summary"]')?.innerText.trim() || '',
@@ -320,6 +339,7 @@ function App() {
     <button className="daily-action daily-edit" type="button" aria-label={editingStories ? 'Save edits' : 'Edit update'} title={editingStories ? 'Save text and story choices' : 'Edit text and story choices'} aria-pressed={editingStories} onClick={toggleStoryEditing}><svg viewBox="0 0 24 24" aria-hidden="true">{editingStories ? <path d="m4 12 5 5L20 6"/> : <><path d="m4 20 4.2-.9L19 8.3 15.7 5 4.9 15.8 4 20Z"/><path d="m13.9 6.8 3.3 3.3"/></>}</svg></button>
     <button className={`daily-action daily-edit ${headlineOnly ? 'is-active' : ''}`} type="button" aria-label={headlineOnly ? 'Show summaries' : 'Show headlines only'} title={editingStories ? 'Save edits before switching views' : headlineOnly ? 'Show headlines and summaries' : 'Show headlines only'} aria-pressed={headlineOnly} disabled={editingStories} onClick={() => setHeadlineOnly(current => !current)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16"/>{!headlineOnly && <path d="M4 15h16"/>}</svg></button>
     <button className="daily-action daily-download" type="button" aria-label="Download update" title={editingStories ? 'Save edits before downloading' : headlineOnly ? 'Download headlines-only Word update' : 'Download Word update with summaries'} disabled={!selectedArticles.length || editingStories} onClick={downloadManagedDocx}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 17v3h16v-3"/></svg></button>
+    <button className="daily-action daily-edit" type="button" aria-label="Email update" title={editingStories ? 'Save edits before emailing' : 'Copy formatted update and open your email app; paste into the message body'} disabled={!selectedArticles.length || editingStories} onClick={emailManagedUpdate}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5h18v13H3z"/><path d="m3 6 9 7 9-7"/></svg></button>
     <button className="daily-action daily-edit daily-search-toggle" type="button" aria-label="Search update" title="Search within the update" aria-expanded={updateSearchOpen} onClick={() => setUpdateSearchOpen(current => !current)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"/><path d="m16 16 5 5"/></svg></button>
   </div>;
   const highlightSearch = value => {

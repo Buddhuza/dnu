@@ -1,0 +1,54 @@
+import { reportEndDateLabel } from './reportDate.js';
+import { reportStoryText } from './reportText.js';
+import { disclaimerFirst, disclaimerSecond } from './disclaimer.js';
+
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+
+export function emailSubject(compiledAt) {
+  const date = reportEndDateLabel(compiledAt);
+  return `OSCE SITROOM DAILY NEWS UPDATE, ${date.replace(/^(\d)\s/, '0$1 ')}`;
+}
+
+export function emailUpdateHtml({ title = 'DAILY NEWS UPDATE', compiledAt, articles, headlineOnly = false }) {
+  const paragraphs = [`<div style="font-family:Calibri,Arial,sans-serif;color:#182a36;max-width:640px"><h1 style="font-size:20pt;color:#183b65;margin:0 0 5pt">${escapeHtml(title)}</h1><p style="font-size:12pt;margin:0 0 14pt">${escapeHtml(reportEndDateLabel(compiledAt))}</p>`];
+  let section = '', subsection = '', country = '';
+  for (const article of articles) {
+    const nextSection = article.section || 'Miscellaneous';
+    if (nextSection !== section) {
+      section = nextSection;
+      subsection = '';
+      country = '';
+      paragraphs.push(`<h2 style="font-size:15pt;color:#0070c0;margin:${headlineOnly ? '10pt' : '16pt'} 0 5pt">${escapeHtml(section.toUpperCase())}</h2>`);
+    }
+    if (article.subsection && article.subsection !== subsection) {
+      subsection = article.subsection;
+      country = '';
+      const highlight = section === 'Miscellaneous' ? '' : 'background-color:#d9e2f3;';
+      paragraphs.push(`<h3 style="font-size:12pt;color:#0070c0;${highlight}margin:${headlineOnly ? '7pt' : '10pt'} 0 4pt;padding:2pt 3pt">${escapeHtml(subsection.toUpperCase())}</h3>`);
+    }
+    if (article.country && article.country !== country) {
+      country = article.country;
+      paragraphs.push(`<h4 style="font-size:12pt;color:#0070c0;background-color:#d9e2f3;margin:${headlineOnly ? '7pt' : '10pt'} 0 4pt;padding:2pt 3pt">${escapeHtml(country.toUpperCase())}</h4>`);
+    }
+    const { headline, summary } = reportStoryText(article);
+    const detail = !headlineOnly && summary ? ` ${escapeHtml(summary)}` : '';
+    paragraphs.push(`<p style="font-size:12pt;line-height:${headlineOnly ? '1.25' : '1.4'};margin:0 0 ${headlineOnly ? '3pt' : '8pt'}"><strong>${escapeHtml(headline)}</strong>${detail} (<a style="color:#0563c1;text-decoration:underline" href="${escapeHtml(article.url)}">${escapeHtml(article.sourceName)}</a>)</p>`);
+  }
+  paragraphs.push(`<div style="border-top:1px solid #808080;margin-top:18pt;padding-top:7pt;font-size:9pt;line-height:1.35"><p style="margin:0 0 7pt"><strong>Disclaimer:</strong> ${escapeHtml(disclaimerFirst)}</p><p style="margin:0">${escapeHtml(disclaimerSecond)}</p></div></div>`);
+  return paragraphs.join('');
+}
+
+export function emailUpdateText({ title = 'DAILY NEWS UPDATE', compiledAt, articles, headlineOnly = false }) {
+  const lines = [title, reportEndDateLabel(compiledAt), ''];
+  let section = '', subsection = '', country = '';
+  for (const article of articles) {
+    const nextSection = article.section || 'Miscellaneous';
+    if (nextSection !== section) { section = nextSection; subsection = ''; country = ''; lines.push(section.toUpperCase()); }
+    if (article.subsection && article.subsection !== subsection) { subsection = article.subsection; country = ''; lines.push(subsection.toUpperCase()); }
+    if (article.country && article.country !== country) { country = article.country; lines.push(country.toUpperCase()); }
+    const { headline, summary } = reportStoryText(article);
+    lines.push(`${headline}${!headlineOnly && summary ? ` ${summary}` : ''} (${article.sourceName}: ${article.url})`, '');
+  }
+  lines.push(`Disclaimer: ${disclaimerFirst}`, '', disclaimerSecond);
+  return lines.join('\n');
+}
