@@ -21,6 +21,7 @@ export const EDITORIAL_GUIDANCE = [
   'Any international news agency can supply stories in any report section. The source-list category is only for browsing outlets; place each article by the location or organisation it covers.',
   'Lead stories contain three or four major Ukraine headlines and one or two major Middle East headlines. Use Reuters, AP, AFP, DW, Politico, Euronews, BBC or dpa for Ukraine leads. Do not place Ukrainian outlets under Ukraine in any section; place an international organisation here only for an exceptional OSCE story.',
   'Use Serbia / Kosovo for Kosovo coverage and Moldova / Transdniestria for Transdniestria coverage. Use Georgia / Abkhazia / South Ossetia for Georgia’s breakaway republics.',
+  'Use Armenian outlets for Armenia and Azerbaijani outlets for Azerbaijan, but do not place either country’s outlets under the other country. Keep each summary to one short sentence that adds a concrete fact from the first two paragraphs beyond the headline.',
   'Western / Central Europe includes Iceland and the UK, while Belarus, Moldova and Ukraine belong in Eastern Europe. Middle East / North Africa focuses especially on the Iran war and the Strait of Hormuz.',
   'Afghanistan / Pakistan is reserved for Afghanistan stories connected to Russia or Central Asian countries. Russia / Eurasia covers Russia only.',
   'North East Asia covers China, Japan, Mongolia and both Koreas. North America covers Canada and the US. International Organisations covers OSCE, EU institutions, NATO, UN bodies, G7, G20, ICC, WTO, IMF, CIS and CSTO.'

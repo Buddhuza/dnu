@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { articlePlacement } from '../server/importArticle.js';
 import { editorialScore, isRussianSource } from '../server/editorialPolicy.js';
 import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES } from '../src/newsSections.js';
-import { disallowedUkraineSource } from '../src/sourcePolicy.js';
+import { blockedPlacementReason } from '../src/sourcePolicy.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const sources = JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'));
@@ -91,7 +91,7 @@ function placementFromTitle(title) {
 const summaryOverrides = new Map([
   ['https://apnews.com/article/russia-ukraine-war-zelenskyy-burnham-trump-putin-9fe44ec1bb361f19d46dfafb58da46f6', 'Kyiv also endured a second consecutive night of missile attacks, officials said.']
 ]);
-const raw = [...Object.values(state.sources), ...Object.values(fallback.sources), ...Object.values(recovery.sources)].flatMap(source => source.articles || []).map(article => ({ ...article, title: article.sourceId === 'source-93' ? article.title.replace(/ - (?:TopNews|News from Embassies) - Ansa\.it$/i, '') : article.title, summary: summaryOverrides.get(article.url) || summaryFixes[article.url]?.replacement || article.summary })).sort((a, b) =>
+const raw = [...Object.values(state.sources), ...Object.values(fallback.sources), ...Object.values(recovery.sources)].flatMap(source => source.articles || []).map(article => ({ ...article, title: article.sourceId === 'source-93' ? article.title.replace(/ - (?:TopNews|News from Embassies) - Ansa\.it$/i, '') : article.sourceId === 'source-7' ? article.title.replace(/ - Tirana Times$/i, '') : article.title, summary: summaryOverrides.get(article.url) || summaryFixes[article.url]?.replacement || article.summary })).sort((a, b) =>
   Number(agencyPriority.test(b.sourceName)) - Number(agencyPriority.test(a.sourceName)) || String(b.summary || '').length - String(a.summary || '').length);
 const accepted = [];
 const excluded = [];
@@ -137,7 +137,8 @@ for (const article of raw) {
   let placement = inferred || (article.section ? { sectionId: article.section, subsection: article.subsection, country: article.country } : null);
   if (source && isRussianSource(source)) placement = { sectionId: 'Miscellaneous', subsection: 'RUSSIA / EURASIA', country: 'Russia' };
   if (!placement?.sectionId || !placement.subsection) { excluded.push({ ...article, reason: 'country or organisation needs editorial placement' }); continue; }
-  if (disallowedUkraineSource(article, placement)) { excluded.push({ ...article, reason: 'Ukrainian outlet excluded from Ukraine coverage' }); continue; }
+  const blockedSource = blockedPlacementReason(article, placement);
+  if (blockedSource) { excluded.push({ ...article, reason: blockedSource }); continue; }
   if (placement.subsection === 'AFGHANISTAN / PAKISTAN' && !/\b(?:Russia|Russian|Kazakh\w*|Kyrgyz\w*|Tajik\w*|Turkmen\w*|Uzbek\w*|Central Asia\w*)\b/i.test(`${article.title} ${article.summary}`)) { excluded.push({ ...article, reason: 'Afghanistan story has no stated Russia or Central Asia connection' }); continue; }
   if (placement.sectionId === 'Miscellaneous' && !MISCELLANEOUS_COUNTRIES[placement.subsection]?.includes(placement.country)) { excluded.push({ ...article, reason: 'country or organisation outside configured sections' }); continue; }
   seenUrls.add(article.url);

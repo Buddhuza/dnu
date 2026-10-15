@@ -1,5 +1,5 @@
 import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, orderedSubsections } from './newsSections.js';
-import { disallowedUkraineSource } from './sourcePolicy.js';
+import { blockedPlacementReason } from './sourcePolicy.js';
 
 export const THEME_PRESETS = {
   forest: { name: 'Forest', primary: '#123e47', accent: '#bce081', background: '#f4efe6', surface: '#fdfaf4', text: '#182a36', section: '#0070c0', font: 'DM Sans' },
@@ -195,11 +195,11 @@ export function displaySiteContent(articles, config, excludedIds = new Set()) {
       subsection: edit?.sectionId ? edit.subsection : edit?.subsection || (legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : article.subsection),
       country: edit?.sectionId ? edit.country : edit?.country || article.country || ''
     };
-    if (!disallowedUkraineSource(displayed)) items.push(displayed);
+    if (!blockedPlacementReason(displayed)) items.push(displayed);
   }
   for (const article of config.customArticles) {
     if (article.hidden || sectionById.get(article.sectionId)?.visible === false) continue;
-    if (!disallowedUkraineSource(article)) items.push({ ...article, section: sectionById.get(article.sectionId)?.name || article.sectionId });
+    if (!blockedPlacementReason(article)) items.push({ ...article, section: sectionById.get(article.sectionId)?.name || article.sectionId });
   }
   const uniqueItems = deduplicateArticles(items, excludedIds);
   const order = new Map(config.sections.map((section, index) => [section.id, index]));
@@ -272,7 +272,7 @@ export function moveArticleInConfig(config, articles, movedId, destination, excl
   const requestedCountry = String(destination.country || '').trim().slice(0, 100);
   const countryOptions = [...(MISCELLANEOUS_COUNTRIES[subsection] || []), ...(config.customCountries?.[subsection] || [])];
   const country = countryOptions.find(label => label.toLocaleLowerCase() === requestedCountry.toLocaleLowerCase()) || requestedCountry;
-  if (disallowedUkraineSource(moved, { sectionId: section.id, subsection })) return config;
+  if (blockedPlacementReason(moved, { sectionId: section.id, subsection })) return config;
   if (destination.createSubsection && !subsection) return config;
   if (destination.createCountry && (!country || section.id !== 'Miscellaneous')) return config;
   const alphabetical = new Intl.Collator('en', { sensitivity: 'base', ignorePunctuation: true });

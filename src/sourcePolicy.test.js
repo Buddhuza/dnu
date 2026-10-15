@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { disallowedUkraineSource, isUkrainianOutlet } from './sourcePolicy.js';
+import { blockedPlacementReason, disallowedUkraineSource, isUkrainianOutlet } from './sourcePolicy.js';
 import { defaultSiteConfig, displaySiteContent, moveArticleInConfig } from './siteConfig.js';
 
 test('Ukrainian outlets are excluded from Ukraine placement but retained for other countries', () => {
@@ -25,9 +25,23 @@ test('display and move rules keep Ukrainian outlet stories out of Ukraine', () =
   assert.equal(moveArticleInConfig(config, articles, 'other', { sectionId: 'Lead stories', subsection: 'Ukraine' }), config);
 });
 
+test('Armenian and Azerbaijani outlets cannot cover the other country heading', () => {
+  const armenian = { sourceId: 'source-47', url: 'https://www.pan.am/en/article' };
+  const azerbaijani = { sourceId: 'source-59', url: 'https://news.az/news/article' };
+  assert.match(blockedPlacementReason(armenian, { sectionId: 'South Caucasus', subsection: 'Azerbaijan' }), /Armenian outlet/);
+  assert.match(blockedPlacementReason(azerbaijani, { sectionId: 'South Caucasus', subsection: 'Armenia' }), /Azerbaijani outlet/);
+  assert.match(blockedPlacementReason(azerbaijani, { sectionId: 'Lead stories', subsection: 'Armenia' }), /Azerbaijani outlet/);
+  assert.equal(blockedPlacementReason(armenian, { sectionId: 'South Caucasus', subsection: 'Armenia' }), '');
+  assert.equal(blockedPlacementReason(azerbaijani, { sectionId: 'South Caucasus', subsection: 'Azerbaijan' }), '');
+  assert.equal(blockedPlacementReason({ url: 'https://oc-media.org/article' }, { sectionId: 'South Caucasus', subsection: 'Armenia' }), '');
+});
+
 test('published edition uses international outlets for all Ukraine stories', () => {
   const update = JSON.parse(readFileSync(new URL('../data/daily-update-2026-10-14-15.json', import.meta.url), 'utf8'));
   assert.ok(update.articles.some(article => article.section === 'Lead stories' && article.subsection === 'Ukraine'));
   assert.ok(update.articles.some(article => article.section === 'Eastern Europe' && article.subsection === 'Ukraine'));
-  assert.ok(update.articles.every(article => !disallowedUkraineSource(article)));
+  assert.ok(update.articles.every(article => !blockedPlacementReason(article)));
+  assert.ok(update.articles.every(article => String(article.summary || '').trim().split(/\s+/).length <= 30));
+  const tirana = update.articles.find(article => article.url.includes('tirana-erupts-in-chaos'));
+  assert.equal(tirana.summary, 'Protesters set fires near the prime minister’s office and targeted commercial premises in luxury high-rise buildings.');
 });

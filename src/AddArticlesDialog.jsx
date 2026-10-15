@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { formatViennaDateTime } from './viennaTime.js';
 import { MISCELLANEOUS_COUNTRIES } from './newsSections.js';
 import { canonicalArticleUrl } from './siteConfig.js';
-import { disallowedUkraineSource } from './sourcePolicy.js';
+import { blockedPlacementReason } from './sourcePolicy.js';
 
 const firecrawlKeyStorage = 'dnu-firecrawl-api-key-v1';
 const savedFirecrawlKey = () => { try { return localStorage.getItem(firecrawlKeyStorage) || ''; } catch { return ''; } };
@@ -49,7 +49,7 @@ export default function AddArticlesDialog({ serverAvailable, sources, sections, 
     const section = availableSections.find(item => item.id === draft.sectionId);
     if (!section || (section.subsections.length && !section.subsections.includes(draft.subsection)) ||
       (draft.sectionId === 'Miscellaneous' && !(MISCELLANEOUS_COUNTRIES[draft.subsection]?.includes(draft.country) || (!MISCELLANEOUS_COUNTRIES[draft.subsection] && draft.country.trim()))) ||
-      (draft.russianSource && (draft.sectionId !== 'Miscellaneous' || draft.subsection !== 'RUSSIA / EURASIA')) || disallowedUkraineSource(draft) || remainingSlots < 1) return;
+      (draft.russianSource && (draft.sectionId !== 'Miscellaneous' || draft.subsection !== 'RUSSIA / EURASIA')) || blockedPlacementReason(draft) || remainingSlots < 1) return;
     const { added, russianSource, ...story } = draft;
     onAdd(story);
     changeDraft(draft.id, { added: true });
@@ -109,12 +109,13 @@ export default function AddArticlesDialog({ serverAvailable, sources, sections, 
         const section = availableSections.find(item => item.id === draft.sectionId);
         const subsections = section?.subsections || [];
         const countries = draft.sectionId === 'Miscellaneous' ? MISCELLANEOUS_COUNTRIES[draft.subsection] || [] : [];
-        const valid = section && (!subsections.length || subsections.includes(draft.subsection)) && (draft.sectionId !== 'Miscellaneous' || countries.includes(draft.country) || (!MISCELLANEOUS_COUNTRIES[draft.subsection] && draft.country.trim())) && (!draft.russianSource || (draft.sectionId === 'Miscellaneous' && draft.subsection === 'RUSSIA / EURASIA')) && !disallowedUkraineSource(draft);
+        const restriction = blockedPlacementReason(draft);
+        const valid = section && (!subsections.length || subsections.includes(draft.subsection)) && (draft.sectionId !== 'Miscellaneous' || countries.includes(draft.country) || (!MISCELLANEOUS_COUNTRIES[draft.subsection] && draft.country.trim())) && (!draft.russianSource || (draft.sectionId === 'Miscellaneous' && draft.subsection === 'RUSSIA / EURASIA')) && !restriction;
         return <div className="add-draft" key={draft.id}><strong>{draft.title}</strong><small>{draft.sourceName} · {formatViennaDateTime(draft.publishedAt)}</small><div className="add-placement">
           <label>Section<select value={draft.sectionId} onChange={event => changeDraft(draft.id, { sectionId: event.target.value, subsection: '', country: '' })} disabled={draft.added}><option value="">Choose section</option>{availableSections.filter(item => !draft.russianSource || item.id === 'Miscellaneous').map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
           <label>{draft.sectionId === 'Miscellaneous' ? 'Subsection' : 'Country / topic'}<select value={draft.subsection} onChange={event => changeDraft(draft.id, { subsection: event.target.value, country: '' })} disabled={draft.added || !section}><option value="">{subsections.length ? 'Choose location' : 'No subsection'}</option>{subsections.filter(name => !draft.russianSource || name === 'RUSSIA / EURASIA').map(name => <option key={name} value={name}>{name}</option>)}</select></label>
           {draft.sectionId === 'Miscellaneous' && <label>Country / organisation{MISCELLANEOUS_COUNTRIES[draft.subsection] ? <select value={draft.country} onChange={event => changeDraft(draft.id, { country: event.target.value })} disabled={draft.added || !countries.length}><option value="">Choose country or organisation</option>{countries.map(name => <option key={name} value={name}>{name}</option>)}</select> : <input value={draft.country} maxLength={100} onChange={event => changeDraft(draft.id, { country: event.target.value })} disabled={draft.added || !draft.subsection} placeholder="Country or organisation"/>}</label>}
-        </div>{disallowedUkraineSource(draft) && <p className="add-unavailable">Ukraine stories in this update use international outlets. Choose another relevant placement for this source.</p>}<button type="button" onClick={() => addDraft(draft)} disabled={draft.added || !valid || remainingSlots < 1}>{draft.added ? 'Added to update' : 'Add to update'}</button></div>;
+        </div>{restriction && <p className="add-unavailable">{restriction}. Choose another relevant placement for this source.</p>}<button type="button" onClick={() => addDraft(draft)} disabled={draft.added || !valid || remainingSlots < 1}>{draft.added ? 'Added to update' : 'Add to update'}</button></div>;
       })}</div>}
       {results.length > 0 && <ul className="add-results" ref={resultsRef} aria-live="polite">{results.map((result, index) => <li key={`${result.url}-${index}`} className={result.success ? 'success' : 'failure'}><strong>{result.url}</strong><span>{result.message}</span></li>)}</ul>}
     </section>

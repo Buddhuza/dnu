@@ -177,7 +177,7 @@ export async function scrapeHeadlines(source, include, apiKey, fetchImpl = fetch
 }
 
 export async function scrapeArticle(url, apiKey, fetchImpl = fetch) {
-  const prompt = 'Read the original English-language news article. Return an object with exactHeadline copied verbatim, publishedAt as an ISO 8601 timestamp with timezone only if explicitly available, and summary as one short factual sentence from the first two substantive paragraphs that adds the most important detail beyond the headline without repeating it. Do not translate a non-English article. Do not invent dates or facts, and do not add opinion or analysis.';
+  const prompt = 'Read the original English-language news article. Return an object with exactHeadline copied verbatim, publishedAt as an ISO 8601 timestamp with timezone only if explicitly available, and summary as exactly one factual sentence of 10 to 25 words. Use the most important concrete detail from the first two substantive paragraphs that is absent from the headline. Omit repeated headline facts, scene-setting, commentary and background. If no additional concrete detail is available there, leave summary empty. Do not translate a non-English article. Do not invent dates or facts, and do not add opinion or analysis.';
   return firecrawlPost({ url, formats: ['markdown', 'html', { type: 'json', prompt }], onlyMainContent: true, timeout: 30000 }, apiKey, fetchImpl);
 }
 
