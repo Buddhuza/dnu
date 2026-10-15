@@ -157,11 +157,11 @@
 .daily-heading{display:block}
 .daily-heading-main{display:flex;justify-content:space-between;align-items:start;gap:18px}
 .daily-section-nav{display:grid;grid-template-columns:repeat(var(--section-count),minmax(0,1fr));gap:6px;margin-top:15px}
-.daily-section-nav a{display:flex;align-items:center;justify-content:center;min-height:30px;padding:5px 4px;border:1px solid #d6e1de;border-radius:6px;background:var(--site-bg,#f4efe6);color:var(--site-section,#0070c0);font-size:10px;font-weight:800;line-height:1.15;text-align:center;text-decoration:none;text-transform:uppercase}
+.daily-section-nav a{display:flex;align-items:center;justify-content:center;min-width:0;min-height:30px;padding:5px 4px;border:1px solid #d6e1de;border-radius:6px;background:var(--site-bg,#f4efe6);color:var(--site-section,#0070c0);font-size:10px;font-weight:800;line-height:1.15;text-align:center;text-decoration:none;text-transform:uppercase;white-space:nowrap}
+.daily-section-nav a span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.daily-section-nav .section-label-compact{display:none}
 .daily-section-nav a:hover,.daily-section-nav a:focus-visible{border-color:var(--site-section,#0070c0);outline:2px solid transparent}
-@media(max-width:800px){.daily-section-nav{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:720px){.daily-heading{margin:-20px -18px 0;padding:20px 18px 16px}.daily-heading-main{flex-direction:column}}
-@media(max-width:460px){.daily-section-nav{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .main-panel .daily-update,.main-panel .website-panel{margin-top:0}
 .collection-audit{margin-top:24px;padding:18px;border:1px solid #d6dfdf;border-radius:10px;background:var(--site-surface,#fff);color:var(--site-text,#182a36)}
 .collection-audit h3{margin:0 0 6px;font-size:19px}
@@ -184,7 +184,7 @@
 .sidebar{min-height:0;overflow:hidden;grid-row:auto}
 .main-panel{display:flex;flex-direction:column;min-height:0;overflow:hidden;padding:8px clamp(16px,3.6vw,58px)}
 .reading-layout{height:100%;min-height:0}
-.daily-update{height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding:0 20px 12px}
+.daily-update{height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding:0 20px 12px;container:daily-update / inline-size}
 .daily-heading{position:relative;top:auto;flex:none;margin:0 -20px;padding:11px 20px 9px}
 .daily-heading h2{font-size:max(30px,calc(var(--section-heading-size,26px) + 4px));margin:0}
 .daily-heading .report-date{margin-top:2px;line-height:1.25}
@@ -198,7 +198,8 @@
 .website-panel iframe{flex:1;min-height:0;height:auto}
 @media(max-width:800px){.reading-layout.website-open{grid-template-columns:1fr;grid-template-rows:minmax(0,2fr) minmax(0,1fr);gap:8px}}
 @media(max-width:720px){.topbar{padding:7px 14px}.workspace,.workspace.no-sidebar{display:flex;flex-direction:column}.sidebar{flex:none}.sidebar-heading{padding:8px 16px 0}.sidebar-heading h2{font-size:17px}.search-box{height:32px;margin-bottom:5px}.group-select{height:30px;margin-bottom:5px}.source-list{flex:none;padding-bottom:5px}.source-row{height:42px}.main-panel{flex:1;padding:7px 10px}.daily-update{padding:0 12px 8px}.daily-heading{margin:0 -12px;padding:10px 12px 8px}}
-@media(max-width:720px){.topbar .brand-text small{display:none}.daily-heading-main{gap:6px}.daily-downloads{gap:6px;flex-wrap:nowrap;justify-content:space-between}.daily-downloads .daily-download{width:auto;flex:1 1 auto;font-size:14px}.daily-edit{flex:0 0 auto;font-size:14px}.daily-section-nav{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin-top:7px}.daily-section-nav a{font-size:9px}}
+@media(max-width:720px){.topbar .brand-text small{display:none}.daily-heading-main{gap:6px}.daily-downloads{gap:6px;flex-wrap:nowrap;justify-content:space-between}.daily-downloads .daily-download{width:auto;flex:1 1 auto;font-size:14px}.daily-edit{flex:0 0 auto;font-size:14px}.daily-section-nav{gap:4px;margin-top:7px}.daily-section-nav a{font-size:9px}}
+@container daily-update (max-width: 850px){.daily-section-nav .section-label-full{display:none}.daily-section-nav .section-label-compact{display:block}}
 .daily-search-toggle{width:35px;height:35px;display:grid;place-items:center;padding:5px}
 .daily-search-toggle svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 .update-search{display:flex;align-items:center;gap:6px;margin-top:8px;padding:7px;border:1px solid #d6e1de;border-radius:7px;background:var(--site-bg,#f4efe6)}
