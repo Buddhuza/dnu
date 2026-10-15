@@ -2,9 +2,10 @@ export function sourceAudit(source, attempts = [], errors = []) {
   const grouped = new Map();
   for (const attempt of attempts) {
     const key = `${attempt.collectionMethod}:${attempt.listingUrl}`;
-    const row = grouped.get(key) || { listingUrl: attempt.listingUrl, collectionMethod: attempt.collectionMethod, listedCount: 0, candidatesFound: 0, candidatesChecked: 0, headlines: 0, rejectionCounts: { pageError: 0, missingHeadlineOrTime: 0, outsideWindow: 0, outsideScope: 0, nonEnglish: 0 }, pageErrors: [] };
+    const row = grouped.get(key) || { listingUrl: attempt.listingUrl, collectionMethod: attempt.collectionMethod, listedCount: 0, candidatesFound: 0, candidatesSelected: 0, candidatesChecked: 0, headlines: 0, rejectionCounts: { pageError: 0, missingHeadlineOrTime: 0, outsideWindow: 0, outsideScope: 0, nonEnglish: 0 }, pageErrors: [] };
     row.listedCount = Math.max(row.listedCount, attempt.listedCount || 0);
     row.candidatesFound = Math.max(row.candidatesFound, attempt.candidatesFound || 0);
+    row.candidatesSelected = Math.max(row.candidatesSelected, attempt.candidatesSelected ?? attempt.candidatesFound ?? 0);
     row.candidatesChecked += attempt.candidatesChecked || 0;
     row.headlines += attempt.headlines || 0;
     for (const name of Object.keys(row.rejectionCounts)) row.rejectionCounts[name] += attempt.rejectionCounts?.[name] || 0;
@@ -21,6 +22,7 @@ export function sourceAudit(source, attempts = [], errors = []) {
   const outOfWindowPages = checkedAttempts.reduce((sum, attempt) => sum + attempt.rejectionCounts.outsideWindow, 0);
   const filteredPages = checkedAttempts.reduce((sum, attempt) => sum + attempt.rejectionCounts.outsideScope, 0);
   const nonEnglishPages = checkedAttempts.reduce((sum, attempt) => sum + (attempt.rejectionCounts.nonEnglish || 0), 0);
+  const skipped = checkedAttempts.reduce((sum, attempt) => sum + Math.max(0, attempt.candidatesFound - attempt.candidatesSelected), 0);
   const methods = [...new Set(checkedAttempts.map(attempt => attempt.collectionMethod).filter(Boolean))];
   let status, reason, remedy;
   if (headlines) {
@@ -65,5 +67,6 @@ export function sourceAudit(source, attempts = [], errors = []) {
   if (status !== 'extracted' && /do not support|all scraping engines|blocked|forbidden|403/i.test(errors.join(' '))) {
     remedy = 'The publisher blocked a collection method; use a working publisher feed or arrange permitted access to its article pages.';
   }
+  if (status !== 'extracted' && skipped) reason += ` ${skipped} lower-priority listing links were not opened.`;
   return { sourceId: source.id, name: source.name, status, reason, remedy, attempts: checkedAttempts, errors };
 }

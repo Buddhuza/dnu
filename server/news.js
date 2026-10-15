@@ -126,9 +126,9 @@ export function undatedCandidates(payload, source, include = DEFAULT_INCLUDE, ex
     } catch { continue; }
     if (seen.has(url.href)) continue;
     seen.add(url.href);
-    candidates.push({ title, url: url.href });
+    candidates.push({ title, summary, url: url.href });
   }
-  return candidates.sort((a, b) => editorialScore(b.title) - editorialScore(a.title));
+  return candidates.sort((a, b) => editorialScore(b.title, b.summary) - editorialScore(a.title, a.summary));
 }
 
 export function candidatePage(candidates, cursor = 0, fullScan = false, deepScan = false) {
@@ -136,6 +136,12 @@ export function candidatePage(candidates, cursor = 0, fullScan = false, deepScan
   const limit = fullScan || deepScan ? 10 : 3;
   const items = candidates.slice(offset, offset + limit);
   return { items, nextCursor: fullScan && offset + items.length < candidates.length ? offset + items.length : null };
+}
+
+// Bulk monitoring checks each outlet, but opens only the strongest listing links.
+// The explicit complete scan continues to use the full candidate list.
+export function shortlistCandidates(candidates, limit = 12) {
+  return candidates.slice(0, limit);
 }
 
 export function reviewedArticleCheck(payload, source, url, now = Date.now()) {
@@ -172,7 +178,7 @@ export function reviewedArticle(payload, source, url, now = Date.now()) {
 
 export async function scrapeHeadlines(source, include, apiKey, fetchImpl = fetch) {
   const targetUrl = source.listingUrl || source.url;
-  const prompt = 'Extract English-language news article headlines linked from this page. Prioritize OSCE and external cooperation, diplomacy, and security between countries or international organisations. Return an object with an articles array. For each article return title, url (absolute article URL), and publishedAt as an ISO 8601 timestamp with timezone only when the exact time and timezone are visible. Include article links even when the date or time is not visible; omit publishedAt for those. Do not turn a date-only label into a midnight timestamp. Do not invent dates, titles, or URLs. Do not include navigation links.';
+  const prompt = 'Extract English-language news article headlines linked from this page. Prioritize OSCE and external cooperation, diplomacy, and security between countries or international organisations. Return an object with an articles array. For each article return title, url (absolute article URL), description only if a short article description is visible on this listing page, and publishedAt as an ISO 8601 timestamp with timezone only when the exact time and timezone are visible. Include article links even when the date or time is not visible; omit publishedAt for those. Do not turn a date-only label into a midnight timestamp. Do not invent dates, titles, descriptions, or URLs. Do not include navigation links.';
   return firecrawlPost({ url: targetUrl, formats: [{ type: 'json', prompt }], onlyMainContent: true, timeout: 30000 }, apiKey, fetchImpl);
 }
 

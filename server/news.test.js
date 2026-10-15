@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { normalizeArticles, scrapeHeadlines, searchSourceArticles, undatedCandidates, reviewedArticle, reviewedArticleCheck, fallbackListingUrl, candidatePage, customSourceFromRequest, DEFAULT_INCLUDE } from './news.js';
+import { normalizeArticles, scrapeHeadlines, searchSourceArticles, undatedCandidates, reviewedArticle, reviewedArticleCheck, fallbackListingUrl, candidatePage, shortlistCandidates, customSourceFromRequest, DEFAULT_INCLUDE } from './news.js';
 
 const source = { id: 'source-1', name: 'Test News', group: 'Test', url: 'https://example.com/news/' };
 const now = Date.parse('2026-10-09T12:00:00Z');
@@ -105,6 +105,24 @@ test('complete source scan pages through every matching article link', () => {
   assert.deepEqual(seen, candidates);
   assert.equal(candidatePage(candidates).items.length, 3);
   assert.equal(candidatePage(candidates, 0, false, true).items.length, 10);
+});
+
+test('bulk scan opens a bounded headline shortlist while complete scan keeps every link', () => {
+  const candidates = Array.from({ length: 31 }, (_, index) => ({ url: `https://example.com/${index}` }));
+  const shortlisted = shortlistCandidates(candidates);
+  assert.equal(shortlisted.length, 12);
+  assert.deepEqual(shortlisted, candidates.slice(0, 12));
+  assert.equal(candidatePage(shortlisted, 10, true).items.length, 2);
+  assert.equal(candidatePage(shortlisted, 10, true).nextCursor, null);
+  assert.equal(candidates.length, 31);
+});
+
+test('listing descriptions help rank externally focused stories before article scrapes', () => {
+  const payload = { data: { json: { articles: [
+    { title: 'Political agenda today', description: 'The OSCE discussed a new cross-border security agreement.', url: '/osce' },
+    { title: 'Election campaign rally', description: 'A local mayor spoke at a party event.', url: '/local' }
+  ] } } };
+  assert.equal(undatedCandidates(payload, source, ['political', 'election'])[0].url, 'https://example.com/osce');
 });
 
 test('manual source accepts a public HTTPS news site and rejects local targets', () => {

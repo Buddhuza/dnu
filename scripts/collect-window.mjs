@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { collectFeed, collectFallbackFeed, FEED_URLS } from '../server/feeds.js';
-import { articleArray, DEFAULT_INCLUDE, fallbackListingUrl, scrapeHeadlines, scrapeImportedArticle, searchSourceArticles, reviewedArticleCheck, undatedCandidates } from '../server/news.js';
+import { articleArray, DEFAULT_INCLUDE, fallbackListingUrl, scrapeHeadlines, scrapeImportedArticle, searchSourceArticles, reviewedArticleCheck, shortlistCandidates, undatedCandidates } from '../server/news.js';
 import { articlePlacement } from '../server/importArticle.js';
 import { IMPORT_PROMPT } from '../src/importPrompt.js';
 
@@ -64,11 +64,12 @@ async function batchArticlePages(urls) {
 
 async function examineCandidates(source, record, payload, method) {
   const candidates = candidateList(payload, source);
-  const attempt = { method, listed: articleArray(payload).length, candidates: candidates.length, fetched: 0, accepted: 0, rejected: {}, errors: [] };
+  const selected = process.env.COLLECTION_DEEP === '1' ? candidates : shortlistCandidates(candidates);
+  const attempt = { method, listed: articleArray(payload).length, candidates: candidates.length, selected: selected.length, fetched: 0, accepted: 0, rejected: {}, errors: [] };
   attempt.listedArticles = articleArray(payload).map(item => ({ title: item.title || item.headline, url: item.url || item.link, publishedAt: item.publishedAt || item.date })).slice(0, 100);
   record.attempts.push(attempt);
   save();
-  const unchecked = candidates.filter(candidate => !record.checkedUrls.includes(candidate.url));
+  const unchecked = selected.filter(candidate => !record.checkedUrls.includes(candidate.url));
   for (let offset = 0; offset < unchecked.length; offset += 10) {
     const group = unchecked.slice(offset, offset + 10);
     let pages;
@@ -105,7 +106,7 @@ async function examineCandidates(source, record, payload, method) {
       if (/credit|quota|payment required/i.test(error.message)) { save(); throw error; }
     }
     save();
-    console.log(`${source.id} ${source.name}: ${method} ${attempt.fetched}/${candidates.length} pages, ${record.articles.length} relevant`);
+    console.log(`${source.id} ${source.name}: ${method} ${attempt.fetched}/${selected.length} selected pages, ${record.articles.length} relevant`);
     }
   }
 }

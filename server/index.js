@@ -2,7 +2,7 @@ import express from 'express';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { DEFAULT_INCLUDE, DEFAULT_EXCLUDE, articleArray, fallbackListingUrl, normalizeArticles, parseWords, scrapeHeadlines, scrapeArticle, scrapeImportedArticle, searchSourceArticles, undatedCandidates, reviewedArticle, reviewedArticleCheck, candidatePage, customSourceFromRequest } from './news.js';
+import { DEFAULT_INCLUDE, DEFAULT_EXCLUDE, articleArray, fallbackListingUrl, normalizeArticles, parseWords, scrapeHeadlines, scrapeArticle, scrapeImportedArticle, searchSourceArticles, undatedCandidates, reviewedArticle, reviewedArticleCheck, candidatePage, shortlistCandidates, customSourceFromRequest } from './news.js';
 import { importedArticle, publicArticleUrl, sourceForArticle } from './importArticle.js';
 import { collectFeed, collectFallbackFeed, FEED_URLS } from './feeds.js';
 import { createReportDocx } from './report.js';
@@ -77,11 +77,13 @@ app.post('/api/headlines', async (req, res) => {
     }
     const fromFeed = entry.payload.collectionMethod === 'feed';
     const fullScan = req.body?.fullScan === true;
+    const selective = req.body?.selective === true;
     const feedHeadlines = fromFeed ? normalizeArticles(entry.payload, source, Date.now(), include, exclude, true) : [];
-    const verifyFeedArticles = fromFeed && fullScan && Boolean(process.env.FIRECRAWL_API_KEY);
+    const verifyFeedArticles = fromFeed && fullScan && !selective && Boolean(process.env.FIRECRAWL_API_KEY);
     const headlines = verifyFeedArticles ? [] : feedHeadlines;
     const candidates = verifyFeedArticles ? feedHeadlines.map(item => ({ title: item.title, url: item.url, feedArticle: item })) : fromFeed ? [] : undatedCandidates(entry.payload, source, include, exclude, true);
-    const page = candidatePage(candidates, req.body?.cursor, fullScan, req.body?.deepScan === true);
+    const selectedCandidates = selective ? shortlistCandidates(candidates) : candidates;
+    const page = candidatePage(selectedCandidates, req.body?.cursor, fullScan, req.body?.deepScan === true);
     let checked = 0;
     const rejectionCounts = { pageError: 0, missingHeadlineOrTime: 0, outsideWindow: 0, outsideScope: 0, nonEnglish: 0 };
     const pageErrors = [];
@@ -102,7 +104,7 @@ app.post('/api/headlines', async (req, res) => {
         } catch (error) { rejectionCounts.pageError++; if (pageErrors.length < 3) pageErrors.push(`${candidate.url}: ${error.message}`); /* Other candidates may still be verifiable. */ }
     }
     const nextCursor = fromFeed && !verifyFeedArticles ? null : page.nextCursor;
-    res.json({ source, headlines: headlines.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date(entry.at).toISOString(), listedCount: articleArray(entry.payload).length, candidatesFound: candidates.length, candidatesChecked: checked, rejectionCounts, pageErrors, nextCursor, collectionMethod: verifyFeedArticles ? 'feed+firecrawl' : fromFeed ? 'feed' : entry.payload.collectionMethod || 'firecrawl', listingUrl: entry.payload.feedUrl || entry.payload.searchQuery || (fallback ? alternateUrl : source.listingUrl || source.url), note: verifyFeedArticles ? 'Publisher feed entries were checked against their original article pages.' : fromFeed ? 'Headlines and dates came from the publisher feed. Article pages were not independently checked.' : nextCursor === null && fullScan ? 'All relevant article links returned from this listing were checked; listings can still omit stories.' : 'Only some article pages were checked. No result is not proof that the source had no relevant news.' });
+    res.json({ source, headlines: headlines.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date(entry.at).toISOString(), listedCount: articleArray(entry.payload).length, candidatesFound: candidates.length, candidatesSelected: selectedCandidates.length, candidatesChecked: checked, rejectionCounts, pageErrors, nextCursor, collectionMethod: verifyFeedArticles ? 'feed+firecrawl' : fromFeed ? 'feed' : entry.payload.collectionMethod || 'firecrawl', listingUrl: entry.payload.feedUrl || entry.payload.searchQuery || (fallback ? alternateUrl : source.listingUrl || source.url), note: verifyFeedArticles ? 'Publisher feed entries were checked against their original article pages.' : fromFeed ? 'Headlines and dates came from the publisher feed. Article pages were not independently checked.' : selective ? `Checked the ${selectedCandidates.length} highest-priority headline links from this listing; ${candidates.length - selectedCandidates.length} lower-priority links were not opened.` : nextCursor === null && fullScan ? 'All relevant article links returned from this listing were checked; listings can still omit stories.' : 'Only some article pages were checked. No result is not proof that the source had no relevant news.' });
   } catch (error) {
     res.status(502).json({ error: `Could not collect ${source.name}: ${error.message}` });
   }
