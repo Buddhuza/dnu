@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig, toggleLeadStoryInConfig } from './siteConfig.js';
 
 const articles = [
@@ -173,6 +174,22 @@ test('similar diplomatic headlines about different countries remain separate', (
     { id: 'uzbek', section: 'South Caucasus', subsection: 'Azerbaijan', title: 'President Ilham Aliyev met with President of Uzbekistan', sourceName: 'Agency B' }
   ];
   assert.equal(displaySiteContent(stories, defaultSiteConfig(stories)).length, 2);
+});
+
+test('one planned diplomatic trip appears once even across sections and source wording', () => {
+  const stories = [
+    { id: 'local', section: 'Central Asia', subsection: 'Uzbekistan', title: 'Rubio to visit India, Uzbekistan', sourceName: 'Pajhwok', publishedAt: '2026-10-14T09:19:00Z' },
+    { id: 'local-two', section: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States', title: 'US Secretary of State Marco Rubio to visit Uzbekistan this week', sourceName: 'Kun.uz', publishedAt: '2026-10-14T11:45:00Z' },
+    { id: 'international', section: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States', title: 'US top diplomat Marco Rubio to visit India and Uzbekistan', sourceName: 'AsiaOne', publishedAt: '2026-10-14T02:43:00Z' },
+    { id: 'different-trip', section: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States', title: 'Marco Rubio to visit Japan and China', sourceName: 'AP', publishedAt: '2026-10-14T04:00:00Z' }
+  ];
+  assert.deepEqual(displaySiteContent(stories, defaultSiteConfig(stories)).map(item => item.id), ['international', 'different-trip']);
+});
+
+test('published update has one Rubio visit story from the preferred source', () => {
+  const update = JSON.parse(readFileSync(new URL('../data/daily-update-2026-10-14-15.json', import.meta.url), 'utf8'));
+  const visits = update.articles.filter(article => /Rubio.*\bvisit\b/i.test(article.title));
+  assert.deepEqual(visits.map(article => article.sourceName), ['AsiaOne']);
 });
 
 test('a manually added version replaces a matching snapshot story', () => {

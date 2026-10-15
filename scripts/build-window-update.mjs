@@ -6,6 +6,7 @@ import { editorialScore, isRussianSource } from '../server/editorialPolicy.js';
 import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES } from '../src/newsSections.js';
 import { blockedPlacementReason } from '../src/sourcePolicy.js';
 import { preferredRegionalPlacement } from '../src/storyPlacement.js';
+import { deduplicateArticles } from '../src/siteConfig.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const sources = JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'));
@@ -147,6 +148,11 @@ for (const article of raw) {
   seenTitles.add(titleKey(article.title));
   accepted.push({ ...article, section: placement.sectionId, subsection: placement.subsection, country: placement.country || '' });
 }
+
+const unique = deduplicateArticles(accepted.map(article => ({ ...article, sectionId: article.section })));
+const keptUrls = new Set(unique.map(article => article.url));
+for (const article of accepted) if (!keptUrls.has(article.url)) excluded.push({ ...article, reason: 'same event covered by a preferred source' });
+accepted.splice(0, accepted.length, ...accepted.filter(article => keptUrls.has(article.url)));
 
 function leadScore(article, middleEast = false) {
   const impact = middleEast && /\b(?:Hormuz|Iranian attack|Iran war|Israeli strike|ceasefire|shipping|missile)\b/i.test(`${article.title} ${article.summary}`) ? 200 : 0;

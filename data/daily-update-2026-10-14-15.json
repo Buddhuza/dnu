@@ -1896,20 +1896,6 @@
       "reviewed": true
     },
     {
-      "id": "https://pajhwok.com/2026/10/14/rubio-to-visit-india-uzbekistan/",
-      "url": "https://pajhwok.com/2026/10/14/rubio-to-visit-india-uzbekistan/",
-      "sourceId": "source-171",
-      "sourceName": "Pajhwok",
-      "group": "Miscl",
-      "title": "Rubio to visit India, Uzbekistan",
-      "summary": "US Secretary of State Marco Rubio will begin his five-day trip to India and Uzbekistan next Saturday.",
-      "publishedAt": "2026-10-14T09:19:00.000Z",
-      "section": "Central Asia",
-      "subsection": "Uzbekistan",
-      "country": "",
-      "reviewed": true
-    },
-    {
       "id": "https://kun.uz/en/news/2026/10/14/uzbekistans-military-team-wins-silver-at-cambrian-patrol-2026-in-wales",
       "url": "https://kun.uz/en/news/2026/10/14/uzbekistans-military-team-wins-silver-at-cambrian-patrol-2026-in-wales",
       "sourceId": "source-78",
@@ -4360,20 +4346,6 @@
       "reviewed": true
     },
     {
-      "id": "https://kun.uz/en/news/2026/10/14/us-secretary-of-state-marco-rubio-to-visit-uzbekistan-this-week",
-      "url": "https://kun.uz/en/news/2026/10/14/us-secretary-of-state-marco-rubio-to-visit-uzbekistan-this-week",
-      "sourceId": "source-78",
-      "sourceName": "Kun.uz",
-      "group": "Central Asia",
-      "title": "US Secretary of State Marco Rubio to visit Uzbekistan this week",
-      "summary": "Rubio will attend a meeting of foreign ministers from the C5+1 group in Samarkand, which includes the five Central Asian countries.",
-      "publishedAt": "2026-10-14T11:45:24.000Z",
-      "section": "Miscellaneous",
-      "subsection": "NORTH AMERICA",
-      "country": "United States",
-      "reviewed": true
-    },
-    {
       "id": "https://www.kyivpost.com/post/87012",
       "url": "https://www.kyivpost.com/post/87012",
       "sourceId": "source-37",
@@ -5669,7 +5641,7 @@
       "group": "Central Asia",
       "url": "https://kun.uz/en/news/list",
       "status": "collected",
-      "reason": "3 verified articles included; 10 original article pages checked."
+      "reason": "2 verified articles included; 10 original article pages checked."
     },
     {
       "id": "source-79",
@@ -6413,7 +6385,7 @@
       "group": "Miscl",
       "url": "https://pajhwok.com/",
       "status": "collected",
-      "reason": "5 verified articles included; 10 original article pages checked."
+      "reason": "4 verified articles included; 10 original article pages checked."
     },
     {
       "id": "source-172",

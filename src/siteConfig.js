@@ -235,8 +235,29 @@ function placesInHeadline(article) {
   return new Set(placeNames.filter(name => name !== String(article.country || '').toLocaleLowerCase() && new RegExp(`\\b${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'u').test(text)));
 }
 
+function plannedVisit(article) {
+  const title = String(article.title || '');
+  const actor = title.match(/\b([A-Z][\p{L}’'-]+(?:\s+[A-Z][\p{L}’'-]+)?)\s+(?:to|will|set to|expected to)\s+visit\b/u)?.[1]?.split(/\s+/).at(-1)?.toLocaleLowerCase();
+  if (!actor) return null;
+  const destinations = new Set([...placeNames, 'india'].filter(name => new RegExp(`\\b${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'iu').test(title)));
+  return destinations.size ? { actor, destinations } : null;
+}
+
+function samePlannedVisit(left, right) {
+  if (!left || !right || left.actor !== right.actor) return false;
+  const shared = [...left.destinations].some(place => right.destinations.has(place));
+  return shared && ([...left.destinations].every(place => right.destinations.has(place)) || [...right.destinations].every(place => left.destinations.has(place)));
+}
+
+function sourcePreference(article) {
+  const name = String(article.sourceName || '');
+  if (/^(?:Reuters|AP|AFP|Associated Press|BBC|DW|dpa|Euronews|Politico(?:\.eu)?|The Guardian|Guardian)$/i.test(name)) return 2;
+  if (/^(?:AsiaOne|Al Jazeera|France 24|Deutsche Welle|The Independent|Financial Times)$/i.test(name)) return 1;
+  return 0;
+}
+
 export function deduplicateArticles(articles, excludedIds = new Set()) {
-  const details = articles.map(article => ({ url: canonicalArticleUrl(article.url), words: headlineWords(article.title), places: placesInHeadline(article) }));
+  const details = articles.map(article => ({ url: canonicalArticleUrl(article.url), words: headlineWords(article.title), places: placesInHeadline(article), visit: plannedVisit(article) }));
   const parents = articles.map((_, index) => index);
   const root = index => { while (parents[index] !== index) index = parents[index] = parents[parents[index]]; return index; };
   for (let index = 0; index < articles.length; index++) for (let other = index + 1; other < articles.length; other++) {
@@ -244,6 +265,7 @@ export function deduplicateArticles(articles, excludedIds = new Set()) {
     if (left.url && left.url === right.url) { parents[root(other)] = root(index); continue; }
     const firstTime = Date.parse(a.publishedAt), secondTime = Date.parse(b.publishedAt);
     if (Number.isFinite(firstTime) && Number.isFinite(secondTime) && Math.abs(firstTime - secondTime) > 48 * 60 * 60 * 1000) continue;
+    if (samePlannedVisit(left.visit, right.visit)) { parents[root(other)] = root(index); continue; }
     const samePlacement = a.sectionId === b.sectionId && a.subsection === b.subsection && (a.country || '') === (b.country || '');
     if ((!samePlacement && a.sourceName !== b.sourceName) || left.words.length < 6 || right.words.length < 6) continue;
     const shared = left.words.filter(word => right.words.includes(word)).length;
@@ -256,7 +278,8 @@ export function deduplicateArticles(articles, excludedIds = new Set()) {
     const group = root(index), previous = winners.get(group);
     const selectedOverExcluded = previous !== undefined && excludedIds.has(articles[previous].id) && !excludedIds.has(articles[index].id);
     const manualOverSnapshot = previous !== undefined && excludedIds.has(articles[previous].id) === excludedIds.has(articles[index].id) && articles[previous].sourceId !== 'manual' && articles[index].sourceId === 'manual';
-    if (previous === undefined || selectedOverExcluded || manualOverSnapshot) winners.set(group, index);
+    const preferredSource = previous !== undefined && excludedIds.has(articles[previous].id) === excludedIds.has(articles[index].id) && articles[previous].sourceId !== 'manual' && articles[index].sourceId !== 'manual' && sourcePreference(articles[index]) > sourcePreference(articles[previous]);
+    if (previous === undefined || selectedOverExcluded || manualOverSnapshot || preferredSource) winners.set(group, index);
   }
   const selected = new Set(winners.values());
   return articles.filter((_, index) => selected.has(index));
