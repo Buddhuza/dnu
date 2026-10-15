@@ -28,5 +28,6 @@ export const EDITORIAL_GUIDANCE = [
 
 export function orderedSubsections(section, labels) {
   const order = new Map((section?.subsections ?? []).map((label, index) => [label, index]));
-  return [...labels].sort((a, b) => (order.get(a) ?? 999) - (order.get(b) ?? 999));
+  const leadRank = label => section?.id === 'Lead stories' ? label === 'Ukraine' ? 0 : label === 'Middle East' ? 1 : (order.get(label) ?? 999) + 2 : order.get(label) ?? 999;
+  return [...labels].sort((a, b) => leadRank(a) - leadRank(b));
 }

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig } from './siteConfig.js';
+import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig, toggleLeadStoryInConfig } from './siteConfig.js';
 
 const articles = [
   { id: 'a', section: 'Europe', subsection: 'Poland', title: 'Original headline', summary: 'Original summary.', sourceName: 'Agency', url: 'https://example.com/a' },
@@ -31,6 +31,37 @@ test('countries stay alphabetical even when a manually added story has a later a
   config.articleOrder = ['uk', 'italy', 'germany'];
   config.customArticles = [{ id: 'manual-italy', title: 'New Italy story', url: 'https://example.com/italy', sourceName: 'Agency', sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Italy' }];
   assert.deepEqual(displaySiteContent(stories, config).map(item => item.country), ['Germany', 'Italy', 'Italy', 'United Kingdom']);
+});
+
+test('star creates a lead heading and removing it restores the original placement after reload', () => {
+  const stories = [{ id: 'armenia', section: 'South Caucasus', subsection: 'Armenia', title: 'Armenia signs regional deal', sourceName: 'Agency', url: 'https://example.com/armenia' }];
+  const initial = defaultSiteConfig(stories);
+  const starred = toggleLeadStoryInConfig(initial, stories, 'armenia');
+  assert.deepEqual(displaySiteContent(stories, starred).map(item => [item.sectionId, item.subsection]), [['Lead stories', 'Armenia']]);
+  assert.ok(starred.sections.find(section => section.id === 'Lead stories').subsections.includes('Armenia'));
+  const restored = normalizeSiteConfig(JSON.parse(JSON.stringify(starred)), stories);
+  const unstarred = toggleLeadStoryInConfig(restored, stories, 'armenia');
+  assert.deepEqual(displaySiteContent(stories, unstarred).map(item => [item.sectionId, item.subsection]), [['South Caucasus', 'Armenia']]);
+  assert.ok(!unstarred.sections.find(section => section.id === 'Lead stories').subsections.includes('Armenia'));
+  assert.equal(unstarred.leadOrigins.armenia, undefined);
+});
+
+test('lead stories keep Ukraine then Middle East ahead of other headings', () => {
+  const stories = [
+    { id: 'me', section: 'Lead stories', subsection: 'Middle East', title: 'Iran story', sourceName: 'Agency', url: 'https://example.com/me' },
+    { id: 'ua', section: 'Lead stories', subsection: 'Ukraine', title: 'Ukraine story', sourceName: 'Agency', url: 'https://example.com/ua' },
+    { id: 'other', section: 'South Caucasus', subsection: 'Armenia', title: 'Armenia story', sourceName: 'Agency', url: 'https://example.com/other' }
+  ];
+  const config = toggleLeadStoryInConfig(defaultSiteConfig(stories), stories, 'other');
+  config.sections.find(section => section.id === 'Lead stories').subsections = ['Armenia', 'Middle East', 'Ukraine'];
+  assert.deepEqual(displaySiteContent(stories, config).map(item => item.subsection), ['Ukraine', 'Middle East', 'Armenia']);
+});
+
+test('removing an original Middle East lead creates its relevant country', () => {
+  const stories = [{ id: 'saudi', section: 'Lead stories', subsection: 'Middle East', title: 'Houthis strike Saudi oil company Aramco', sourceName: 'Agency', url: 'https://example.com/saudi' }];
+  const config = toggleLeadStoryInConfig(defaultSiteConfig(stories), stories, 'saudi');
+  assert.deepEqual(displaySiteContent(stories, config).map(item => [item.sectionId, item.subsection, item.country]), [['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Saudi Arabia']]);
+  assert.ok(config.customCountries['MIDDLE EAST / NORTH AFRICA'].includes('Saudi Arabia'));
 });
 
 test('headline, empty summary, and agency edits survive saved settings', () => {

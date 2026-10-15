@@ -1,4 +1,4 @@
-import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES } from './newsSections.js';
+import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, orderedSubsections } from './newsSections.js';
 
 export const THEME_PRESETS = {
   forest: { name: 'Forest', primary: '#123e47', accent: '#bce081', background: '#f4efe6', surface: '#fdfaf4', text: '#182a36', section: '#0070c0', font: 'DM Sans' },
@@ -30,6 +30,7 @@ const defaults = {
   sections: [],
   articleEdits: {},
   articleOrder: [],
+  leadOrigins: {},
   customCountries: {},
   customArticles: [],
   customSources: [],
@@ -137,6 +138,10 @@ export function normalizeSiteConfig(input, articles = []) {
     const countries = [...new Set(values.map(value => clean(value, '', 100).trim()).filter(Boolean))].slice(0, 100);
     return countries.length ? [[label, countries]] : [];
   }));
+  const leadOrigins = Object.fromEntries(Object.entries(input.leadOrigins && typeof input.leadOrigins === 'object' && !Array.isArray(input.leadOrigins) ? input.leadOrigins : {}).slice(0, 500).flatMap(([id, place]) => {
+    if (!id || id.length > 500 || !place || !sectionIds.has(place.sectionId) || place.sectionId === 'Lead stories') return [];
+    return [[id, { sectionId: place.sectionId, subsection: clean(place.subsection, '', 100), country: clean(place.country, '', 100) }]];
+  }));
   return {
     version: 1,
     brandName: ['SIGNAL DESK', 'DNU'].includes(input.brandName) ? base.brandName : clean(input.brandName, base.brandName, 80),
@@ -153,7 +158,7 @@ export function normalizeSiteConfig(input, articles = []) {
     sectionHeadingSize: Number.isFinite(Number(input.sectionHeadingSize)) ? Math.max(20, Math.min(40, Number(input.sectionHeadingSize))) : 26,
     sectionHeadingUppercase: input.sectionHeadingUppercase !== false,
     updateWidth: Number.isFinite(Number(input.updateWidth)) ? Math.max(480, Math.min(1400, Number(input.updateWidth) === 600 ? 900 : Number(input.updateWidth))) : 900,
-    theme, darkTheme, sections, articleEdits,
+    theme, darkTheme, sections, articleEdits, leadOrigins,
     articleOrder: [...new Set((Array.isArray(input.articleOrder) ? input.articleOrder : []).filter(id => typeof id === 'string' && id.length <= 500))].slice(0, 1000),
     customArticles, customSources, sourceListingOverrides, customCountries,
     hiddenSourceIds: (Array.isArray(input.hiddenSourceIds) ? input.hiddenSourceIds : []).filter(id => typeof id === 'string').slice(0, 500)
@@ -197,7 +202,7 @@ export function displaySiteContent(articles, config, excludedIds = new Set()) {
   const uniqueItems = deduplicateArticles(items, excludedIds);
   const order = new Map(config.sections.map((section, index) => [section.id, index]));
   const articleOrder = new Map((config.articleOrder ?? []).map((id, index) => [id, index]));
-  const subsectionOrder = new Map(config.sections.map(section => [section.id, new Map((section.subsections ?? []).map((name, index) => [name, index]))]));
+  const subsectionOrder = new Map(config.sections.map(section => [section.id, new Map(orderedSubsections(section, section.subsections ?? []).map((name, index) => [name, index]))]));
   const alphabetical = new Intl.Collator('en', { sensitivity: 'base', ignorePunctuation: true });
   return uniqueItems.sort((a, b) => (order.get(a.sectionId) ?? 999) - (order.get(b.sectionId) ?? 999)
     || (subsectionOrder.get(a.sectionId)?.get(a.subsection) ?? 999) - (subsectionOrder.get(b.sectionId)?.get(b.subsection) ?? 999)
@@ -307,4 +312,48 @@ export function moveArticleInConfig(config, articles, movedId, destination, excl
     else delete updated.customCountries[sourceSubsection];
   }
   return updated;
+}
+
+function leadHeadingForStory(story) {
+  if (story.sectionId === 'Eastern Europe' && story.subsection === 'Ukraine') return 'Ukraine';
+  if (story.subsection === 'MIDDLE EAST / NORTH AFRICA') return 'Middle East';
+  return story.country || story.subsection || story.sectionId;
+}
+
+function originalPlacementForLead(story) {
+  if (story.subsection === 'Ukraine') return { sectionId: 'Eastern Europe', subsection: 'Ukraine', country: '' };
+  if (story.subsection === 'Middle East') {
+    const title = story.title || '';
+    const country = /\bSaudi(?: Arabia| oil)|\bAramco\b/i.test(title) ? 'Saudi Arabia'
+      : /\bIsrael|Israeli|Gaza|Palestin/i.test(title) ? 'Israel'
+      : /\bLeban|Hezbollah/i.test(title) ? 'Lebanon'
+      : /\bSyria|Syrian/i.test(title) ? 'Syria'
+      : /\bT[üu]rki|Turkish/i.test(title) ? 'Türkiye'
+      : /\bLibya|Libyan/i.test(title) ? 'Libya' : 'Iran';
+    return { sectionId: 'Miscellaneous', subsection: 'MIDDLE EAST / NORTH AFRICA', country };
+  }
+  const standard = NEWS_SECTIONS.find(section => section.id !== 'Lead stories' && section.id !== 'Miscellaneous' && section.subsections.includes(story.subsection));
+  if (standard) return { sectionId: standard.id, subsection: story.subsection, country: '' };
+  const misc = Object.entries(MISCELLANEOUS_COUNTRIES).find(([, countries]) => countries.includes(story.subsection));
+  if (misc) return { sectionId: 'Miscellaneous', subsection: misc[0], country: story.subsection };
+  return { sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: story.subsection };
+}
+
+export function toggleLeadStoryInConfig(config, articles, storyId, excludedIds = new Set()) {
+  const story = displaySiteContent(articles, config, excludedIds).find(item => item.id === storyId);
+  if (!story) return config;
+  if (story.sectionId !== 'Lead stories') {
+    const subsection = leadHeadingForStory(story);
+    const moved = moveArticleInConfig(config, articles, storyId, {
+      sectionId: 'Lead stories', subsection, country: '', createSubsection: true
+    }, excludedIds);
+    return moved === config ? config : { ...moved, leadOrigins: { ...config.leadOrigins, [storyId]: { sectionId: story.sectionId, subsection: story.subsection || '', country: story.country || '' } } };
+  }
+  const origin = config.leadOrigins?.[storyId] || originalPlacementForLead(story);
+  const destination = { ...origin, createSubsection: true, createCountry: origin.sectionId === 'Miscellaneous' && Boolean(origin.country) };
+  const moved = moveArticleInConfig(config, articles, storyId, destination, excludedIds);
+  if (moved === config) return config;
+  const leadOrigins = { ...config.leadOrigins };
+  delete leadOrigins[storyId];
+  return { ...moved, leadOrigins };
 }

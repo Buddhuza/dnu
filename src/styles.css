@@ -239,9 +239,15 @@
 .daily-story-inline-edit [data-edit-field="sourceName"]{color:var(--site-section,#0070c0)}
 .daily-story-inline-edit [data-edit-field="summary"]:empty{display:inline-block;min-width:5ch}
 .daily-story-inline-edit [data-edit-field="summary"]:empty::before{content:attr(data-placeholder);opacity:.55}
-.daily-story .story-move-button{flex:none;align-self:flex-start;margin:2px 0 0;padding:5px 9px;border:1px solid var(--site-section,#0070c0);border-radius:5px;background:var(--site-surface,#fff);color:var(--site-section,#0070c0);font-size:13px;font-weight:700;line-height:1.2}
-.daily-story .story-move-button:hover,.daily-story .story-move-button:focus-visible{background:var(--site-bg,#f4efe6);text-decoration:none}
-.daily-story .story-drag-handle{flex:none;align-self:flex-start;margin:2px 0 0;padding:3px 6px;border:1px solid #aabac2;border-radius:5px;background:var(--site-surface,#fff);color:var(--site-section,#0070c0);font-size:16px;line-height:1;letter-spacing:-.16em;cursor:grab;touch-action:none}
+.story-edit-tools{flex:none;display:flex;flex-direction:column;align-items:center;gap:3px;width:30px}
+.daily-story .story-edit-tools button,.daily-story .story-edit-tools .daily-story-checkbox{display:grid;place-items:center;flex:none;width:30px;height:30px;margin:0;padding:0;border:1px solid #aabac2;border-radius:5px;background:var(--site-surface,#fff);color:var(--site-section,#0070c0);line-height:1}
+.daily-story .story-edit-tools button:hover,.daily-story .story-edit-tools button:focus-visible{background:var(--site-bg,#f4efe6);text-decoration:none}
+.daily-story .story-edit-tools svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.daily-story .story-edit-tools .story-drag-handle{font-size:18px;letter-spacing:-.16em;cursor:grab;touch-action:none}
+.daily-story .story-edit-tools .story-star-button.is-lead svg{fill:currentColor}
+.daily-story .story-edit-tools .daily-story-checkbox{appearance:none;cursor:pointer;position:relative}
+.daily-story .story-edit-tools .daily-story-checkbox:checked::after{content:'✓';color:var(--site-section,#0070c0);font-size:20px;font-weight:700}
+.daily-story .story-edit-tools .daily-story-checkbox:focus-visible{outline:2px solid var(--site-section,#0070c0);outline-offset:2px}
 .daily-story .story-drag-handle:active{cursor:grabbing}
 .story-drop-target{outline:2px dashed var(--site-section,#0070c0);outline-offset:2px}
 .daily-story.story-drop-before{border-top:3px solid var(--site-section,#0070c0)}

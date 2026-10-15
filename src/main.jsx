@@ -6,7 +6,7 @@ import publishedSiteConfig from '../data/site-config.json';
 import SiteManager from './SiteManager.jsx';
 import AddArticlesDialog from './AddArticlesDialog.jsx';
 import MoveStoryDialog from './MoveStoryDialog.jsx';
-import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig } from './siteConfig.js';
+import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig, toggleLeadStoryInConfig } from './siteConfig.js';
 import { orderedSubsections } from './newsSections.js';
 import { createReportDocxFromTemplate } from './docxBuilder.js';
 import { reportFilename } from './reportFilename.js';
@@ -300,6 +300,12 @@ function App() {
     return true;
   };
   const moveStory = destination => relocateStory(moveStoryId, destination);
+  const toggleLeadStory = storyId => {
+    const drafts = readStoryDrafts();
+    if (!validStoryDrafts(drafts)) return;
+    setSiteConfig(current => toggleLeadStoryInConfig(applyStoryDrafts(current, drafts), daily?.articles ?? [], storyId, excludedStoryIds));
+    setCompiledAt(new Date().toISOString());
+  };
   const keepStoryTextInline = event => { if (event.key === 'Enter') event.preventDefault(); };
   const updateControls = () => daily?.articles?.length > 0 && <div className="daily-downloads">
     <button className="daily-action daily-edit" type="button" aria-label="Add articles" title="Add article URLs" onClick={() => setAddingArticles(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M4 12h16"/></svg></button>
@@ -404,10 +410,13 @@ function App() {
                 {items.map((item, index) => <React.Fragment key={item.id}>
                   {item.country && (index === 0 || items[index - 1].country !== item.country) && <h5 data-drop-kind="country" data-section-id={sectionId} data-subsection={subsection} data-country={item.country} className={`daily-country ${dropTarget === `country:${sectionId}:${subsection}:${item.country}` ? 'story-drop-target' : ''}`}>{highlightSearch(item.country)}</h5>}
                   <article data-drop-kind="story" data-section-id={item.sectionId} data-subsection={item.subsection || ''} data-country={item.country || ''} data-story-id={item.id} className={`daily-story ${editingStories ? 'daily-story-editing' : ''} ${updateSearchOpen && updateSearchIds.has(item.id) ? 'search-match' : ''} ${updateSearchOpen && updateSearchResults[Math.min(activeSearchResult, updateSearchResults.length - 1)]?.id === item.id ? 'active-search-match' : ''} ${dropTarget === `story:${item.id}:before` ? 'story-drop-before' : ''} ${dropTarget === `story:${item.id}:after` ? 'story-drop-after' : ''}`}>
-                    {editingStories && <input className="daily-story-checkbox" type="checkbox" checked={!excludedStoryIds.has(item.id)} aria-label={`Include story: ${item.title}`} onChange={event => setExcludedStoryIds(current => { const next = new Set(current); if (event.target.checked) next.delete(item.id); else next.add(item.id); return next; })}/>}
-                    {editingStories && <button type="button" className="story-drag-handle" aria-label={`Drag story: ${item.title}`} title="Drag to another visible heading or story" onPointerDown={event => startStoryDrag(event, item.id)} onPointerMove={moveStoryDrag} onPointerUp={finishStoryDrag} onPointerCancel={() => { pointerDragRef.current = null; setDropTarget(''); }}>⋮⋮</button>}
+                    {editingStories && <div className="story-edit-tools">
+                      <button type="button" className="story-drag-handle" aria-label={`Drag story: ${item.title}`} title="Drag to another visible heading or story" onPointerDown={event => startStoryDrag(event, item.id)} onPointerMove={moveStoryDrag} onPointerUp={finishStoryDrag} onPointerCancel={() => { pointerDragRef.current = null; setDropTarget(''); }}>⋮⋮</button>
+                      <button type="button" className="story-move-button" aria-label={`Move story: ${item.title}`} title="Move to another section, country or organisation" onClick={() => setMoveStoryId(item.id)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h14m-4-4 4 4-4 4M20 17H6m4-4-4 4 4 4"/></svg></button>
+                      <button type="button" className={`story-star-button ${item.sectionId === 'Lead stories' ? 'is-lead' : ''}`} aria-label={`${item.sectionId === 'Lead stories' ? 'Remove from' : 'Add to'} lead stories: ${item.title}`} aria-pressed={item.sectionId === 'Lead stories'} title={item.sectionId === 'Lead stories' ? 'Return to original country' : 'Make lead story'} onClick={() => toggleLeadStory(item.id)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.5 3 6.1 6.7 1-4.8 4.7 1.1 6.7-6-3.2-6 3.2 1.1-6.7-4.8-4.7 6.7-1L12 2.5Z"/></svg></button>
+                      <input className="daily-story-checkbox" type="checkbox" checked={!excludedStoryIds.has(item.id)} title="Include in update" aria-label={`Include story: ${item.title}`} onChange={event => setExcludedStoryIds(current => { const next = new Set(current); if (event.target.checked) next.delete(item.id); else next.add(item.id); return next; })}/>
+                    </div>}
                     <div className="daily-story-content">{editingStories ? <p className="daily-story-inline-edit"><strong contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit headline" data-edit-field="title" onKeyDown={keepStoryTextInline}>{reportStoryText(item).headline}</strong>{' '}<span contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit summary" data-edit-field="summary" data-placeholder="Add summary" onKeyDown={keepStoryTextInline}>{reportStoryText(item).summary}</span>{' '}(<span contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit agency" data-edit-field="sourceName" onKeyDown={keepStoryTextInline}>{item.sourceName}</span>){Number.isFinite(Date.parse(item.publishedAt)) && <> <time className="daily-story-time" dateTime={item.publishedAt} title={dateLabel(item.publishedAt)}>{formatViennaCompactDateTime(item.publishedAt)}</time></>}</p> : <p><strong>{highlightSearch(reportStoryText(item).headline)}</strong>{!headlineOnly && item.summary && <> {highlightSearch(reportStoryText(item).summary)}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{highlightSearch(item.sourceName)}</a>){Number.isFinite(Date.parse(item.publishedAt)) && <> <time className="daily-story-time" dateTime={item.publishedAt} title={dateLabel(item.publishedAt)}>{highlightSearch(formatViennaCompactDateTime(item.publishedAt))}</time></>}</p>}</div>
-                    {editingStories && <button type="button" className="story-move-button" aria-label={`Move story: ${item.title}`} title="Move to another section, country or organisation" onClick={() => setMoveStoryId(item.id)}>Move</button>}
                   </article>
                 </React.Fragment>)}
               </div>)}
