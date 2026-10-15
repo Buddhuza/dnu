@@ -1,4 +1,4 @@
-import { NEWS_SECTIONS } from './newsSections.js';
+import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES } from './newsSections.js';
 
 export const THEME_PRESETS = {
   forest: { name: 'Forest', primary: '#123e47', accent: '#bce081', background: '#f4efe6', surface: '#fdfaf4', text: '#182a36', section: '#0070c0', font: 'DM Sans' },
@@ -30,6 +30,7 @@ const defaults = {
   sections: [],
   articleEdits: {},
   articleOrder: [],
+  customCountries: {},
   customArticles: [],
   customSources: [],
   sourceListingOverrides: {},
@@ -130,6 +131,12 @@ export function normalizeSiteConfig(input, articles = []) {
     const url = httpsUrl(value);
     return /^source-\d+$/.test(id) && url ? [[id, url]] : [];
   }));
+  const customCountries = Object.fromEntries(Object.entries(input.customCountries && typeof input.customCountries === 'object' && !Array.isArray(input.customCountries) ? input.customCountries : {}).slice(0, 40).flatMap(([subsection, values]) => {
+    const label = clean(subsection, '', 100).trim();
+    if (!label || !Array.isArray(values)) return [];
+    const countries = [...new Set(values.map(value => clean(value, '', 100).trim()).filter(Boolean))].slice(0, 100);
+    return countries.length ? [[label, countries]] : [];
+  }));
   return {
     version: 1,
     brandName: ['SIGNAL DESK', 'DNU'].includes(input.brandName) ? base.brandName : clean(input.brandName, base.brandName, 80),
@@ -148,7 +155,7 @@ export function normalizeSiteConfig(input, articles = []) {
     updateWidth: Number.isFinite(Number(input.updateWidth)) ? Math.max(480, Math.min(1400, Number(input.updateWidth) === 600 ? 900 : Number(input.updateWidth))) : 900,
     theme, darkTheme, sections, articleEdits,
     articleOrder: [...new Set((Array.isArray(input.articleOrder) ? input.articleOrder : []).filter(id => typeof id === 'string' && id.length <= 500))].slice(0, 1000),
-    customArticles, customSources, sourceListingOverrides,
+    customArticles, customSources, sourceListingOverrides, customCountries,
     hiddenSourceIds: (Array.isArray(input.hiddenSourceIds) ? input.hiddenSourceIds : []).filter(id => typeof id === 'string').slice(0, 500)
   };
 }
@@ -164,7 +171,7 @@ export function displaySources(baseSources, config) {
   }), ...config.customSources].filter(source => !hidden.has(source.id));
 }
 
-export function displaySiteContent(articles, config) {
+export function displaySiteContent(articles, config, excludedIds = new Set()) {
   const sectionById = new Map(config.sections.map(section => [section.id, section]));
   const items = [];
   for (const article of articles) {
@@ -187,23 +194,86 @@ export function displaySiteContent(articles, config) {
     if (article.hidden || sectionById.get(article.sectionId)?.visible === false) continue;
     items.push({ ...article, section: sectionById.get(article.sectionId)?.name || article.sectionId });
   }
+  const uniqueItems = deduplicateArticles(items, excludedIds);
   const order = new Map(config.sections.map((section, index) => [section.id, index]));
   const articleOrder = new Map((config.articleOrder ?? []).map((id, index) => [id, index]));
   const subsectionOrder = new Map(config.sections.map(section => [section.id, new Map((section.subsections ?? []).map((name, index) => [name, index]))]));
   const alphabetical = new Intl.Collator('en', { sensitivity: 'base', ignorePunctuation: true });
-  return items.sort((a, b) => (order.get(a.sectionId) ?? 999) - (order.get(b.sectionId) ?? 999)
+  return uniqueItems.sort((a, b) => (order.get(a.sectionId) ?? 999) - (order.get(b.sectionId) ?? 999)
     || (subsectionOrder.get(a.sectionId)?.get(a.subsection) ?? 999) - (subsectionOrder.get(b.sectionId)?.get(b.subsection) ?? 999)
     || alphabetical.compare(a.country || '', b.country || '')
     || (articleOrder.get(a.id) ?? 9999) - (articleOrder.get(b.id) ?? 9999));
 }
 
-export function moveArticleInConfig(config, articles, movedId, destination) {
-  const current = displaySiteContent(articles, config);
+export function canonicalArticleUrl(value) {
+  try {
+    const url = new URL(value);
+    for (const key of [...url.searchParams.keys()]) if (/^utm_|^(?:fbclid|gclid|mc_cid|mc_eid)$/i.test(key)) url.searchParams.delete(key);
+    return `${url.hostname.replace(/^www\./, '').toLowerCase()}${url.pathname.replace(/\/$/, '')}${url.search}`;
+  } catch { return ''; }
+}
+
+function headlineWords(value) {
+  return [...new Set(String(value || '').toLocaleLowerCase().replace(/\s+\|\s+[^|]+$/, '').replace(/\b(?:photo|photos|video|updated)\b/gi, '').match(/[\p{L}\p{N}]+/gu) || [])];
+}
+
+const placeNames = [...new Set([
+  ...NEWS_SECTIONS.filter(section => section.id !== 'Lead stories' && section.id !== 'Miscellaneous').flatMap(section => section.subsections),
+  ...Object.values(MISCELLANEOUS_COUNTRIES).flat(),
+  'Vietnamese', 'Kyrgyz', 'Tajik', 'Uzbek', 'Kazakh', 'Georgian', 'Armenian', 'Azerbaijani'
+].map(value => value.toLocaleLowerCase()))];
+
+function placesInHeadline(article) {
+  const text = String(article.title || '').toLocaleLowerCase();
+  return new Set(placeNames.filter(name => name !== String(article.country || '').toLocaleLowerCase() && new RegExp(`\\b${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'u').test(text)));
+}
+
+export function deduplicateArticles(articles, excludedIds = new Set()) {
+  const details = articles.map(article => ({ url: canonicalArticleUrl(article.url), words: headlineWords(article.title), places: placesInHeadline(article) }));
+  const parents = articles.map((_, index) => index);
+  const root = index => { while (parents[index] !== index) index = parents[index] = parents[parents[index]]; return index; };
+  for (let index = 0; index < articles.length; index++) for (let other = index + 1; other < articles.length; other++) {
+    const a = articles[index], b = articles[other], left = details[index], right = details[other];
+    if (left.url && left.url === right.url) { parents[root(other)] = root(index); continue; }
+    const firstTime = Date.parse(a.publishedAt), secondTime = Date.parse(b.publishedAt);
+    if (Number.isFinite(firstTime) && Number.isFinite(secondTime) && Math.abs(firstTime - secondTime) > 48 * 60 * 60 * 1000) continue;
+    const samePlacement = a.sectionId === b.sectionId && a.subsection === b.subsection && (a.country || '') === (b.country || '');
+    if ((!samePlacement && a.sourceName !== b.sourceName) || left.words.length < 6 || right.words.length < 6) continue;
+    const shared = left.words.filter(word => right.words.includes(word)).length;
+    if (shared / Math.max(left.words.length, right.words.length) < (samePlacement ? 0.74 : 0.9) || (samePlacement && left.words[0] !== right.words[0])) continue;
+    if (left.places.size && right.places.size && ![...left.places].some(place => right.places.has(place))) continue;
+    parents[root(other)] = root(index);
+  }
+  const winners = new Map();
+  for (let index = 0; index < articles.length; index++) {
+    const group = root(index), previous = winners.get(group);
+    const selectedOverExcluded = previous !== undefined && excludedIds.has(articles[previous].id) && !excludedIds.has(articles[index].id);
+    const manualOverSnapshot = previous !== undefined && excludedIds.has(articles[previous].id) === excludedIds.has(articles[index].id) && articles[previous].sourceId !== 'manual' && articles[index].sourceId === 'manual';
+    if (previous === undefined || selectedOverExcluded || manualOverSnapshot) winners.set(group, index);
+  }
+  const selected = new Set(winners.values());
+  return articles.filter((_, index) => selected.has(index));
+}
+
+export function moveArticleInConfig(config, articles, movedId, destination, excludedIds = new Set()) {
+  const current = displaySiteContent(articles, config, excludedIds);
   const moved = current.find(item => item.id === movedId);
   const section = config.sections.find(item => item.id === destination.sectionId && item.visible);
   if (!moved || !section || movedId === destination.anchorId) return config;
-  const subsection = destination.subsection || '';
-  const country = destination.country || '';
+  const requestedSubsection = String(destination.subsection || '').trim().slice(0, 100);
+  const subsection = section.subsections?.find(label => label.toLocaleLowerCase() === requestedSubsection.toLocaleLowerCase()) || requestedSubsection;
+  const requestedCountry = String(destination.country || '').trim().slice(0, 100);
+  const countryOptions = [...(MISCELLANEOUS_COUNTRIES[subsection] || []), ...(config.customCountries?.[subsection] || [])];
+  const country = countryOptions.find(label => label.toLocaleLowerCase() === requestedCountry.toLocaleLowerCase()) || requestedCountry;
+  if (destination.createSubsection && !subsection) return config;
+  if (destination.createCountry && (!country || section.id !== 'Miscellaneous')) return config;
+  const alphabetical = new Intl.Collator('en', { sensitivity: 'base', ignorePunctuation: true });
+  const sections = destination.createSubsection && !section.subsections?.some(label => label.toLocaleLowerCase() === subsection.toLocaleLowerCase())
+    ? config.sections.map(item => item.id === section.id ? { ...item, subsections: [...(item.subsections || []), subsection].sort(alphabetical.compare) } : item)
+    : config.sections;
+  const customCountries = destination.createCountry && !countryOptions.some(label => label.toLocaleLowerCase() === country.toLocaleLowerCase())
+    ? { ...config.customCountries, [subsection]: [...(config.customCountries?.[subsection] || []), country].sort(alphabetical.compare) }
+    : config.customCountries;
   const articleOrder = [...new Set([...(config.articleOrder ?? []), ...current.map(item => item.id)])].filter(id => id !== movedId);
   let anchorId = destination.anchorId;
   if (!anchorId) {
@@ -213,7 +283,7 @@ export function moveArticleInConfig(config, articles, movedId, destination) {
   const insertAt = anchorIndex < 0 ? articleOrder.length : anchorIndex + (destination.after === false ? 0 : 1);
   articleOrder.splice(insertAt, 0, movedId);
   if (config.customArticles.some(item => item.id === movedId)) {
-    return { ...config, articleOrder, customArticles: config.customArticles.map(item => item.id === movedId ? { ...item, sectionId: section.id, subsection, country } : item) };
+    return { ...config, sections, customCountries, articleOrder, customArticles: config.customArticles.map(item => item.id === movedId ? { ...item, sectionId: section.id, subsection, country } : item) };
   }
-  return { ...config, articleOrder, articleEdits: { ...config.articleEdits, [movedId]: { ...(config.articleEdits[movedId] ?? {}), sectionId: section.id, subsection, country } } };
+  return { ...config, sections, customCountries, articleOrder, articleEdits: { ...config.articleEdits, [movedId]: { ...(config.articleEdits[movedId] ?? {}), sectionId: section.id, subsection, country } } };
 }

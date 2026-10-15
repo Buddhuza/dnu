@@ -102,7 +102,7 @@ test('estimated import time remains identified after browser settings reload', (
   assert.equal(displaySiteContent([], config)[0].timeSource, 'inferred');
 });
 
-test('dragging a story changes its section, subsection, and order after settings reload', () => {
+test('moving a story changes its section, subsection, and order after settings reload', () => {
   const stories = [
     { id: 'one', section: 'Lead stories', subsection: 'Ukraine', title: 'One' },
     { id: 'two', section: 'Lead stories', subsection: 'Ukraine', title: 'Two' },
@@ -117,10 +117,57 @@ test('dragging a story changes its section, subsection, and order after settings
   assert.equal(stories[2].section, 'Eastern Europe');
 });
 
-test('dragging a custom story into an empty subsection retains its new placement', () => {
+test('moving a custom story into an empty subsection retains its new placement', () => {
   const config = defaultSiteConfig([]);
   config.customArticles = [{ id: 'manual-a', title: 'Custom', url: 'https://example.com/a', sectionId: 'Lead stories', subsection: 'Ukraine' }];
   const moved = moveArticleInConfig(config, [], 'manual-a', { sectionId: 'South Caucasus', subsection: 'Armenia', country: '' });
   assert.deepEqual(displaySiteContent([], normalizeSiteConfig(moved, []))[0].subsection, 'Armenia');
   assert.equal(moved.customArticles[0].sectionId, 'South Caucasus');
+});
+
+test('story duplicates are removed from the update and its download source', () => {
+  const stories = [
+    { id: 'first', url: 'https://example.com/article?utm_source=feed', section: 'South Caucasus', subsection: 'Azerbaijan', title: 'President hosts dinner for participants of CICA summit (PHOTO)', sourceName: 'Agency A' },
+    { id: 'same-url', url: 'https://www.example.com/article/', section: 'South Caucasus', subsection: 'Azerbaijan', title: 'Completely different metadata title', sourceName: 'Agency B' },
+    { id: 'same-story', url: 'https://other.example.com/story', section: 'South Caucasus', subsection: 'Azerbaijan', title: 'President hosts dinner for participants of CICA summit', sourceName: 'Agency C' },
+    { id: 'different-country', url: 'https://example.com/other', section: 'South Caucasus', subsection: 'Armenia', title: 'President hosts dinner for participants of CICA summit', sourceName: 'Agency D' }
+  ];
+  assert.deepEqual(displaySiteContent(stories, defaultSiteConfig(stories)).map(item => item.id), ['different-country', 'first']);
+  assert.deepEqual(displaySiteContent(stories, defaultSiteConfig(stories), new Set(['first'])).map(item => item.id), ['different-country', 'same-url']);
+});
+
+test('similar diplomatic headlines about different countries remain separate', () => {
+  const stories = [
+    { id: 'tajik', section: 'South Caucasus', subsection: 'Azerbaijan', title: 'President Ilham Aliyev met with President of Tajikistan', sourceName: 'Agency A' },
+    { id: 'uzbek', section: 'South Caucasus', subsection: 'Azerbaijan', title: 'President Ilham Aliyev met with President of Uzbekistan', sourceName: 'Agency B' }
+  ];
+  assert.equal(displaySiteContent(stories, defaultSiteConfig(stories)).length, 2);
+});
+
+test('a manually added version replaces a matching snapshot story', () => {
+  const stories = [{ id: 'snapshot', section: 'Eastern Europe', subsection: 'Ukraine', title: 'Ukraine and Germany agree on new security cooperation', url: 'https://example.com/original', sourceName: 'Agency' }];
+  const config = defaultSiteConfig(stories);
+  config.customArticles = [{ id: 'manual-new', sourceId: 'manual', sectionId: 'Eastern Europe', subsection: 'Ukraine', title: 'Ukraine and Germany agree on new security cooperation', url: 'https://example.org/alternate', sourceName: 'Another agency' }];
+  assert.deepEqual(displaySiteContent(stories, config).map(item => item.id), ['manual-new']);
+});
+
+test('similar headlines from different dates remain separate', () => {
+  const stories = [
+    { id: 'recent', section: 'Eastern Europe', subsection: 'Ukraine', title: 'Ukraine and Germany agree on new security cooperation', publishedAt: '2026-10-14T12:00:00Z' },
+    { id: 'old', section: 'Eastern Europe', subsection: 'Ukraine', title: 'Ukraine and Germany agree on new security cooperation', publishedAt: '2024-10-14T12:00:00Z' }
+  ];
+  assert.equal(displaySiteContent(stories, defaultSiteConfig(stories)).length, 2);
+});
+
+test('moving to a new regional country and organisation persists across reload', () => {
+  const stories = [{ id: 'one', section: 'Eastern Europe', subsection: 'Ukraine', title: 'One' }, { id: 'two', section: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'OSCE', title: 'Two' }];
+  const initial = defaultSiteConfig(stories);
+  const regional = moveArticleInConfig(initial, stories, 'one', { sectionId: 'South Eastern Europe', subsection: 'New country', country: '', createSubsection: true });
+  const organisation = moveArticleInConfig(regional, stories, 'two', { sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'New organisation', createCountry: true });
+  const restored = normalizeSiteConfig(organisation, stories);
+  assert.ok(restored.sections.find(item => item.id === 'South Eastern Europe').subsections.includes('New country'));
+  assert.ok(restored.customCountries['INTERNATIONAL ORGANISATIONS'].includes('New organisation'));
+  assert.deepEqual(displaySiteContent(stories, restored).map(item => [item.id, item.subsection, item.country]), [
+    ['one', 'New country', ''], ['two', 'INTERNATIONAL ORGANISATIONS', 'New organisation']
+  ]);
 });

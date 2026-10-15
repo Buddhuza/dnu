@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { formatViennaDateTime } from './viennaTime.js';
 import { MISCELLANEOUS_COUNTRIES } from './newsSections.js';
+import { canonicalArticleUrl } from './siteConfig.js';
 
 const firecrawlKeyStorage = 'dnu-firecrawl-api-key-v1';
 const savedFirecrawlKey = () => { try { return localStorage.getItem(firecrawlKeyStorage) || ''; } catch { return ''; } };
@@ -61,7 +62,7 @@ export default function AddArticlesDialog({ serverAvailable, sources, sections, 
     setBusy(true);
     const next = [];
     const pending = [];
-    const seen = new Set([...existingUrls, ...drafts.map(draft => draft.url)]);
+    const seen = new Set([...existingUrls, ...drafts.map(draft => draft.url)].map(canonicalArticleUrl));
     const pendingCount = drafts.filter(draft => !draft.added).length;
     let lastDirectStart = 0;
     for (const [index, line] of lines.entries()) {
@@ -69,7 +70,7 @@ export default function AddArticlesDialog({ serverAvailable, sources, sections, 
       let url;
       try { url = new URL(line); if (url.protocol !== 'https:') throw new Error(); }
       catch { next.push({ url: line, message: 'Use a full HTTPS article URL.' }); continue; }
-      if (seen.has(url.href)) { next.push({ url: line, message: 'Already in the update.' }); continue; }
+      if (seen.has(canonicalArticleUrl(url.href))) { next.push({ url: line, message: 'Already in the update.' }); continue; }
       if (pendingCount + pending.length >= remainingSlots) { next.push({ url: line, message: 'The browser has reached its 100 custom-story limit.' }); continue; }
       try {
         let result;
@@ -85,7 +86,7 @@ export default function AddArticlesDialog({ serverAvailable, sources, sections, 
           result = await importDirectArticle(url.href, apiKey.trim(), sources, fetch, { allowUnplaced: true });
         }
         pending.push({ ...result, added: false });
-        seen.add(url.href);
+        seen.add(canonicalArticleUrl(url.href));
       } catch (error) { next.push({ url: line, message: error.message || 'Could not add this article.' }); }
     }
     setDrafts(current => [...current, ...pending]);
