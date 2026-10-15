@@ -1,4 +1,5 @@
 import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES } from '../src/newsSections.js';
+import { preferredRegionalPlacement } from '../src/storyPlacement.js';
 import { viennaWallTimeToIso, wallTimeToIso } from '../src/viennaTime.js';
 import { isEnglishArticle, isRussianSource, isRussiaFocused } from './editorialPolicy.js';
 
@@ -154,6 +155,7 @@ export function importedArticle(payload, url, source, { allowUnplaced = false } 
   const { publishedAt, timeSource } = resolveArticleTime(payload, url);
   if (isRussianSource(source) && !isRussiaFocused(title, summary)) throw new Error('Russian outlets are limited to Russia-focused stories.');
   let placement = articlePlacement(extracted, title, summary);
+  if (placement) placement = preferredRegionalPlacement({ ...source, sourceId: source.id, title, summary, url: url.href }, placement);
   if (!placement && !allowUnplaced) throw new Error('The article could not be placed in a configured country or organisation.');
   if (isRussianSource(source) && placement && (placement.sectionId !== 'Miscellaneous' || placement.subsection !== 'RUSSIA / EURASIA')) {
     if (!allowUnplaced) throw new Error('Russian outlets are limited to the Russia section.');

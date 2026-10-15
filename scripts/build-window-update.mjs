@@ -5,6 +5,7 @@ import { articlePlacement } from '../server/importArticle.js';
 import { editorialScore, isRussianSource } from '../server/editorialPolicy.js';
 import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES } from '../src/newsSections.js';
 import { blockedPlacementReason } from '../src/sourcePolicy.js';
+import { preferredRegionalPlacement } from '../src/storyPlacement.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const sources = JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'));
@@ -137,6 +138,7 @@ for (const article of raw) {
   let placement = inferred || (article.section ? { sectionId: article.section, subsection: article.subsection, country: article.country } : null);
   if (source && isRussianSource(source)) placement = { sectionId: 'Miscellaneous', subsection: 'RUSSIA / EURASIA', country: 'Russia' };
   if (!placement?.sectionId || !placement.subsection) { excluded.push({ ...article, reason: 'country or organisation needs editorial placement' }); continue; }
+  placement = preferredRegionalPlacement(article, placement);
   const blockedSource = blockedPlacementReason(article, placement);
   if (blockedSource) { excluded.push({ ...article, reason: blockedSource }); continue; }
   if (placement.subsection === 'AFGHANISTAN / PAKISTAN' && !/\b(?:Russia|Russian|Kazakh\w*|Kyrgyz\w*|Tajik\w*|Turkmen\w*|Uzbek\w*|Central Asia\w*)\b/i.test(`${article.title} ${article.summary}`)) { excluded.push({ ...article, reason: 'Afghanistan story has no stated Russia or Central Asia connection' }); continue; }

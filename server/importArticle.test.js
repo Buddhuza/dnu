@@ -36,6 +36,14 @@ test('imported story has a reviewed headline, summary, source and placement', ()
   assert.equal(story.id, 'manual-https://example.org/article');
 });
 
+test('manual import uses the participating outlet country for a bilateral story', () => {
+  const url = publicArticleUrl('https://www.pan.am/en/626315');
+  const source = { id: 'source-47', name: 'PAN', url: 'https://www.pan.am/en/newsfeed' };
+  const payload = { data: { metadata: { ogTitle: 'Mirzoyan discusses bilateral issues with Kosovo’s official', publishedTime: '2026-10-14T07:18:00Z', language: 'en' }, json: { summary: 'Armenian Foreign Minister Ararat Mirzoyan met Kosovo’s deputy prime minister.', section: 'South Eastern Europe', subsection: 'Serbia / Kosovo' } } };
+  const story = importedArticle(payload, url, source);
+  assert.deepEqual([story.sectionId, story.subsection], ['South Caucasus', 'Armenia']);
+});
+
 test('non-English pages are refused, while an undated page uses the import time', () => {
   const url = publicArticleUrl('https://example.org/article');
   const source = sourceForArticle(url, []);
