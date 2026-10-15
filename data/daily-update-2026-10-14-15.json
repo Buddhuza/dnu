@@ -1,6 +1,6 @@
 {
   "title": "DAILY NEWS UPDATE",
-  "checkedAt": "2026-10-15T01:43:01.481Z",
+  "checkedAt": "2026-10-15T20:01:49.436Z",
   "windowHours": 24,
   "windowStart": "2026-10-14T00:00:00.000Z",
   "windowEnd": "2026-10-15T00:00:00.000Z",
@@ -104,6 +104,20 @@
       "reviewed": true
     },
     {
+      "id": "https://english.gazetatema.net/society/eu-calls-for-investigation-into-police-violence-claims-i347648",
+      "url": "https://english.gazetatema.net/society/eu-calls-for-investigation-into-police-violence-claims-i347648",
+      "sourceId": "source-6",
+      "sourceName": "TemA",
+      "group": "South Eastern Europe",
+      "title": "EU calls for investigation into police violence claims",
+      "summary": "The European Union has called for claims of police violence against protesters and journalists in Albania to be investigated as a priority.",
+      "publishedAt": "2026-10-14T12:23:41.000Z",
+      "section": "South Eastern Europe",
+      "subsection": "Albania",
+      "country": "",
+      "reviewed": true
+    },
+    {
       "id": "https://en.vijesti.me/world-a/balkan/831492/photo-of-the-most-violent-protests-against-rame-water-cannons-burning-government-buildings-and-banks-stones-at-police-tear-gas",
       "url": "https://en.vijesti.me/world-a/balkan/831492/photo-of-the-most-violent-protests-against-rame-water-cannons-burning-government-buildings-and-banks-stones-at-police-tear-gas",
       "sourceId": "source-12",
@@ -112,6 +126,34 @@
       "title": "PHOTO The most violent protests against Rama: Water cannons, government and bank buildings set on fire, rocks thrown at police, tear gas",
       "summary": "Police used water cannons tonight against tens of thousands of protesting students in the Albanian capital Tirana, where violent demonstrations are taking place for a second day.",
       "publishedAt": "2026-10-14T21:46:00.000Z",
+      "section": "South Eastern Europe",
+      "subsection": "Albania",
+      "country": "",
+      "reviewed": true
+    },
+    {
+      "id": "https://english.gazetatema.net/society/protest-turns-violent-as-bank-fire-threatens-homes-i347649",
+      "url": "https://english.gazetatema.net/society/protest-turns-violent-as-bank-fire-threatens-homes-i347649",
+      "sourceId": "source-6",
+      "sourceName": "TemA",
+      "group": "South Eastern Europe",
+      "title": "Protest turns violent as bank fire threatens homes",
+      "summary": "Masked protesters have smashed their way into a bank in Albania's capital, Tirana, breaking windows and wrecking the inside.",
+      "publishedAt": "2026-10-14T13:41:39.000Z",
+      "section": "South Eastern Europe",
+      "subsection": "Albania",
+      "country": "",
+      "reviewed": true
+    },
+    {
+      "id": "https://english.gazetatema.net/politics/foreign-ministry-demands-action-over-vatican-embassy-attack-i347638",
+      "url": "https://english.gazetatema.net/politics/foreign-ministry-demands-action-over-vatican-embassy-attack-i347638",
+      "sourceId": "source-6",
+      "sourceName": "TemA",
+      "group": "South Eastern Europe",
+      "title": "Foreign ministry demands action over Vatican embassy attack",
+      "summary": "The Foreign Ministry has condemned vandalism at the Vatican's embassy in Tirana, where the Holy See's flag was removed during Tuesday's violent protests.",
+      "publishedAt": "2026-10-14T07:41:13.000Z",
       "section": "South Eastern Europe",
       "subsection": "Albania",
       "country": "",
@@ -146,6 +188,20 @@
       "reviewed": true
     },
     {
+      "id": "https://n1info.ba/english/news/brkic-nato-expects-swift-formation-of-government-in-bosnia-and-intensified-cooperation/",
+      "url": "https://n1info.ba/english/news/brkic-nato-expects-swift-formation-of-government-in-bosnia-and-intensified-cooperation/",
+      "sourceId": "source-8",
+      "sourceName": "N1",
+      "group": "South Eastern Europe",
+      "title": "Brkic: NATO expects swift formation of government in Bosnia and intensified cooperation",
+      "summary": "NATO's senior officials and representatives of member states are closely monitoring the post-election situation in Bosnia and Herzegovina and expect a new government to be formed as soon as possible.",
+      "publishedAt": "2026-10-14T07:48:10.025Z",
+      "section": "South Eastern Europe",
+      "subsection": "Bosnia and Herzegovina",
+      "country": "",
+      "reviewed": true
+    },
+    {
       "id": "https://fena.ba/article/1701252/sda-election-result-the-partys-biggest-victory-since-2002-announces-government-formation-talks",
       "url": "https://fena.ba/article/1701252/sda-election-result-the-partys-biggest-victory-since-2002-announces-government-formation-talks",
       "sourceId": "source-23",
@@ -156,6 +212,20 @@
       "publishedAt": "2026-10-14T17:50:00.000Z",
       "section": "South Eastern Europe",
       "subsection": "Bosnia and Herzegovina",
+      "country": "",
+      "reviewed": true
+    },
+    {
+      "id": "https://mina.news/en/article/eu-membership-to-further-connect-montenegro-with-its-diaspora-and-create-new-investment-opportunities",
+      "url": "https://mina.news/en/article/eu-membership-to-further-connect-montenegro-with-its-diaspora-and-create-new-investment-opportunities",
+      "sourceId": "source-10",
+      "sourceName": "Mina",
+      "group": "South Eastern Europe",
+      "title": "EU membership to further connect Montenegro with its diaspora and create new investment opportunities",
+      "summary": "Montenegrin President Jakov Milatovic stated that Montenegro's accession to the European Union will enhance business cooperation with Poland.",
+      "publishedAt": "2026-10-14T17:42:15.000Z",
+      "section": "South Eastern Europe",
+      "subsection": "Montenegro",
       "country": "",
       "reviewed": true
     },
@@ -272,6 +342,20 @@
       "reviewed": true
     },
     {
+      "id": "https://www.kosovo-online.com/en/news/politics/kurti-meets-nato-and-kfor-commanders-discuss-security-situation-and-cooperation-14-10",
+      "url": "https://www.kosovo-online.com/en/news/politics/kurti-meets-nato-and-kfor-commanders-discuss-security-situation-and-cooperation-14-10",
+      "sourceId": "source-25",
+      "sourceName": "Kosovo Online",
+      "group": "South Eastern Europe",
+      "title": "Kurti meets NATO and KFOR commanders to discuss security situation and cooperation - Kosovo Online",
+      "summary": "Major General Roberto Vergori today assumed command of KFOR from Turkish General Ozkan Ulutas.",
+      "publishedAt": "2026-10-14T18:13:00.000Z",
+      "section": "South Eastern Europe",
+      "subsection": "Serbia / Kosovo",
+      "country": "",
+      "reviewed": true
+    },
+    {
       "id": "https://www.pan.am/en/626315",
       "url": "https://www.pan.am/en/626315",
       "sourceId": "source-47",
@@ -280,6 +364,20 @@
       "title": "Mirzoyan discusses bilateral issues with Kosovo’s official",
       "summary": "On October 13, Armenian Minister of Foreign Affairs and International Trade Ararat Mirzoyan met with Kosovo’s First Deputy Prime Minister Glauk Konjufca during the Warsaw Security Forum.",
       "publishedAt": "2026-10-14T07:18:00.000Z",
+      "section": "South Eastern Europe",
+      "subsection": "Serbia / Kosovo",
+      "country": "",
+      "reviewed": true
+    },
+    {
+      "id": "https://english.gazetatema.net/kosovo-region/us-keeps-kosovo-talks-on-hold-over-promises-to-serbs-i347650",
+      "url": "https://english.gazetatema.net/kosovo-region/us-keeps-kosovo-talks-on-hold-over-promises-to-serbs-i347650",
+      "sourceId": "source-6",
+      "sourceName": "TemA",
+      "group": "South Eastern Europe",
+      "title": "US keeps Kosovo talks on hold over promises to Serbs",
+      "summary": "The United States has told Kosovo it must keep its promises to the country's Serb minority before Washington will restart talks on closer cooperation.",
+      "publishedAt": "2026-10-14T14:42:24.000Z",
       "section": "South Eastern Europe",
       "subsection": "Serbia / Kosovo",
       "country": "",
@@ -468,6 +566,20 @@
       "reviewed": true
     },
     {
+      "id": "https://ipn.md/en/ukraine-will-increase-by-20-the-water-flow-discharged-from-novodnestrovsk-prime-minister-tofan/",
+      "url": "https://ipn.md/en/ukraine-will-increase-by-20-the-water-flow-discharged-from-novodnestrovsk-prime-minister-tofan/",
+      "sourceId": "source-32",
+      "sourceName": "IPN",
+      "group": "East Europe",
+      "title": "Ukraine will increase by 20% the water flow discharged from Novodnestrovsk, Prime Minister Tofan - ipn.md",
+      "summary": "Ukraine has agreed to increase by approximately 20% the water flow discharged from the Novodnestrovsk hydroelectric complex, in the context of the difficult situation on the upper course of the Dniester.",
+      "publishedAt": "2026-10-14T13:04:32.000Z",
+      "section": "Eastern Europe",
+      "subsection": "Moldova",
+      "country": "",
+      "reviewed": true
+    },
+    {
       "id": "https://www.moldpres.md/eng/official/igor-grosu-va-participa-la-conferinta-europeana-a-presedintilor-de-parlament-din-statele-membre-ale-consiliului-europei-eng",
       "url": "https://www.moldpres.md/eng/official/igor-grosu-va-participa-la-conferinta-europeana-a-presedintilor-de-parlament-din-statele-membre-ale-consiliului-europei-eng",
       "sourceId": "source-30",
@@ -476,6 +588,20 @@
       "title": "Moldovan parliament speaker to attend European Conference of Presidents of Parliament of Council of Europe member states",
       "summary": "Parliament Speaker Igor Grosu will deliver an address during the panel dedicated to hybrid threats to resilient democracies at the conference.",
       "publishedAt": "2026-10-14T10:50:00.000Z",
+      "section": "Eastern Europe",
+      "subsection": "Moldova",
+      "country": "",
+      "reviewed": true
+    },
+    {
+      "id": "https://ipn.md/en/moldova-could-reach-500-million-euros-through-the-growth-plan-by-the-end-of-the-year/",
+      "url": "https://ipn.md/en/moldova-could-reach-500-million-euros-through-the-growth-plan-by-the-end-of-the-year/",
+      "sourceId": "source-32",
+      "sourceName": "IPN",
+      "group": "East Europe",
+      "title": "Moldova could reach 500 million euros through the Growth Plan by the end of the year - ipn.md",
+      "summary": "Marta Kos stated that Moldova could receive over 150 million euros unlocked through the Growth Plan.",
+      "publishedAt": "2026-10-14T09:05:48.000Z",
       "section": "Eastern Europe",
       "subsection": "Moldova",
       "country": "",
@@ -650,6 +776,20 @@
       "reviewed": true
     },
     {
+      "id": "https://www.aa.com.tr/en/europe/eu-disburses-32b-to-ukraine-for-drones-missiles-air-defense-systems/4088419",
+      "url": "https://www.aa.com.tr/en/europe/eu-disburses-32b-to-ukraine-for-drones-missiles-air-defense-systems/4088419",
+      "sourceId": "source-149",
+      "sourceName": "AA",
+      "group": "Miscl",
+      "title": "EU disburses $3.2B to Ukraine for drones, missiles, air defense systems",
+      "summary": "The European Commission disbursed €2.86 billion ($3.2 billion) to Ukraine for urgent military needs amid continued attacks.",
+      "publishedAt": "2026-10-14T11:15:01.000Z",
+      "section": "Eastern Europe",
+      "subsection": "Ukraine",
+      "country": "",
+      "reviewed": true
+    },
+    {
       "id": "https://hromadske.ua/en/amp/personaliyi/272491-former-ukrainian-president-yushchenko-urges-trump-to-reconsider-russian-fuel-trade",
       "url": "https://hromadske.ua/en/amp/personaliyi/272491-former-ukrainian-president-yushchenko-urges-trump-to-reconsider-russian-fuel-trade",
       "sourceId": "source-38",
@@ -706,6 +846,20 @@
       "reviewed": true
     },
     {
+      "id": "https://www.bbc.com/news/articles/c8wy9veedgygo",
+      "url": "https://www.bbc.com/news/articles/c8wy9veedgygo",
+      "sourceId": "source-83",
+      "sourceName": "BBC",
+      "group": "Miscl",
+      "title": "Starlink: Musk says US government may be behind slowdown of Ukraine drone speeds",
+      "summary": "Starlink restricted speed limits on Tuesday night to 100mph (160km/h), meaning any weapons that travelled faster than that lost connectivity to the network.",
+      "publishedAt": "2026-10-14T20:17:09.546Z",
+      "section": "Eastern Europe",
+      "subsection": "Ukraine",
+      "country": "",
+      "reviewed": true
+    },
+    {
       "id": "https://www.nbcnews.com/world/ukraine/ukraine-starlink-restrictions-military-intel-trump-zelenskyy-russia-rcna603412",
       "url": "https://www.nbcnews.com/world/ukraine/ukraine-starlink-restrictions-military-intel-trump-zelenskyy-russia-rcna603412",
       "sourceId": "source-159",
@@ -742,6 +896,20 @@
       "title": "Ukrainian military’s access to Starlink satellite internet suddenly restricted",
       "summary": "The Ukrainian military's access to Starlink internet terminals was restricted on Tuesday evening, leading to the failure of several combat missions.",
       "publishedAt": "2026-10-14T16:18:46.000Z",
+      "section": "Eastern Europe",
+      "subsection": "Ukraine",
+      "country": "",
+      "reviewed": true
+    },
+    {
+      "id": "https://charter97.org/en/news/2026/10/14/701865/",
+      "url": "https://charter97.org/en/news/2026/10/14/701865/",
+      "sourceId": "source-29",
+      "sourceName": "Charter 97",
+      "group": "East Europe",
+      "title": "Ukraine Has Found A Way To Recruit More Motivated Soldiers Into The Army",
+      "summary": "Since 2024, the Ukrainian army has been developing a decentralized recruitment system that allows recruits to choose a brigade based on various factors including specialization and reputation of commanders.",
+      "publishedAt": "2026-10-14T16:17:00.000Z",
       "section": "Eastern Europe",
       "subsection": "Ukraine",
       "country": "",
@@ -938,6 +1106,20 @@
       "title": "Zanzibar president arrives in Armenia for COP17 Leaders’ Summit",
       "summary": "The president of Zanzibar has arrived in Armenia to participate in the COP17 Leaders’ Summit.",
       "publishedAt": "2026-10-14T12:53:00.000Z",
+      "section": "South Caucasus",
+      "subsection": "Armenia",
+      "country": "",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.azatutyun.am/a/33876524.html",
+      "url": "https://www.azatutyun.am/a/33876524.html",
+      "sourceId": "source-46",
+      "sourceName": "Armenia Liberty",
+      "group": "South Caucasus",
+      "title": "Russian Railway Chief Holds ‘Very Good’ Talks With Pashinian",
+      "summary": "The chief executive of the Russian Railways indicated that Prime Minister Nikol Pashinian did not insist on ending its long-term management of Armenia’s railway network during their meeting.",
+      "publishedAt": "2026-10-14T11:53:59.000Z",
       "section": "South Caucasus",
       "subsection": "Armenia",
       "country": "",
@@ -1490,6 +1672,20 @@
       "reviewed": true
     },
     {
+      "id": "https://1tv.ge/lang/en/news/georgia-signs-additional-protocol-to-the-warsaw-convention/",
+      "url": "https://1tv.ge/lang/en/news/georgia-signs-additional-protocol-to-the-warsaw-convention/",
+      "sourceId": "source-62",
+      "sourceName": "1TV",
+      "group": "South Caucasus",
+      "title": "Georgia signs Additional Protocol to the Warsaw Convention - 1TV",
+      "summary": "In Strasbourg, Georgia signed the Additional Protocol of the Council of Europe aimed at enhancing efforts against money laundering and terrorist financing.",
+      "publishedAt": "2026-10-14T15:25:30.000Z",
+      "section": "South Caucasus",
+      "subsection": "Georgia",
+      "country": "",
+      "reviewed": true
+    },
+    {
       "id": "https://kaztag.kz/en/news/pressure-on-civil-society-in-kazakhstan-highlighted-at-osce-conference",
       "url": "https://kaztag.kz/en/news/pressure-on-civil-society-in-kazakhstan-highlighted-at-osce-conference",
       "sourceId": "source-70",
@@ -1744,11 +1940,11 @@
     {
       "id": "https://www.trend.az/casia/kyrgyzstan/4234573.html",
       "url": "https://www.trend.az/casia/kyrgyzstan/4234573.html",
-      "sourceId": "source-56",
+      "sourceId": "source-67",
       "sourceName": "Trend",
-      "group": "South Caucasus",
+      "group": "Central Asia",
       "title": "Kyrgyzstan, Bangladesh sign foreign ministry cooperation program for 2027-2028",
-      "summary": "Kyrgyzstan and Bangladesh have signed a cooperation program between their foreign ministries for 2027-2028.",
+      "summary": "Kyrgyzstan and Bangladesh have signed a cooperation program between their foreign ministries following the second round of political consultations held in Bishkek.",
       "publishedAt": "2026-10-14T06:45:00.000Z",
       "section": "Central Asia",
       "subsection": "Kyrgyzstan",
@@ -2358,6 +2554,20 @@
       "reviewed": true
     },
     {
+      "id": "https://www.ansa.it/english/news/news_from_embassies/2026/10/14/indian-lawmakers-and-the-italian-ambassador-discuss-bilateral-relations_83a4a1ec-746c-4f63-936b-47eb38a1868f.html",
+      "url": "https://www.ansa.it/english/news/news_from_embassies/2026/10/14/indian-lawmakers-and-the-italian-ambassador-discuss-bilateral-relations_83a4a1ec-746c-4f63-936b-47eb38a1868f.html",
+      "sourceId": "source-93",
+      "sourceName": "ANSA",
+      "group": "Miscl",
+      "title": "Indian lawmakers and the Italian ambassador discuss bilateral relations",
+      "summary": "A delegation from the Italy-India Friendship Group discussed the strategic partnership launched last May during a meeting held at the Indian Parliament.",
+      "publishedAt": "2026-10-14T15:14:00.000Z",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Italy",
+      "reviewed": true
+    },
+    {
       "id": "https://newsukraine.rbc.ua/news/italy-s-meloni-calls-trump-s-russian-diesel-1792005167.html",
       "url": "https://newsukraine.rbc.ua/news/italy-s-meloni-calls-trump-s-russian-diesel-1792005167.html",
       "sourceId": "source-35",
@@ -2386,6 +2596,20 @@
       "reviewed": true
     },
     {
+      "id": "https://www.ansa.it/english/news/2026/10/14/radars-in-the-balkans-to-defend-italy-too-says-crosetto_44f6d985-956e-4ac0-9d46-c19667cff2f9.html",
+      "url": "https://www.ansa.it/english/news/2026/10/14/radars-in-the-balkans-to-defend-italy-too-says-crosetto_44f6d985-956e-4ac0-9d46-c19667cff2f9.html",
+      "sourceId": "source-93",
+      "sourceName": "ANSA",
+      "group": "Miscl",
+      "title": "Radars in the Balkans to defend Italy too says Crosetto",
+      "summary": "Italy's Defence Minister Guido Crosetto announced the installation of radars in the Balkans to enhance security during a ceremony in Pristina.",
+      "publishedAt": "2026-10-14T10:58:00.000Z",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Italy",
+      "reviewed": true
+    },
+    {
       "id": "https://www.interpressnews.ge/en/article/150178-shalva-papuashvili-to-attend-conference-of-speakers-of-parliaments-of-council-of-europe-member-states-in-rome/",
       "url": "https://www.interpressnews.ge/en/article/150178-shalva-papuashvili-to-attend-conference-of-speakers-of-parliaments-of-council-of-europe-member-states-in-rome/",
       "sourceId": "source-63",
@@ -2394,6 +2618,48 @@
       "title": "Shalva Papuashvili to attend conference of Speakers of Parliaments of Council of Europe Member States in Rome",
       "summary": "Georgian Parliament Speaker Shalva Papuashvili has travelled to Rome, the capital of Italy, on a working visit to participate in the Conference of Speakers of Parliaments of the Council of Europe Member States.",
       "publishedAt": "2026-10-14T16:34:00.000Z",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Italy",
+      "reviewed": true
+    },
+    {
+      "id": "https://charter97.org/en/news/2026/10/14/701856/",
+      "url": "https://charter97.org/en/news/2026/10/14/701856/",
+      "sourceId": "source-29",
+      "sourceName": "Charter 97",
+      "group": "East Europe",
+      "title": "Meloni Recalled The Berlin Wall And Russian Tanks",
+      "summary": "Italian Prime Minister Giorgia Meloni stated that support for Ukraine is not an alternative to peace; on the contrary, it is what brings that peace closer.",
+      "publishedAt": "2026-10-14T15:29:00.000Z",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Italy",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.ansa.it/english/news/news_from_embassies/2026/10/14/italian-czech-business-forum-tomorrow-at-the-parliament-in-prague_8cdefa70-d5c2-4f97-9f4d-42e270bd642c.html",
+      "url": "https://www.ansa.it/english/news/news_from_embassies/2026/10/14/italian-czech-business-forum-tomorrow-at-the-parliament-in-prague_8cdefa70-d5c2-4f97-9f4d-42e270bd642c.html",
+      "sourceId": "source-93",
+      "sourceName": "ANSA",
+      "group": "Miscl",
+      "title": "Italian-Czech Business Forum Tomorrow at the Parliament in Prague",
+      "summary": "The event will focus on global challenges facing industry and logistics during a period of strategic realignment in Europe.",
+      "publishedAt": "2026-10-14T15:08:00.000Z",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Italy",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.ansa.it/english/news/2026/10/14/friendship-between-italy-and-us-founded-on-freedom-and-democracy-says-meloni_f4486377-0711-4efe-995b-f2fed2895ff3.html",
+      "url": "https://www.ansa.it/english/news/2026/10/14/friendship-between-italy-and-us-founded-on-freedom-and-democracy-says-meloni_f4486377-0711-4efe-995b-f2fed2895ff3.html",
+      "sourceId": "source-93",
+      "sourceName": "ANSA",
+      "group": "Miscl",
+      "title": "Friendship between Italy and US founded on freedom and democracy says Meloni",
+      "summary": "The Italian-American community, which today numbers around 28 million people, gives the bond between Italy and the United States a human face.",
+      "publishedAt": "2026-10-14T10:29:00.000Z",
       "section": "Miscellaneous",
       "subsection": "WESTERN / CENTRAL EUROPE",
       "country": "Italy",
@@ -2540,6 +2806,20 @@
       "reviewed": true
     },
     {
+      "id": "https://www.theportugalnews.com/news/2026-10-14/fixed-taxi-fares-at-lisbon-airport-to-take-affect/1100297",
+      "url": "https://www.theportugalnews.com/news/2026-10-14/fixed-taxi-fares-at-lisbon-airport-to-take-affect/1100297",
+      "sourceId": "source-146",
+      "sourceName": "Portugal News",
+      "group": "Miscl",
+      "title": "Fixed taxi fares at Portugal airport to take affect",
+      "summary": "The new system for taxis operating at Humberto Delgado Airport begins on Thursday and will initially cover all taxi drivers, including those not yet accredited for the service.",
+      "publishedAt": "2026-10-14T14:33:00.000Z",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "Portugal",
+      "reviewed": true
+    },
+    {
       "id": "https://www.romania-insider.com/business/fides-romania-needs-national-affordable-housing-program",
       "url": "https://www.romania-insider.com/business/fides-romania-needs-national-affordable-housing-program",
       "sourceId": "source-108",
@@ -2666,6 +2946,20 @@
       "reviewed": true
     },
     {
+      "id": "https://www.bbc.com/news/articles/cmx23q4dwvneo",
+      "url": "https://www.bbc.com/news/articles/cmx23q4dwvneo",
+      "sourceId": "source-83",
+      "sourceName": "BBC",
+      "group": "Miscl",
+      "title": "Burnham treads carefully in Zelensky visit, balancing Trump and Ukraine",
+      "summary": "President Volodymyr Zelensky's visit to London follows a well-trodden diplomatic path in a war now in its fifth year.",
+      "publishedAt": "2026-10-14T14:30:48.452Z",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "United Kingdom",
+      "reviewed": true
+    },
+    {
       "id": "https://www.theguardian.com/politics/2026/oct/14/uk-sanctions-powers-action-supporters-israeli-settlements",
       "url": "https://www.theguardian.com/politics/2026/oct/14/uk-sanctions-powers-action-supporters-israeli-settlements",
       "sourceId": "source-106",
@@ -2674,6 +2968,20 @@
       "title": "New UK sanctions powers will enable action against supporters of illegal Israeli settlements",
       "summary": "The UK is expanding its sanctions powers to freeze assets and target entities enabling illegal Israeli settlements, obstructing humanitarian aid or unlawfully holding prisoners.",
       "publishedAt": "2026-10-14T16:51:25.000Z",
+      "section": "Miscellaneous",
+      "subsection": "WESTERN / CENTRAL EUROPE",
+      "country": "United Kingdom",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.bbc.com/news/articles/cq99z1rr3lmpo",
+      "url": "https://www.bbc.com/news/articles/cq99z1rr3lmpo",
+      "sourceId": "source-83",
+      "sourceName": "BBC",
+      "group": "Miscl",
+      "title": "Omagh bombing inquiry: Ex-watchdog told she would 'destroy peace process'",
+      "summary": "The 1998 Omagh bombing killed 29 people, including a woman pregnant with twins.",
+      "publishedAt": "2026-10-14T15:34:19.964Z",
       "section": "Miscellaneous",
       "subsection": "WESTERN / CENTRAL EUROPE",
       "country": "United Kingdom",
@@ -2890,6 +3198,20 @@
       "reviewed": true
     },
     {
+      "id": "https://www.rudaw.net/english/categories/iraq/1079726",
+      "url": "https://www.rudaw.net/english/categories/iraq/1079726",
+      "sourceId": "source-117",
+      "sourceName": "Rudaw",
+      "group": "Miscl",
+      "title": "Iraq, Iran to discuss presence of Iranian Kurdish opposition groups on October 19",
+      "summary": "Iraqi National Security Advisor Qasim al-Abboudi stated that Baghdad has agreed to establish camps for members of the Kurdish opposition parties and their families away from the Iranian border.",
+      "publishedAt": "2026-10-14T14:41:00.000Z",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "country": "Iran",
+      "reviewed": true
+    },
+    {
       "id": "https://www.iranintl.com/en/202610142337",
       "url": "https://www.iranintl.com/en/202610142337",
       "sourceId": "source-119",
@@ -2918,6 +3240,20 @@
       "reviewed": true
     },
     {
+      "id": "https://www.aa.com.tr/en/middle-east/lebanese-president-iranian-foreign-minister-stress-diplomatic-solutions-to-regional-conflicts/4088645",
+      "url": "https://www.aa.com.tr/en/middle-east/lebanese-president-iranian-foreign-minister-stress-diplomatic-solutions-to-regional-conflicts/4088645",
+      "sourceId": "source-149",
+      "sourceName": "AA",
+      "group": "Miscl",
+      "title": "Lebanese president, top Iranian diplomat stress diplomatic solutions to regional conflicts",
+      "summary": "During a phone call, Iranian Foreign Minister Abbas Araghchi emphasized the need to halt Israeli attacks on Lebanon.",
+      "publishedAt": "2026-10-14T13:44:57.000Z",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "country": "Lebanon",
+      "reviewed": true
+    },
+    {
       "id": "https://today.lorientlejour.com/article/1550815/aoun-araghchi-agree-on-need-for-diplomatic-solutions-to-regional-conflicts.html",
       "url": "https://today.lorientlejour.com/article/1550815/aoun-araghchi-agree-on-need-for-diplomatic-solutions-to-regional-conflicts.html",
       "sourceId": "source-121",
@@ -2943,6 +3279,34 @@
       "section": "Miscellaneous",
       "subsection": "MIDDLE EAST / NORTH AFRICA",
       "country": "Lebanon",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.aa.com.tr/en/middle-east/un-envoy-says-libyas-political-progress-milestone-significant-challenges-remain/4088909",
+      "url": "https://www.aa.com.tr/en/middle-east/un-envoy-says-libyas-political-progress-milestone-significant-challenges-remain/4088909",
+      "sourceId": "source-149",
+      "sourceName": "AA",
+      "group": "Miscl",
+      "title": "UN envoy says Libya's political progress 'milestone,’ significant challenges remain",
+      "summary": "Hanna Tetteh emphasized that the Smaller Convening Agreement signed in Tripoli on Aug. 30 marks a break in Libya's prolonged political deadlock.",
+      "publishedAt": "2026-10-14T17:32:01.000Z",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "country": "Libya",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.independent.com.mt/articles/2026-10-14/local-news/Home-Affairs-Minister-meets-Libyan-Prime-Minister-Abdul-Hamid-Ddeibah-6736293788",
+      "url": "https://www.independent.com.mt/articles/2026-10-14/local-news/Home-Affairs-Minister-meets-Libyan-Prime-Minister-Abdul-Hamid-Ddeibah-6736293788",
+      "sourceId": "source-145",
+      "sourceName": "Malta Independent",
+      "group": "Miscl",
+      "title": "Home Affairs Minister meets Libyan Prime Minister Abdul Hamid Ddeibah - The Malta Independent",
+      "summary": "The Minister for Home Affairs, Glenn Bedingfield, met with the Prime Minister of Libya, Abdul Hamid Ddeibah, and his Libyan counterpart Emad Al-Trabelsi on Wednesday to discuss topics of common interest for the two countries.",
+      "publishedAt": "2026-10-14T19:57:00.000Z",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "country": "Libya",
       "reviewed": true
     },
     {
@@ -3184,6 +3548,20 @@
       "reviewed": true
     },
     {
+      "id": "https://www.tolonews.com/afghanistan-201197",
+      "url": "https://www.tolonews.com/afghanistan-201197",
+      "sourceId": "source-169",
+      "sourceName": "Tolo",
+      "group": "Miscl",
+      "title": "Moscow to Host Regional Talks on Afghanistan’s Security Thursday | TOLOnews",
+      "summary": "A joint meeting of the Collective Security Treaty Organization, the Commonwealth of Independent States, and the Shanghai Cooperation Organization is scheduled to take place on Thursday in Moscow to discuss the security situation in Afghanistan and Central Asia.",
+      "publishedAt": "2026-10-14T19:01:22.000Z",
+      "section": "Miscellaneous",
+      "subsection": "RUSSIA / EURASIA",
+      "country": "Russia",
+      "reviewed": true
+    },
+    {
       "id": "https://en.interfax.com.ua/news/general/1219914.html",
       "url": "https://en.interfax.com.ua/news/general/1219914.html",
       "sourceId": "source-33",
@@ -3408,6 +3786,34 @@
       "reviewed": true
     },
     {
+      "id": "https://charter97.org/en/news/2026/10/14/701893/",
+      "url": "https://charter97.org/en/news/2026/10/14/701893/",
+      "sourceId": "source-29",
+      "sourceName": "Charter 97",
+      "group": "East Europe",
+      "title": "Media Reports: FBI Director Arrives In Russia",
+      "summary": "Kash Patel arrived in Russia for a meeting, which was reported by the American cable news channel MS NOW, citing two sources.",
+      "publishedAt": "2026-10-14T19:34:00.000Z",
+      "section": "Miscellaneous",
+      "subsection": "RUSSIA / EURASIA",
+      "country": "Russia",
+      "reviewed": true
+    },
+    {
+      "id": "https://edition.cnn.com/2026/10/14/world/putin-trump-ukraine-war-intelligence-latam-intl",
+      "url": "https://edition.cnn.com/2026/10/14/world/putin-trump-ukraine-war-intelligence-latam-intl",
+      "sourceId": "source-101",
+      "sourceName": "CNN",
+      "group": "Miscl",
+      "title": "Gift for Putin as fears grow that Trump is turning the screws on Ukraine | CNN",
+      "summary": "Twice now, Ukraine’s President Volodymyr Zelensky has declared Kyiv was not given the usual warning about Russian ballistic missile attacks from its partners.",
+      "publishedAt": "2026-10-14T16:57:26.894Z",
+      "section": "Miscellaneous",
+      "subsection": "RUSSIA / EURASIA",
+      "country": "Russia",
+      "reviewed": true
+    },
+    {
       "id": "https://meduza.io/en/feature/2026/10/14/yelena-morgunova-wife-of-russian-performance-artist-pavel-krisevich-describes-two-arrests-threats-against-her-family-and-an-ultimatum-to-leave-russia",
       "url": "https://meduza.io/en/feature/2026/10/14/yelena-morgunova-wife-of-russian-performance-artist-pavel-krisevich-describes-two-arrests-threats-against-her-family-and-an-ultimatum-to-leave-russia",
       "sourceId": "source-116",
@@ -3486,6 +3892,20 @@
       "title": "Moscow Hails Trump Diesel Deal, Promises Direct Exports to U.S. - The Moscow Times",
       "summary": "A diesel supply deal with the United States will boost Russia’s economy and include direct exports to the U.S. market, according to Deputy Prime Minister Alexander Novak.",
       "publishedAt": "2026-10-14T13:11:00.000Z",
+      "section": "Miscellaneous",
+      "subsection": "RUSSIA / EURASIA",
+      "country": "Russia",
+      "reviewed": true
+    },
+    {
+      "id": "https://charter97.org/en/news/2026/10/14/701830/",
+      "url": "https://charter97.org/en/news/2026/10/14/701830/",
+      "sourceId": "source-29",
+      "sourceName": "Charter 97",
+      "group": "East Europe",
+      "title": "An Attack By Nearly 500 Drones Brought Moscow's Airports To A Standstill",
+      "summary": "More than 500 flights were delayed or canceled due to a massive attack by Ukrainian drones on Moscow.",
+      "publishedAt": "2026-10-14T12:17:00.000Z",
       "section": "Miscellaneous",
       "subsection": "RUSSIA / EURASIA",
       "country": "Russia",
@@ -3668,6 +4088,20 @@
       "title": "Lithuania works on mending ties with China less publicly, expects breakthrough in December",
       "summary": "Lithuania expects to make progress toward restoring diplomatic representation with China by the end of the year, Prime Minister Mindaugas Sinkevičius said Wednesday.",
       "publishedAt": "2026-10-14T14:15:00.000Z",
+      "section": "Miscellaneous",
+      "subsection": "NORTH EAST ASIA",
+      "country": "China",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.aa.com.tr/en/asia-pacific/china-will-continue-to-play-constructive-role-for-comprehensive-ceasefire-in-middle-east-says-top-diplomat/4088983",
+      "url": "https://www.aa.com.tr/en/asia-pacific/china-will-continue-to-play-constructive-role-for-comprehensive-ceasefire-in-middle-east-says-top-diplomat/4088983",
+      "sourceId": "source-149",
+      "sourceName": "AA",
+      "group": "Miscl",
+      "title": "China will continue to play 'constructive' role for 'comprehensive' ceasefire in Middle East, says top diplomat",
+      "summary": "Wang Yi met with Khaldoon Khalifa Al Mubarak, the special UAE envoy to China, in Beijing.",
+      "publishedAt": "2026-10-14T18:54:25.000Z",
       "section": "Miscellaneous",
       "subsection": "NORTH EAST ASIA",
       "country": "China",
@@ -3870,6 +4304,20 @@
       "reviewed": true
     },
     {
+      "id": "https://www.aa.com.tr/en/americas/us-judge-blocks-sanctions-against-2-human-rights-groups-engaging-with-international-court/4088642",
+      "url": "https://www.aa.com.tr/en/americas/us-judge-blocks-sanctions-against-2-human-rights-groups-engaging-with-international-court/4088642",
+      "sourceId": "source-149",
+      "sourceName": "AA",
+      "group": "Miscl",
+      "title": "US judge blocks sanctions against 2 human rights groups engaging with international court",
+      "summary": "A US federal judge blocked the Trump administration from penalizing two human rights organizations communicating with the International Criminal Court (ICC), ruling that the measures unconstitutionally restrict free speech.",
+      "publishedAt": "2026-10-14T13:45:43.000Z",
+      "section": "Miscellaneous",
+      "subsection": "NORTH AMERICA",
+      "country": "United States",
+      "reviewed": true
+    },
+    {
       "id": "https://www.turkishminute.com/2026/10/14/trump-says-erdogan-would-do-as-i-ask-in-response-to-yemens-houthis/",
       "url": "https://www.turkishminute.com/2026/10/14/trump-says-erdogan-would-do-as-i-ask-in-response-to-yemens-houthis/",
       "sourceId": "source-147",
@@ -3968,6 +4416,20 @@
       "reviewed": true
     },
     {
+      "id": "https://www.foxnews.com/politics/trump-backed-gop-candidate-ousted-scandal-plagued-incumbent-warns-never-ending-war-iran",
+      "url": "https://www.foxnews.com/politics/trump-backed-gop-candidate-ousted-scandal-plagued-incumbent-warns-never-ending-war-iran",
+      "sourceId": "source-100",
+      "sourceName": "Fox",
+      "group": "Miscl",
+      "title": "Trump-backed GOP candidate who ousted scandal-plagued incumbent warns against 'never-ending war' with Iran",
+      "summary": "Ryan Elijah, who defeated Rep. Cory Mills in the Republican primary, says the U.S. must prevent a nuclear-armed Iran while drawing down the military conflict.",
+      "publishedAt": "2026-10-14T19:38:56.000Z",
+      "section": "Miscellaneous",
+      "subsection": "NORTH AMERICA",
+      "country": "United States",
+      "reviewed": true
+    },
+    {
       "id": "https://www.kurdistan24.net/en/story/946122/pm-barzani-meets-delegation-representing-more-than-30-us-companies",
       "url": "https://www.kurdistan24.net/en/story/946122/pm-barzani-meets-delegation-representing-more-than-30-us-companies",
       "sourceId": "source-118",
@@ -3976,6 +4438,20 @@
       "title": "PM Barzani Meets Delegation Representing More Than 30 US Companies",
       "summary": "The delegation represented companies involved in defense and security, energy, logistics, transportation, and industry.",
       "publishedAt": "2026-10-14T15:10:11.000Z",
+      "section": "Miscellaneous",
+      "subsection": "NORTH AMERICA",
+      "country": "United States",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.defensenews.com/breaking-news/2026/10/14/pete-hegseth-to-discuss-autonomous-warfare-at-ausa-annual-2026-on-oct-14-at-10am-est/",
+      "url": "https://www.defensenews.com/breaking-news/2026/10/14/pete-hegseth-to-discuss-autonomous-warfare-at-ausa-annual-2026-on-oct-14-at-10am-est/",
+      "sourceId": "source-161",
+      "sourceName": "Defense News",
+      "group": "Miscl",
+      "title": "Pete Hegseth to discuss autonomous warfare at AUSA Annual 2026 on Oct 14 at 10am EST",
+      "summary": "Secretary of War Pete Hegseth is scheduled to appear at the Association of the United States Army’s 2026 Annual Meeting for a discussion on the future of autonomous warfare.",
+      "publishedAt": "2026-10-14T14:00:03.405Z",
       "section": "Miscellaneous",
       "subsection": "NORTH AMERICA",
       "country": "United States",
@@ -4060,6 +4536,20 @@
       "title": "Rising inequality, diesel deal and another execution",
       "summary": "Rising inequality and income disparity may well play a big part in the forthcoming US midterm elections, according to the Neue Zürcher Zeitung.",
       "publishedAt": "2026-10-14T15:00:00.000Z",
+      "section": "Miscellaneous",
+      "subsection": "NORTH AMERICA",
+      "country": "United States",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.foxnews.com/world/african-nations-knifes-edge-us-embassy-warns-americans-long-range-attacks",
+      "url": "https://www.foxnews.com/world/african-nations-knifes-edge-us-embassy-warns-americans-long-range-attacks",
+      "sourceId": "source-100",
+      "sourceName": "Fox",
+      "group": "Miscl",
+      "title": "African nations on ‘knife’s edge’ as US embassy warns Americans of long-range attacks",
+      "summary": "The U.S. Embassy in Addis Ababa warned U.S. citizens of the danger of \"long-range attacks\" following reports of drone strikes in Ethiopia's capital.",
+      "publishedAt": "2026-10-14T14:39:14.000Z",
       "section": "Miscellaneous",
       "subsection": "NORTH AMERICA",
       "country": "United States",
@@ -4186,6 +4676,20 @@
       "title": "Trump's ambassador to Greece, Kimberly Guilfoyle, resigns after allegations of improper conduct",
       "summary": "Guilfoyle faced severe criticism over allegations she engaged in improper and possibly illegal conduct before and during her tenure in Athens.",
       "publishedAt": "2026-10-14T09:09:00.000Z",
+      "section": "Miscellaneous",
+      "subsection": "NORTH AMERICA",
+      "country": "United States",
+      "reviewed": true
+    },
+    {
+      "id": "https://edition.cnn.com/2026/10/14/politics/trump-greenland-oil-gas-minerals-intl-hnk",
+      "url": "https://edition.cnn.com/2026/10/14/politics/trump-greenland-oil-gas-minerals-intl-hnk",
+      "sourceId": "source-101",
+      "sourceName": "CNN",
+      "group": "Miscl",
+      "title": "Greenland contradicts Trump’s claim that ‘massive’ oil and gas drilling is about to begin there | CNN Politics",
+      "summary": "Greenland's deputy mining minister Jørgen Hammeken-Holm acknowledged that 'there are activities by US companies,' but stated that 'we are very far away from “massive” exploration.'",
+      "publishedAt": "2026-10-14T06:09:44.665Z",
       "section": "Miscellaneous",
       "subsection": "NORTH AMERICA",
       "country": "United States",
@@ -4584,6 +5088,20 @@
       "reviewed": true
     },
     {
+      "id": "https://n1info.ba/english/news/osce-mission-and-sarajevo-faculty-of-political-sciences-launch-human-rights-partnership/",
+      "url": "https://n1info.ba/english/news/osce-mission-and-sarajevo-faculty-of-political-sciences-launch-human-rights-partnership/",
+      "sourceId": "source-8",
+      "sourceName": "N1",
+      "group": "South Eastern Europe",
+      "title": "OSCE Mission and Sarajevo Faculty of Political Sciences launch human rights partnership",
+      "summary": "The partnership between the OSCE Mission to Bosnia and Herzegovina and the Faculty of Political Sciences was formalized through a Memorandum of Understanding signed today.",
+      "publishedAt": "2026-10-14T14:20:50.659Z",
+      "section": "Miscellaneous",
+      "subsection": "INTERNATIONAL ORGANISATIONS",
+      "country": "OSCE",
+      "reviewed": true
+    },
+    {
       "id": "https://news.am/en/news/1067759",
       "url": "https://news.am/en/news/1067759",
       "sourceId": "source-50",
@@ -4654,6 +5172,20 @@
       "reviewed": true
     },
     {
+      "id": "https://www.timesofisrael.com/un-reaffirms-push-for-lebanon-stability-as-beirut-asks-to-extend-peacekeepers-mandate/",
+      "url": "https://www.timesofisrael.com/un-reaffirms-push-for-lebanon-stability-as-beirut-asks-to-extend-peacekeepers-mandate/",
+      "sourceId": "source-120",
+      "sourceName": "TOI",
+      "group": "Miscl",
+      "title": "UN reaffirms push for Lebanon stability as Beirut asks to extend peacekeepers’ mandate",
+      "summary": "Under-Secretary-General for Peace Operations Jean-Pierre Lacroix met officials in Lebanon, emphasizing the UN's commitment to supporting peace as UNIFIL's mandate nears its expiration.",
+      "publishedAt": "2026-10-14T18:47:00.000Z",
+      "section": "Miscellaneous",
+      "subsection": "INTERNATIONAL ORGANISATIONS",
+      "country": "UN",
+      "reviewed": true
+    },
+    {
       "id": "https://apnews.com/article/lebanon-un-peacekeepers-southern-lebanon-lacroix-8c84eb54b63eb2d75bd3f595c121d9c6",
       "url": "https://apnews.com/article/lebanon-un-peacekeepers-southern-lebanon-lacroix-8c84eb54b63eb2d75bd3f595c121d9c6",
       "sourceId": "source-85",
@@ -4662,6 +5194,20 @@
       "title": "UN peacekeeping chief says major questions hang over southern Lebanon as UNIFIL exit nears",
       "summary": "The United Nations peacekeeping chief said unresolved questions remain about plans for southern Lebanon as the end of UNIFIL's mandate approaches.",
       "publishedAt": "2026-10-14T17:26:00.000Z",
+      "section": "Miscellaneous",
+      "subsection": "INTERNATIONAL ORGANISATIONS",
+      "country": "UN",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.aljazeera.com/news/2026/10/14/un-official-warns-of-looming-food-crisis-as-hormuz-fertiliser-plan-stalls",
+      "url": "https://www.aljazeera.com/news/2026/10/14/un-official-warns-of-looming-food-crisis-as-hormuz-fertiliser-plan-stalls",
+      "sourceId": "source-122",
+      "sourceName": "Al Jazeera",
+      "group": "Miscl",
+      "title": "UN official warns of looming food crisis as Hormuz fertiliser plan stalls",
+      "summary": "UN Under-Secretary-General Jorge Moreira da Silva emphasized the urgency for Iran and the US to agree on a fertiliser transport plan within weeks to avoid significant drops in agricultural productivity.",
+      "publishedAt": "2026-10-14T16:08:09.000Z",
       "section": "Miscellaneous",
       "subsection": "INTERNATIONAL ORGANISATIONS",
       "country": "UN",
@@ -4745,7 +5291,7 @@
       "group": "South Eastern Europe",
       "url": "https://dtt-net.com/category/w-balkan-news/",
       "status": "checked",
-      "reason": "20 links listed and 6 original article pages checked across 5 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-13. Article checks: 4 outside requested window, 1 outside window."
+      "reason": "24 links listed and 22 original article pages checked across 9 collection methods; no article from this outlet was verified and included for the requested window. 1 candidate article timestamps were date-only or midnight values and could not verify the full window. Newest dated listing: 2026-10-13. Article checks: 4 outside requested window, 1 outside window."
     },
     {
       "id": "source-2",
@@ -4777,15 +5323,15 @@
       "group": "South Eastern Europe",
       "url": "https://albaniandailynews.com/category/politics",
       "status": "checked",
-      "reason": "10 links listed and 9 original article pages checked across 4 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 5 outside window."
+      "reason": "36 links listed and 31 original article pages checked across 8 collection methods; no article from this outlet was verified and included for the requested window. 10 candidate article timestamps were date-only or midnight values and could not verify the full window. Newest dated listing: 2026-10-14. Article checks: 5 outside window."
     },
     {
       "id": "source-6",
       "name": "TemA",
       "group": "South Eastern Europe",
       "url": "https://english.gazetatema.net/category/politics/",
-      "status": "checked",
-      "reason": "26 links listed and 19 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2023-10-06. Article checks: 15 missing headline or time, 2 page error."
+      "status": "collected",
+      "reason": "4 verified articles included; 32 original article pages checked."
     },
     {
       "id": "source-7",
@@ -4800,8 +5346,8 @@
       "name": "N1",
       "group": "South Eastern Europe",
       "url": "https://n1info.ba/english/news",
-      "status": "checked",
-      "reason": "89 links listed and 19 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-13. Article checks: 3 non english."
+      "status": "collected",
+      "reason": "2 verified articles included; 24 original article pages checked."
     },
     {
       "id": "source-9",
@@ -4816,8 +5362,8 @@
       "name": "Mina",
       "group": "South Eastern Europe",
       "url": "https://www.mina.news/en/category/mina-generalni-english",
-      "status": "checked",
-      "reason": "33 links listed and 10 original article pages checked across 7 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 9 missing headline or time."
+      "status": "collected",
+      "reason": "1 verified article included; 15 original article pages checked."
     },
     {
       "id": "source-11",
@@ -4825,7 +5371,7 @@
       "group": "South Eastern Europe",
       "url": "https://www.cdm.me/english/",
       "status": "checked",
-      "reason": "107 links listed and 19 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 2 outside window."
+      "reason": "111 links listed and 26 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 2 outside window."
     },
     {
       "id": "source-12",
@@ -4841,7 +5387,7 @@
       "group": "South Eastern Europe",
       "url": "https://meta.mk/en/category/mkd-en/",
       "status": "failed",
-      "reason": "0 links listed and 0 original article pages checked across 5 collection methods; no usable article listing or page could be obtained. Errors: primary Firecrawl listing: We apologize for the inconvenience but we do not support this site. If you are part of an enterprise and want to have a further conversation about this, please contact our sales team here: https://www.firecrawl.dev/contact-sales; alternate Firecrawl listing: We apologize for the inconvenience but we do not support this site. If you are part of an enterprise and want to have a further conversation about this, please contact our sales team here: https://www.firecrawl.dev/contact-sales"
+      "reason": "28 links listed and 0 original article pages checked across 9 collection methods; no usable original article page could be obtained. Errors: primary Firecrawl listing: We apologize for the inconvenience but we do not support this site. If you are part of an enterprise and want to have a further conversation about this, please contact our sales team here: https://www.firecrawl.dev/contact-sales; alternate Firecrawl listing: We apologize for the inconvenience but we do not support this site. If you are part of an enterprise and want to have a further conversation about this, please contact our sales team here: https://www.firecrawl.dev/contact-sales"
     },
     {
       "id": "source-14",
@@ -4849,7 +5395,7 @@
       "group": "South Eastern Europe",
       "url": "https://mia.mk/en/latest-posts",
       "status": "checked",
-      "reason": "12 links listed and 3 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 2 missing headline or time."
+      "reason": "26 links listed and 9 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 2 missing headline or time."
     },
     {
       "id": "source-15",
@@ -4865,7 +5411,7 @@
       "group": "South Eastern Europe",
       "url": "https://skopjediem.com/",
       "status": "checked",
-      "reason": "103 links listed and 2 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-09."
+      "reason": "105 links listed and 3 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-09."
     },
     {
       "id": "source-17",
@@ -4873,7 +5419,7 @@
       "group": "South Eastern Europe",
       "url": "https://n1info.rs/english/news/",
       "status": "checked",
-      "reason": "116 links listed and 10 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2023-10-13."
+      "reason": "125 links listed and 22 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2023-10-13."
     },
     {
       "id": "source-18",
@@ -4897,7 +5443,7 @@
       "group": "South Eastern Europe",
       "url": "https://prishtinainsight.com/category/news/",
       "status": "checked",
-      "reason": "78 links listed and 7 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-12. Article checks: 4 outside window."
+      "reason": "88 links listed and 20 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-12. Article checks: 4 outside window."
     },
     {
       "id": "source-21",
@@ -4905,7 +5451,7 @@
       "group": "South Eastern Europe",
       "url": "https://www.rtklive.com/en/news-category.php?CatID=5",
       "status": "checked",
-      "reason": "9 links listed and 0 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-13. Errors: alternate Firecrawl listing: The operation was aborted due to timeout"
+      "reason": "9 links listed and 4 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-13. Errors: alternate Firecrawl listing: The operation was aborted due to timeout"
     },
     {
       "id": "source-22",
@@ -4929,15 +5475,15 @@
       "group": "South Eastern Europe",
       "url": "https://abcnews.al/kategoria/english/",
       "status": "checked",
-      "reason": "70 links listed and 2 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2024-09-26. Article checks: 1 non english."
+      "reason": "70 links listed and 3 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2024-09-26. Article checks: 1 non english."
     },
     {
       "id": "source-25",
       "name": "Kosovo Online",
       "group": "South Eastern Europe",
       "url": "https://www.kosovo-online.com/en",
-      "status": "checked",
-      "reason": "9 links listed and 3 original article pages checked across 4 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 1 outside scope, 1 missing headline or time."
+      "status": "collected",
+      "reason": "1 verified article included; 15 original article pages checked."
     },
     {
       "id": "source-26",
@@ -4968,8 +5514,8 @@
       "name": "Charter 97",
       "group": "East Europe",
       "url": "https://charter97.org/en/news/",
-      "status": "checked",
-      "reason": "26 links listed and 10 original article pages checked across 5 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 1 outside requested window, 1 outside window, 1 outside scope."
+      "status": "collected",
+      "reason": "4 verified articles included; 16 original article pages checked."
     },
     {
       "id": "source-30",
@@ -4985,15 +5531,15 @@
       "group": "East Europe",
       "url": "https://www.infotag.md/news_arhive_en/",
       "status": "checked",
-      "reason": "17 links listed and 2 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 1 outside window."
+      "reason": "44 links listed and 24 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 1 outside window."
     },
     {
       "id": "source-32",
       "name": "IPN",
       "group": "East Europe",
       "url": "https://ipn.md/en/all-news/",
-      "status": "checked",
-      "reason": "90 links listed and 43 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Article checks: 2 outside window, 6 missing headline or time, 2 outside requested window."
+      "status": "collected",
+      "reason": "2 verified articles included; 63 original article pages checked."
     },
     {
       "id": "source-33",
@@ -5057,7 +5603,7 @@
       "group": "East Europe",
       "url": "https://nikvesti.com/en/news/archive/all",
       "status": "checked",
-      "reason": "2 links listed and 0 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Article checks: 1 page error. Errors: primary Firecrawl listing: All scraping engines failed to retrieve content from this URL. Engines tried: [index, index;documents, fire-engine;chrome-cdp;stealth, fire-engine(retry);chrome-cdp;stealth, pdf, document, image]. This usually happens when: (1) The URL is invalid or the page doesn't exist (404), (2) The website is blocking automated access, (3) The website is down or unreachable, (4) The page requires authentication. Double check the URL is correct and accessible in a browser. If the issue persists, contact us at help@firecrawl.com with your request ID for investigation.; alternate Firecrawl listing: All scraping engines failed to retrieve content from this URL. Engines tried: [index, index;documents, fire-engine;chrome-cdp;stealth, fire-engine(retry);chrome-cdp;stealth, pdf, document, image]. This usually happens when: (1) The URL is invalid or the page doesn't exist (404), (2) The website is blocking automated access, (3) The website is down or unreachable, (4) The page requires authentication. Double check the URL is correct and accessible in a browser. If the issue persists, contact us at help@firecrawl.com with your request ID for investigation."
+      "reason": "3 links listed and 1 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Article checks: 1 page error. Errors: primary Firecrawl listing: All scraping engines failed to retrieve content from this URL. Engines tried: [index, index;documents, fire-engine;chrome-cdp;stealth, fire-engine(retry);chrome-cdp;stealth, pdf, document, image]. This usually happens when: (1) The URL is invalid or the page doesn't exist (404), (2) The website is blocking automated access, (3) The website is down or unreachable, (4) The page requires authentication. Double check the URL is correct and accessible in a browser. If the issue persists, contact us at help@firecrawl.com with your request ID for investigation.; alternate Firecrawl listing: All scraping engines failed to retrieve content from this URL. Engines tried: [index, index;documents, fire-engine;chrome-cdp;stealth, fire-engine(retry);chrome-cdp;stealth, pdf, document, image]. This usually happens when: (1) The URL is invalid or the page doesn't exist (404), (2) The website is blocking automated access, (3) The website is down or unreachable, (4) The page requires authentication. Double check the URL is correct and accessible in a browser. If the issue persists, contact us at help@firecrawl.com with your request ID for investigation."
     },
     {
       "id": "source-41",
@@ -5065,7 +5611,7 @@
       "group": "East Europe",
       "url": "https://khpg.org/en/page_1",
       "status": "checked",
-      "reason": "15 links listed and 2 original article pages checked across 5 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2021-12-15. Article checks: 1 outside requested window."
+      "reason": "38 links listed and 27 original article pages checked across 9 collection methods; no article from this outlet was verified and included for the requested window. 1 candidate article timestamps were date-only or midnight values and could not verify the full window. Newest dated listing: 2021-12-15. Article checks: 1 outside requested window."
     },
     {
       "id": "source-42",
@@ -5097,15 +5643,15 @@
       "group": "East Europe",
       "url": "https://tsn.ua/en",
       "status": "checked",
-      "reason": "107 links listed and 68 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14."
+      "reason": "122 links listed and 84 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14."
     },
     {
       "id": "source-46",
       "name": "Armenia Liberty",
       "group": "South Caucasus",
       "url": "https://www.azatutyun.am/z/1089",
-      "status": "checked",
-      "reason": "12 links listed and 3 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 1 non english, 1 outside window."
+      "status": "collected",
+      "reason": "1 verified article included; 6 original article pages checked."
     },
     {
       "id": "source-47",
@@ -5161,7 +5707,7 @@
       "group": "South Caucasus",
       "url": "https://www.civilnet.am/en/",
       "status": "checked",
-      "reason": "108 links listed and 28 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2023-10-14. Article checks: 1 missing headline or time, 5 outside window."
+      "reason": "132 links listed and 47 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2023-10-14. Article checks: 1 missing headline or time, 5 outside window."
     },
     {
       "id": "source-54",
@@ -5185,7 +5731,7 @@
       "group": "South Caucasus",
       "url": "https://www.trend.az/azerbaijan/",
       "status": "collected",
-      "reason": "8 verified articles included; 10 original article pages checked."
+      "reason": "7 verified articles included; 10 original article pages checked."
     },
     {
       "id": "source-57",
@@ -5232,8 +5778,8 @@
       "name": "1TV",
       "group": "South Caucasus",
       "url": "https://1tv.ge/lang/en?s=&post_type=news",
-      "status": "checked",
-      "reason": "221 links listed and 56 original article pages checked across 7 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-15. Article checks: 7 outside window."
+      "status": "collected",
+      "reason": "1 verified article included; 84 original article pages checked."
     },
     {
       "id": "source-63",
@@ -5272,8 +5818,8 @@
       "name": "Trend",
       "group": "Central Asia",
       "url": "https://www.trend.az/casia/",
-      "status": "checked",
-      "reason": "25 links listed and 10 original article pages checked across 5 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-13. Article checks: 2 outside requested window, 1 non english."
+      "status": "collected",
+      "reason": "1 verified article included; 26 original article pages checked."
     },
     {
       "id": "source-68",
@@ -5353,7 +5899,7 @@
       "group": "Central Asia",
       "url": "https://asiaplustj.info/en/news/all",
       "status": "checked",
-      "reason": "8 links listed and 0 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14."
+      "reason": "39 links listed and 26 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14."
     },
     {
       "id": "source-78",
@@ -5400,8 +5946,8 @@
       "name": "BBC",
       "group": "Miscl",
       "url": "https://www.bbc.com/news",
-      "status": "checked",
-      "reason": "20 links listed and 10 original article pages checked across 5 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2023-10-10. Article checks: 9 outside window. Errors: publisher feed: fetch failed"
+      "status": "collected",
+      "reason": "3 verified articles included; 26 original article pages checked."
     },
     {
       "id": "source-84",
@@ -5425,7 +5971,7 @@
       "group": "Miscl",
       "url": "https://nordot.app/-/units/601684660556563553",
       "status": "checked",
-      "reason": "4 links listed and 0 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2023-10-10."
+      "reason": "4 links listed and 0 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2023-10-10."
     },
     {
       "id": "source-87",
@@ -5465,7 +6011,7 @@
       "group": "Miscl",
       "url": "https://yle.fi/news/tuoreimmat",
       "status": "checked",
-      "reason": "28 links listed and 9 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2023-10-13. Article checks: 5 outside requested window, 3 outside scope."
+      "reason": "53 links listed and 34 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2023-10-13. Article checks: 5 outside requested window, 3 outside scope."
     },
     {
       "id": "source-92",
@@ -5480,8 +6026,8 @@
       "name": "ANSA",
       "group": "Miscl",
       "url": "https://www.ansa.it/english/",
-      "status": "checked",
-      "reason": "118 links listed and 30 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 12 non english, 1 missing headline or time."
+      "status": "collected",
+      "reason": "4 verified articles included; 40 original article pages checked."
     },
     {
       "id": "source-94",
@@ -5489,7 +6035,7 @@
       "group": "Miscl",
       "url": "https://eng.lsm.lv/archive/",
       "status": "checked",
-      "reason": "19 links listed and 12 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-13. Article checks: 9 outside window, 1 outside requested window."
+      "reason": "58 links listed and 43 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-13. Article checks: 9 outside window, 1 outside requested window."
     },
     {
       "id": "source-95",
@@ -5505,7 +6051,7 @@
       "group": "Miscl",
       "url": "https://www.polskieradio.pl/395/7784",
       "status": "checked",
-      "reason": "116 links listed and 65 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-13. Article checks: 2 non english, 1 outside window, 1 missing headline or time."
+      "reason": "121 links listed and 70 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-13. Article checks: 2 non english, 1 outside window, 1 missing headline or time."
     },
     {
       "id": "source-97",
@@ -5536,16 +6082,16 @@
       "name": "Fox",
       "group": "Miscl",
       "url": "https://www.foxnews.com/us",
-      "status": "checked",
-      "reason": "118 links listed and 33 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 10 outside window, 2 outside requested window, 1 outside scope."
+      "status": "collected",
+      "reason": "2 verified articles included; 59 original article pages checked."
     },
     {
       "id": "source-101",
       "name": "CNN",
       "group": "Miscl",
       "url": "https://edition.cnn.com/us",
-      "status": "checked",
-      "reason": "4 links listed and 3 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 2 outside scope. Errors: publisher feed: fetch failed"
+      "status": "collected",
+      "reason": "2 verified articles included; 9 original article pages checked."
     },
     {
       "id": "source-102",
@@ -5577,7 +6123,7 @@
       "group": "Miscl",
       "url": "https://www.rfa.org/english/",
       "status": "checked",
-      "reason": "109 links listed and 45 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-09-30."
+      "reason": "121 links listed and 52 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-09-30."
     },
     {
       "id": "source-106",
@@ -5625,7 +6171,7 @@
       "group": "Miscl",
       "url": "https://www.baltictimes.com/",
       "status": "checked",
-      "reason": "105 links listed and 56 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-09. Article checks: 7 outside window, 5 outside requested window."
+      "reason": "116 links listed and 72 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-09. Article checks: 7 outside window, 5 outside requested window."
     },
     {
       "id": "source-112",
@@ -5633,7 +6179,7 @@
       "group": "Miscl",
       "url": "https://www.newsinenglish.no/",
       "status": "checked",
-      "reason": "10 links listed and 6 original article pages checked across 5 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-10. Article checks: 1 outside window, 2 outside requested window."
+      "reason": "22 links listed and 9 original article pages checked across 9 collection methods; no article from this outlet was verified and included for the requested window. 3 candidate article timestamps were date-only or midnight values and could not verify the full window. Newest dated listing: 2026-10-10. Article checks: 1 outside window, 2 outside requested window."
     },
     {
       "id": "source-113",
@@ -5672,8 +6218,8 @@
       "name": "Rudaw",
       "group": "Miscl",
       "url": "https://www.rudaw.net/english",
-      "status": "checked",
-      "reason": "121 links listed and 46 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-15. Article checks: 6 outside window, 5 non english."
+      "status": "collected",
+      "reason": "1 verified article included; 54 original article pages checked."
     },
     {
       "id": "source-118",
@@ -5696,8 +6242,8 @@
       "name": "TOI",
       "group": "Miscl",
       "url": "https://www.timesofisrael.com/",
-      "status": "checked",
-      "reason": "3 links listed and 1 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14."
+      "status": "collected",
+      "reason": "1 verified article included; 17 original article pages checked."
     },
     {
       "id": "source-121",
@@ -5712,8 +6258,8 @@
       "name": "Al Jazeera",
       "group": "Miscl",
       "url": "https://www.aljazeera.com/news/",
-      "status": "checked",
-      "reason": "3 links listed and 2 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Errors: publisher feed: fetch failed"
+      "status": "collected",
+      "reason": "1 verified article included; 4 original article pages checked."
     },
     {
       "id": "source-123",
@@ -5721,7 +6267,7 @@
       "group": "Miscl",
       "url": "https://www.dawn.com/",
       "status": "checked",
-      "reason": "4 links listed and 4 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 1 outside requested window, 1 outside window."
+      "reason": "20 links listed and 15 original article pages checked across 4 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 1 outside requested window, 1 outside window."
     },
     {
       "id": "source-124",
@@ -5729,7 +6275,7 @@
       "group": "Miscl",
       "url": "https://montsame.mn/en",
       "status": "checked",
-      "reason": "113 links listed and 38 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-07. Article checks: 5 non english."
+      "reason": "128 links listed and 50 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-07. Article checks: 5 non english."
     },
     {
       "id": "source-125",
@@ -5801,7 +6347,7 @@
       "group": "Miscl",
       "url": "https://www.belganewsagency.eu/",
       "status": "checked",
-      "reason": "102 links listed and 59 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-13. Article checks: 4 outside window."
+      "reason": "102 links listed and 61 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-13. Article checks: 4 outside window."
     },
     {
       "id": "source-134",
@@ -5809,7 +6355,7 @@
       "group": "Miscl",
       "url": "https://www.vrt.be/vrtnws/en",
       "status": "checked",
-      "reason": "115 links listed and 3 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-08."
+      "reason": "115 links listed and 3 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-08."
     },
     {
       "id": "source-135",
@@ -5825,7 +6371,7 @@
       "group": "Miscl",
       "url": "https://www.thelocal.ch/",
       "status": "checked",
-      "reason": "98 links listed and 5 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-12."
+      "reason": "100 links listed and 10 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-12."
     },
     {
       "id": "source-137",
@@ -5833,7 +6379,7 @@
       "group": "Miscl",
       "url": "https://www.thelocal.at/",
       "status": "checked",
-      "reason": "97 links listed and 7 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-12."
+      "reason": "99 links listed and 10 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-12."
     },
     {
       "id": "source-138",
@@ -5841,7 +6387,7 @@
       "group": "Miscl",
       "url": "https://www.vindobona.org/",
       "status": "checked",
-      "reason": "105 links listed and 18 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-08-23. Article checks: 2 outside requested window, 1 outside window."
+      "reason": "145 links listed and 40 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-08-23. Article checks: 2 outside requested window, 1 outside window."
     },
     {
       "id": "source-139",
@@ -5865,7 +6411,7 @@
       "group": "Miscl",
       "url": "https://www.channel4.com/news",
       "status": "checked",
-      "reason": "7 links listed and 2 original article pages checked across 5 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-12. Article checks: 1 outside requested window."
+      "reason": "17 links listed and 8 original article pages checked across 9 collection methods; no article from this outlet was verified and included for the requested window. 1 candidate article timestamps were date-only or midnight values and could not verify the full window. Newest dated listing: 2026-10-12. Article checks: 1 outside requested window."
     },
     {
       "id": "source-142",
@@ -5896,16 +6442,16 @@
       "name": "Malta Independent",
       "group": "Miscl",
       "url": "https://www.independent.com.mt/",
-      "status": "checked",
-      "reason": "5 links listed and 4 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 3 outside scope."
+      "status": "collected",
+      "reason": "1 verified article included; 15 original article pages checked."
     },
     {
       "id": "source-146",
       "name": "Portugal News",
       "group": "Miscl",
       "url": "https://www.theportugalnews.com/",
-      "status": "checked",
-      "reason": "9 links listed and 2 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 1 outside scope."
+      "status": "collected",
+      "reason": "1 verified article included; 14 original article pages checked."
     },
     {
       "id": "source-147",
@@ -5928,8 +6474,8 @@
       "name": "AA",
       "group": "Miscl",
       "url": "https://www.aa.com.tr/en",
-      "status": "checked",
-      "reason": "6 links listed and 6 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 1 outside requested window."
+      "status": "collected",
+      "reason": "5 verified articles included; 22 original article pages checked."
     },
     {
       "id": "source-150",
@@ -5945,7 +6491,7 @@
       "group": "Miscl",
       "url": "https://www.croatiaweek.com/category/news-3/",
       "status": "checked",
-      "reason": "8 links listed and 3 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-01. Article checks: 2 outside window, 1 outside requested window."
+      "reason": "22 links listed and 16 original article pages checked across 10 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-01. Article checks: 2 outside window, 1 outside requested window."
     },
     {
       "id": "source-152",
@@ -5953,7 +6499,7 @@
       "group": "Miscl",
       "url": "https://sloveniatimes.com/c/latest-news",
       "status": "checked",
-      "reason": "16 links listed and 10 original article pages checked across 5 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2023-10-16. Article checks: 2 outside window, 1 outside requested window, 3 outside scope."
+      "reason": "19 links listed and 15 original article pages checked across 9 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2023-10-16. Article checks: 2 outside window, 1 outside requested window, 3 outside scope."
     },
     {
       "id": "source-153",
@@ -5993,7 +6539,7 @@
       "group": "Miscl",
       "url": "https://www.axios.com/world",
       "status": "checked",
-      "reason": "8 links listed and 1 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14."
+      "reason": "30 links listed and 3 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14."
     },
     {
       "id": "source-158",
@@ -6017,15 +6563,15 @@
       "group": "Miscl",
       "url": "https://www.usatoday.com/news/world/",
       "status": "checked",
-      "reason": "18 links listed and 9 original article pages checked across 5 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 2 outside scope, 3 outside requested window, 3 outside window."
+      "reason": "30 links listed and 16 original article pages checked across 9 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 2 outside scope, 3 outside requested window, 3 outside window."
     },
     {
       "id": "source-161",
       "name": "Defense News",
       "group": "Miscl",
       "url": "https://www.defensenews.com/",
-      "status": "checked",
-      "reason": "17 links listed and 12 original article pages checked across 5 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-14. Article checks: 2 outside scope, 3 outside window, 4 missing headline or time, 2 outside requested window."
+      "status": "collected",
+      "reason": "1 verified article included; 18 original article pages checked."
     },
     {
       "id": "source-162",
@@ -6049,7 +6595,7 @@
       "group": "Miscl",
       "url": "https://www.militarytimes.com/news/",
       "status": "checked",
-      "reason": "7 links listed and 2 original article pages checked across 5 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-12. Article checks: 1 outside requested window."
+      "reason": "21 links listed and 3 original article pages checked across 9 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-12. Article checks: 1 outside requested window."
     },
     {
       "id": "source-165",
@@ -6073,7 +6619,7 @@
       "group": "Miscl",
       "url": "https://foreignpolicy.com/category/latest/",
       "status": "checked",
-      "reason": "19 links listed and 10 original article pages checked across 5 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-13. Article checks: 2 outside requested window, 2 outside window."
+      "reason": "53 links listed and 36 original article pages checked across 9 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-13. Article checks: 2 outside requested window, 2 outside window. Errors: No page returned: https://foreignpolicy.com/projects/trump-presidential-transition-personnel-cabinet-policy-issues/?article_anchor=trump-george-glass-japan-ambassador-china-portugal; No page returned: https://foreignpolicy.com/projects/trump-presidency-personnel-cabinet-policy-issues/"
     },
     {
       "id": "source-168",
@@ -6081,15 +6627,15 @@
       "group": "Miscl",
       "url": "https://www.c-span.org/news/",
       "status": "checked",
-      "reason": "5 links listed and 4 original article pages checked across 4 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-15. Article checks: 3 outside scope."
+      "reason": "37 links listed and 20 original article pages checked across 8 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-15. Article checks: 3 outside scope. Errors: No page returned: https://www.c-span.org/congress/?chamber=house&date=2026-09-16"
     },
     {
       "id": "source-169",
       "name": "Tolo",
       "group": "Miscl",
       "url": "https://www.tolonews.com/afghanistan",
-      "status": "checked",
-      "reason": "75 links listed and 42 original article pages checked across 6 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-11. Article checks: 9 outside window, 1 outside scope."
+      "status": "collected",
+      "reason": "1 verified article included; 66 original article pages checked."
     },
     {
       "id": "source-170",
@@ -6113,7 +6659,7 @@
       "group": "Miscl",
       "url": "https://www.ariananews.af/category/latest-news/",
       "status": "checked",
-      "reason": "24 links listed and 18 original article pages checked across 5 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-12. Article checks: 10 outside window, 3 outside requested window, 3 outside scope."
+      "reason": "55 links listed and 42 original article pages checked across 9 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-12. Article checks: 10 outside window, 3 outside requested window, 3 outside scope."
     },
     {
       "id": "source-173",

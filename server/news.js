@@ -1,6 +1,7 @@
 import { editorialScore, isEnglishArticle, passesSourcePolicy } from './editorialPolicy.js';
 import { IMPORT_PROMPT } from '../src/importPrompt.js';
 import { publicationTimestamp } from './importArticle.js';
+import { wallTimeToIso } from '../src/viennaTime.js';
 
 export const DEFAULT_INCLUDE = ['OSCE', 'cooperation', 'diplomacy', 'bilateral', 'foreign policy', 'talks', 'summit', 'peace', 'sanctions', 'NATO', 'EU', 'UN', 'security', 'defense', 'defence', 'conflict', 'war', 'terrorism', 'military', 'politics', 'political', 'election', 'Russia', 'Ukraine'];
 export const DEFAULT_EXCLUDE = [];
@@ -140,14 +141,18 @@ export function candidatePage(candidates, cursor = 0, fullScan = false, deepScan
 export function reviewedArticleCheck(payload, source, url, now = Date.now()) {
   const data = payload?.data ?? {};
   const extracted = typeof data.json === 'string' ? JSON.parse(data.json) : data.json ?? {};
-  const html = data.html ?? '';
+  const html = data.rawHtml || data.html || '';
+  const head = html.includes('</head>') ? html.slice(0, html.indexOf('</head>')) : html.slice(0, 100000);
+  const publisherZone = { 'aa.com.tr': 'Europe/Istanbul', 'mina.news': 'Europe/Podgorica' }[new URL(url).hostname.replace(/^www\./, '')];
+  const localPublisherTime = publisherZone && String(data.metadata?.publishedTime || '').match(/^(20\d{2})-(\d{2})-(\d{2})[T\s](\d{2}):(\d{2})(?::(\d{2}))?(?:\.\d+)?$/);
+  const inferredPublisherTime = localPublisherTime ? wallTimeToIso(publisherZone, ...localPublisherTime.slice(1, 7).map((value, index) => Number(value || (index === 5 ? 0 : value)))) : null;
   const tassTime = new URL(url).hostname === 'tass.com' ? html.match(/<dateformat\s+time="(\d{10})"\s+mode="abs"/)?.[1] : null;
   const izvestiaTime = new URL(url).hostname === 'iz.ru' ? html.match(/itemprop="datePublished">([^<]+)/)?.[1] : null;
   const publishedAt = publicationTimestamp(
     data.metadata?.publishedTime, data.metadata?.['article:published_time'], data.metadata?.['og:article:published_time'], data.metadata?.mediator_published_time,
-    data.metadata?.datePublished, data.metadata?.['date.available'],
-    ...[...html.matchAll(/["']datePublished["']\s*:\s*["']([^"']+)/gi)].map(match => match[1]),
-    izvestiaTime, tassTime ? new Date(Number(tassTime) * 1000).toISOString() : null, extracted.publishedAt
+    data.metadata?.['cXenseParse:publishtime'], data.metadata?.publishedDate, data.metadata?.datePublished, data.metadata?.['date.available'],
+    ...[...head.matchAll(/["']datePublished["']\s*:\s*["']([^"']+)/gi)].map(match => match[1]),
+    inferredPublisherTime, izvestiaTime, tassTime ? new Date(Number(tassTime) * 1000).toISOString() : null, extracted.publishedAt
   );
   if (!publishedAt) return { article: null, reason: 'missingHeadlineOrTime' };
   const time = Date.parse(publishedAt);

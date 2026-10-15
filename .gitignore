@@ -4,6 +4,7 @@ data/collection-*-working.json
 data/collection-*-fallback.json
 data/collection-*-review.json
 data/collection-*-summary-fixes.json
+data/collection-*-recovery.json
 .env
 .env.*
 !.env.example

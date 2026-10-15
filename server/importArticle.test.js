@@ -49,6 +49,7 @@ test('non-English pages are refused, while an undated page uses the import time'
 
 test('publisher page timestamps with a space and timezone are verified', () => {
   assert.equal(publicationTimestamp('2026-10-13 08:25:00 +02:00'), '2026-10-13T06:25:00.000Z');
+  assert.equal(publicationTimestamp('2026-10-14CEST16:42:24'), '2026-10-14T14:42:24.000Z');
   assert.equal(publicationTimestamp('2026-10-13', '2026-10-13T08:25:00+02:00'), '2026-10-13T06:25:00.000Z');
 });
 

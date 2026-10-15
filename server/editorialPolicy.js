@@ -23,9 +23,9 @@ export function isEnglishArticle(payload, title, summary = '') {
   const data = payload?.data || {};
   const metadata = data.metadata || {};
   const hint = String(metadata.language ?? metadata.lang ?? metadata.ogLocale ?? metadata['og:locale'] ?? data.html?.match(/<html[^>]*\blang=["']([^"']+)/i)?.[1] ?? '').trim().toLowerCase();
-  if (hint && !/^en(?:[-_]|$)/.test(hint)) return false;
   const markdown = String(data.markdown ?? '').replace(/!?\[([^\]]+)\]\([^)]*\)/g, '$1').slice(0, 8000);
   if (markdown.length >= 350) return franc(markdown, { minLength: 200 }) === 'eng' || englishWordCount(markdown) >= 15;
+  if (hint && !/^en(?:[-_]|$)/.test(hint)) return false;
   if (/^en(?:[-_]|$)/.test(hint)) return true;
   return isEnglishListingText(title, summary);
 }

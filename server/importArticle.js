@@ -74,7 +74,7 @@ export function publicationTimestamp(...values) {
   const abbreviations = { UTC: 'Z', GMT: 'Z', CET: '+01:00', CEST: '+02:00', EET: '+02:00', EEST: '+03:00', BST: '+01:00', EST: '-05:00', EDT: '-04:00', CST: '-06:00', CDT: '-05:00', MST: '-07:00', MDT: '-06:00', PST: '-08:00', PDT: '-07:00' };
   for (const value of values) {
     if (typeof value !== 'string') continue;
-    let normalized = value.trim().replace(/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2})/, '$1T$2').replace(/\s+([+-]\d{2}:?\d{2})$/, '$1');
+    let normalized = value.trim().replace(/^(\d{4}-\d{2}-\d{2})(UTC|GMT|CET|CEST|EET|EEST|BST|EST|EDT|CST|CDT|MST|MDT|PST|PDT)(\d{2}:\d{2}(?::\d{2})?)$/i, (_, date, zone, time) => `${date}T${time}${abbreviations[zone.toUpperCase()]}`).replace(/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2})/, '$1T$2').replace(/\s+([+-]\d{2}:?\d{2})$/, '$1');
     normalized = normalized.replace(/\s+(UTC|GMT|CET|CEST|EET|EEST|BST|EST|EDT|CST|CDT|MST|MDT|PST|PDT)$/i, (_, zone) => abbreviations[zone.toUpperCase()]);
     normalized = normalized.replace(/\s+GMT([+-])(\d{1,2})(?::?(\d{2}))?$/i, (_, sign, hours, minutes) => `${sign}${hours.padStart(2, '0')}:${minutes || '00'}`);
     if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})$/i.test(normalized) && Number.isFinite(Date.parse(normalized))) return new Date(normalized).toISOString();

@@ -65,6 +65,12 @@ test('undated matching links can be checked on their original article pages', ()
   assert.equal(reviewedArticle(mediatorPage, source, candidates[0].url, now).publishedAt, '2026-10-09T10:00:00.000Z');
   const spacedZonePage = { data: { metadata: { 'article:published_time': '2026-10-09 12:25:11 +02:00', ogTitle: 'NATO allies discuss more air defence for Ukraine' }, json: { summary: 'The secretary general asked members to step up deliveries.' } } };
   assert.equal(reviewedArticle(spacedZonePage, source, candidates[0].url, now).publishedAt, '2026-10-09T10:25:11.000Z');
+  const bbcPage = { data: { metadata: { ogTitle: 'Ukraine seeks allied military support', 'cXenseParse:publishtime': '2026-10-09T10:17:09Z' }, json: { summary: 'Officials asked for additional air defence systems.' } } };
+  assert.equal(reviewedArticle(bbcPage, source, candidates[0].url, now).publishedAt, '2026-10-09T10:17:09.000Z');
+  const structuredPage = { data: { metadata: { ogTitle: 'UN discusses peacekeeper mandate in Lebanon' }, rawHtml: '<head><script type="application/ld+json">{"datePublished":"2026-10-09T11:47:00+00:00"}</script></head>', json: { summary: 'The current mandate expires at the end of the year.' } } };
+  assert.equal(reviewedArticle(structuredPage, source, candidates[0].url, now).publishedAt, '2026-10-09T11:47:00.000Z');
+  const aaPage = { data: { metadata: { ogTitle: 'NATO allies increase military aid', publishedTime: '2026-10-09T14:15:01.383' }, json: { summary: 'The package includes drones and missiles.' } } };
+  assert.equal(reviewedArticle(aaPage, { ...source, url: 'https://www.aa.com.tr/en/', id: 'source-149' }, 'https://www.aa.com.tr/en/europe/story/4088419', now).publishedAt, '2026-10-09T11:15:01.000Z');
 });
 
 test('alternate collection checks the source homepage after a section fails', () => {
