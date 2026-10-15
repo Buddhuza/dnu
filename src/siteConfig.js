@@ -282,8 +282,29 @@ export function moveArticleInConfig(config, articles, movedId, destination, excl
   const anchorIndex = articleOrder.indexOf(anchorId);
   const insertAt = anchorIndex < 0 ? articleOrder.length : anchorIndex + (destination.after === false ? 0 : 1);
   articleOrder.splice(insertAt, 0, movedId);
-  if (config.customArticles.some(item => item.id === movedId)) {
-    return { ...config, sections, customCountries, articleOrder, customArticles: config.customArticles.map(item => item.id === movedId ? { ...item, sectionId: section.id, subsection, country } : item) };
+  const updated = config.customArticles.some(item => item.id === movedId)
+    ? { ...config, sections, customCountries, articleOrder, customArticles: config.customArticles.map(item => item.id === movedId ? { ...item, sectionId: section.id, subsection, country } : item) }
+    : { ...config, sections, customCountries, articleOrder, articleEdits: { ...config.articleEdits, [movedId]: { ...(config.articleEdits[movedId] ?? {}), sectionId: section.id, subsection, country } } };
+  const assigned = [
+    ...articles.map(article => {
+      const edit = updated.articleEdits[article.id];
+      return { sectionId: edit?.sectionId || article.section, subsection: edit?.sectionId ? edit.subsection : edit?.subsection || article.subsection || '', country: edit?.sectionId ? edit.country : edit?.country || article.country || '' };
+    }),
+    ...updated.customArticles.map(article => ({ sectionId: article.sectionId, subsection: article.subsection || '', country: article.country || '' }))
+  ];
+  const sourceSection = moved.sectionId;
+  const sourceSubsection = moved.subsection || '';
+  const sourceCountry = moved.country || '';
+  const standard = NEWS_SECTIONS.find(item => item.id === sourceSection);
+  if (!standard && !assigned.some(item => item.sectionId === sourceSection)) updated.sections = updated.sections.filter(item => item.id !== sourceSection);
+  else if (sourceSubsection && !standard?.subsections.includes(sourceSubsection) && !assigned.some(item => item.sectionId === sourceSection && item.subsection === sourceSubsection)) {
+    updated.sections = updated.sections.map(item => item.id === sourceSection ? { ...item, subsections: (item.subsections || []).filter(label => label !== sourceSubsection) } : item);
   }
-  return { ...config, sections, customCountries, articleOrder, articleEdits: { ...config.articleEdits, [movedId]: { ...(config.articleEdits[movedId] ?? {}), sectionId: section.id, subsection, country } } };
+  if (sourceCountry && updated.customCountries?.[sourceSubsection]?.includes(sourceCountry) && !assigned.some(item => item.sectionId === sourceSection && item.subsection === sourceSubsection && item.country === sourceCountry)) {
+    const remaining = updated.customCountries[sourceSubsection].filter(label => label !== sourceCountry);
+    updated.customCountries = { ...updated.customCountries };
+    if (remaining.length) updated.customCountries[sourceSubsection] = remaining;
+    else delete updated.customCountries[sourceSubsection];
+  }
+  return updated;
 }

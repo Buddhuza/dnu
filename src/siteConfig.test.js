@@ -171,3 +171,26 @@ test('moving to a new regional country and organisation persists across reload',
     ['one', 'New country', ''], ['two', 'INTERNATIONAL ORGANISATIONS', 'New organisation']
   ]);
 });
+
+test('moving the last story removes empty headings and unused custom destinations', () => {
+  const stories = [{ id: 'one', section: 'Eastern Europe', subsection: 'Ukraine', title: 'One' }, { id: 'two', section: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'OSCE', title: 'Two' }];
+  let config = defaultSiteConfig(stories);
+  config = moveArticleInConfig(config, stories, 'one', { sectionId: 'South Caucasus', subsection: 'New country', country: '', createSubsection: true });
+  config = moveArticleInConfig(config, stories, 'two', { sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'New organisation', createCountry: true });
+  config = moveArticleInConfig(config, stories, 'one', { sectionId: 'Eastern Europe', subsection: 'Ukraine', country: '' });
+  config = moveArticleInConfig(config, stories, 'two', { sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'OSCE' });
+  assert.ok(!config.sections.find(item => item.id === 'South Caucasus').subsections.includes('New country'));
+  assert.ok(!config.customCountries['INTERNATIONAL ORGANISATIONS']?.includes('New organisation'));
+  assert.deepEqual(displaySiteContent(stories, normalizeSiteConfig(config, stories)).map(item => [item.sectionId, item.subsection, item.country]), [
+    ['Eastern Europe', 'Ukraine', ''], ['Miscellaneous', 'INTERNATIONAL ORGANISATIONS', 'OSCE']
+  ]);
+});
+
+test('moving the sole story out of a custom section removes that section', () => {
+  const stories = [{ id: 'one', section: 'Eastern Europe', subsection: 'Ukraine', title: 'One' }];
+  const config = defaultSiteConfig(stories);
+  config.sections.push({ id: 'Custom section', name: 'Custom section', visible: true, subsections: ['Country'] });
+  const custom = moveArticleInConfig(config, stories, 'one', { sectionId: 'Custom section', subsection: 'Country', country: '' });
+  const moved = moveArticleInConfig(custom, stories, 'one', { sectionId: 'Eastern Europe', subsection: 'Ukraine', country: '' });
+  assert.ok(!moved.sections.some(item => item.id === 'Custom section'));
+});
