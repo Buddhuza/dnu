@@ -1,5 +1,6 @@
 import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, orderedSubsections } from './newsSections.js';
 import { blockedPlacementReason } from './sourcePolicy.js';
+import { excludedHeadlineReason } from './headlinePolicy.js';
 
 export const THEME_PRESETS = {
   forest: { name: 'Forest', primary: '#123e47', accent: '#bce081', background: '#f4efe6', surface: '#fdfaf4', text: '#182a36', section: '#0070c0', font: 'DM Sans' },
@@ -195,11 +196,11 @@ export function displaySiteContent(articles, config, excludedIds = new Set()) {
       subsection: edit?.sectionId ? edit.subsection : edit?.subsection || (legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : article.subsection),
       country: edit?.sectionId ? edit.country : edit?.country || article.country || ''
     };
-    if (!blockedPlacementReason(displayed)) items.push(displayed);
+    if (!blockedPlacementReason(displayed) && !excludedHeadlineReason(displayed.title)) items.push(displayed);
   }
   for (const article of config.customArticles) {
     if (article.hidden || sectionById.get(article.sectionId)?.visible === false) continue;
-    if (!blockedPlacementReason(article)) items.push({ ...article, section: sectionById.get(article.sectionId)?.name || article.sectionId });
+    if (!blockedPlacementReason(article) && !excludedHeadlineReason(article.title)) items.push({ ...article, section: sectionById.get(article.sectionId)?.name || article.sectionId });
   }
   const uniqueItems = deduplicateArticles(items, excludedIds);
   const order = new Map(config.sections.map((section, index) => [section.id, index]));

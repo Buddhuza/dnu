@@ -5,6 +5,7 @@ import { canonicalArticleUrl } from './siteConfig.js';
 import { blockedPlacementReason } from './sourcePolicy.js';
 import { articlePlacement, publicArticleUrl } from '../server/importArticle.js';
 import { duplicateGroups, duplicateGroupHue } from './storyDuplicates.js';
+import { excludedHeadlineReason } from './headlinePolicy.js';
 
 const firecrawlKeyStorage = 'dnu-firecrawl-api-key-v1';
 const NEW = '__new__';
@@ -67,6 +68,7 @@ export default function AddArticlesDialog({ serverAvailable, sources, sections, 
     const title = manual.title.trim(), summary = manual.summary.trim();
     const sourceName = manual.sourceName.trim(), url = publicArticleUrl(manual.url.trim());
     if (!title || !sourceName || !url) { setManualError('Headline, agency and a public HTTPS hyperlink are required.'); return; }
+    if (excludedHeadlineReason(title)) { setManualError(excludedHeadlineReason(title)); return; }
     if ([...existingUrls, ...drafts.map(draft => draft.url)].some(value => canonicalArticleUrl(value) === canonicalArticleUrl(url.href))) { setManualError('This article link is already in the update or review list.'); return; }
     if (remainingSlots <= drafts.filter(draft => !draft.added).length) { setManualError('The browser has reached its 100 custom-story limit.'); return; }
     const placement = articlePlacement({}, title, summary) || { sectionId: '', subsection: '', country: '' };

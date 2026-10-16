@@ -17,3 +17,11 @@ export function reportEndDateLabel(windowEnd) {
   const end = dateParts(windowEnd);
   return `${end.day} ${end.month} ${end.year}`;
 }
+
+export function reportShortDateLabel(value) {
+  if (!Number.isFinite(Date.parse(value))) return '';
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Vienna', day: 'numeric', month: 'short', year: '2-digit'
+  }).formatToParts(new Date(value)).map(part => [part.type, part.value]));
+  return `${parts.day} ${parts.month} ${parts.year}`;
+}

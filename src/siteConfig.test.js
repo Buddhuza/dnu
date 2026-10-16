@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig, toggleLeadStoryInConfig } from './siteConfig.js';
+import { MISCELLANEOUS_COUNTRIES } from './newsSections.js';
 
 const articles = [
   { id: 'a', section: 'Europe', subsection: 'Poland', title: 'Original headline', summary: 'Original summary.', sourceName: 'Agency', url: 'https://example.com/a' },
@@ -62,7 +63,7 @@ test('removing an original Middle East lead creates its relevant country', () =>
   const stories = [{ id: 'saudi', section: 'Lead stories', subsection: 'Middle East', title: 'Houthis strike Saudi oil company Aramco', sourceName: 'Agency', url: 'https://example.com/saudi' }];
   const config = toggleLeadStoryInConfig(defaultSiteConfig(stories), stories, 'saudi');
   assert.deepEqual(displaySiteContent(stories, config).map(item => [item.sectionId, item.subsection, item.country]), [['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Saudi Arabia']]);
-  assert.ok(config.customCountries['MIDDLE EAST / NORTH AFRICA'].includes('Saudi Arabia'));
+  assert.ok(MISCELLANEOUS_COUNTRIES['MIDDLE EAST / NORTH AFRICA'].includes('Saudi Arabia'));
 });
 
 test('headline, empty summary, and agency edits survive saved settings', () => {

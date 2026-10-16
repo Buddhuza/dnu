@@ -42,6 +42,5 @@ test('published edition uses international outlets for all Ukraine stories', () 
   assert.ok(update.articles.some(article => article.section === 'Eastern Europe' && article.subsection === 'Ukraine'));
   assert.ok(update.articles.every(article => !blockedPlacementReason(article)));
   assert.ok(update.articles.every(article => String(article.summary || '').trim().split(/\s+/).length <= 30));
-  const tirana = update.articles.find(article => article.url.includes('tirana-erupts-in-chaos'));
-  assert.equal(tirana.summary, 'Protesters set fires near the prime minister’s office and targeted commercial premises in luxury high-rise buildings.');
+  assert.ok(!update.articles.some(article => article.url.includes('tirana-erupts-in-chaos')));
 });

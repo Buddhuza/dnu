@@ -7,6 +7,7 @@ import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES } from '../src/newsSections.js';
 import { blockedPlacementReason } from '../src/sourcePolicy.js';
 import { preferredRegionalPlacement } from '../src/storyPlacement.js';
 import { deduplicateArticles } from '../src/siteConfig.js';
+import { excludedHeadlineReason } from '../src/headlinePolicy.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const sources = JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'));
@@ -57,6 +58,7 @@ const titlePlaces = [
   ['Miscellaneous', 'WESTERN / CENTRAL EUROPE', 'Spain', /\bSpain|Spanish|Madrid\b/i],
   ['Miscellaneous', 'WESTERN / CENTRAL EUROPE', 'Netherlands', /\bNetherlands|Dutch|Amsterdam|The Hague\b/i],
   ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Iran', /\bIran|Iranian|Tehran|Hormuz\b/i],
+  ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Saudi Arabia', /\bSaudi Arabia|Saudi|Riyadh|Aramco\b/i],
   ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Israel', /\bIsrael|Israeli|Palestinian|Gaza|West Bank\b/i],
   ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Lebanon', /\bLebanon|Lebanese|Beirut\b/i],
   ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Syria', /\bSyria|Syrian|Damascus\b/i],
@@ -93,6 +95,11 @@ function placementFromTitle(title) {
 const summaryOverrides = new Map([
   ['https://apnews.com/article/russia-ukraine-war-zelenskyy-burnham-trump-putin-9fe44ec1bb361f19d46dfafb58da46f6', 'Kyiv also endured a second consecutive night of missile attacks, officials said.']
 ]);
+const overlappingAlbaniaRecaps = new Set([
+  'https://www.tiranatimes.com/tirana-erupts-in-chaos-as-anti-government-protests-escalate/',
+  'https://www.tiranatimes.com/student-protests-turn-violent-amid-growing-unrest-in-albania/',
+  'https://en.vijesti.me/world-a/balkan/831492/photo-of-the-most-violent-protests-against-rame-water-cannons-burning-government-buildings-and-banks-stones-at-police-tear-gas'
+]);
 const raw = [...Object.values(state.sources), ...Object.values(fallback.sources), ...Object.values(recovery.sources)].flatMap(source => source.articles || []).map(article => ({ ...article, title: article.sourceId === 'source-93' ? article.title.replace(/ - (?:TopNews|News from Embassies) - Ansa\.it$/i, '') : article.sourceId === 'source-7' ? article.title.replace(/ - Tirana Times$/i, '') : article.title, summary: summaryOverrides.get(article.url) || summaryFixes[article.url]?.replacement || article.summary })).sort((a, b) =>
   Number(agencyPriority.test(b.sourceName)) - Number(agencyPriority.test(a.sourceName)) || String(b.summary || '').length - String(a.summary || '').length);
 const accepted = [];
@@ -107,6 +114,8 @@ for (const article of raw) {
   else if (/\/2026\/10\/1[0-3]\//.test(new URL(article.url).pathname)) reason = 'article URL predates requested window';
   else if (/T00:00:00(?:\.000)?Z$/.test(article.publishedAt)) reason = 'date-only or midnight time needs review';
   else if (!article.title?.trim() || !article.summary?.trim()) reason = 'headline or summary missing';
+  else if (excludedHeadlineReason(article.title)) reason = excludedHeadlineReason(article.title);
+  else if (overlappingAlbaniaRecaps.has(article.url)) reason = 'broader recap overlaps specific Albania protest developments';
   else if (article.sourceId === 'source-167') reason = 'all collected Foreign Policy pages were opinion or analysis';
   else if (article.sourceId === 'source-123' && /\b(?:Makkah Alliance|Omani FM|Dar urges regional powers)\b/i.test(article.title)) reason = 'Pakistan-focused story outside the configured Afghanistan coverage';
   else if (/Washington panel urges continued US support for Kurdistan/i.test(article.title)) reason = 'Iraq-focused story outside the configured countries';
@@ -134,6 +143,7 @@ for (const article of raw) {
     : /European Security Council/i.test(article.title) ? { sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'EU' }
     : /\bUNHCR\b/i.test(article.title) ? { sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'UN' }
     : /\bHegseth\b/i.test(article.title) ? { sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' }
+    : /\b(?:Saudi Arabia|Saudi|Aramco|Riyadh)\b/i.test(article.title) ? { sectionId: 'Miscellaneous', subsection: 'MIDDLE EAST / NORTH AFRICA', country: 'Saudi Arabia' }
     : null;
   const inferred = placementOverrides.get(article.url) || subjectPlacement || placementFromTitle(article.title) || contextPlaces.get(article.sourceId) || articlePlacement({}, article.title, '');
   let placement = inferred || (article.section ? { sectionId: article.section, subsection: article.subsection, country: article.country } : null);
@@ -159,7 +169,8 @@ function leadScore(article, middleEast = false) {
   return editorialScore(article.title, article.summary) + impact + (agencyPriority.test(article.sourceName) ? (middleEast ? 75 : 1000) : 0) + articleDate(article) / 1e13;
 }
 const ukrainian = accepted.filter(article => article.section === 'Eastern Europe' && article.subsection === 'Ukraine' && agencyPriority.test(article.sourceName)).sort((a, b) => leadScore(b) - leadScore(a)).slice(0, 4);
-const middleEast = accepted.filter(article => article.section === 'Miscellaneous' && article.subsection === 'MIDDLE EAST / NORTH AFRICA').sort((a, b) => leadScore(b, true) - leadScore(a, true)).slice(0, 2);
+const middleEast = accepted.filter(article => article.section === 'Miscellaneous' && article.subsection === 'MIDDLE EAST / NORTH AFRICA')
+  .sort((a, b) => Number(/\bSaudi Arabia|Saudi|Riyadh|Aramco\b/i.test(a.title)) - Number(/\bSaudi Arabia|Saudi|Riyadh|Aramco\b/i.test(b.title)) || leadScore(b, true) - leadScore(a, true)).slice(0, 2);
 for (const article of ukrainian) { article.section = 'Lead stories'; article.subsection = 'Ukraine'; article.country = ''; }
 for (const article of middleEast) { article.section = 'Lead stories'; article.subsection = 'Middle East'; article.country = ''; }
 accepted.sort((a, b) => (sectionOrder.get(a.section) ?? 999) - (sectionOrder.get(b.section) ?? 999)

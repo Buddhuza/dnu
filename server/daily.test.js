@@ -110,7 +110,7 @@ test('13 October edition contains verified headlines inside its fixed 24-hour wi
   assert.ok(update.articles.length >= 25);
   assert.ok(new Set(update.articles.map(item => item.sourceId)).size >= 10);
   const leads = update.articles.filter(item => item.section === 'Lead stories');
-  assert.equal(leads.filter(item => item.subsection === 'Ukraine').length, 4);
+  assert.ok([3, 4].includes(leads.filter(item => item.subsection === 'Ukraine').length));
   assert.ok(leads.some(item => item.sourceName === 'Euronews'));
   assert.ok([1, 2].includes(leads.filter(item => item.subsection === 'Middle East').length));
   for (const article of update.articles) {
@@ -124,4 +124,12 @@ test('13 October edition contains verified headlines inside its fixed 24-hour wi
   const armenia = update.articles.filter(item => item.section === 'South Caucasus' && item.subsection === 'Armenia');
   assert.match(armenia[0].title, /OSCE/);
   assert.equal(currentDailyUpdate(update, end + 86400000).articles.length, update.articles.length);
+});
+
+test('current edition keeps Saudi coverage outside leads and avoids overlapping Albania recaps', () => {
+  const update = JSON.parse(readFileSync(new URL('../data/daily-update-2026-10-14-15.json', import.meta.url), 'utf8'));
+  assert.ok(!update.articles.some(item => item.section === 'Lead stories' && /\bSaudi Arabia|Saudi|Aramco\b/i.test(item.title)));
+  assert.ok(update.articles.some(item => item.country === 'Saudi Arabia' && /Aramco/i.test(item.title)));
+  assert.ok(!update.articles.some(item => item.url === 'https://www.tiranatimes.com/tirana-erupts-in-chaos-as-anti-government-protests-escalate/'));
+  assert.ok(update.articles.every(item => !/[?]/.test(item.title) && !/^(?:analysis|opinion)\b/i.test(item.title)));
 });

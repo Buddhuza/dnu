@@ -1,4 +1,5 @@
 import { franc } from 'franc-min';
+import { excludedHeadlineReason } from '../src/headlinePolicy.js';
 
 const russianSourceIds = new Set(['source-97', 'source-98', 'source-99', 'source-115', 'source-116']);
 const englishWords = new Set('the and for with from that this which will have has was were are about into over under after before between during government minister president security defence defense politics political election parliament country countries talks agreement cooperation military foreign international new said says'.split(' '));
@@ -52,5 +53,5 @@ export function editorialScore(title, summary = '') {
 }
 
 export function passesSourcePolicy(source, title, summary = '') {
-  return isEnglishListingText(title, summary) && (!isRussianSource(source) || isRussiaFocused(title, summary));
+  return !excludedHeadlineReason(title) && isEnglishListingText(title, summary) && (!isRussianSource(source) || isRussiaFocused(title, summary));
 }

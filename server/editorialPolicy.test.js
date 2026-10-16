@@ -20,3 +20,12 @@ test('OSCE and international cooperation rank ahead of local politics', () => {
   assert.ok(editorialScore('OSCE chair to visit Armenia') > editorialScore('Mayoral party wins local election'));
   assert.ok(editorialScore('Armenia and Azerbaijan hold peace talks') > editorialScore('Mayoral party wins local election'));
 });
+
+test('question, analysis and opinion headlines are excluded before article scraping', () => {
+  const source = { id: 'source-1' };
+  const summary = 'Officials discussed security cooperation between the governments.';
+  assert.equal(passesSourcePolicy(source, 'Ukraine seeks new security agreement?', summary), false);
+  assert.equal(passesSourcePolicy(source, 'Analysis: Ukraine seeks new security agreement', summary), false);
+  assert.equal(passesSourcePolicy(source, 'Opinion | Ukraine seeks new security agreement', summary), false);
+  assert.equal(passesSourcePolicy(source, 'Ukraine seeks new security agreement', summary), true);
+});

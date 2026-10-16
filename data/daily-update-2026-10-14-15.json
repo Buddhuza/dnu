@@ -34,20 +34,6 @@
       "reviewed": true
     },
     {
-      "id": "https://apnews.com/article/ukraine-drones-china-russia-0715effbd80246ee535fd25220011f30",
-      "url": "https://apnews.com/article/ukraine-drones-china-russia-0715effbd80246ee535fd25220011f30",
-      "sourceId": "source-85",
-      "sourceName": "AP",
-      "group": "Miscl",
-      "title": "The not-so-secret vulnerability in Ukraine's drone arsenal? Chinese technology",
-      "summary": "Ukraine’s greatest fear is that the Chinese government could severely restrict its access to these critical parts, which could jeopardize its drone capabilities in the ongoing conflict.",
-      "publishedAt": "2026-10-14T16:09:00.000Z",
-      "section": "Lead stories",
-      "subsection": "Ukraine",
-      "country": "",
-      "reviewed": true
-    },
-    {
       "id": "https://www.dpa-international.com/politics/urn:newsml:dpa.com:20090101:261014-930-841003",
       "url": "https://www.dpa-international.com/politics/urn:newsml:dpa.com:20090101:261014-930-841003",
       "sourceId": "source-87",
@@ -70,9 +56,9 @@
       "title": "Iran-backed Houthis strike Saudi oil company Aramco's headquarters, officials say",
       "summary": "Houthi missile attacks scattered around Saudi Arabia targeted oil facilities and an international airport, with multiple hits reported at Aramco Headquarters and nearby King Khalid International Airport.",
       "publishedAt": "2026-10-14T21:59:00.000Z",
-      "section": "Lead stories",
-      "subsection": "Middle East",
-      "country": "",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "country": "Saudi Arabia",
       "reviewed": true
     },
     {
@@ -90,20 +76,6 @@
       "reviewed": true
     },
     {
-      "id": "https://www.tiranatimes.com/tirana-erupts-in-chaos-as-anti-government-protests-escalate/",
-      "url": "https://www.tiranatimes.com/tirana-erupts-in-chaos-as-anti-government-protests-escalate/",
-      "sourceId": "source-7",
-      "sourceName": "Tirana Times",
-      "group": "South Eastern Europe",
-      "title": "Tirana Erupts in Chaos as Anti-Government Protests Escalate",
-      "summary": "Protesters set fires near the prime minister’s office and targeted commercial premises in luxury high-rise buildings.",
-      "publishedAt": "2026-10-14T19:23:16.000Z",
-      "section": "South Eastern Europe",
-      "subsection": "Albania",
-      "country": "",
-      "reviewed": true
-    },
-    {
       "id": "https://english.gazetatema.net/society/eu-calls-for-investigation-into-police-violence-claims-i347648",
       "url": "https://english.gazetatema.net/society/eu-calls-for-investigation-into-police-violence-claims-i347648",
       "sourceId": "source-6",
@@ -112,20 +84,6 @@
       "title": "EU calls for investigation into police violence claims",
       "summary": "The European Union has called for claims of police violence against protesters and journalists in Albania to be investigated as a priority.",
       "publishedAt": "2026-10-14T12:23:41.000Z",
-      "section": "South Eastern Europe",
-      "subsection": "Albania",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://en.vijesti.me/world-a/balkan/831492/photo-of-the-most-violent-protests-against-rame-water-cannons-burning-government-buildings-and-banks-stones-at-police-tear-gas",
-      "url": "https://en.vijesti.me/world-a/balkan/831492/photo-of-the-most-violent-protests-against-rame-water-cannons-burning-government-buildings-and-banks-stones-at-police-tear-gas",
-      "sourceId": "source-12",
-      "sourceName": "Vijesti.me",
-      "group": "South Eastern Europe",
-      "title": "PHOTO The most violent protests against Rama: Water cannons, government and bank buildings set on fire, rocks thrown at police, tear gas",
-      "summary": "Police used water cannons tonight against tens of thousands of protesting students in the Albanian capital Tirana, where violent demonstrations are taking place for a second day.",
-      "publishedAt": "2026-10-14T21:46:00.000Z",
       "section": "South Eastern Europe",
       "subsection": "Albania",
       "country": "",
@@ -154,20 +112,6 @@
       "title": "Foreign ministry demands action over Vatican embassy attack",
       "summary": "The Foreign Ministry has condemned vandalism at the Vatican's embassy in Tirana, where the Holy See's flag was removed during Tuesday's violent protests.",
       "publishedAt": "2026-10-14T07:41:13.000Z",
-      "section": "South Eastern Europe",
-      "subsection": "Albania",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.tiranatimes.com/student-protests-turn-violent-amid-growing-unrest-in-albania/",
-      "url": "https://www.tiranatimes.com/student-protests-turn-violent-amid-growing-unrest-in-albania/",
-      "sourceId": "source-7",
-      "sourceName": "Tirana Times",
-      "group": "South Eastern Europe",
-      "title": "Student Protests Turn Violent Amid Growing Unrest in Albania - Tirana Times",
-      "summary": "Student-led protests demanding improvements in education, greater economic opportunities and the resignation of Prime Minister Edi Rama turned violent Tuesday as demonstrators clashed with police in Albania’s capital.",
-      "publishedAt": "2026-10-14T01:28:34.000Z",
       "section": "South Eastern Europe",
       "subsection": "Albania",
       "country": "",
@@ -252,20 +196,6 @@
       "title": "MPs adopt amendments to the Constitution related to the abolition of immunity for members of the Government for corruption crimes",
       "summary": "62 MPs voted in favor of the text of Draft Amendment 22 to the highest legal act, while there were no votes against or abstentions.",
       "publishedAt": "2026-10-14T17:11:00.000Z",
-      "section": "South Eastern Europe",
-      "subsection": "Montenegro",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.telegraf.rs/amp/english/4414637-from-november-1-citizens-of-montenegro-will-need-visas-to-travel-to-russia",
-      "url": "https://www.telegraf.rs/amp/english/4414637-from-november-1-citizens-of-montenegro-will-need-visas-to-travel-to-russia",
-      "sourceId": "source-19",
-      "sourceName": "Telegraf",
-      "group": "South Eastern Europe",
-      "title": "From November 1, citizens of Montenegro will need visas to travel to Russia?",
-      "summary": "From November 1, Russian citizens will be able to enter Montenegro and stay on its territory based on visas.",
-      "publishedAt": "2026-10-14T10:42:00.000Z",
       "section": "South Eastern Europe",
       "subsection": "Montenegro",
       "country": "",
@@ -394,20 +324,6 @@
       "publishedAt": "2026-10-14T15:20:35.000Z",
       "section": "South Eastern Europe",
       "subsection": "Serbia / Kosovo",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://en.belsat.eu/95922941/will-doors-open-to-minsk-inside-off-the-record-talks-at-warsaw-security-forum",
-      "url": "https://en.belsat.eu/95922941/will-doors-open-to-minsk-inside-off-the-record-talks-at-warsaw-security-forum",
-      "sourceId": "source-27",
-      "sourceName": "Belsat",
-      "group": "East Europe",
-      "title": "Will doors open to Minsk? Inside off-the-record talks at Warsaw Security Forum",
-      "summary": "A Belarusian opposition representative said Europe had lost six years by failing to develop a strategy for Belarus.",
-      "publishedAt": "2026-10-14T05:43:00.000Z",
-      "section": "Eastern Europe",
-      "subsection": "Belarus",
       "country": "",
       "reviewed": true
     },
@@ -2285,20 +2201,6 @@
       "section": "Miscellaneous",
       "subsection": "WESTERN / CENTRAL EUROPE",
       "country": "Hungary",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.thejournal.ie/readme/peadar-toibin-journal-public-service-strike-7192252-Oct2026/",
-      "url": "https://www.thejournal.ie/readme/peadar-toibin-journal-public-service-strike-7192252-Oct2026/",
-      "sourceId": "source-139",
-      "sourceName": "The Journal",
-      "group": "Miscl",
-      "title": "The government says it wants productivity. But where has theirs been over pay talks?",
-      "summary": "According to Eurostat, Ireland is the most expensive country among the EU 27 for electricity, housing, and health services.",
-      "publishedAt": "2026-10-14T06:00:24.000Z",
-      "section": "Miscellaneous",
-      "subsection": "WESTERN / CENTRAL EUROPE",
-      "country": "Ireland",
       "reviewed": true
     },
     {
@@ -4346,20 +4248,6 @@
       "reviewed": true
     },
     {
-      "id": "https://www.kyivpost.com/post/87012",
-      "url": "https://www.kyivpost.com/post/87012",
-      "sourceId": "source-37",
-      "sourceName": "Kyiv Post",
-      "group": "East Europe",
-      "title": "Trump’s Ukraine Ultimatum: Peace Plan or Capitulation?",
-      "summary": "US President Donald Trump’s recent statements have by now fully aligned with those coming from the Kremlin.",
-      "publishedAt": "2026-10-14T11:29:00.000Z",
-      "section": "Miscellaneous",
-      "subsection": "NORTH AMERICA",
-      "country": "United States",
-      "reviewed": true
-    },
-    {
       "id": "https://www.tovima.com/politics/greek-government-sidesteps-guilfoyle-firing-amid-backlash/",
       "url": "https://www.tovima.com/politics/greek-government-sidesteps-guilfoyle-firing-amid-backlash/",
       "sourceId": "source-143",
@@ -4598,20 +4486,6 @@
       "reviewed": true
     },
     {
-      "id": "https://en.vijesti.me/tv/shows/831443/There-is-a-deadlock-in-parliament--who-is-hindering-negotiations-with-the-EU",
-      "url": "https://en.vijesti.me/tv/shows/831443/There-is-a-deadlock-in-parliament--who-is-hindering-negotiations-with-the-EU",
-      "sourceId": "source-12",
-      "sourceName": "Vijesti.me",
-      "group": "South Eastern Europe",
-      "title": "Clear: Deadlock in Parliament - Who is hindering negotiations with the EU?",
-      "summary": "The parliament faces a deadlock regarding necessary constitutional amendments amidst political maneuvering.",
-      "publishedAt": "2026-10-14T16:16:00.000Z",
-      "section": "Miscellaneous",
-      "subsection": "INTERNATIONAL ORGANISATIONS",
-      "country": "EU",
-      "reviewed": true
-    },
-    {
       "id": "https://europeanwesternbalkans.com/2026/10/14/croatia-circulates-document-to-eu-member-states-outlining-demands-for-montenegros-accession/",
       "url": "https://europeanwesternbalkans.com/2026/10/14/croatia-circulates-document-to-eu-member-states-outlining-demands-for-montenegros-accession/",
       "sourceId": "source-3",
@@ -4718,20 +4592,6 @@
       "title": "Greece Pushes for Ambitious EU Budget as Frugal–Cohesion Divide Deepens - tovima.com",
       "summary": "Deputy FM Tasos Chatzivasileiou urged his counterparts not to let Europe slow its progress regarding the upcoming EU budget during the General Affairs Council in Luxembourg.",
       "publishedAt": "2026-10-14T07:30:36.000Z",
-      "section": "Miscellaneous",
-      "subsection": "INTERNATIONAL ORGANISATIONS",
-      "country": "EU",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.euronews.com/2026/10/14/european-security-council-new-idea-or-a-repackaged-hybrid-toolbox",
-      "url": "https://www.euronews.com/2026/10/14/european-security-council-new-idea-or-a-repackaged-hybrid-toolbox",
-      "sourceId": "source-82",
-      "sourceName": "Euronews",
-      "group": "Miscl",
-      "title": "European Security Council: New idea or a repackaged hybrid toolbox?",
-      "summary": "The European Commission wants to create a European Security Council to better prepare the bloc for sabotage and external threats.",
-      "publishedAt": "2026-10-14T06:29:56.000Z",
       "section": "Miscellaneous",
       "subsection": "INTERNATIONAL ORGANISATIONS",
       "country": "EU",
@@ -5072,8 +4932,8 @@
       "name": "Tirana Times",
       "group": "South Eastern Europe",
       "url": "https://www.tiranatimes.com/",
-      "status": "collected",
-      "reason": "2 verified articles included; 4 original article pages checked."
+      "status": "checked",
+      "reason": "No article selected after headline and overlap review; 4 original article pages checked."
     },
     {
       "id": "source-8",
@@ -5113,7 +4973,7 @@
       "group": "South Eastern Europe",
       "url": "https://en.vijesti.me/latest-news",
       "status": "collected",
-      "reason": "6 verified articles included; 7 original article pages checked."
+      "reason": "4 verified articles included; 7 original article pages checked."
     },
     {
       "id": "source-13",
@@ -5169,7 +5029,7 @@
       "group": "South Eastern Europe",
       "url": "https://www.telegraf.rs/english",
       "status": "collected",
-      "reason": "3 verified articles included; 4 original article pages checked."
+      "reason": "2 verified articles included; 4 original article pages checked."
     },
     {
       "id": "source-20",
@@ -5233,7 +5093,7 @@
       "group": "East Europe",
       "url": "https://en.belsat.eu/79795236/news",
       "status": "collected",
-      "reason": "4 verified articles included; 10 original article pages checked."
+      "reason": "3 verified articles included; 10 original article pages checked."
     },
     {
       "id": "source-28",
@@ -5313,7 +5173,7 @@
       "group": "East Europe",
       "url": "https://www.kyivpost.com/all-news",
       "status": "collected",
-      "reason": "5 verified articles included; 6 original article pages checked. Ukraine-placed articles from this outlet are excluded by editorial policy."
+      "reason": "4 verified articles included; 6 original article pages checked. Ukraine-placed articles from this outlet are excluded by editorial policy."
     },
     {
       "id": "source-38",
@@ -5673,7 +5533,7 @@
       "group": "Miscl",
       "url": "https://www.euronews.com/just-in",
       "status": "collected",
-      "reason": "5 verified articles included; 21 original article pages checked."
+      "reason": "4 verified articles included; 21 original article pages checked."
     },
     {
       "id": "source-83",
@@ -5697,7 +5557,7 @@
       "group": "Miscl",
       "url": "https://apnews.com/world-news",
       "status": "collected",
-      "reason": "7 verified articles included; 7 original article pages checked."
+      "reason": "6 verified articles included; 7 original article pages checked."
     },
     {
       "id": "source-86",
@@ -6129,7 +5989,7 @@
       "group": "Miscl",
       "url": "https://www.thejournal.ie/",
       "status": "collected",
-      "reason": "2 verified articles included; 10 original article pages checked."
+      "reason": "1 verified article included; 10 original article pages checked."
     },
     {
       "id": "source-140",

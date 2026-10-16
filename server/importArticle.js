@@ -1,4 +1,5 @@
 import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES } from '../src/newsSections.js';
+import { excludedHeadlineReason } from '../src/headlinePolicy.js';
 import { preferredRegionalPlacement } from '../src/storyPlacement.js';
 import { viennaWallTimeToIso, wallTimeToIso } from '../src/viennaTime.js';
 import { isEnglishArticle, isRussianSource, isRussiaFocused } from './editorialPolicy.js';
@@ -17,6 +18,7 @@ const countryRules = [
   ].flatMap(([section, countries]) => countries.map(country => [section, country, new RegExp(`\\b(?:${country === 'Bosnia and Herzegovina' ? 'Bosnia|Bosnian|Herzegovina' : country === 'North Macedonia' ? 'North Macedonia|Macedonian' : country === 'Ukraine' ? 'Ukraine|Ukrainian|Kyiv' : country === 'Kyrgyzstan' ? 'Kyrgyzstan|Kyrgyz' : country === 'Kazakhstan' ? 'Kazakhstan|Kazakh' : country === 'Georgia' ? 'Georgia|Georgian|Tbilisi' : country})\\b`, 'i')]))
 ];
 const miscellaneous = [
+  ['MIDDLE EAST / NORTH AFRICA', 'Saudi Arabia', /\bSaudi Arabia|Saudi|Riyadh|Aramco\b/i],
   ['MIDDLE EAST / NORTH AFRICA', 'Iran', /\bIran|Iranian|Tehran|Hormuz\b/i],
   ['MIDDLE EAST / NORTH AFRICA', 'Israel', /\bIsrael|Israeli|Palestin|Gaza|West Bank\b/i],
   ['MIDDLE EAST / NORTH AFRICA', 'Lebanon', /\bLebanon|Lebanese|Beirut\b/i],
@@ -151,6 +153,7 @@ export function importedArticle(payload, url, source, { allowUnplaced = false } 
   const title = String(data.metadata?.ogTitle ?? extracted.exactHeadline ?? data.metadata?.title ?? '').trim();
   const summary = String(extracted.summary ?? '').trim();
   if (!title || !summary) throw new Error('The original page did not yield a headline and a one-sentence summary.');
+  if (excludedHeadlineReason(title)) throw new Error(excludedHeadlineReason(title));
   if (!isEnglishArticle(payload, title, summary)) throw new Error('The original article is not in English.');
   const { publishedAt, timeSource } = resolveArticleTime(payload, url);
   if (isRussianSource(source) && !isRussiaFocused(title, summary)) throw new Error('Russian outlets are limited to Russia-focused stories.');
