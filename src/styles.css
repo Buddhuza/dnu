@@ -293,6 +293,8 @@
 @media(max-width:720px){.daily-downloads .daily-action,.daily-downloads .daily-action.daily-download{width:30px;height:30px;min-width:30px;padding:5px}.daily-downloads .daily-action svg{width:16px;height:16px}}
 .daily-title-row{flex-direction:column;align-items:flex-start;gap:2px}
 .daily-title-row .report-date{margin:0;font-size:var(--site-body-size,18px)}
+.daily-story-date{color:#647178;font-size:inherit;line-height:inherit;white-space:nowrap}
+.app-shell[data-mode="dark"] .daily-story-date{color:#b7c2c7}
 .daily-story{border-bottom:0;padding:3px 0 7px}
 .daily-story p{line-height:1.45}
 .daily-section{margin-top:12px;padding-top:8px}
