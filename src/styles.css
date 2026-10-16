@@ -65,6 +65,12 @@
 .add-placement select{min-width:0;width:100%;padding:9px;border:1px solid #a7bbba;border-radius:6px;background:var(--site-surface,#fff);color:var(--site-text,#182a36);font:inherit}
 .add-draft>button{justify-self:start;padding:8px 12px;border:0;border-radius:6px;background:var(--site-primary,#123e47);color:#fff;font:inherit;font-weight:700}
 .add-draft>button:disabled{opacity:.55;cursor:default}
+.add-manual-form{margin-top:16px;padding-top:12px;border-top:1px solid #a7bbba}
+.add-manual-form h3{font-size:var(--site-body-size,18px);margin:4px 0 0}
+.add-manual-error,.add-duplicate-warning{color:#9d4a17;font-size:calc(var(--site-body-size,18px) - 2px);line-height:1.35;margin:8px 0}
+.app-shell[data-mode="dark"] .add-manual-error,.app-shell[data-mode="dark"] .add-duplicate-warning{color:#ffc38e}
+.story-duplicate-flag{display:inline-block;margin:2px 0 0;padding:1px 7px;border-radius:4px;background:#fff0dd;color:#874711;font-size:calc(var(--site-body-size,18px) - 4px);font-weight:700;line-height:1.4}
+.app-shell[data-mode="dark"] .story-duplicate-flag{background:#54351f;color:#ffd4a9}
 
 /* Two-column reading layout and adjustable text size. */
 .app-shell{font-size:var(--site-body-size,18px)}
