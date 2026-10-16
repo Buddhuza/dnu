@@ -131,9 +131,9 @@ export function undatedCandidates(payload, source, include = DEFAULT_INCLUDE, ex
   return candidates.sort((a, b) => editorialScore(b.title, b.summary) - editorialScore(a.title, a.summary));
 }
 
-export function candidatePage(candidates, cursor = 0, fullScan = false, deepScan = false) {
+export function candidatePage(candidates, cursor = 0, fullScan = false, deepScan = false, selective = false) {
   const offset = fullScan ? Math.min(candidates.length, Math.max(0, Math.trunc(Number(cursor) || 0))) : 0;
-  const limit = fullScan || deepScan ? 10 : 3;
+  const limit = selective ? 3 : fullScan || deepScan ? 10 : 3;
   const items = candidates.slice(offset, offset + limit);
   return { items, nextCursor: fullScan && offset + items.length < candidates.length ? offset + items.length : null };
 }

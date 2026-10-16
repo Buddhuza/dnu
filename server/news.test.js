@@ -114,6 +114,8 @@ test('bulk scan opens a bounded headline shortlist while complete scan keeps eve
   assert.deepEqual(shortlisted, candidates.slice(0, 12));
   assert.equal(candidatePage(shortlisted, 10, true).items.length, 2);
   assert.equal(candidatePage(shortlisted, 10, true).nextCursor, null);
+  assert.equal(candidatePage(shortlisted, 0, true, false, true).items.length, 3);
+  assert.equal(candidatePage(shortlisted, 3, true, false, true).nextCursor, 6);
   assert.equal(candidates.length, 31);
 });
 

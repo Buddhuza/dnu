@@ -24,3 +24,9 @@ test('source audit reports missing listing links and keyword mismatches', () => 
   assert.equal(sourceAudit(source, [attempt({ candidatesFound: 0, candidatesChecked: 0 })]).status, 'no-matching-links');
   assert.equal(sourceAudit(source, [], ['Firecrawl blocked access']).status, 'failed');
 });
+
+test('source audit identifies articles skipped from the previous update', () => {
+  const result = sourceAudit(source, [attempt({ listedCount: 2, previouslyCovered: 2, candidatesFound: 0, candidatesChecked: 0 })]);
+  assert.equal(result.status, 'previously-covered');
+  assert.match(result.reason, /2 articles were already covered/);
+});

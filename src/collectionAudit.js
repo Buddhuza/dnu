@@ -2,8 +2,9 @@ export function sourceAudit(source, attempts = [], errors = []) {
   const grouped = new Map();
   for (const attempt of attempts) {
     const key = `${attempt.collectionMethod}:${attempt.listingUrl}`;
-    const row = grouped.get(key) || { listingUrl: attempt.listingUrl, collectionMethod: attempt.collectionMethod, listedCount: 0, candidatesFound: 0, candidatesSelected: 0, candidatesChecked: 0, headlines: 0, rejectionCounts: { pageError: 0, missingHeadlineOrTime: 0, outsideWindow: 0, outsideScope: 0, nonEnglish: 0 }, pageErrors: [] };
+    const row = grouped.get(key) || { listingUrl: attempt.listingUrl, collectionMethod: attempt.collectionMethod, listedCount: 0, previouslyCovered: 0, candidatesFound: 0, candidatesSelected: 0, candidatesChecked: 0, headlines: 0, rejectionCounts: { pageError: 0, missingHeadlineOrTime: 0, outsideWindow: 0, outsideScope: 0, nonEnglish: 0 }, pageErrors: [] };
     row.listedCount = Math.max(row.listedCount, attempt.listedCount || 0);
+    row.previouslyCovered = Math.max(row.previouslyCovered, attempt.previouslyCovered || 0);
     row.candidatesFound = Math.max(row.candidatesFound, attempt.candidatesFound || 0);
     row.candidatesSelected = Math.max(row.candidatesSelected, attempt.candidatesSelected ?? attempt.candidatesFound ?? 0);
     row.candidatesChecked += attempt.candidatesChecked || 0;
@@ -16,6 +17,7 @@ export function sourceAudit(source, attempts = [], errors = []) {
   const headlines = checkedAttempts.reduce((sum, attempt) => sum + attempt.headlines, 0);
   const listed = Math.max(0, ...checkedAttempts.map(attempt => attempt.listedCount));
   const candidates = Math.max(0, ...checkedAttempts.map(attempt => attempt.candidatesFound));
+  const previouslyCovered = checkedAttempts.reduce((sum, attempt) => sum + attempt.previouslyCovered, 0);
   const checked = checkedAttempts.reduce((sum, attempt) => sum + attempt.candidatesChecked, 0);
   const failedPages = checkedAttempts.reduce((sum, attempt) => sum + attempt.rejectionCounts.pageError, 0);
   const unverifiedPages = checkedAttempts.reduce((sum, attempt) => sum + attempt.rejectionCounts.missingHeadlineOrTime, 0);
@@ -39,6 +41,10 @@ export function sourceAudit(source, attempts = [], errors = []) {
     status = 'empty-listing';
     reason = 'The checked pages returned no article links.';
     remedy = 'Try a different news-section URL or publisher feed.';
+  } else if (!candidates && previouslyCovered) {
+    status = 'previously-covered';
+    reason = `${previouslyCovered} article${previouslyCovered === 1 ? ' was' : 's were'} already covered in the previous update and skipped before article scraping.`;
+    remedy = 'Check a newer listing page if you expect fresh reporting.';
   } else if (!candidates && !methods.includes('feed')) {
     status = 'no-matching-links';
     reason = `${listed} links were found, but none matched the include and exclude keywords.`;
