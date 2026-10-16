@@ -6,7 +6,7 @@ import publishedSiteConfig from '../data/site-config.json';
 import SiteManager from './SiteManager.jsx';
 import AddArticlesDialog from './AddArticlesDialog.jsx';
 import MoveStoryDialog from './MoveStoryDialog.jsx';
-import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig, toggleLeadStoryInConfig } from './siteConfig.js';
+import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig, toggleLeadStoryInConfig, addCustomArticleInConfig } from './siteConfig.js';
 import { orderedSubsections } from './newsSections.js';
 import { createReportDocxFromTemplate } from './docxBuilder.js';
 import { reportFilename } from './reportFilename.js';
@@ -462,7 +462,7 @@ function App() {
       </main>
     </div>{toast && <div className="toast" onClick={() => setToast('')}>{toast} ×</div>}
     {managementEnabled && managing && <SiteManager initialTab={managerTab} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} includeText={includeText} setIncludeText={setIncludeText} excludeText={setExcludeText} setExcludeText={setExcludeText} applyScope={applyScope} onClose={() => setManaging(false)} onReset={() => setSiteConfig(defaultSiteConfig(daily?.articles ?? preparedUpdate.articles))}/>}
-    {addingArticles && <AddArticlesDialog serverAvailable={!staticPreview && Boolean(config?.firecrawlConfigured)} sources={configuredSources} sections={siteConfig.sections} existingArticles={displayedArticles} existingUrls={[...(daily?.articles ?? []).map(item => item.url), ...siteConfig.customArticles.map(item => item.url)]} remainingSlots={100 - siteConfig.customArticles.length} onAdd={article => { setSiteConfig(current => current.customArticles.some(item => item.url === article.url) ? current : { ...current, customArticles: [...current.customArticles, article] }); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}
+    {addingArticles && <AddArticlesDialog serverAvailable={!staticPreview && Boolean(config?.firecrawlConfigured)} sources={configuredSources} sections={siteConfig.sections} customCountries={siteConfig.customCountries} existingArticles={displayedArticles} existingUrls={[...(daily?.articles ?? []).map(item => item.url), ...siteConfig.customArticles.map(item => item.url)]} remainingSlots={100 - siteConfig.customArticles.length} onAdd={(article, placement) => { setSiteConfig(current => addCustomArticleInConfig(current, article, placement)); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}
     {editingStories && storyToMove && <MoveStoryDialog story={storyToMove} sections={siteConfig.sections} articles={displayedArticles} customCountries={siteConfig.customCountries} onMove={moveStory} onClose={() => setMoveStoryId('')}/>}
   </div>;
 }

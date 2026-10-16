@@ -212,6 +212,27 @@ export function displaySiteContent(articles, config, excludedIds = new Set()) {
     || (articleOrder.get(a.id) ?? 9999) - (articleOrder.get(b.id) ?? 9999));
 }
 
+export function addCustomArticleInConfig(config, article, { createSubsection = false, createCountry = false } = {}) {
+  const section = config.sections.find(item => item.id === article.sectionId && item.visible);
+  const subsection = String(article.subsection || '').trim().slice(0, 100);
+  const country = article.sectionId === 'Miscellaneous' ? String(article.country || '').trim().slice(0, 100) : '';
+  if (!section || !subsection || (article.sectionId === 'Miscellaneous' && !country) ||
+    (section.id === 'Lead stories' && !section.subsections.includes(subsection)) ||
+    (!section.subsections.includes(subsection) && !createSubsection) ||
+    blockedPlacementReason(article, { sectionId: section.id, subsection }) ||
+    config.customArticles.some(item => canonicalArticleUrl(item.url) === canonicalArticleUrl(article.url))) return config;
+  const alphabetical = new Intl.Collator('en', { sensitivity: 'base', ignorePunctuation: true });
+  const sections = !section.subsections.includes(subsection)
+    ? config.sections.map(item => item.id === section.id ? { ...item, subsections: [...item.subsections, subsection].sort(alphabetical.compare) } : item)
+    : config.sections;
+  const knownCountries = [...(MISCELLANEOUS_COUNTRIES[subsection] || []), ...(config.customCountries?.[subsection] || [])];
+  if (country && !knownCountries.includes(country) && !createCountry) return config;
+  const customCountries = country && !knownCountries.includes(country)
+    ? { ...config.customCountries, [subsection]: [...(config.customCountries?.[subsection] || []), country].sort(alphabetical.compare) }
+    : config.customCountries;
+  return { ...config, sections, customCountries, customArticles: [...config.customArticles, { ...article, subsection, country }] };
+}
+
 export function canonicalArticleUrl(value) {
   try {
     const url = new URL(value);
