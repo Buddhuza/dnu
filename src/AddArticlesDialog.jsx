@@ -4,7 +4,7 @@ import { MISCELLANEOUS_COUNTRIES } from './newsSections.js';
 import { canonicalArticleUrl } from './siteConfig.js';
 import { blockedPlacementReason } from './sourcePolicy.js';
 import { articlePlacement, publicArticleUrl } from '../server/importArticle.js';
-import { possibleDuplicates } from './storyDuplicates.js';
+import { duplicateGroups, duplicateGroupHue } from './storyDuplicates.js';
 
 const firecrawlKeyStorage = 'dnu-firecrawl-api-key-v1';
 const NEW = '__new__';
@@ -26,7 +26,7 @@ export default function AddArticlesDialog({ serverAvailable, sources, sections, 
   const resultsRef = useRef(null);
   const scrollTargetRef = useRef('drafts');
   const availableSections = sections.filter(section => section.visible);
-  const duplicateMatches = possibleDuplicates([...existingArticles, ...drafts.filter(draft => !draft.added)]);
+  const duplicateMatches = duplicateGroups([...existingArticles, ...drafts.filter(draft => !draft.added)]);
 
   useEffect(() => {
     try {
@@ -137,7 +137,7 @@ export default function AddArticlesDialog({ serverAvailable, sources, sections, 
           <label>{draft.sectionId === 'Miscellaneous' ? 'Subsection' : draft.sectionId === 'Lead stories' ? 'Heading' : 'Country / topic'}<select value={draft.createSubsection ? NEW : draft.subsection} onChange={event => changeDraft(draft.id, { subsection: event.target.value === NEW ? '' : event.target.value, country: '', createSubsection: event.target.value === NEW, createCountry: false })} disabled={draft.added || !section}><option value="">Choose location</option>{subsections.filter(name => !draft.russianSource || name === 'RUSSIA / EURASIA').map(name => <option key={name} value={name}>{name}</option>)}{draft.sectionId !== 'Lead stories' && !draft.russianSource && <option value={NEW}>Create {draft.sectionId === 'Miscellaneous' ? 'subsection' : 'country or heading'}…</option>}</select></label>
           {draft.createSubsection && <label>New {draft.sectionId === 'Miscellaneous' ? 'subsection' : 'country or heading'}<input value={draft.subsection} maxLength={100} onChange={event => changeDraft(draft.id, { subsection: event.target.value })} disabled={draft.added} placeholder="Enter a name"/></label>}
           {draft.sectionId === 'Miscellaneous' && draft.subsection && <><label>{draft.subsection === 'INTERNATIONAL ORGANISATIONS' ? 'Organisation' : 'Country / organisation'}<select value={draft.createCountry ? NEW : draft.country} onChange={event => changeDraft(draft.id, { country: event.target.value === NEW ? '' : event.target.value, createCountry: event.target.value === NEW })} disabled={draft.added}><option value="">Choose country or organisation</option>{countries.map(name => <option key={name} value={name}>{name}</option>)}<option value={NEW}>Create country or organisation…</option></select></label>{draft.createCountry && <label>New country or organisation<input value={draft.country} maxLength={100} onChange={event => changeDraft(draft.id, { country: event.target.value })} disabled={draft.added} placeholder="Enter a name"/></label>}</>}
-        </div>{duplicateMatches.has(draft.id) && <p className="add-duplicate-warning">Possible duplicate: {duplicateMatches.get(draft.id).map(other => `${other.sourceName}: ${other.title}`).join('; ')}</p>}{restriction && <p className="add-unavailable">{restriction}. Choose another relevant placement for this source.</p>}<button type="button" onClick={() => addDraft(draft)} disabled={draft.added || !valid || remainingSlots < 1}>{draft.added ? 'Added to update' : 'Add to update'}</button></div>;
+        </div>{!draft.added && duplicateMatches.has(draft.id) && <p className="add-duplicate-warning" style={{ '--duplicate-hue': duplicateGroupHue(duplicateMatches.get(draft.id).number) }}>Possible duplicate · Group {duplicateMatches.get(draft.id).number}: {duplicateMatches.get(draft.id).matches.map(other => `${other.sourceName}: ${other.title}`).join('; ')}</p>}{restriction && <p className="add-unavailable">{restriction}. Choose another relevant placement for this source.</p>}<button type="button" onClick={() => addDraft(draft)} disabled={draft.added || !valid || remainingSlots < 1}>{draft.added ? 'Added to update' : 'Add to update'}</button></div>;
       })}</div>}
       {results.length > 0 && <ul className="add-results" ref={resultsRef} aria-live="polite">{results.map((result, index) => <li key={`${result.url}-${index}`} className={result.success ? 'success' : 'failure'}><strong>{result.url}</strong><span>{result.message}</span></li>)}</ul>}
     </section>

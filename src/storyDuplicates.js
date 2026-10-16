@@ -48,3 +48,29 @@ export function possibleDuplicates(articles) {
   }
   return matches;
 }
+
+export function duplicateGroups(articles) {
+  const matches = possibleDuplicates(articles);
+  const visited = new Set();
+  const groups = new Map();
+  let number = 0;
+  for (const article of articles) {
+    if (!matches.has(article.id) || visited.has(article.id)) continue;
+    number++;
+    const members = [];
+    const queue = [article.id];
+    while (queue.length) {
+      const id = queue.pop();
+      if (visited.has(id)) continue;
+      visited.add(id);
+      members.push(id);
+      for (const other of matches.get(id) || []) if (!visited.has(other.id)) queue.push(other.id);
+    }
+    for (const id of members) groups.set(id, { number, matches: matches.get(id) || [] });
+  }
+  return groups;
+}
+
+export function duplicateGroupHue(number) {
+  return Math.round((number - 1) * 137.508) % 360;
+}
