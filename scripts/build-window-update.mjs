@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { articlePlacement } from '../server/importArticle.js';
 import { editorialScore, isRussianSource } from '../server/editorialPolicy.js';
-import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES } from '../src/newsSections.js';
+import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, compareCountryLabels } from '../src/newsSections.js';
 import { blockedPlacementReason, isUkrainianOutlet } from '../src/sourcePolicy.js';
 import { preferredRegionalPlacement, ukraineAttackPlacement } from '../src/storyPlacement.js';
 import { deduplicateArticles } from '../src/siteConfig.js';
@@ -71,7 +71,7 @@ const titlePlaces = [
   ['Miscellaneous', 'NORTH EAST ASIA', 'Mongolia', /\bMongolia|Mongolian\b/i],
   ['Miscellaneous', 'NORTH AMERICA', 'United States', /\b(?:United States|U\.S\.|US|American|Washington|Trump)\b/i],
   ['Miscellaneous', 'NORTH AMERICA', 'Canada', /\bCanada|Canadian|Ottawa\b/i],
-  ...['OSCE', 'EU', 'NATO', 'UN', 'G7', 'G20', 'ICC', 'WTO', 'IMF', 'CIS', 'CSTO'].map(name => ['Miscellaneous', 'INTERNATIONAL ORGANISATIONS', name, new RegExp(`\\b${name}\\b`, 'i')])
+  ...MISCELLANEOUS_COUNTRIES['INTERNATIONAL ORGANISATIONS'].map(name => ['Miscellaneous', 'INTERNATIONAL ORGANISATIONS', name, new RegExp(`\\b${name}\\b`, 'i')])
 ];
 const contextPlaces = new Map([
   ['source-51', { sectionId: 'South Caucasus', subsection: 'Armenia', country: '' }],
@@ -176,7 +176,7 @@ for (const article of ukrainian) { article.section = 'Lead stories'; article.sub
 for (const article of middleEast) { article.section = 'Lead stories'; article.subsection = 'Middle East'; article.country = ''; }
 accepted.sort((a, b) => (sectionOrder.get(a.section) ?? 999) - (sectionOrder.get(b.section) ?? 999)
   || (subsectionOrder.get(`${a.section}|${a.subsection}`) ?? 999) - (subsectionOrder.get(`${b.section}|${b.subsection}`) ?? 999)
-  || a.country.localeCompare(b.country, 'en') || editorialScore(b.title, b.summary) - editorialScore(a.title, a.summary) || articleDate(b) - articleDate(a));
+  || compareCountryLabels(a.subsection, a.country, b.country) || editorialScore(b.title, b.summary) - editorialScore(a.title, a.summary) || articleDate(b) - articleDate(a));
 
 const sourceOutcomes = sources.map(source => {
   const result = state.sources[source.id];

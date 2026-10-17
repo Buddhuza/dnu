@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { formatViennaDateTime } from './viennaTime.js';
-import { MISCELLANEOUS_COUNTRIES } from './newsSections.js';
+import { MISCELLANEOUS_COUNTRIES, compareCountryLabels } from './newsSections.js';
 import { canonicalArticleUrl } from './siteConfig.js';
 import { blockedPlacementReason } from './sourcePolicy.js';
 import { articlePlacement, publicArticleUrl } from '../server/importArticle.js';
@@ -131,7 +131,7 @@ export default function AddArticlesDialog({ serverAvailable, sources, sections, 
       {drafts.length > 0 && <div className="add-drafts" ref={draftsRef} aria-live="polite"><h3>Review placement</h3>{drafts.map(draft => {
         const section = availableSections.find(item => item.id === draft.sectionId);
         const subsections = section?.subsections || [];
-        const countries = draft.sectionId === 'Miscellaneous' ? [...new Set([...(MISCELLANEOUS_COUNTRIES[draft.subsection] || []), ...(customCountries[draft.subsection] || [])])].sort((a, b) => a.localeCompare(b, 'en')) : [];
+        const countries = draft.sectionId === 'Miscellaneous' ? [...new Set([...(MISCELLANEOUS_COUNTRIES[draft.subsection] || []), ...(customCountries[draft.subsection] || [])])].sort((a, b) => compareCountryLabels(draft.subsection, a, b)) : [];
         const restriction = blockedPlacementReason(draft);
         const valid = section && draft.subsection.trim() && (subsections.includes(draft.subsection) || (draft.createSubsection && draft.sectionId !== 'Lead stories')) && (draft.sectionId !== 'Miscellaneous' || (draft.country.trim() && (countries.includes(draft.country) || draft.createCountry))) && (!draft.russianSource || (draft.sectionId === 'Miscellaneous' && draft.subsection === 'RUSSIA / EURASIA')) && !restriction;
         return <div className="add-draft" key={draft.id}><strong>{draft.title}</strong><small>{draft.sourceName} · {formatViennaDateTime(draft.publishedAt)}</small><div className="add-placement">

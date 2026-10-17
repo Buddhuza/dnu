@@ -14,8 +14,22 @@ export const MISCELLANEOUS_COUNTRIES = {
   'AFGHANISTAN / PAKISTAN': ['Afghanistan'],
   'NORTH EAST ASIA': ['China', 'Japan', 'Mongolia', 'South Korea', 'North Korea'],
   'NORTH AMERICA': ['Canada', 'United States'],
-  'INTERNATIONAL ORGANISATIONS': ['OSCE', 'EU', 'NATO', 'UN', 'G7', 'G20', 'ICC', 'WTO', 'IMF', 'CIS', 'CSTO']
+  'INTERNATIONAL ORGANISATIONS': ['OSCE', 'EU', 'UN', 'NATO', 'IMF', 'G7', 'G20', 'ICC', 'WTO', 'CIS', 'CSTO', 'BRICS']
 };
+
+const organisationOrder = MISCELLANEOUS_COUNTRIES['INTERNATIONAL ORGANISATIONS'];
+const eurasianOrganisation = /\b(?:CIS|CSTO|BRICS|SCO|EAEU|Eurasian|Shanghai Cooperation)\b/i;
+
+export function compareCountryLabels(subsection, a, b) {
+  const alphabetical = a.localeCompare(b, 'en', { sensitivity: 'base', ignorePunctuation: true });
+  if (subsection !== 'INTERNATIONAL ORGANISATIONS') return alphabetical;
+  const rank = name => {
+    const index = organisationOrder.indexOf(name);
+    if (index >= 0) return index < 9 ? index : 100 + index;
+    return eurasianOrganisation.test(name) ? 200 : 50;
+  };
+  return rank(a) - rank(b) || alphabetical;
+}
 
 export const EDITORIAL_GUIDANCE = [
   'Any international news agency can supply stories in any report section. The source-list category is only for browsing outlets; place each article by the location or organisation it covers.',
@@ -25,7 +39,7 @@ export const EDITORIAL_GUIDANCE = [
   'When a story concerns several countries in South Eastern Europe, Eastern Europe, the South Caucasus or Central Asia, file it under the country of the reporting outlet if that country is one of the story subjects. Otherwise use the principal actor or subject; do not infer a country from a publisher name appended to the headline.',
   'Western / Central Europe includes Iceland and the UK, while Belarus, Moldova and Ukraine belong in Eastern Europe. Middle East / North Africa focuses especially on the Iran war and the Strait of Hormuz.',
   'Afghanistan / Pakistan is reserved for Afghanistan stories connected to Russia or Central Asian countries. Russia / Eurasia covers Russia only.',
-  'North East Asia covers China, Japan, Mongolia and both Koreas. North America covers Canada and the US. International Organisations covers OSCE, EU institutions, NATO, UN bodies, G7, G20, ICC, WTO, IMF, CIS and CSTO.'
+  'North East Asia covers China, Japan, Mongolia and both Koreas. North America covers Canada and the US. International Organisations places OSCE, EU, UN, NATO and IMF first, then other Western bodies, followed by CIS, CSTO, BRICS and other Eurasian organisations.'
 ];
 
 export function orderedSubsections(section, labels) {

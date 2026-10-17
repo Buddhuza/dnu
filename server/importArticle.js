@@ -36,7 +36,7 @@ const miscellaneous = [
   ['NORTH AMERICA', 'Canada', /\bCanada|Canadian|Ottawa\b/i],
   ['NORTH AMERICA', 'United States', /\bUnited States|\bU\.S\.|\bUS\b|American|Washington|Trump\b/i]
 ];
-const organisations = ['OSCE', 'EU', 'NATO', 'UN', 'G7', 'G20', 'ICC', 'WTO', 'IMF', 'CIS', 'CSTO'];
+const organisations = MISCELLANEOUS_COUNTRIES['INTERNATIONAL ORGANISATIONS'];
 const miscCountries = new Map(Object.entries(MISCELLANEOUS_COUNTRIES).map(([label, names]) => [label, new Set(names)]));
 
 export function publicArticleUrl(value) {

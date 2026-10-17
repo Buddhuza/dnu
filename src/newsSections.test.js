@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { NEWS_SECTIONS, orderedSubsections } from './newsSections.js';
+import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, orderedSubsections, compareCountryLabels } from './newsSections.js';
 
 test('news section taxonomy places organisations under Miscellaneous', () => {
   assert.deepEqual(NEWS_SECTIONS.map(section => section.id), [
@@ -16,4 +16,11 @@ test('news section taxonomy places organisations under Miscellaneous', () => {
 test('subsections follow the configured order', () => {
   const section = NEWS_SECTIONS[1];
   assert.deepEqual(orderedSubsections(section, ['Serbia / Kosovo', 'Albania', 'Serbia']), ['Albania', 'Serbia', 'Serbia / Kosovo']);
+});
+
+test('international organisations follow editorial priority rather than the alphabet', () => {
+  const shuffled = ['CSTO', 'WTO', 'BRICS', 'UN', 'G7', 'CIS', 'NATO', 'EU', 'IMF', 'OSCE', 'ICC', 'G20'];
+  assert.deepEqual(shuffled.sort((a, b) => compareCountryLabels('INTERNATIONAL ORGANISATIONS', a, b)), MISCELLANEOUS_COUNTRIES['INTERNATIONAL ORGANISATIONS']);
+  assert.deepEqual(['SCO', 'OECD', 'BRICS', 'World Bank'].sort((a, b) => compareCountryLabels('INTERNATIONAL ORGANISATIONS', a, b)), ['OECD', 'World Bank', 'BRICS', 'SCO']);
+  assert.deepEqual(['United Kingdom', 'Italy'].sort((a, b) => compareCountryLabels('WESTERN / CENTRAL EUROPE', a, b)), ['Italy', 'United Kingdom']);
 });

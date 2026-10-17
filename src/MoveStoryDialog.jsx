@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { MISCELLANEOUS_COUNTRIES } from './newsSections.js';
+import { MISCELLANEOUS_COUNTRIES, compareCountryLabels } from './newsSections.js';
 import { blockedPlacementReason } from './sourcePolicy.js';
 
 const NEW = '__new__';
@@ -18,7 +18,7 @@ export default function MoveStoryDialog({ story, sections, articles, customCount
     ...(customCountries?.[subsection] || []),
     ...articles.filter(item => item.sectionId === sectionId && item.subsection === subsection).map(item => item.country).filter(Boolean),
     ...(story.country && story.subsection === subsection ? [story.country] : [])
-  ])].sort((a, b) => a.localeCompare(b, 'en')), [articles, customCountries, sectionId, subsection, story.country, story.subsection]);
+  ])].sort((a, b) => compareCountryLabels(subsection, a, b)), [articles, customCountries, sectionId, subsection, story.country, story.subsection]);
   const country = countryChoice === NEW ? newCountry.trim() : countryChoice;
   const sourceRestriction = blockedPlacementReason(story, { sectionId, subsection });
   const valid = Boolean(section && subsection && (!miscellaneous || country) && !sourceRestriction);

@@ -35,6 +35,12 @@ test('countries stay alphabetical even when a manually added story has a later a
   assert.deepEqual(displaySiteContent(stories, config).map(item => item.country), ['Germany', 'Italy', 'Italy', 'United Kingdom']);
 });
 
+test('international organisation stories display in report priority order', () => {
+  const countries = ['CSTO', 'NATO', 'BRICS', 'OSCE', 'IMF', 'CIS', 'UN', 'EU'];
+  const stories = countries.map((country, index) => ({ id: String(index), url: `https://example.com/${index}`, section: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country, title: `${country} news`, sourceName: 'Agency' }));
+  assert.deepEqual(displaySiteContent(stories, defaultSiteConfig(stories)).map(item => item.country), ['OSCE', 'EU', 'UN', 'NATO', 'IMF', 'CIS', 'CSTO', 'BRICS']);
+});
+
 test('star creates a lead heading and removing it restores the original placement after reload', () => {
   const stories = [{ id: 'armenia', section: 'South Caucasus', subsection: 'Armenia', title: 'Armenia signs regional deal', sourceName: 'Agency', url: 'https://example.com/armenia' }];
   const initial = defaultSiteConfig(stories);
