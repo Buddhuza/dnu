@@ -2,13 +2,16 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import { collectFeed } from '../server/feeds.js';
-import { articleArray, DEFAULT_INCLUDE, fallbackListingUrl, normalizeArticles, scrapeHeadlines, undatedCandidates, reviewedArticleCheck } from '../server/news.js';
+import { articleArray, DEFAULT_INCLUDE, fallbackListingUrl, normalizeArticles, scrapeHeadlines, shortlistCandidates, undatedCandidates, reviewedArticleCheck } from '../server/news.js';
 import { previousCoverageIndex, previousCoverageReason } from '../server/previousCoverage.js';
+import { createAutoScrapeHistory } from '../server/autoScrapeHistory.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const sources = JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'));
 const previous = JSON.parse(readFileSync(join(root, 'data/daily-update-2026-10-14-15.json'), 'utf8'));
 const priorIndex = previousCoverageIndex(previous.articles);
+const scrapeHistory = createAutoScrapeHistory(join(root, 'data/auto-scrape-history.jsonl'));
+const batchId = `comparison-${new Date().toISOString()}`;
 const key = process.env.FIRECRAWL_API_KEY;
 if (!key) throw new Error('FIRECRAWL_API_KEY is required for the comparison.');
 const ids = (process.env.EXPERIMENT_SOURCE_IDS || 'source-2,source-32,source-47,source-60,source-71,source-83,source-97,source-98,source-104,source-122').split(',').map(id => id.trim());
@@ -58,7 +61,7 @@ async function batchScrape(urls) {
 result.creditsBefore = await usage();
 save();
 for (const source of selectedSources) {
-  const record = { id: source.id, name: source.name, method: '', listed: 0, relevantCandidates: 0, previouslyCovered: 0, outsideWindowOnListing: 0, selectedForArticleScrape: 0, articlePagesRequested: 0, verifiedInWindow: 0, accepted: [], errors: [] };
+  const record = { id: source.id, name: source.name, method: '', listed: 0, relevantCandidates: 0, previouslyCovered: 0, previouslyScraped: 0, outsideWindowOnListing: 0, weakListingCandidates: 0, selectedForArticleScrape: 0, articlePagesRequested: 0, verifiedInWindow: 0, accepted: [], errors: [] };
   result.sources.push(record);
   try {
     record.creditsAtStart = await usage();
@@ -66,7 +69,13 @@ for (const source of selectedSources) {
     try { feed = await collectFeed(source); } catch (error) { record.errors.push(`Feed: ${error.message}`); }
     const feedArticles = feed ? normalizeArticles(feed, source, end, DEFAULT_INCLUDE, [], true).filter(article => inWindow(article.publishedAt)) : [];
     record.previouslyCovered += feedArticles.filter(article => previousCoverageReason(article, priorIndex)).length;
-    const freshFeed = feedArticles.filter(article => !previousCoverageReason(article, priorIndex));
+    const uncoveredFeed = feedArticles.filter(article => !previousCoverageReason(article, priorIndex));
+    record.previouslyScraped += uncoveredFeed.filter(article => scrapeHistory.reason(article, source.id)).length;
+    const freshFeed = [];
+    for (const article of uncoveredFeed) {
+      const claim = await scrapeHistory.claim(article, { batchId, sourceId: source.id });
+      if (claim.claimed) freshFeed.push(article);
+    }
     if (freshFeed.length) {
       record.method = 'publisher feed';
       record.listed = articleArray(feed).length;
@@ -93,20 +102,30 @@ for (const source of selectedSources) {
     const times = new Map(listed.map(article => [String(article.url || article.absoluteUrl || article.link), listedDate(article)]));
     const allCandidates = undatedCandidates(listing, source, [], [], true);
     record.deepComparisonPages = allCandidates.filter(article => {
-      if (previousCoverageReason(article, priorIndex)) return false;
+      if (previousCoverageReason(article, priorIndex) || scrapeHistory.reason(article, source.id)) return false;
       const time = Date.parse(times.get(article.url));
       return !Number.isFinite(time) || inWindow(times.get(article.url));
     }).length;
     const candidates = undatedCandidates(listing, source, DEFAULT_INCLUDE, [], true);
     record.relevantCandidates = candidates.length;
     record.previouslyCovered += candidates.filter(article => previousCoverageReason(article, priorIndex)).length;
-    const fresh = candidates.filter(article => !previousCoverageReason(article, priorIndex));
+    const uncovered = candidates.filter(article => !previousCoverageReason(article, priorIndex));
+    record.previouslyScraped += uncovered.filter(article => scrapeHistory.reason(article, source.id)).length;
+    const fresh = uncovered.filter(article => !scrapeHistory.reason(article, source.id));
     record.outsideWindowOnListing = fresh.filter(article => { const time = Date.parse(times.get(article.url)); return Number.isFinite(time) && !inWindow(times.get(article.url)); }).length;
     const eligible = fresh.filter(article => { const time = Date.parse(times.get(article.url)); return !Number.isFinite(time) || inWindow(times.get(article.url)); });
     record.creditsAfterListing = await usage();
-    record.selectedForArticleScrape = Math.min(12, eligible.length);
-    for (let offset = 0; offset < record.selectedForArticleScrape; offset += 6) {
-      const group = eligible.slice(offset, Math.min(offset + 6, record.selectedForArticleScrape));
+    const shortlist = shortlistCandidates(eligible);
+    record.weakListingCandidates = eligible.filter(article => article.listingPriority != null && article.listingPriority < 3).length;
+    record.selectedForArticleScrape = shortlist.length;
+    for (let offset = 0; offset < shortlist.length; offset += 6) {
+      const group = [];
+      for (const candidate of shortlist.slice(offset, offset + 6)) {
+        const claim = await scrapeHistory.claim(candidate, { batchId, sourceId: source.id });
+        if (claim.claimed) group.push(candidate);
+        else record.previouslyScraped++;
+      }
+      if (!group.length) continue;
       const pages = await batchScrape(group.map(article => article.url));
       record.articlePagesRequested += group.length;
       for (const [index, page] of pages.entries()) {
@@ -114,6 +133,7 @@ for (const source of selectedSources) {
         const check = reviewedArticleCheck({ data: page }, source, group[index].url, end);
         if (!check.article || !inWindow(check.article.publishedAt)) continue;
         record.verifiedInWindow++;
+        if (!normalizeArticles({ data: { json: { articles: [check.article] } } }, source, end, DEFAULT_INCLUDE, [], true).length) continue;
         record.accepted.push({ title: check.article.title, url: check.article.url, publishedAt: check.article.publishedAt });
       }
       if (record.accepted.length >= 2) break;
@@ -127,7 +147,7 @@ await sleep(3000);
 result.creditsAfter = await usage();
 result.creditsUsed = result.creditsBefore - result.creditsAfter;
 result.totals = result.sources.reduce((totals, source) => {
-  for (const key of ['listed', 'relevantCandidates', 'previouslyCovered', 'outsideWindowOnListing', 'articlePagesRequested', 'deepComparisonPages', 'verifiedInWindow']) totals[key] = (totals[key] || 0) + (source[key] || 0);
+  for (const key of ['listed', 'relevantCandidates', 'previouslyCovered', 'previouslyScraped', 'outsideWindowOnListing', 'weakListingCandidates', 'articlePagesRequested', 'deepComparisonPages', 'verifiedInWindow']) totals[key] = (totals[key] || 0) + (source[key] || 0);
   totals.accepted = (totals.accepted || 0) + source.accepted.length;
   return totals;
 }, {});

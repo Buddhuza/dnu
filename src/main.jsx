@@ -173,7 +173,7 @@ function App() {
   const selectedSourceStories = selectedArticles.filter(item => item.sourceId === activeId);
   const sourceRequest = source => ({ sourceId: source.id, ...(source.id.startsWith('manual-source-') ? { customSource: source } : {}), ...(source.listingUrl ? { listingUrlOverride: source.listingUrl } : {}), ...scope });
 
-  async function scanSource(source, fullScan, onPage = () => {}, selective = false) {
+  async function scanSource(source, fullScan, onPage = () => {}, selective = false, batchId = '', manualRescrape = false) {
     const headlines = [];
     const attempts = [];
     const errors = [];
@@ -183,7 +183,7 @@ function App() {
       let cursor = 0;
       do {
         try {
-          const response = await fetch('/api/headlines', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...sourceRequest(source), fullScan, selective, cursor, fallback: strategy === 'alternate', search: strategy === 'search' }) });
+          const response = await fetch('/api/headlines', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...sourceRequest(source), fullScan, selective, cursor, batchId, manualRescrape, fallback: strategy === 'alternate', search: strategy === 'search' }) });
           const data = await response.json();
           if (!response.ok) throw new Error(data.error || 'Collection failed');
           headlines.push(...data.headlines);
@@ -224,7 +224,7 @@ function App() {
     setError('');
     setResult(null);
     try {
-      const scan = await scanSource(source, fullScan, (headlines, page) => setResult({ ...page, headlines: [...headlines] }));
+      const scan = await scanSource(source, fullScan, (headlines, page) => setResult({ ...page, headlines: [...headlines] }), !fullScan, `source-${Date.now()}`, fullScan);
       saveAudit(scan.audit);
       rememberWorkingListing(source, scan.audit);
       setResult(scan.lastPage ? { ...scan.lastPage, headlines: scan.headlines } : null);
@@ -240,6 +240,7 @@ function App() {
     setBatchProgress({ done: 0, total: targetSources.length, failed: 0 });
     let done = 0, failed = 0;
     const gathered = [];
+    const batchId = `batch-${new Date().toISOString()}`;
     setAuditRows([]);
     const collectGroup = async groupSources => {
       let cursor = 0;
@@ -253,7 +254,7 @@ function App() {
             const scan = await scanSource(source, true, (headlines, page) => {
               const previous = gathered.filter(item => item.sourceId !== source.id);
               setResult({ headlines: [...previous, ...headlines].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date().toISOString(), batch: true });
-            }, true);
+            }, true, batchId);
             gathered.push(...scan.headlines);
             saveAudit(scan.audit);
             rememberWorkingListing(source, scan.audit);
@@ -422,7 +423,7 @@ function App() {
     if (hit) relocateStory(drag.storyId, hit.destination);
   };
   const collectionPanel = (
-        <section className="headlines-section" id="live-collection"><div className="section-title"><div><h2>Live collection</h2></div><span className="time-filter">◷ &nbsp; LAST 48 HOURS</span></div><div className="source-banner"><div className="banner-icon">{active?.name?.[0] || 'S'}</div><div><strong>{active?.name || 'Select a source'}</strong><small>{active?.url || 'Choose an outlet from the left'}</small></div><button onClick={() => loadSource()} disabled={loading || !active || !canCollect || staticPreview}>{loading ? 'Collecting…' : 'Collect headlines'} <span>↗</span></button></div><div className="batch-row"><span>Batch checks visit every source, use publisher feeds first, and open ranked article links three at a time until two stories qualify or twelve links have been checked. Articles already in the prepared update are skipped before scraping. If none qualify, another feed, listing, and site search are tried. Use Scan all listed articles on a source for an exhaustive check.</span><button onClick={() => loadSource(activeId, true)} disabled={loading || !canCollect || !active || staticPreview}>Scan all listed articles</button><button onClick={() => loadVisible(collectionSources)} disabled={loading || !collectionSources.length || staticPreview}>Verify visible sources ({collectionSources.length})</button><button onClick={() => loadVisible(configuredSources)} disabled={loading || !configuredSources.length || staticPreview}>Verify all sources ({configuredSources.length})</button></div>
+        <section className="headlines-section" id="live-collection"><div className="section-title"><div><h2>Live collection</h2></div><span className="time-filter">◷ &nbsp; LAST 48 HOURS</span></div><div className="source-banner"><div className="banner-icon">{active?.name?.[0] || 'S'}</div><div><strong>{active?.name || 'Select a source'}</strong><small>{active?.url || 'Choose an outlet from the left'}</small></div><button onClick={() => loadSource()} disabled={loading || !active || !canCollect || staticPreview}>{loading ? 'Collecting…' : 'Collect headlines'} <span>↗</span></button></div><div className="batch-row"><span>Automatic checks use publisher feeds first, then rank headline listings and open up to twelve promising article links. Previously scraped articles are remembered across batches and skipped. Scan all listed articles lets you manually check a source again.</span><button onClick={() => loadSource(activeId, true)} disabled={loading || !canCollect || !active || staticPreview}>Scan all listed articles</button><button onClick={() => loadVisible(collectionSources)} disabled={loading || !collectionSources.length || staticPreview}>Verify visible sources ({collectionSources.length})</button><button onClick={() => loadVisible(configuredSources)} disabled={loading || !configuredSources.length || staticPreview}>Verify all sources ({configuredSources.length})</button></div>
           {!config?.firecrawlConfigured && <div className="notice"><p>{staticPreview ? 'This published page shows the prepared update. Live collection requires the server app; feeds work without Firecrawl, while other sources need an API key.' : <>Feed sources can be collected without an API key. Add <code>FIRECRAWL_API_KEY</code> for other sources.</>}</p></div>}
           {error && <div className="error-box" role="alert">{error}</div>}
           {loading && <div className="loading-box"><div className="spinner"/> {batchProgress ? `Collected ${batchProgress.done} of ${batchProgress.total} sources${batchProgress.failed ? ` · ${batchProgress.failed} failed` : ''}` : 'Collecting headlines and checking publication times…'}</div>}

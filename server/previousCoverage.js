@@ -1,4 +1,4 @@
-function canonicalUrl(value) {
+export function canonicalUrl(value) {
   try {
     const url = new URL(value);
     for (const key of [...url.searchParams.keys()]) if (/^utm_|^(?:fbclid|gclid|mc_cid|mc_eid)$/i.test(key)) url.searchParams.delete(key);
@@ -6,7 +6,7 @@ function canonicalUrl(value) {
   } catch { return ''; }
 }
 
-function headlineKey(value) {
+export function headlineKey(value) {
   return String(value || '').normalize('NFKC').toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
 }
 

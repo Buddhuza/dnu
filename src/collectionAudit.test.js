@@ -30,3 +30,10 @@ test('source audit identifies articles skipped from the previous update', () => 
   assert.equal(result.status, 'previously-covered');
   assert.match(result.reason, /2 articles were already covered/);
 });
+
+test('source audit distinguishes remembered pages from unranked links', () => {
+  const result = sourceAudit(source, [attempt({ listedCount: 5, candidatesFound: 5, candidatesSelected: 0, previouslyScraped: 5, candidatesChecked: 0 })]);
+  assert.equal(result.status, 'previously-scraped');
+  assert.match(result.reason, /5 article links were already scraped/);
+  assert.doesNotMatch(result.reason, /lower-priority/);
+});

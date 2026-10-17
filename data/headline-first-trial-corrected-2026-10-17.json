@@ -1,0 +1,82 @@
+{
+  "windowStart": "2026-10-16T14:50:22.987Z",
+  "windowEnd": "2026-10-17T14:50:22.987Z",
+  "previousEdition": "data/daily-update-2026-10-14-15.json",
+  "sources": [
+    {
+      "id": "source-60",
+      "name": "Report.az",
+      "method": "primary listing",
+      "listed": 6,
+      "relevantCandidates": 5,
+      "previouslyCovered": 0,
+      "previouslyScraped": 0,
+      "outsideWindowOnListing": 2,
+      "weakListingCandidates": 0,
+      "selectedForArticleScrape": 3,
+      "articlePagesRequested": 3,
+      "verifiedInWindow": 2,
+      "accepted": [
+        {
+          "title": "Events calling on Armenia to address mine problem held in six European countries",
+          "url": "https://report.az/en/foreign-politics/campaigns-calling-on-armenia-to-address-mine-problem-held-in-six-european-countries",
+          "publishedAt": "2026-10-16T19:41:01.000Z"
+        },
+        {
+          "title": "Azerbaijan, UAE discuss prospects for special forces cooperation",
+          "url": "https://report.az/en/military/azerbaijan-uae-discuss-prospects-for-special-forces-cooperation",
+          "publishedAt": "2026-10-16T14:59:25.000Z"
+        }
+      ],
+      "errors": [],
+      "creditsAtStart": 85089,
+      "deepComparisonPages": 4,
+      "creditsAfterListing": 85084,
+      "creditsAtEnd": 85069
+    },
+    {
+      "id": "source-83",
+      "name": "BBC",
+      "method": "primary listing",
+      "listed": 9,
+      "relevantCandidates": 4,
+      "previouslyCovered": 0,
+      "previouslyScraped": 0,
+      "outsideWindowOnListing": 2,
+      "weakListingCandidates": 1,
+      "selectedForArticleScrape": 1,
+      "articlePagesRequested": 1,
+      "verifiedInWindow": 1,
+      "accepted": [
+        {
+          "title": "Trump denies limiting Ukraine access to Starlink network",
+          "url": "https://www.bbc.com/news/articles/ckz65g34wyd8o",
+          "publishedAt": "2026-10-16T19:33:48.296Z"
+        }
+      ],
+      "errors": [
+        "Feed: fetch failed"
+      ],
+      "creditsAtStart": 85069,
+      "deepComparisonPages": 3,
+      "creditsAfterListing": 85064,
+      "creditsAtEnd": 85059
+    }
+  ],
+  "errors": [],
+  "creditsBefore": 85089,
+  "creditsAfter": 85059,
+  "creditsUsed": 30,
+  "totals": {
+    "listed": 15,
+    "relevantCandidates": 9,
+    "previouslyCovered": 0,
+    "previouslyScraped": 0,
+    "outsideWindowOnListing": 4,
+    "weakListingCandidates": 1,
+    "articlePagesRequested": 4,
+    "deepComparisonPages": 7,
+    "verifiedInWindow": 3,
+    "accepted": 3
+  }
+}

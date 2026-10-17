@@ -1,0 +1,71 @@
+{
+  "windowStart": "2026-10-16T14:51:11.937Z",
+  "windowEnd": "2026-10-17T14:51:11.937Z",
+  "previousEdition": "data/daily-update-2026-10-14-15.json",
+  "sources": [
+    {
+      "id": "source-60",
+      "name": "Report.az",
+      "method": "primary listing",
+      "listed": 10,
+      "relevantCandidates": 6,
+      "previouslyCovered": 0,
+      "previouslyScraped": 2,
+      "outsideWindowOnListing": 1,
+      "weakListingCandidates": 1,
+      "selectedForArticleScrape": 2,
+      "articlePagesRequested": 2,
+      "verifiedInWindow": 1,
+      "accepted": [
+        {
+          "title": "Azerbaijan readmits 52 people from European countries in September",
+          "url": "https://report.az/en/foreign-politics/azerbaijan-readmits-52-people-from-european-countries-in-september",
+          "publishedAt": "2026-10-16T15:06:05.000Z"
+        }
+      ],
+      "errors": [],
+      "creditsAtStart": 85059,
+      "deepComparisonPages": 5,
+      "creditsAfterListing": 85054,
+      "creditsAtEnd": 85044
+    },
+    {
+      "id": "source-83",
+      "name": "BBC",
+      "method": "primary listing",
+      "listed": 10,
+      "relevantCandidates": 4,
+      "previouslyCovered": 0,
+      "previouslyScraped": 0,
+      "outsideWindowOnListing": 3,
+      "weakListingCandidates": 1,
+      "selectedForArticleScrape": 0,
+      "articlePagesRequested": 0,
+      "verifiedInWindow": 0,
+      "accepted": [],
+      "errors": [
+        "Feed: fetch failed"
+      ],
+      "creditsAtStart": 85044,
+      "deepComparisonPages": 4,
+      "creditsAfterListing": 85039,
+      "creditsAtEnd": 85039
+    }
+  ],
+  "errors": [],
+  "creditsBefore": 85059,
+  "creditsAfter": 85039,
+  "creditsUsed": 20,
+  "totals": {
+    "listed": 20,
+    "relevantCandidates": 10,
+    "previouslyCovered": 0,
+    "previouslyScraped": 2,
+    "outsideWindowOnListing": 4,
+    "weakListingCandidates": 2,
+    "articlePagesRequested": 2,
+    "deepComparisonPages": 9,
+    "verifiedInWindow": 1,
+    "accepted": 1
+  }
+}

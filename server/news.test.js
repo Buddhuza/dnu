@@ -127,6 +127,15 @@ test('listing descriptions help rank externally focused stories before article s
   assert.equal(undatedCandidates(payload, source, ['political', 'election'])[0].url, 'https://example.com/osce');
 });
 
+test('listing AI priority shortlists visible headlines before article scrapes', () => {
+  const payload = { data: { json: { articles: [
+    { title: 'Election campaign rally', description: 'A local mayor spoke at a party event.', url: '/local', priority: 1 },
+    { title: 'Political agenda today', description: 'The OSCE discussed a cross-border agreement.', url: '/osce', priority: 5 }
+  ] } } };
+  assert.equal(shortlistCandidates(undatedCandidates(payload, source, ['political', 'election']))[0].url, 'https://example.com/osce');
+  assert.equal(shortlistCandidates(undatedCandidates(payload, source, ['political', 'election'])).length, 1);
+});
+
 test('manual source accepts a public HTTPS news site and rejects local targets', () => {
   const input = { id: 'manual-source-123', name: 'New Agency', group: 'Europe', url: 'https://news.example.org/latest' };
   assert.equal(customSourceFromRequest(input)?.url, input.url);

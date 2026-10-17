@@ -1,0 +1,88 @@
+{
+  "windowStart": "2026-10-16T14:47:58.959Z",
+  "windowEnd": "2026-10-17T14:47:58.959Z",
+  "previousEdition": "data/daily-update-2026-10-14-15.json",
+  "sources": [
+    {
+      "id": "source-32",
+      "name": "IPN",
+      "method": "primary listing",
+      "listed": 15,
+      "relevantCandidates": 10,
+      "previouslyCovered": 0,
+      "previouslyScraped": 0,
+      "outsideWindowOnListing": 4,
+      "selectedForArticleScrape": 6,
+      "articlePagesRequested": 6,
+      "verifiedInWindow": 1,
+      "accepted": [
+        {
+          "title": "Road traffic, halted on Vadul lui Voda street in the capital, until Monday morning - ipn.md",
+          "url": "https://ipn.md/en/road-traffic-halted-on-vadul-lui-voda-street-in-the-capital-until-monday-morning/",
+          "publishedAt": "2026-10-16T16:37:47.000Z"
+        }
+      ],
+      "errors": [],
+      "creditsAtStart": 85224,
+      "deepComparisonPages": 8,
+      "creditsAfterListing": 85219,
+      "creditsAtEnd": 85189
+    },
+    {
+      "id": "source-97",
+      "name": "TASS",
+      "method": "primary listing",
+      "listed": 48,
+      "relevantCandidates": 17,
+      "previouslyCovered": 0,
+      "previouslyScraped": 0,
+      "outsideWindowOnListing": 0,
+      "selectedForArticleScrape": 12,
+      "articlePagesRequested": 12,
+      "verifiedInWindow": 0,
+      "accepted": [],
+      "errors": [],
+      "creditsAtStart": 85189,
+      "deepComparisonPages": 20,
+      "creditsAfterListing": 85184,
+      "creditsAtEnd": 85124
+    },
+    {
+      "id": "source-122",
+      "name": "Al Jazeera",
+      "method": "primary listing",
+      "listed": 10,
+      "relevantCandidates": 6,
+      "previouslyCovered": 0,
+      "previouslyScraped": 0,
+      "outsideWindowOnListing": 0,
+      "selectedForArticleScrape": 6,
+      "articlePagesRequested": 6,
+      "verifiedInWindow": 0,
+      "accepted": [],
+      "errors": [
+        "Feed: fetch failed"
+      ],
+      "creditsAtStart": 85124,
+      "deepComparisonPages": 10,
+      "creditsAfterListing": 85119,
+      "creditsAtEnd": 85089
+    }
+  ],
+  "errors": [],
+  "creditsBefore": 85224,
+  "creditsAfter": 85089,
+  "creditsUsed": 135,
+  "totals": {
+    "listed": 73,
+    "relevantCandidates": 33,
+    "previouslyCovered": 0,
+    "previouslyScraped": 0,
+    "outsideWindowOnListing": 4,
+    "articlePagesRequested": 24,
+    "deepComparisonPages": 38,
+    "verifiedInWindow": 1,
+    "accepted": 1
+  },
+  "methodNote": "Initial measurement before the final article relevance check and AI priority threshold were applied. Its accepted count is not a report-ready story count."
+}

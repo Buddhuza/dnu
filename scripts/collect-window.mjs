@@ -2,9 +2,10 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { collectFeed, collectFallbackFeed, FEED_URLS } from '../server/feeds.js';
-import { articleArray, DEFAULT_INCLUDE, fallbackListingUrl, scrapeHeadlines, scrapeImportedArticle, searchSourceArticles, reviewedArticleCheck, shortlistCandidates, undatedCandidates } from '../server/news.js';
+import { articleArray, DEFAULT_INCLUDE, fallbackListingUrl, scrapeHeadlines, searchSourceArticles, reviewedArticleCheck, shortlistCandidates, undatedCandidates } from '../server/news.js';
 import { articlePlacement } from '../server/importArticle.js';
 import { IMPORT_PROMPT } from '../src/importPrompt.js';
+import { createAutoScrapeHistory } from '../server/autoScrapeHistory.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const sources = JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'));
@@ -13,6 +14,8 @@ const start = Date.parse('2026-10-14T00:00:00Z'); // 14 October, 02:00 in Vienna
 const end = Date.parse('2026-10-15T00:00:00Z'); // 15 October, 02:00 in Vienna
 const key = process.env.FIRECRAWL_API_KEY;
 if (!key) throw new Error('FIRECRAWL_API_KEY is not set');
+const scrapeHistory = createAutoScrapeHistory(join(root, 'data/auto-scrape-history.jsonl'));
+const batchId = process.env.COLLECTION_BATCH_ID || `window-${new Date().toISOString()}`;
 const state = existsSync(checkpointPath) ? JSON.parse(readFileSync(checkpointPath, 'utf8')) : {
   windowStart: new Date(start).toISOString(), windowEnd: new Date(end).toISOString(), startedAt: new Date().toISOString(), sources: {}
 };
@@ -64,24 +67,28 @@ async function batchArticlePages(urls) {
 
 async function examineCandidates(source, record, payload, method) {
   const candidates = candidateList(payload, source);
-  const selected = process.env.COLLECTION_DEEP === '1' ? candidates : shortlistCandidates(candidates);
-  const attempt = { method, listed: articleArray(payload).length, candidates: candidates.length, selected: selected.length, fetched: 0, accepted: 0, rejected: {}, errors: [] };
+  const fresh = candidates.filter(candidate => !scrapeHistory.reason(candidate, source.id));
+  const selected = process.env.COLLECTION_DEEP === '1' ? fresh : shortlistCandidates(fresh);
+  const attempt = { method, listed: articleArray(payload).length, candidates: candidates.length, previouslyScraped: candidates.length - fresh.length, selected: selected.length, fetched: 0, accepted: 0, rejected: {}, errors: [] };
   attempt.listedArticles = articleArray(payload).map(item => ({ title: item.title || item.headline, url: item.url || item.link, publishedAt: item.publishedAt || item.date })).slice(0, 100);
   record.attempts.push(attempt);
   save();
   const unchecked = selected.filter(candidate => !record.checkedUrls.includes(candidate.url));
   for (let offset = 0; offset < unchecked.length; offset += 10) {
-    const group = unchecked.slice(offset, offset + 10);
+    const group = [];
+    for (const candidate of unchecked.slice(offset, offset + 10)) {
+      const claim = await scrapeHistory.claim(candidate, { batchId, sourceId: source.id });
+      if (claim.claimed) { group.push(candidate); record.checkedUrls.push(candidate.url); }
+      else attempt.previouslyScraped++;
+    }
+    if (!group.length) { save(); continue; }
+    save();
     let pages;
     try { pages = await batchArticlePages(group.map(item => item.url)); }
     catch (error) {
       attempt.errors.push(`Batch: ${error.message}`);
       if (/credit|quota|payment required/i.test(error.message)) { save(); throw error; }
-      pages = [];
-      for (const candidate of group) {
-        try { pages.push((await scrapeImportedArticle(candidate.url, key)).data); }
-        catch (pageError) { pages.push(null); attempt.errors.push(`${candidate.url}: ${pageError.message}`); }
-      }
+      pages = group.map(() => null);
     }
     for (let index = 0; index < group.length; index++) {
       const candidate = group[index];
@@ -89,7 +96,6 @@ async function examineCandidates(source, record, payload, method) {
       attempt.fetched++;
       if (!data) { attempt.rejected.pageError = (attempt.rejected.pageError || 0) + 1; save(); continue; }
       const page = { data };
-      record.checkedUrls.push(candidate.url);
       try {
       const check = reviewedArticleCheck(page, source, candidate.url, end);
       if (!check.article) { attempt.rejected[check.reason] = (attempt.rejected[check.reason] || 0) + 1; save(); continue; }

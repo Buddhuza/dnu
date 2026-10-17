@@ -9,12 +9,14 @@ import { createReportDocx } from './report.js';
 import { currentDailyUpdate } from './daily.js';
 import { reportFilename } from '../src/reportFilename.js';
 import { previousCoverageIndex, previousCoverageReason } from './previousCoverage.js';
+import { createAutoScrapeHistory } from './autoScrapeHistory.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const sources = JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'));
 const sourceById = new Map(sources.map(source => [source.id, source]));
 const dailySnapshot = JSON.parse(readFileSync(join(root, 'data/daily-update-2026-10-14-15.json'), 'utf8'));
 const priorCoverage = previousCoverageIndex(dailySnapshot.articles);
+const autoScrapeHistory = createAutoScrapeHistory(join(root, 'data/auto-scrape-history.jsonl'));
 const cache = new Map();
 const articleCache = new Map();
 const app = express();
@@ -57,7 +59,7 @@ app.post('/api/headlines', async (req, res) => {
   if (fallback && search) return res.status(400).json({ error: 'Choose one collection method.' });
   const alternateUrl = fallbackListingUrl(source);
   if ((fallback || search) && !process.env.FIRECRAWL_API_KEY) return res.status(503).json({ error: 'Firecrawl is required to check alternate links.' });
-  const cacheKey = JSON.stringify([source.id, source.url, source.listingUrl, include, fallback, search]);
+  const cacheKey = JSON.stringify([source.id, source.url, source.listingUrl, include, exclude, fallback, search]);
   const continuingScan = req.body?.fullScan === true && Number(req.body?.cursor) > 0;
   try {
     let entry = cache.get(cacheKey);
@@ -80,21 +82,39 @@ app.post('/api/headlines', async (req, res) => {
     const fromFeed = entry.payload.collectionMethod === 'feed';
     const fullScan = req.body?.fullScan === true;
     const selective = req.body?.selective === true;
+    const manualRescrape = fullScan && !selective && req.body?.manualRescrape === true;
     const feedEntries = fromFeed ? normalizeArticles(entry.payload, source, Date.now(), include, exclude, true) : [];
-    const feedHeadlines = feedEntries.filter(item => !previousCoverageReason(item, priorCoverage));
-    const verifyFeedArticles = fromFeed && fullScan && !selective && Boolean(process.env.FIRECRAWL_API_KEY);
+    const uncoveredFeed = manualRescrape ? feedEntries : feedEntries.filter(item => !previousCoverageReason(item, priorCoverage));
+    const feedHeadlines = [];
+    let previouslyProcessedFeed = 0;
+    for (const item of uncoveredFeed) {
+      const claim = await autoScrapeHistory.claim(item, { batchId: String(req.body?.batchId || 'api-automatic').slice(0, 100), sourceId: source.id, force: manualRescrape });
+      if (claim.claimed) feedHeadlines.push(item);
+      else previouslyProcessedFeed++;
+    }
+    const verifyFeedArticles = fromFeed && manualRescrape && Boolean(process.env.FIRECRAWL_API_KEY);
     const headlines = verifyFeedArticles ? [] : feedHeadlines;
     const listedCandidates = fromFeed ? [] : undatedCandidates(entry.payload, source, include, exclude, true);
-    const candidates = verifyFeedArticles ? feedHeadlines.map(item => ({ title: item.title, url: item.url, feedArticle: item })) : fromFeed ? [] : listedCandidates.filter(item => !previousCoverageReason(item, priorCoverage));
+    const candidates = verifyFeedArticles ? feedHeadlines.map(item => ({ title: item.title, url: item.url, feedArticle: item })) : fromFeed ? [] : manualRescrape ? listedCandidates : listedCandidates.filter(item => !previousCoverageReason(item, priorCoverage));
     const previouslyCovered = feedEntries.length - feedHeadlines.length + listedCandidates.length - (fromFeed ? 0 : candidates.length);
-    const selectedCandidates = selective ? shortlistCandidates(candidates) : candidates;
+    const selectionKey = JSON.stringify([fullScan, selective, req.body?.deepScan === true, manualRescrape]);
+    entry.selections ??= new Map();
+    if (continuingScan && !entry.selections.has(selectionKey)) return res.status(409).json({ error: 'This source scan expired. Start it again from the first page.' });
+    if (!continuingScan) {
+      const freshCandidates = manualRescrape ? candidates : candidates.filter(item => !autoScrapeHistory.reason(item, source.id));
+      entry.selections.set(selectionKey, { candidates: selective ? shortlistCandidates(freshCandidates) : freshCandidates, previouslyScraped: candidates.length - freshCandidates.length });
+    }
+    const { candidates: selectedCandidates, previouslyScraped } = entry.selections.get(selectionKey);
     const page = candidatePage(selectedCandidates, req.body?.cursor, fullScan, req.body?.deepScan === true, selective);
     let checked = 0;
+    let skippedSinceSelection = 0;
     const rejectionCounts = { pageError: 0, missingHeadlineOrTime: 0, outsideWindow: 0, outsideScope: 0, nonEnglish: 0 };
     const pageErrors = [];
     for (const candidate of page.items) {
-        checked++;
         try {
+          const claim = await autoScrapeHistory.claim(candidate, { batchId: String(req.body?.batchId || 'api-automatic').slice(0, 100), sourceId: source.id, force: manualRescrape });
+          if (!claim.claimed) { skippedSinceSelection++; continue; }
+          checked++;
           let article = articleCache.get(candidate.url);
           if (!article || Date.now() - article.at > 10 * 60 * 1000) {
             article = { at: Date.now(), payload: await scrapeArticle(candidate.url, process.env.FIRECRAWL_API_KEY) };
@@ -109,7 +129,7 @@ app.post('/api/headlines', async (req, res) => {
         } catch (error) { rejectionCounts.pageError++; if (pageErrors.length < 3) pageErrors.push(`${candidate.url}: ${error.message}`); /* Other candidates may still be verifiable. */ }
     }
     const nextCursor = fromFeed && !verifyFeedArticles ? null : page.nextCursor;
-    res.json({ source, headlines: headlines.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date(entry.at).toISOString(), listedCount: articleArray(entry.payload).length, previouslyCovered, candidatesFound: candidates.length, candidatesSelected: selectedCandidates.length, candidatesChecked: checked, rejectionCounts, pageErrors, nextCursor, collectionMethod: verifyFeedArticles ? 'feed+firecrawl' : fromFeed ? 'feed' : entry.payload.collectionMethod || 'firecrawl', listingUrl: entry.payload.feedUrl || entry.payload.searchQuery || (fallback ? alternateUrl : source.listingUrl || source.url), note: verifyFeedArticles ? 'Publisher feed entries were checked against their original article pages.' : fromFeed ? 'Headlines and dates came from the publisher feed. Article pages were not independently checked.' : selective ? `Checking up to ${selectedCandidates.length} ranked headline links, three at a time; ${candidates.length - selectedCandidates.length} lower-priority links are outside this scan.` : nextCursor === null && fullScan ? 'All relevant article links returned from this listing were checked; listings can still omit stories.' : 'Only some article pages were checked. No result is not proof that the source had no relevant news.' });
+    res.json({ source, headlines: headlines.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date(entry.at).toISOString(), listedCount: articleArray(entry.payload).length, previouslyCovered, previouslyScraped: previouslyScraped + previouslyProcessedFeed + skippedSinceSelection, candidatesFound: candidates.length + (verifyFeedArticles ? 0 : uncoveredFeed.length), candidatesSelected: selectedCandidates.length + (verifyFeedArticles ? 0 : feedHeadlines.length), candidatesChecked: checked, rejectionCounts, pageErrors, nextCursor, collectionMethod: verifyFeedArticles ? 'feed+firecrawl' : fromFeed ? 'feed' : entry.payload.collectionMethod || 'firecrawl', listingUrl: entry.payload.feedUrl || entry.payload.searchQuery || (fallback ? alternateUrl : source.listingUrl || source.url), note: verifyFeedArticles ? 'Publisher feed entries were checked against their original article pages.' : fromFeed ? `Headlines and dates came from the publisher feed without opening article pages; ${previouslyProcessedFeed} previously seen entries were skipped.` : selective ? `Checking up to ${selectedCandidates.length} ranked headline links, three at a time; ${Math.max(0, candidates.length - previouslyScraped - selectedCandidates.length)} lower-priority links are outside this scan; ${previouslyScraped + skippedSinceSelection} previously scraped links were skipped.` : nextCursor === null && fullScan ? 'All relevant article links returned from this listing were checked; listings can still omit stories.' : 'Only some article pages were checked. No result is not proof that the source had no relevant news.' });
   } catch (error) {
     res.status(502).json({ error: `Could not collect ${source.name}: ${error.message}` });
   }
@@ -128,6 +148,7 @@ app.post('/api/article', async (req, res) => {
   try {
     let entry = articleCache.get(articleUrl.href);
     if (!entry || Date.now() - entry.at > 10 * 60 * 1000) {
+      await autoScrapeHistory.claim({ url: articleUrl.href }, { batchId: 'manual-review', sourceId: source.id, force: true });
       entry = { at: Date.now(), payload: await scrapeArticle(articleUrl.href, process.env.FIRECRAWL_API_KEY) };
       articleCache.set(articleUrl.href, entry);
     }
@@ -147,6 +168,7 @@ app.post('/api/import-article', async (req, res) => {
   try {
     let entry = articleCache.get(articleUrl.href);
     if (!entry || Date.now() - entry.at > 10 * 60 * 1000) {
+      await autoScrapeHistory.claim({ url: articleUrl.href }, { batchId: 'manual-add', sourceId: sourceForArticle(articleUrl, sources)?.id || '', force: true });
       entry = { at: Date.now(), payload: await scrapeImportedArticle(articleUrl.href, process.env.FIRECRAWL_API_KEY) };
       articleCache.set(articleUrl.href, entry);
     }
