@@ -35,6 +35,17 @@ const compactSectionLabels = {
   Miscellaneous: 'MISCL'
 };
 
+function scrollReportTo(target, gap) {
+  const scroller = target.closest('.daily-scroll');
+  if (!scroller) return;
+  if (getComputedStyle(scroller).overflowY === 'visible') {
+    const headingHeight = document.querySelector('.daily-heading')?.getBoundingClientRect().height || 0;
+    window.scrollTo({ top: window.scrollY + target.getBoundingClientRect().top - headingHeight - gap, behavior: 'smooth' });
+  } else {
+    scroller.scrollTo({ top: scroller.scrollTop + target.getBoundingClientRect().top - scroller.getBoundingClientRect().top - gap, behavior: 'smooth' });
+  }
+}
+
 function App() {
   const [currentTime, setCurrentTime] = useState(() => new Date());
   const [compiledAt, setCompiledAt] = useState(() => preparedUpdate.checkedAt || new Date().toISOString());
@@ -122,8 +133,7 @@ function App() {
     const item = updateSearchResults[Math.min(activeSearchResult, updateSearchResults.length - 1)];
     const target = [...document.querySelectorAll('.daily-scroll .daily-story')].find(node => node.dataset.storyId === item.id);
     if (!target) return;
-    const scroller = target.closest('.daily-scroll');
-    scroller.scrollTo({ top: scroller.scrollTop + target.getBoundingClientRect().top - scroller.getBoundingClientRect().top - 20, behavior: 'smooth' });
+    scrollReportTo(target, 20);
   }, [updateSearchOpen, updateSearchResults, activeSearchResult]);
   const reportWindow = useMemo(() => {
     if (!daily) return null;
@@ -363,8 +373,7 @@ function App() {
     const target = document.getElementById(`daily-section-${index}`);
     if (!target) return;
     event.preventDefault();
-    const scroller = target.closest('.daily-scroll');
-    scroller.scrollTo({ top: scroller.scrollTop + target.getBoundingClientRect().top - scroller.getBoundingClientRect().top - 12, behavior: 'smooth' });
+    scrollReportTo(target, 12);
     history.replaceState(null, '', `#daily-section-${index}`);
   };
   const dropAtPoint = (x, y, movedId) => {
@@ -394,6 +403,11 @@ function App() {
     setDropTarget(hit?.key || '');
     const scroller = document.querySelector('.daily-scroll');
     if (scroller) {
+      if (getComputedStyle(scroller).overflowY === 'visible') {
+        if (event.clientY < 48) window.scrollBy(0, -18);
+        else if (event.clientY > window.innerHeight - 48) window.scrollBy(0, 18);
+        return;
+      }
       const box = scroller.getBoundingClientRect();
       if (event.clientY < box.top + 48) scroller.scrollTop -= 18;
       else if (event.clientY > box.bottom - 48) scroller.scrollTop += 18;
@@ -421,9 +435,9 @@ function App() {
   return <div className="app-shell" data-mode={siteConfig.darkMode ? 'dark' : 'light'} style={themeStyle}>
     <header className="topbar"><div className="brand-text"><strong>{siteConfig.brandName}</strong><small>{siteConfig.brandTagline}</small></div><span className="topbar-spacer"/><button className="mode-button" aria-pressed={siteConfig.darkMode} onClick={() => setSiteConfig(current => ({ ...current, darkMode: !current.darkMode }))}>{siteConfig.darkMode ? '☀ Light mode' : '☾ Dark mode'}</button>{managementEnabled && <button className="manage-button" onClick={() => { setManagerTab('Content'); setManaging(true); }}>⚙ Manage site</button>}<time className="topbar-date" dateTime={currentTime.toISOString()} title="Vienna time">{formatViennaCompactDateTime(currentTime)}</time></header>
     <div className={`workspace ${siteConfig.showSources ? '' : 'no-sidebar'}`}>
-      {siteConfig.showSources && <aside className="sidebar">
+      {siteConfig.showSources && <aside className={`sidebar ${search.trim() ? 'has-search-query' : ''}`}>
         <div className="sidebar-heading"><h2>Sources <em>{sources.length}</em></h2></div>
-        <label className="search-box"><span>⌕</span><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search sources" aria-label="Search sources"/><kbd>⌘ K</kbd></label>
+        <label className="search-box"><span>⌕</span><input value={search} onChange={e => { setSearch(e.target.value); if (window.matchMedia('(max-width: 800px)').matches) setGroup('All sources'); }} placeholder="Search sources" aria-label="Search sources"/><kbd>⌘ K</kbd></label>
         <select className="group-select" value={group} onChange={e => setGroup(e.target.value)} aria-label="Filter source region">{groups.map(x => <option key={x}>{x}</option>)}</select>
         <div className="source-list">{visibleSources.map(x => <button key={x.id} className={`source-row ${websiteSourceId === x.id ? 'active' : ''}`} onClick={() => { setActiveId(x.id); setWebsiteSourceId(x.id); setResult(null); setError(''); }} aria-label={`Show ${x.name} website beside the daily news update`}><span className="source-icon">{x.name[0]}</span><span className="source-copy"><strong>{x.name}</strong></span><span className="source-arrow">›</span></button>)}{!visibleSources.length && <p className="no-sources">No sources match this search.</p>}</div>
         <div className="sidebar-foot"><span className="pulse"/> {sources.length} visible sources</div>
