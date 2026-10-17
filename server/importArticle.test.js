@@ -15,6 +15,18 @@ test('placement uses the report taxonomy and rejects invented classifications', 
   assert.deepEqual(articlePlacement({}, 'Germany signs defence deal with France', ''), { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Germany' });
 });
 
+test('imported international coverage of an attack in Ukraine overrides a Russia classification', () => {
+  const url = new URL('https://example.org/russia-bombs-ukraine');
+  const payload = { data: { metadata: { ogTitle: 'Russia bombs Ukraine overnight', publishedTime: '2026-10-17T08:00:00Z', language: 'en' }, json: { summary: 'The Russian military said missiles hit a power plant near Kyiv.', classification: { section: 'Miscellaneous', subsection: 'RUSSIA / EURASIA', country: 'Russia' } } } };
+  const article = importedArticle(payload, url, { id: 'manual', name: 'International News', url: url.href });
+  assert.equal(article.sectionId, 'Eastern Europe');
+  assert.equal(article.subsection, 'Ukraine');
+  const armenianUrl = new URL('https://www.pan.am/en/russian-attack-ukraine');
+  const armenianPayload = { data: { metadata: { ogTitle: 'Armenian officials condemn Russian bombing of Ukraine', publishedTime: '2026-10-17T08:00:00Z', language: 'en' }, json: { summary: 'The Russian military struck energy facilities in Kyiv overnight.' } } };
+  const regionalArticle = importedArticle(armenianPayload, armenianUrl, { id: 'source-47', name: 'PAN', url: 'https://www.pan.am/en' });
+  assert.equal(regionalArticle.subsection, 'Ukraine');
+});
+
 test('review flow can keep a scraped article whose location is unknown', () => {
   const url = new URL('https://example.org/story');
   const payload = { data: { metadata: { ogTitle: 'New security talks announced', publishedTime: '2026-10-14T10:00:00Z', language: 'en' }, json: { summary: 'The foreign ministers will meet next month.' } } };

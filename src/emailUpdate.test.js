@@ -12,7 +12,9 @@ test('email subject uses the Vienna compilation date with a two-digit day', () =
 test('formatted email follows Word headings, source links, and disclaimer', () => {
   const html = emailUpdateHtml({ ...options, logoUrl: 'https://example.com/osce-logo.png' });
   assert.match(html, /<img src="https:\/\/example.com\/osce-logo.png" alt="OSCE"/);
-  assert.match(html, /Organization for Security and Co-operation in Europe/);
+  assert.match(html, /Organisation for Security and Co-operation in Europe/);
+  assert.doesNotMatch(html, /Organization for Security and Co-operation in Europe/);
+  assert.match(emailUpdateText(options), /Organisation for Security and Co-operation in Europe/);
   assert.match(html, /16 Oct 26/);
   assert.match(html, /WESTERN \/ CENTRAL EUROPE/);
   assert.match(html, /background-color:#d9e2f3[^>]*>FRANCE/);

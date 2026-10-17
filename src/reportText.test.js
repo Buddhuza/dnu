@@ -15,3 +15,9 @@ test('all caps introduction is normalised without turning pronouns into US', () 
 test('report text places one period after the headline and summary', () => {
   assert.deepEqual(reportStoryText({ title: 'NATO Begins Annual Nuclear Exercise in Italy', summary: 'Seventeen nations are taking part' }), { headline: 'NATO begins annual nuclear exercise in Italy.', summary: 'Seventeen nations are taking part.' });
 });
+
+test('OSCE name uses Organisation in displayed report text', () => {
+  const text = reportStoryText({ title: 'Organization for Security and Co-operation in Europe meets', summary: 'The Organization for Security and Co-operation in Europe sent observers' });
+  assert.match(text.headline, /Organisation for Security and Co-operation in Europe/);
+  assert.match(text.summary, /Organisation for Security and Co-operation in Europe/);
+});

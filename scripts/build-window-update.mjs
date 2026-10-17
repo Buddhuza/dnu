@@ -4,8 +4,8 @@ import { fileURLToPath } from 'node:url';
 import { articlePlacement } from '../server/importArticle.js';
 import { editorialScore, isRussianSource } from '../server/editorialPolicy.js';
 import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES } from '../src/newsSections.js';
-import { blockedPlacementReason } from '../src/sourcePolicy.js';
-import { preferredRegionalPlacement } from '../src/storyPlacement.js';
+import { blockedPlacementReason, isUkrainianOutlet } from '../src/sourcePolicy.js';
+import { preferredRegionalPlacement, ukraineAttackPlacement } from '../src/storyPlacement.js';
 import { deduplicateArticles } from '../src/siteConfig.js';
 import { excludedHeadlineReason } from '../src/headlinePolicy.js';
 
@@ -145,11 +145,12 @@ for (const article of raw) {
     : /\bHegseth\b/i.test(article.title) ? { sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' }
     : /\b(?:Saudi Arabia|Saudi|Aramco|Riyadh)\b/i.test(article.title) ? { sectionId: 'Miscellaneous', subsection: 'MIDDLE EAST / NORTH AFRICA', country: 'Saudi Arabia' }
     : null;
-  const inferred = placementOverrides.get(article.url) || subjectPlacement || placementFromTitle(article.title) || contextPlaces.get(article.sourceId) || articlePlacement({}, article.title, '');
+  const attackedUkraine = !isUkrainianOutlet(article) && !(source && isRussianSource(source)) ? ukraineAttackPlacement(article.title, article.summary) : null;
+  const inferred = attackedUkraine || placementOverrides.get(article.url) || subjectPlacement || placementFromTitle(article.title) || contextPlaces.get(article.sourceId) || articlePlacement({}, article.title, '');
   let placement = inferred || (article.section ? { sectionId: article.section, subsection: article.subsection, country: article.country } : null);
   if (source && isRussianSource(source)) placement = { sectionId: 'Miscellaneous', subsection: 'RUSSIA / EURASIA', country: 'Russia' };
   if (!placement?.sectionId || !placement.subsection) { excluded.push({ ...article, reason: 'country or organisation needs editorial placement' }); continue; }
-  placement = preferredRegionalPlacement(article, placement);
+  placement = attackedUkraine || preferredRegionalPlacement(article, placement);
   const blockedSource = blockedPlacementReason(article, placement);
   if (blockedSource) { excluded.push({ ...article, reason: blockedSource }); continue; }
   if (placement.subsection === 'AFGHANISTAN / PAKISTAN' && !/\b(?:Russia|Russian|Kazakh\w*|Kyrgyz\w*|Tajik\w*|Turkmen\w*|Uzbek\w*|Central Asia\w*)\b/i.test(`${article.title} ${article.summary}`)) { excluded.push({ ...article, reason: 'Afghanistan story has no stated Russia or Central Asia connection' }); continue; }

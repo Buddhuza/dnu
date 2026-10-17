@@ -1,5 +1,20 @@
 const regionalSections = new Set(['South Eastern Europe', 'Eastern Europe', 'South Caucasus', 'Central Asia']);
 
+// An attack on Ukraine belongs under the place attacked, even when Russia is
+// named first in the headline. Keep attacks launched from Ukraine against
+// Russian territory out of this rule.
+export function ukraineAttackPlacement(title, summary = '') {
+  const text = `${title} ${summary}`;
+  const ukrainianPlace = '(?:Ukraine|Ukrainian (?:cities|towns|villages|territory|infrastructure)|Kyiv|Kiev|Kharkiv|Odesa|Odessa|Dnipro|Lviv|Zaporizhzhia|Sumy|Chernihiv|Mykolaiv|Oleshky)';
+  const attack = '(?:attack\\w*|strik\\w*|bomb\\w*|shell\\w*|hit|hits|target\\w*|pound\\w*|kill\\w*|injur\\w*|launch\\w* (?:missiles|drones))';
+  const patterns = [
+    new RegExp(`\\b(?:Russia|Russian)\\b.{0,90}\\b${attack}\\b.{0,90}\\b${ukrainianPlace}\\b`, 'i'),
+    new RegExp(`\\b${attack}\\b.{0,60}\\b(?:in|on|across|against|near|inside)\\s+(?:the\\s+)?${ukrainianPlace}\\b`, 'i'),
+    new RegExp(`\\b${ukrainianPlace}\\b.{0,60}\\b(?:is|was|were|has been|have been)\\s+${attack}\\b`, 'i')
+  ];
+  return patterns.some(pattern => pattern.test(text)) ? { sectionId: 'Eastern Europe', subsection: 'Ukraine', country: '' } : null;
+}
+
 const countryMentions = [
   ['Albania', /\b(?:Albania|Albanian|Tirana)\b/i],
   ['Bosnia and Herzegovina', /\b(?:Bosnia|Bosnian|Herzegovina|Sarajevo)\b/i],

@@ -1,7 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { preferredRegionalPlacement, sourceHomeCountry } from './storyPlacement.js';
+import { preferredRegionalPlacement, sourceHomeCountry, ukraineAttackPlacement } from './storyPlacement.js';
+
+test('attacks taking place in Ukraine are placed by location rather than the first country named', () => {
+  const ukraine = { sectionId: 'Eastern Europe', subsection: 'Ukraine', country: '' };
+  assert.deepEqual(ukraineAttackPlacement('Russia bombs Ukraine overnight'), ukraine);
+  assert.deepEqual(ukraineAttackPlacement('Russian drones strike Kyiv energy network'), ukraine);
+  assert.deepEqual(ukraineAttackPlacement('Strike on Kyiv kills three'), ukraine);
+  assert.equal(ukraineAttackPlacement('Ukrainian drones attack Belgorod in Russia'), null);
+  assert.equal(ukraineAttackPlacement('EU pledges military aid to Ukraine'), null);
+});
 
 test('a PAN story about Mirzoyan and Kosovo belongs under Armenia', () => {
   const story = {

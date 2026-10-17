@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import preparedUpdate from '../data/prepared-update.json';
 import preparedSources from '../sources.json';
@@ -71,6 +71,7 @@ function App() {
   const [moveStoryId, setMoveStoryId] = useState('');
   const [dropTarget, setDropTarget] = useState('');
   const pointerDragRef = useRef(null);
+  const pendingReadingPositionRef = useRef(null);
   const [addingArticles, setAddingArticles] = useState(false);
   const [updateSearchOpen, setUpdateSearchOpen] = useState(false);
   const [updateSearchText, setUpdateSearchText] = useState('');
@@ -107,6 +108,19 @@ function App() {
   useEffect(() => { localStorage.setItem('dnu-source-audit-v1', JSON.stringify(auditRows)); }, [auditRows]);
   useEffect(() => { localStorage.setItem('dnu-excluded-story-ids-v1', JSON.stringify([...excludedStoryIds])); }, [excludedStoryIds]);
   useEffect(() => { localStorage.setItem('dnu-headline-only-v1', JSON.stringify(headlineOnly)); }, [headlineOnly]);
+  useLayoutEffect(() => {
+    const position = pendingReadingPositionRef.current;
+    if (!position) return;
+    pendingReadingPositionRef.current = null;
+    const scroller = document.querySelector('.daily-scroll');
+    const anchor = [...(scroller?.querySelectorAll('.daily-story') || [])].find(story => story.dataset.storyId === position.storyId);
+    if (anchor) {
+      const shift = anchor.getBoundingClientRect().top - position.anchorTop;
+      if (position.pageScroll) window.scrollBy(0, shift);
+      else scroller.scrollTop += shift;
+    } else if (position.pageScroll) window.scrollTo(0, position.scrollTop);
+    else if (scroller) scroller.scrollTop = position.scrollTop;
+  }, [editingStories]);
   const configuredSources = useMemo(() => displaySources(config?.sources ?? [], { ...siteConfig, hiddenSourceIds: [] }), [config, siteConfig]);
   const sources = useMemo(() => displaySources(config?.sources ?? [], siteConfig), [config, siteConfig]);
   const active = configuredSources.find(x => x.id === activeId);
@@ -320,13 +334,27 @@ function App() {
       .map(([id, draft]) => [id, { ...(current.articleEdits[id] || {}), title: draft.title.trim(), summary: draft.summary.trim(), summaryEdited: true, sourceName: draft.sourceName.trim() }])]),
     customArticles: current.customArticles.map(item => drafts[item.id] ? { ...item, title: drafts[item.id].title, summary: drafts[item.id].summary, sourceName: drafts[item.id].sourceName } : item)
   });
+  const rememberReadingPosition = () => {
+    const scroller = document.querySelector('.daily-scroll');
+    if (!scroller) return;
+    const pageScroll = getComputedStyle(scroller).overflowY === 'visible';
+    const top = pageScroll ? (document.querySelector('.daily-heading')?.getBoundingClientRect().bottom || 0) : scroller.getBoundingClientRect().top;
+    const bottom = pageScroll ? window.innerHeight : scroller.getBoundingClientRect().bottom;
+    const anchor = [...scroller.querySelectorAll('.daily-story')].find(story => {
+      const box = story.getBoundingClientRect();
+      return box.bottom > top && box.top < bottom && (!editingStories || !excludedStoryIds.has(story.dataset.storyId));
+    });
+    pendingReadingPositionRef.current = { storyId: anchor?.dataset.storyId, anchorTop: anchor?.getBoundingClientRect().top, pageScroll, scrollTop: pageScroll ? window.scrollY : scroller.scrollTop };
+  };
   const toggleStoryEditing = () => {
     if (!editingStories) {
+      rememberReadingPosition();
       setEditingStories(true);
       return;
     }
     const drafts = readStoryDrafts();
     if (!validStoryDrafts(drafts)) return;
+    rememberReadingPosition();
     setSiteConfig(current => applyStoryDrafts(current, drafts));
     setEditingStories(false);
     setMoveStoryId('');

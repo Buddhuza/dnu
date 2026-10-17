@@ -32,5 +32,6 @@ export function withPeriod(value) {
 }
 
 export function reportStoryText(item) {
-  return { headline: withPeriod(sentenceCaseHeadline(item.title, item.summary)), summary: item.summary ? withPeriod(item.summary) : '' };
+  const osceSpelling = value => String(value ?? '').replace(/Organization for Security and Co-operation in Europe/gi, 'Organisation for Security and Co-operation in Europe');
+  return { headline: withPeriod(osceSpelling(sentenceCaseHeadline(item.title, item.summary))), summary: item.summary ? withPeriod(osceSpelling(item.summary)) : '' };
 }

@@ -1,6 +1,7 @@
 import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES } from '../src/newsSections.js';
 import { excludedHeadlineReason } from '../src/headlinePolicy.js';
-import { preferredRegionalPlacement } from '../src/storyPlacement.js';
+import { preferredRegionalPlacement, ukraineAttackPlacement } from '../src/storyPlacement.js';
+import { isUkrainianOutlet } from '../src/sourcePolicy.js';
 import { viennaWallTimeToIso, wallTimeToIso } from '../src/viennaTime.js';
 import { isEnglishArticle, isRussianSource, isRussiaFocused } from './editorialPolicy.js';
 
@@ -157,8 +158,9 @@ export function importedArticle(payload, url, source, { allowUnplaced = false } 
   if (!isEnglishArticle(payload, title, summary)) throw new Error('The original article is not in English.');
   const { publishedAt, timeSource } = resolveArticleTime(payload, url);
   if (isRussianSource(source) && !isRussiaFocused(title, summary)) throw new Error('Russian outlets are limited to Russia-focused stories.');
-  let placement = articlePlacement(extracted, title, summary);
-  if (placement) placement = preferredRegionalPlacement({ ...source, sourceId: source.id, title, summary, url: url.href }, placement);
+  const attackedUkraine = !isRussianSource(source) && !isUkrainianOutlet({ ...source, sourceId: source.id, url: url.href }) ? ukraineAttackPlacement(title, summary) : null;
+  let placement = attackedUkraine || articlePlacement(extracted, title, summary);
+  if (placement && !attackedUkraine) placement = preferredRegionalPlacement({ ...source, sourceId: source.id, title, summary, url: url.href }, placement);
   if (!placement && !allowUnplaced) throw new Error('The article could not be placed in a configured country or organisation.');
   if (isRussianSource(source) && placement && (placement.sectionId !== 'Miscellaneous' || placement.subsection !== 'RUSSIA / EURASIA')) {
     if (!allowUnplaced) throw new Error('Russian outlets are limited to the Russia section.');

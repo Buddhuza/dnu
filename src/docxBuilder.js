@@ -64,6 +64,7 @@ export async function createReportDocxFromTemplate(templateBytes, { title, windo
   }
   paragraphs.push(disclaimerParagraphs());
   let documentXml = await zip.file('word/document.xml').async('string');
+  documentXml = documentXml.replace(/Organization for Security and Co-operation in Europe/g, 'Organisation for Security and Co-operation in Europe');
   documentXml = documentXml.replace('{{TITLE}}', escapeXml(title?.trim() || defaultTitle()));
   documentXml = documentXml.replace(/<w:sectPr\b/, `${paragraphs.join('')}<w:sectPr`);
   zip.file('word/document.xml', documentXml);

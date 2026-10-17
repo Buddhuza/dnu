@@ -23,7 +23,8 @@ test('Word report preserves article text, sections, and linked agency names', as
   assert.doesNotMatch(document, /Missing News|Unselected News|AGENCIES FROM WHICH NO QUALIFYING ARTICLE WAS COLLECTED/);
   assert.match(document, /w:fill="D9E2F3"/);
   assert.match(document, /w:val="0070C0"/);
-  assert.match(document, /Organization for Security and Co-operation in Europe/);
+  assert.match(document, /Organisation for Security and Co-operation in Europe/);
+  assert.doesNotMatch(document, /Organization for Security and Co-operation in Europe/);
   assert.ok(zip.file('word/media/image1.png'));
   assert.ok(zip.file('word/footer1.xml'));
   assert.match(document, /<w:t xml:space="preserve">Test News<\/w:t>/);
