@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { fallbackListingUrl } from '../server/news.js';
@@ -7,10 +7,21 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const allSources = JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'));
 const alternate = process.env.COLLECTION_LISTING_MODE === 'alternate';
 const day = process.env.COLLECTION_DAY || new Date().toISOString().slice(0, 10);
-const checkpoint = alternate ? JSON.parse(readFileSync(join(root, `data/collection-${day}-working.json`), 'utf8')) : null;
+const runId = process.env.COLLECTION_RUN_ID || day;
+const checkpoint = alternate ? JSON.parse(readFileSync(join(root, `data/collection-${runId}-working.json`), 'utf8')) : null;
 const sources = alternate ? allSources.filter(source => checkpoint.sources[source.id]?.status === 'primaryComplete' && fallbackListingUrl(source)) : allSources;
-const path = join(root, `data/${alternate ? 'alternate-listings' : 'listings'}-${day}.json`);
+const path = join(root, `data/${alternate ? 'alternate-listings' : 'listings'}-${runId}.json`);
 const state = existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) : {};
+// Reuse a very recent listing; older ones must refresh to discover new stories.
+const listingPrefix = alternate ? 'alternate-listings-' : 'listings-';
+for (const filename of readdirSync(join(root, 'data')).filter(name => name.startsWith(listingPrefix) && name.endsWith('.json') && name !== `${listingPrefix}${runId}.json`)) {
+  const previousPath = join(root, 'data', filename);
+  if (Date.now() - statSync(previousPath).mtimeMs > 10 * 60 * 1000) continue;
+  try {
+    const previous = JSON.parse(readFileSync(previousPath, 'utf8'));
+    for (const [id, result] of Object.entries(previous)) if (result?.data && !(id in state)) state[id] = result;
+  } catch { /* A concurrently written listing is not reusable. */ }
+}
 const key = process.env.FIRECRAWL_API_KEY;
 if (!key) throw new Error('FIRECRAWL_API_KEY is not set');
 const headers = { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' };

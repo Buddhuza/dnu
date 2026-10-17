@@ -3,6 +3,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 export COLLECTION_DAY="${COLLECTION_DAY:-$(date -u +%Y-%m-%d)}"
+export COLLECTION_RUN_ID="${COLLECTION_RUN_ID:-${COLLECTION_DAY}-$(date -u +%H%M%S)-$$}"
 export NODE_USE_ENV_PROXY=1
 
 node scripts/batch-listings.mjs

@@ -6,11 +6,14 @@ import { articleArray, DEFAULT_INCLUDE, fallbackListingUrl, scrapeHeadlines, sea
 import { articlePlacement } from '../server/importArticle.js';
 import { IMPORT_PROMPT } from '../src/importPrompt.js';
 import { createAutoScrapeHistory } from '../server/autoScrapeHistory.js';
+import { createArticleCache } from '../server/articleCache.js';
+import { passesSourcePolicy } from '../server/editorialPolicy.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const sources = JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'));
 const collectionDay = process.env.COLLECTION_DAY || new Date().toISOString().slice(0, 10);
-const checkpointPath = process.env.COLLECTION_CHECKPOINT || join(root, `data/collection-${collectionDay}-working.json`);
+const runId = process.env.COLLECTION_RUN_ID || collectionDay;
+const checkpointPath = process.env.COLLECTION_CHECKPOINT || join(root, `data/collection-${runId}-working.json`);
 const existingState = existsSync(checkpointPath) ? JSON.parse(readFileSync(checkpointPath, 'utf8')) : null;
 const requestedEnd = process.env.COLLECTION_WINDOW_END ? Date.parse(process.env.COLLECTION_WINDOW_END) : existingState ? Date.parse(existingState.windowEnd) : Date.now();
 const requestedStart = process.env.COLLECTION_WINDOW_START ? Date.parse(process.env.COLLECTION_WINDOW_START) : existingState ? Date.parse(existingState.windowStart) : requestedEnd - 24 * 60 * 60 * 1000;
@@ -18,6 +21,7 @@ if (!Number.isFinite(requestedStart) || !Number.isFinite(requestedEnd) || reques
 const key = process.env.FIRECRAWL_API_KEY;
 if (!key) throw new Error('FIRECRAWL_API_KEY is not set');
 const scrapeHistory = createAutoScrapeHistory(join(root, 'data/auto-scrape-history.jsonl'));
+const articleCache = createArticleCache(join(root, 'data/article-cache.jsonl'));
 const batchId = process.env.COLLECTION_BATCH_ID || `window-${new Date().toISOString()}`;
 const phase = process.env.COLLECTION_PHASE || 'all';
 const state = existingState || {
@@ -74,52 +78,73 @@ async function batchArticlePages(urls) {
 
 async function examineCandidates(source, record, payload, method) {
   const candidates = candidateList(payload, source);
-  const fresh = candidates.filter(candidate => !scrapeHistory.reason(candidate, source.id));
-  const selected = process.env.COLLECTION_DEEP === '1' ? fresh : shortlistCandidates(fresh);
-  const attempt = { method, listed: articleArray(payload).length, candidates: candidates.length, previouslyScraped: candidates.length - fresh.length, selected: selected.length, fetched: 0, accepted: 0, rejected: {}, errors: [] };
+  const selected = process.env.COLLECTION_DEEP === '1' ? candidates : shortlistCandidates(candidates);
+  const attempt = { method, listed: articleArray(payload).length, candidates: candidates.length, previouslyScraped: 0, selected: selected.length, fetched: 0, reused: 0, accepted: 0, rejected: {}, errors: [] };
   attempt.listedArticles = articleArray(payload).map(item => ({ title: item.title || item.headline, url: item.url || item.link, publishedAt: item.publishedAt || item.date })).slice(0, 100);
   record.attempts.push(attempt);
   save();
   const unchecked = selected.filter(candidate => !record.checkedUrls.includes(candidate.url));
   for (let offset = 0; offset < unchecked.length; offset += 10) {
-    const group = [];
-    for (const candidate of unchecked.slice(offset, offset + 10)) {
-      const claim = await scrapeHistory.claim(candidate, { batchId, sourceId: source.id });
-      if (claim.claimed) { group.push(candidate); record.checkedUrls.push(candidate.url); }
-      else attempt.previouslyScraped++;
+    const group = unchecked.slice(offset, offset + 10);
+    const fetchGroup = [];
+    const cached = new Map();
+    for (const candidate of group) {
+      const entry = articleCache.get(candidate.url);
+      if (entry?.article || entry?.page) {
+        cached.set(candidate.url, entry);
+        attempt.reused++;
+        attempt.previouslyScraped++;
+      } else if (entry?.retryAfter > Date.now()) {
+        cached.set(candidate.url, entry);
+        attempt.previouslyScraped++;
+      } else {
+        // Legacy history records an attempt, not a successful page fetch. Recover it once.
+        await scrapeHistory.claim(candidate, { batchId, sourceId: source.id, force: true });
+        fetchGroup.push(candidate);
+      }
     }
-    if (!group.length) { save(); continue; }
-    save();
     let pages;
-    try { pages = await batchArticlePages(group.map(item => item.url)); }
+    try { pages = await batchArticlePages(fetchGroup.map(item => item.url)); }
     catch (error) {
       attempt.errors.push(`Batch: ${error.message}`);
       if (/credit|quota|payment required/i.test(error.message)) { save(); throw error; }
-      pages = group.map(() => null);
+      pages = fetchGroup.map(() => null);
     }
-    for (let index = 0; index < group.length; index++) {
-      const candidate = group[index];
-      const data = pages[index];
-      attempt.fetched++;
-      if (!data) { attempt.rejected.pageError = (attempt.rejected.pageError || 0) + 1; save(); continue; }
-      const page = { data };
+    const fetched = new Map(fetchGroup.map((candidate, index) => [candidate.url, pages[index]]));
+    for (const candidate of group) {
+      const data = fetched.get(candidate.url);
+      const entry = cached.get(candidate.url);
+      if (fetched.has(candidate.url)) attempt.fetched++;
+      record.checkedUrls.push(candidate.url);
+      if (!data && !entry?.page && !entry?.article) {
+        if (fetched.has(candidate.url)) articleCache.putFailure(candidate.url);
+        attempt.rejected.pageError = (attempt.rejected.pageError || 0) + 1;
+        save();
+        continue;
+      }
+      if (data) articleCache.putPage(candidate.url, data);
+      const page = entry?.page ? { data: entry.page } : { data };
       try {
-      const check = reviewedArticleCheck(page, source, candidate.url, end);
-      if (!check.article) { attempt.rejected[check.reason] = (attempt.rejected[check.reason] || 0) + 1; save(); continue; }
-      if (!inWindow(check.article.publishedAt)) { attempt.rejected.outsideRequestedWindow = (attempt.rejected.outsideRequestedWindow || 0) + 1; save(); continue; }
-      const extracted = typeof page.data?.json === 'string' ? JSON.parse(page.data.json) : page.data?.json || {};
-      if (!topical(`${check.article.title} ${check.article.summary}`)) { attempt.rejected.outsideScope = (attempt.rejected.outsideScope || 0) + 1; save(); continue; }
-      const placement = articlePlacement(extracted, check.article.title, check.article.summary);
-      const article = { ...check.article, section: placement?.sectionId || '', subsection: placement?.subsection || '', country: placement?.country || '', reviewed: true };
-      record.articles.push(article);
-      attempt.accepted++;
+        let article = entry?.article;
+        if (!article) {
+          const check = reviewedArticleCheck(page, source, candidate.url, end);
+          if (!check.article) { attempt.rejected[check.reason] = (attempt.rejected[check.reason] || 0) + 1; save(); continue; }
+          const extracted = typeof page.data?.json === 'string' ? JSON.parse(page.data.json) : page.data?.json || {};
+          const placement = articlePlacement(extracted, check.article.title, check.article.summary);
+          article = { ...check.article, section: placement?.sectionId || '', subsection: placement?.subsection || '', country: placement?.country || '', reviewed: true };
+          articleCache.putArticle(candidate.url, article);
+        }
+        if (!inWindow(article.publishedAt)) { attempt.rejected.outsideRequestedWindow = (attempt.rejected.outsideRequestedWindow || 0) + 1; save(); continue; }
+        if (!topical(`${article.title} ${article.summary}`) || !passesSourcePolicy(source, article.title, article.summary)) { attempt.rejected.outsideScope = (attempt.rejected.outsideScope || 0) + 1; save(); continue; }
+        record.articles.push(article);
+        attempt.accepted++;
     } catch (error) {
       attempt.rejected.pageError = (attempt.rejected.pageError || 0) + 1;
       if (attempt.errors.length < 5) attempt.errors.push(`${candidate.url}: ${error.message}`);
       if (/credit|quota|payment required/i.test(error.message)) { save(); throw error; }
     }
     save();
-    console.log(`${source.id} ${source.name}: ${method} ${attempt.fetched}/${selected.length} selected pages, ${record.articles.length} relevant`);
+    console.log(`${source.id} ${source.name}: ${method} ${attempt.fetched} fetched, ${attempt.reused} reused, ${record.articles.length} relevant`);
     }
   }
 }
@@ -130,7 +155,7 @@ async function scan(source) {
   if (phase === 'fallback' && record.status !== 'primaryComplete' && !(record.status === 'complete' && !record.articles.length)) return;
   if (phase === 'supplement' && (!FEED_URLS[source.id] || record.attempts.some(attempt => attempt.method === 'primary Firecrawl listing' && attempt.finished))) return;
   console.log(`SOURCE ${source.id} ${source.name} ${source.url}`);
-  const cachedListing = async (filename = `listings-${collectionDay}.json`) => {
+  const cachedListing = async (filename = `listings-${runId}.json`) => {
     for (let retry = 0; retry < 150; retry++) {
       const file = join(root, 'data', filename);
       let listings = {};
@@ -148,7 +173,7 @@ async function scan(source) {
     ['publisher feed', async () => collectFeed(source)],
     ['primary Firecrawl listing', async () => process.env.COLLECTION_BATCH_LISTINGS === '1' ? cachedListing() : scrapeHeadlines(source, DEFAULT_INCLUDE, key)],
     ['alternate feed', async () => collectFallbackFeed(source, fetch, () => true)],
-    ['alternate Firecrawl listing', async () => { const url = fallbackListingUrl(source); return url ? process.env.COLLECTION_BATCH_ALTERNATE === '1' ? cachedListing(`alternate-listings-${collectionDay}.json`) : scrapeHeadlines({ ...source, listingUrl: url }, DEFAULT_INCLUDE, key) : null; }],
+    ['alternate Firecrawl listing', async () => { const url = fallbackListingUrl(source); return url ? process.env.COLLECTION_BATCH_ALTERNATE === '1' ? cachedListing(`alternate-listings-${runId}.json`) : scrapeHeadlines({ ...source, listingUrl: url }, DEFAULT_INCLUDE, key) : null; }],
     ['Firecrawl site search', async () => searchSourceArticles(source, DEFAULT_INCLUDE, key)]
   ];
   const retryPrimary = record.errors.some(error => error.startsWith('primary Firecrawl listing:'))

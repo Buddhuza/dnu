@@ -8,11 +8,15 @@ import { blockedPlacementReason, isUkrainianOutlet } from '../src/sourcePolicy.j
 import { preferredRegionalPlacement, ukraineAttackPlacement } from '../src/storyPlacement.js';
 import { deduplicateArticles } from '../src/siteConfig.js';
 import { excludedHeadlineReason } from '../src/headlinePolicy.js';
+import { carryForwardArticles } from '../server/updateCarryForward.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const day = process.env.COLLECTION_DAY || new Date().toISOString().slice(0, 10);
+const runId = process.env.COLLECTION_RUN_ID || day;
 const sources = JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'));
-const state = JSON.parse(readFileSync(join(root, `data/collection-${day}-working.json`), 'utf8'));
+const state = JSON.parse(readFileSync(join(root, `data/collection-${runId}-working.json`), 'utf8'));
+const previousPath = join(root, 'data/prepared-update.json');
+const previous = existsSync(previousPath) ? JSON.parse(readFileSync(previousPath, 'utf8')) : { articles: [] };
 const fallback = { sources: {} };
 const recovery = { sources: {} };
 const summariesPath = join(root, `data/collection-${day}-summary-fixes.json`);
@@ -114,7 +118,10 @@ const overlappingAlbaniaRecaps = new Set([
   'https://www.tiranatimes.com/student-protests-turn-violent-amid-growing-unrest-in-albania/',
   'https://en.vijesti.me/world-a/balkan/831492/photo-of-the-most-violent-protests-against-rame-water-cannons-burning-government-buildings-and-banks-stones-at-police-tear-gas'
 ]);
-const raw = Object.values(state.sources).flatMap(source => source.articles || []).map(article => ({ ...article, title: cleanHeadline(article), publishedAt: verifiedTimes[article.url]?.publishedAt || article.publishedAt, summary: summaryFixes[article.url] ? summaryFixes[article.url].replacement : article.summary })).sort((a, b) =>
+// The preceding edition is editorially reviewed. Keep its in-window stories even if
+// their links fall off a listing or the new shortlist does not revisit them.
+const current = Object.values(state.sources).flatMap(source => source.articles || []);
+const raw = carryForwardArticles(current, previous.articles, state.windowStart, state.windowEnd, new Set(sourceById.keys())).map(article => ({ ...article, title: cleanHeadline(article), publishedAt: verifiedTimes[article.url]?.publishedAt || article.publishedAt, summary: summaryFixes[article.url] ? summaryFixes[article.url].replacement : article.summary })).sort((a, b) =>
   Number(agencyPriority.test(b.sourceName)) - Number(agencyPriority.test(a.sourceName)) || String(b.summary || '').length - String(a.summary || '').length);
 const accepted = [];
 const excluded = [];
@@ -287,9 +294,14 @@ const sourceOutcomes = sources.map(source => {
     + (excludedUkraineCount ? ` ${excludedUkraineCount} Ukraine-placed ${excludedUkraineCount === 1 ? 'article was' : 'articles were'} excluded under the outlet policy.` : '');
   return { id: source.id, name: source.name, group: source.group, url: source.url, status, reason };
 });
-const update = { title: 'DAILY NEWS UPDATE', checkedAt: new Date().toISOString(), windowHours: 24, windowStart: state.windowStart, windowEnd: state.windowEnd, articles: accepted, sourceOutcomes };
+const update = { title: 'DAILY NEWS UPDATE', checkedAt: new Date().toISOString(), windowHours: (end - start) / 3600000, windowStart: state.windowStart, windowEnd: state.windowEnd, articles: accepted, sourceOutcomes };
 const output = join(root, `data/daily-update-${day}.json`);
+// Keep each published edition for audit while replacing the active update.
+if (existsSync(previousPath) && previous.checkedAt && previous.checkedAt !== update.checkedAt) {
+  const archive = join(root, `data/daily-update-${previous.checkedAt.replace(/[:.]/g, '-')}.json`);
+  if (!existsSync(archive)) writeFileSync(archive, `${JSON.stringify(previous, null, 2)}\n`);
+}
 writeFileSync(output, `${JSON.stringify(update, null, 2)}\n`);
-writeFileSync(join(root, 'data/prepared-update.json'), `${JSON.stringify(update, null, 2)}\n`);
-writeFileSync(join(root, `data/collection-${day}-review.json`), `${JSON.stringify({ excluded, incompleteSources: sources.filter(source => state.sources[source.id]?.status !== 'complete').map(source => source.id) }, null, 2)}\n`);
+writeFileSync(previousPath, `${JSON.stringify(update, null, 2)}\n`);
+writeFileSync(join(root, `data/collection-${runId}-review.json`), `${JSON.stringify({ excluded, incompleteSources: sources.filter(source => state.sources[source.id]?.status !== 'complete').map(source => source.id) }, null, 2)}\n`);
 console.log(JSON.stringify({ completeSources: sourceOutcomes.filter(source => state.sources[source.id]?.status === 'complete').length, sources: sources.length, articles: accepted.length, excluded: excluded.length, output }));
