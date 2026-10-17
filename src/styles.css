@@ -102,8 +102,6 @@
 
 /* Focus the update into a reading column; keep the rest of the workspace wide. */
 .daily-update{width:min(100%,var(--update-width,600px));margin-left:auto;margin-right:auto}
-.daily-update.article-drop-ready{outline:3px dashed var(--site-section,#0070c0);outline-offset:-4px}
-.article-drop-hint{position:fixed;left:50%;bottom:24px;z-index:80;transform:translateX(-50%);pointer-events:none;border-radius:8px;padding:10px 16px;background:var(--site-primary,#123e47);color:#fff;font-size:14px;font-weight:800;box-shadow:0 8px 25px #0004;white-space:nowrap}
 .daily-section h3{font-size:var(--section-heading-size,26px);line-height:1.2;letter-spacing:.01em}
 .daily-update.uppercase-headings .daily-section h3{text-transform:uppercase}
 .daily-update:not(.uppercase-headings) .daily-section h3{text-transform:none}
@@ -158,6 +156,8 @@
 .website-panel-heading button{border:0;background:transparent;color:var(--site-text);font-size:28px;line-height:1}
 .website-panel-actions{flex-wrap:wrap}
 .website-panel-actions a,.website-panel-actions button{font-size:14px;color:var(--site-section,#0070c0)}
+.website-panel-actions .article-bookmarklet{display:inline-block;padding:7px 10px;border:1px solid var(--site-section,#0070c0);border-radius:6px;font-weight:700;text-decoration:none;cursor:grab}
+.website-panel-actions .article-bookmarklet:active{cursor:grabbing}
 .website-panel-actions button{border:1px solid #ccd9d6;background:transparent;border-radius:6px;padding:7px 9px}
 .website-panel p{font-size:13px;line-height:1.45;color:var(--site-text);opacity:.7}
 .website-panel iframe{width:100%;height:min(75vh,950px);border:1px solid #dbe4e1;border-radius:6px;background:#fff}
