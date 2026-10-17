@@ -323,14 +323,7 @@
   .topbar .mode-button{grid-column:2;grid-row:2;justify-self:end;padding:5px 8px;font-size:12px}
   .topbar .manage-button{grid-column:1/-1;grid-row:3;justify-self:end;margin:0}
   .workspace,.workspace.no-sidebar{display:block;min-height:0;overflow:visible}
-  .sidebar{display:block;min-height:0;overflow:visible;border-right:0;border-bottom:0;padding:5px 0 3px}
-  .sidebar-heading{padding:3px 12px 4px}
-  .sidebar-heading h2{font-size:16px;margin:0}
-  .search-box{height:34px;margin:0 12px 3px}
-  .search-box kbd,.group-select,.sidebar-foot{display:none}
-  .source-list{display:none;max-height:180px;overflow-y:auto;padding:3px 12px 5px}
-  .sidebar.has-search-query .source-list{display:block}
-  .source-row{width:100%;height:38px}
+  .sidebar{display:none}
   .main-panel{display:block;min-height:0;overflow:visible;max-width:none;padding:4px 8px 20px}
   .reading-layout,.reading-layout.website-open{display:block;height:auto;min-height:0;overflow:visible}
   .daily-update,.reading-layout.website-open .daily-update{display:block;width:100%;height:auto;min-height:0;overflow:visible;padding:0 10px 12px}
