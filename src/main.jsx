@@ -17,6 +17,7 @@ import { disclaimerFirst, disclaimerSecond } from './disclaimer.js';
 import { sourceAudit } from './collectionAudit.js';
 import { formatViennaDateTime, formatViennaCompactDateTime } from './viennaTime.js';
 import { emailSubject, emailUpdateHtml, emailUpdateText } from './emailUpdate.js';
+import { droppedArticleUrl } from './dropArticleUrl.js';
 import './styles.css';
 
 const readStored = (key, fallback, legacyKey) => {
@@ -72,6 +73,8 @@ function App() {
   const [dropTarget, setDropTarget] = useState('');
   const pointerDragRef = useRef(null);
   const [addingArticles, setAddingArticles] = useState(false);
+  const [droppedUrl, setDroppedUrl] = useState('');
+  const [articleDragOver, setArticleDragOver] = useState(false);
   const [updateSearchOpen, setUpdateSearchOpen] = useState(false);
   const [updateSearchText, setUpdateSearchText] = useState('');
   const [activeSearchResult, setActiveSearchResult] = useState(0);
@@ -376,6 +379,14 @@ function App() {
     scrollReportTo(target, 12);
     history.replaceState(null, '', `#daily-section-${index}`);
   };
+  const dropArticleLink = event => {
+    setArticleDragOver(false);
+    const url = droppedArticleUrl(event.dataTransfer);
+    if (!url) return;
+    event.preventDefault();
+    setDroppedUrl(url);
+    setAddingArticles(true);
+  };
   const dropAtPoint = (x, y, movedId) => {
     const element = document.elementFromPoint(x, y)?.closest('[data-drop-kind]');
     if (!element) return null;
@@ -444,7 +455,8 @@ function App() {
       </aside>}
       <main className={`main-panel ${websiteSource ? 'with-website' : ''}`}>
         <div className={`reading-layout ${websiteSource ? 'website-open' : ''}`}>
-        {siteConfig.showUpdate && <section className={`daily-update ${siteConfig.sectionHeadingUppercase ? 'uppercase-headings' : ''} ${headlineOnly && !editingStories ? 'headline-only' : ''}`} aria-labelledby="daily-update-title">
+        {siteConfig.showUpdate && <section className={`daily-update ${siteConfig.sectionHeadingUppercase ? 'uppercase-headings' : ''} ${headlineOnly && !editingStories ? 'headline-only' : ''} ${articleDragOver ? 'article-drop-ready' : ''}`} aria-labelledby="daily-update-title" onDragOver={event => { if (event.target.closest('[contenteditable="true"]')) return; if (Array.from(event.dataTransfer?.types || []).some(type => type === 'text/uri-list' || type === 'text/plain')) { event.preventDefault(); event.dataTransfer.dropEffect = 'copy'; setArticleDragOver(true); } }} onDragLeave={event => { if (!event.currentTarget.contains(event.relatedTarget)) setArticleDragOver(false); }} onDrop={dropArticleLink}>
+          {articleDragOver && <div className="article-drop-hint" aria-hidden="true">Drop article link to add it</div>}
           <div className="daily-heading"><div className="daily-heading-main"><div className="daily-title-row"><h2 id="daily-update-title">{siteConfig.updateTitle}</h2><p className="report-date">{reportShortDateLabel(compiledAt)}</p></div>{updateControls()}</div>{updateSearchOpen && <div className="update-search" role="search" aria-label="Search update"><input autoFocus type="search" value={updateSearchText} onChange={event => setUpdateSearchText(event.target.value)} onKeyDown={event => { if (event.key === 'Escape') setUpdateSearchOpen(false); if (event.key === 'Enter' && updateSearchResults.length) { event.preventDefault(); setActiveSearchResult(current => (current + (event.shiftKey ? -1 : 1) + updateSearchResults.length) % updateSearchResults.length); } }} placeholder="Find text in update" aria-label="Find text in update"/>{updateSearchQuery && <span role="status">{updateSearchResults.length ? `${Math.min(activeSearchResult + 1, updateSearchResults.length)} of ${updateSearchResults.length} stories` : 'No matches'}</span>}<button type="button" aria-label="Previous match" disabled={!updateSearchResults.length} onClick={() => setActiveSearchResult(current => (current - 1 + updateSearchResults.length) % updateSearchResults.length)}>↑</button><button type="button" aria-label="Next match" disabled={!updateSearchResults.length} onClick={() => setActiveSearchResult(current => (current + 1) % updateSearchResults.length)}>↓</button><button type="button" aria-label="Close search" onClick={() => setUpdateSearchOpen(false)}>×</button></div>}{dailySections.length > 0 && <nav className="daily-section-nav" aria-label="Update sections" style={{ '--section-count': Math.min(dailySections.length, 6) }}>{dailySections.map(({ section }, index) => <a key={section} href={`#daily-section-${index}`} aria-label={section} title={section} onClick={event => jumpToSection(event, index)}><span className="section-label-full" aria-hidden="true">{section}</span><span className="section-label-compact" aria-hidden="true">{compactSectionLabels[section] || section}</span></a>)}</nav>}</div>
           {daily && <div className="daily-scroll" role="region" aria-label="Daily update stories" tabIndex={0}>
             {dailySections.map(({ sectionId, section, subsections }, sectionIndex) => <div className="daily-section" id={`daily-section-${sectionIndex}`} key={sectionId}>
@@ -470,13 +482,13 @@ function App() {
             {siteConfig.showCoverage && <p className="daily-coverage">{coverageNote}</p>}
           </div>}
         </section>}
-        {websiteSource && <section className="website-panel" aria-label={`${websiteSource.name} website`}><div className="website-panel-heading"><div><span className="eyebrow">SOURCE WEBSITE</span><h2>{websiteSource.name}</h2></div><button onClick={() => setWebsiteSourceId('')} aria-label="Close source website">×</button></div><div className="website-panel-actions"><a href={websiteSource.url} target="_blank" rel="noopener noreferrer">Open website in new tab ↗</a></div><p>Some publishers block display inside other websites. Use the link above if this panel stays blank.</p><iframe key={websiteSource.id} src={websiteSource.url} title={`${websiteSource.name} website`} referrerPolicy="no-referrer" loading="lazy"/></section>}
+        {websiteSource && <section className="website-panel" aria-label={`${websiteSource.name} website`}><div className="website-panel-heading"><div><span className="eyebrow">SOURCE WEBSITE</span><h2>{websiteSource.name}</h2></div><button onClick={() => setWebsiteSourceId('')} aria-label="Close source website">×</button></div><div className="website-panel-actions"><a href={websiteSource.url} target="_blank" rel="noopener noreferrer">Open website in new tab ↗</a></div><p>Drag an article link from this website onto the update to add it. Some publishers block display here; use the link above when the panel stays blank.</p><iframe key={websiteSource.id} src={websiteSource.url} title={`${websiteSource.name} website`} referrerPolicy="no-referrer" loading="lazy"/></section>}
         </div>
 
       </main>
     </div>{toast && <div className="toast" onClick={() => setToast('')}>{toast} ×</div>}
     {managementEnabled && managing && <SiteManager initialTab={managerTab} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} includeText={includeText} setIncludeText={setIncludeText} excludeText={setExcludeText} setExcludeText={setExcludeText} applyScope={applyScope} onClose={() => setManaging(false)} onReset={() => setSiteConfig(defaultSiteConfig(daily?.articles ?? preparedUpdate.articles))}/>}
-    {addingArticles && <AddArticlesDialog serverAvailable={!staticPreview && Boolean(config?.firecrawlConfigured)} sources={configuredSources} sections={siteConfig.sections} customCountries={siteConfig.customCountries} existingArticles={selectedArticles} existingUrls={[...(daily?.articles ?? []).map(item => item.url), ...siteConfig.customArticles.map(item => item.url)]} remainingSlots={100 - siteConfig.customArticles.length} onAdd={(article, placement) => { setSiteConfig(current => addCustomArticleInConfig(current, article, placement)); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}
+    {addingArticles && <AddArticlesDialog initialUrl={droppedUrl} serverAvailable={!staticPreview && Boolean(config?.firecrawlConfigured)} sources={configuredSources} sections={siteConfig.sections} customCountries={siteConfig.customCountries} existingArticles={selectedArticles} existingUrls={[...(daily?.articles ?? []).map(item => item.url), ...siteConfig.customArticles.map(item => item.url)]} remainingSlots={100 - siteConfig.customArticles.length} onAdd={(article, placement) => { setSiteConfig(current => addCustomArticleInConfig(current, article, placement)); setCompiledAt(new Date().toISOString()); }} onClose={() => { setAddingArticles(false); setDroppedUrl(''); }}/>}
     {editingStories && storyToMove && <MoveStoryDialog story={storyToMove} sections={siteConfig.sections} articles={displayedArticles} customCountries={siteConfig.customCountries} onMove={moveStory} onClose={() => setMoveStoryId('')}/>}
   </div>;
 }

@@ -11,8 +11,8 @@ const firecrawlKeyStorage = 'dnu-firecrawl-api-key-v1';
 const NEW = '__new__';
 const savedFirecrawlKey = () => { try { return localStorage.getItem(firecrawlKeyStorage) || ''; } catch { return ''; } };
 
-export default function AddArticlesDialog({ serverAvailable, sources, sections, customCountries = {}, existingArticles = [], existingUrls, remainingSlots, onAdd, onClose }) {
-  const [value, setValue] = useState('');
+export default function AddArticlesDialog({ initialUrl = '', serverAvailable, sources, sections, customCountries = {}, existingArticles = [], existingUrls, remainingSlots, onAdd, onClose }) {
+  const [value, setValue] = useState(initialUrl);
   const [manual, setManual] = useState({ title: '', summary: '', sourceName: '', url: '' });
   const [manualError, setManualError] = useState('');
   const [apiKey, setApiKey] = useState(savedFirecrawlKey);
@@ -26,6 +26,8 @@ export default function AddArticlesDialog({ serverAvailable, sources, sections, 
   const draftsRef = useRef(null);
   const resultsRef = useRef(null);
   const scrollTargetRef = useRef('drafts');
+  const autoImportAllowed = useRef(serverAvailable || Boolean(savedFirecrawlKey()));
+  const autoImportStarted = useRef(false);
   const availableSections = sections.filter(section => section.visible);
   const duplicateMatches = duplicateGroups([...existingArticles, ...drafts.filter(draft => !draft.added)]);
 
@@ -47,6 +49,12 @@ export default function AddArticlesDialog({ serverAvailable, sources, sections, 
     });
     return () => cancelAnimationFrame(frame);
   }, [completedScans]);
+
+  useEffect(() => {
+    if (!initialUrl || !autoImportAllowed.current || autoImportStarted.current || remainingSlots < 1) return;
+    autoImportStarted.current = true;
+    void importUrls();
+  }, [initialUrl, remainingSlots]);
 
   function changeDraft(id, change) {
     setDrafts(current => current.map(draft => draft.id === id ? { ...draft, ...change } : draft));
@@ -80,7 +88,7 @@ export default function AddArticlesDialog({ serverAvailable, sources, sections, 
   }
 
   async function importUrls(event) {
-    event.preventDefault();
+    event?.preventDefault();
     const lines = value.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
     if (!lines.length) { setResults([{ url: '', message: 'Paste at least one article URL.' }]); scrollTargetRef.current = 'results'; setCompletedScans(count => count + 1); return; }
     if (lines.length > 10) { setResults([{ url: '', message: 'Import up to 10 URLs at a time.' }]); scrollTargetRef.current = 'results'; setCompletedScans(count => count + 1); return; }
