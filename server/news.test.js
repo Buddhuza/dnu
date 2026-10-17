@@ -93,6 +93,16 @@ test('publisher article timestamps are taken from TASS and non-English pages are
   assert.deepEqual(undatedCandidates({ data: { json: { articles: [{ title: 'В ФРГ задержали третьего подозреваемого', url: izvestiaUrl }] } } }, izvestia, DEFAULT_INCLUDE).map(item => item.url), []);
 });
 
+test('Al Jazeera page time is converted from Doha when AI only returns a date', () => {
+  const outlet = { id: 'al-jazeera', name: 'Al Jazeera', url: 'https://www.aljazeera.com/news/', group: 'Miscl' };
+  const url = 'https://www.aljazeera.com/news/2026/10/17/hormuz-shipping';
+  const page = { data: {
+    metadata: { ogTitle: 'Iran and US dispute control of Hormuz shipping', publishedDate: '2026-10-17T12:10:56' },
+    json: { publishedAt: '2026-10-17T00:00:00Z', summary: 'Twelve ships were attacked during the preceding week, according to the UK maritime agency.' }
+  } };
+  assert.equal(reviewedArticle(page, outlet, url, Date.parse('2026-10-17T15:22:48Z')).publishedAt, '2026-10-17T09:10:56.000Z');
+});
+
 test('complete source scan pages through every matching article link', () => {
   const candidates = Array.from({ length: 27 }, (_, index) => ({ url: `https://example.com/${index}` }));
   const seen = [];

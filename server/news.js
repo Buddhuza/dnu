@@ -150,8 +150,8 @@ export function reviewedArticleCheck(payload, source, url, now = Date.now()) {
   const extracted = typeof data.json === 'string' ? JSON.parse(data.json) : data.json ?? {};
   const html = data.rawHtml || data.html || '';
   const head = html.includes('</head>') ? html.slice(0, html.indexOf('</head>')) : html.slice(0, 100000);
-  const publisherZone = { 'aa.com.tr': 'Europe/Istanbul', 'mina.news': 'Europe/Podgorica' }[new URL(url).hostname.replace(/^www\./, '')];
-  const localPublisherTime = publisherZone && String(data.metadata?.publishedTime || '').match(/^(20\d{2})-(\d{2})-(\d{2})[T\s](\d{2}):(\d{2})(?::(\d{2}))?(?:\.\d+)?$/);
+  const publisherZone = { 'aa.com.tr': 'Europe/Istanbul', 'mina.news': 'Europe/Podgorica', 'aljazeera.com': 'Asia/Qatar' }[new URL(url).hostname.replace(/^www\./, '')];
+  const localPublisherTime = publisherZone && String(data.metadata?.publishedTime || data.metadata?.publishedDate || '').match(/^(20\d{2})-(\d{2})-(\d{2})[T\s](\d{2}):(\d{2})(?::(\d{2}))?(?:\.\d+)?$/);
   const inferredPublisherTime = localPublisherTime ? wallTimeToIso(publisherZone, ...localPublisherTime.slice(1, 7).map((value, index) => Number(value || (index === 5 ? 0 : value)))) : null;
   const tassTime = new URL(url).hostname === 'tass.com' ? html.match(/<dateformat\s+time="(\d{10})"\s+mode="abs"/)?.[1] : null;
   const izvestiaTime = new URL(url).hostname === 'iz.ru' ? html.match(/itemprop="datePublished">([^<]+)/)?.[1] : null;

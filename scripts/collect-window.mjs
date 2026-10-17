@@ -9,16 +9,23 @@ import { createAutoScrapeHistory } from '../server/autoScrapeHistory.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const sources = JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'));
-const checkpointPath = process.env.COLLECTION_CHECKPOINT || join(root, 'data/collection-2026-10-14-working.json');
-const start = Date.parse('2026-10-14T00:00:00Z'); // 14 October, 02:00 in Vienna
-const end = Date.parse('2026-10-15T00:00:00Z'); // 15 October, 02:00 in Vienna
+const collectionDay = process.env.COLLECTION_DAY || new Date().toISOString().slice(0, 10);
+const checkpointPath = process.env.COLLECTION_CHECKPOINT || join(root, `data/collection-${collectionDay}-working.json`);
+const existingState = existsSync(checkpointPath) ? JSON.parse(readFileSync(checkpointPath, 'utf8')) : null;
+const requestedEnd = process.env.COLLECTION_WINDOW_END ? Date.parse(process.env.COLLECTION_WINDOW_END) : existingState ? Date.parse(existingState.windowEnd) : Date.now();
+const requestedStart = process.env.COLLECTION_WINDOW_START ? Date.parse(process.env.COLLECTION_WINDOW_START) : existingState ? Date.parse(existingState.windowStart) : requestedEnd - 24 * 60 * 60 * 1000;
+if (!Number.isFinite(requestedStart) || !Number.isFinite(requestedEnd) || requestedStart >= requestedEnd) throw new Error('Invalid collection window');
 const key = process.env.FIRECRAWL_API_KEY;
 if (!key) throw new Error('FIRECRAWL_API_KEY is not set');
 const scrapeHistory = createAutoScrapeHistory(join(root, 'data/auto-scrape-history.jsonl'));
 const batchId = process.env.COLLECTION_BATCH_ID || `window-${new Date().toISOString()}`;
-const state = existsSync(checkpointPath) ? JSON.parse(readFileSync(checkpointPath, 'utf8')) : {
-  windowStart: new Date(start).toISOString(), windowEnd: new Date(end).toISOString(), startedAt: new Date().toISOString(), sources: {}
+const phase = process.env.COLLECTION_PHASE || 'all';
+const state = existingState || {
+  windowStart: new Date(requestedStart).toISOString(), windowEnd: new Date(requestedEnd).toISOString(), startedAt: new Date().toISOString(), sources: {}
 };
+const start = Date.parse(state.windowStart);
+const end = Date.parse(state.windowEnd);
+if (start !== requestedStart || end !== requestedEnd) throw new Error('Collection checkpoint window differs from requested window');
 const save = () => writeFileSync(checkpointPath, JSON.stringify(state, null, 2));
 const inWindow = value => { const time = Date.parse(value); return Number.isFinite(time) && time >= start && time < end; };
 const topical = text => /\b(?:OSCE|secur\w*|war|conflict\w*|terror\w*|militar\w*|defen[cs]\w*|border\w*|sanction\w*|diploma\w*|cooperat\w*|foreign|minister\w*|president\w*|government\w*|parliament\w*|election\w*|party|summit\w*|talks|treaty|peace|ceasefire\w*|NATO|European Union|EU|United Nations|UN|Russia\w*|Ukraine|Ukrainian|Iran\w*|Israel\w*|Gaza|Caucasus|Central Asia|missile\w*|drone\w*|arms|weapons|protest\w*|intelligence|ambassador\w*|negotiat\w*|invas\w*|attack\w*|coup|referendum|alliance\w*)\b/i.test(text);
@@ -29,7 +36,7 @@ function candidateList(payload, source) {
   return candidates.filter(item => {
     const listed = listedTimes.get(item.url) || '';
     const time = Date.parse(listed);
-    return !Number.isFinite(time) || inWindow(listed);
+    return !Number.isFinite(time) || /T00:00:00(?:\.000)?Z$/i.test(listed) || inWindow(listed);
   });
 }
 
@@ -119,17 +126,37 @@ async function examineCandidates(source, record, payload, method) {
 
 async function scan(source) {
   const record = state.sources[source.id] ??= { id: source.id, name: source.name, group: source.group, url: source.url, status: 'running', attempts: [], checkedUrls: [], articles: [], errors: [] };
-  if (record.status === 'complete') return;
+  if (record.status === 'complete' && phase !== 'supplement' && !(phase === 'fallback' && !record.articles.length)) return;
+  if (phase === 'fallback' && record.status !== 'primaryComplete' && !(record.status === 'complete' && !record.articles.length)) return;
+  if (phase === 'supplement' && (!FEED_URLS[source.id] || record.attempts.some(attempt => attempt.method === 'primary Firecrawl listing' && attempt.finished))) return;
   console.log(`SOURCE ${source.id} ${source.name} ${source.url}`);
+  const cachedListing = async (filename = `listings-${collectionDay}.json`) => {
+    for (let retry = 0; retry < 150; retry++) {
+      const file = join(root, 'data', filename);
+      let listings = {};
+      try { if (existsSync(file)) listings = JSON.parse(readFileSync(file, 'utf8')); }
+      catch { await new Promise(resolve => setTimeout(resolve, 200)); continue; }
+      if (source.id in listings) {
+        if (listings[source.id].data) return { data: listings[source.id].data };
+        throw new Error(listings[source.id].error || 'Firecrawl listing failed');
+      }
+      await new Promise(resolve => setTimeout(resolve, 4000));
+    }
+    throw new Error('Timed out waiting for Firecrawl batch listing');
+  };
   const strategies = [
     ['publisher feed', async () => collectFeed(source)],
-    ['primary Firecrawl listing', async () => scrapeHeadlines(source, DEFAULT_INCLUDE, key)],
+    ['primary Firecrawl listing', async () => process.env.COLLECTION_BATCH_LISTINGS === '1' ? cachedListing() : scrapeHeadlines(source, DEFAULT_INCLUDE, key)],
     ['alternate feed', async () => collectFallbackFeed(source, fetch, () => true)],
-    ['alternate Firecrawl listing', async () => { const url = fallbackListingUrl(source); return url ? scrapeHeadlines({ ...source, listingUrl: url }, DEFAULT_INCLUDE, key) : null; }],
+    ['alternate Firecrawl listing', async () => { const url = fallbackListingUrl(source); return url ? process.env.COLLECTION_BATCH_ALTERNATE === '1' ? cachedListing(`alternate-listings-${collectionDay}.json`) : scrapeHeadlines({ ...source, listingUrl: url }, DEFAULT_INCLUDE, key) : null; }],
     ['Firecrawl site search', async () => searchSourceArticles(source, DEFAULT_INCLUDE, key)]
   ];
-  for (const [method, collect] of strategies) {
-    if (method === 'primary Firecrawl listing' && record.articles.length) break;
+  const retryPrimary = record.errors.some(error => error.startsWith('primary Firecrawl listing:'))
+    ? [['primary Firecrawl listing retry', async () => scrapeHeadlines(source, DEFAULT_INCLUDE, key)]] : [];
+  const activeStrategies = (phase === 'primary' ? strategies.slice(0, 2) : phase === 'fallback' ? [...retryPrimary, ...strategies.slice(2)] : phase === 'supplement' ? strategies.slice(1, 2) : strategies)
+    .filter(([method]) => !(process.env.COLLECTION_SKIP_DIRECT_FEEDS === '1' && method === 'alternate feed'));
+  for (const [method, collect] of activeStrategies) {
+    if (method === 'primary Firecrawl listing' && record.articles.length && phase !== 'primary' && phase !== 'supplement') break;
     if (method !== 'publisher feed' && method !== 'primary Firecrawl listing' && record.articles.length) break;
     if (record.attempts.some(attempt => attempt.method === method && attempt.finished)) continue;
     try {
@@ -147,13 +174,13 @@ async function scan(source) {
     save();
   }
   record.articles = [...new Map(record.articles.map(item => [item.url, item])).values()];
-  record.status = 'complete';
+  record.status = phase === 'primary' && !record.articles.length ? 'primaryComplete' : 'complete';
   record.completedAt = new Date().toISOString();
   save();
   console.log(`DONE ${source.id} ${source.name}: ${record.articles.length} relevant, ${record.checkedUrls.length} pages checked`);
 }
 
 const selected = process.env.COLLECTION_SOURCE_IDS ? new Set(process.env.COLLECTION_SOURCE_IDS.split(',').map(value => value.trim())) : null;
-const ordered = [sources.find(source => source.id === 'source-32'), ...sources.filter(source => source.id !== 'source-32' && FEED_URLS[source.id]), ...sources.filter(source => source.id !== 'source-32' && !FEED_URLS[source.id])].filter(source => source && (!selected || selected.has(source.id)));
+const ordered = (process.env.COLLECTION_BATCH_LISTINGS === '1' ? sources : [sources.find(source => source.id === 'source-32'), ...sources.filter(source => source.id !== 'source-32' && FEED_URLS[source.id]), ...sources.filter(source => source.id !== 'source-32' && !FEED_URLS[source.id])]).filter(source => source && (!selected || selected.has(source.id)));
 for (const source of ordered) await scan(source);
 console.log(`COMPLETE ${Object.keys(state.sources).length}/${sources.length} sources, ${Object.values(state.sources).reduce((sum, record) => sum + record.articles.length, 0)} relevant articles`);

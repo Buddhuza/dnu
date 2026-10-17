@@ -8,6 +8,7 @@
     "dev:server": "NODE_USE_ENV_PROXY=1 node --watch server/index.js",
     "dev:web": "vite --host 0.0.0.0",
     "build": "vite build",
+    "collect:daily": "bash scripts/collect-daily.sh",
     "start": "NODE_USE_ENV_PROXY=1 node server/index.js",
     "test": "node --test"
   },
