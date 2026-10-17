@@ -6,7 +6,7 @@ import publishedSiteConfig from '../data/site-config.json';
 import SiteManager from './SiteManager.jsx';
 import AddArticlesDialog from './AddArticlesDialog.jsx';
 import MoveStoryDialog from './MoveStoryDialog.jsx';
-import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig, toggleLeadStoryInConfig, addCustomArticleInConfig } from './siteConfig.js';
+import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig, toggleLeadStoryInConfig, addCustomArticleInConfig, clearCustomArticlesInConfig } from './siteConfig.js';
 import { orderedSubsections } from './newsSections.js';
 import { createReportDocxFromTemplate } from './docxBuilder.js';
 import { reportFilename } from './reportFilename.js';
@@ -105,6 +105,13 @@ function App() {
     return () => clearInterval(timer);
   }, []);
   useEffect(() => { localStorage.setItem('dnu-site-settings-v1', JSON.stringify(siteConfig)); document.title = siteConfig.brandName || 'SITUATION ROOM'; }, [siteConfig]);
+  useEffect(() => {
+    if (!daily) return;
+    const editionId = JSON.stringify([daily.windowStart, daily.windowEnd, daily.checkedAt]);
+    if (localStorage.getItem('dnu-current-edition-v1') === editionId) return;
+    clearManualStories();
+    localStorage.setItem('dnu-current-edition-v1', editionId);
+  }, [daily?.windowStart, daily?.windowEnd, daily?.checkedAt]);
   useEffect(() => { localStorage.setItem('dnu-source-audit-v1', JSON.stringify(auditRows)); }, [auditRows]);
   useEffect(() => { localStorage.setItem('dnu-excluded-story-ids-v1', JSON.stringify([...excludedStoryIds])); }, [excludedStoryIds]);
   useEffect(() => { localStorage.setItem('dnu-headline-only-v1', JSON.stringify(headlineOnly)); }, [headlineOnly]);
@@ -214,6 +221,11 @@ function App() {
     setAuditRows(current => [row, ...current.filter(item => item.sourceId !== row.sourceId)]);
   }
 
+  function clearManualStories() {
+    setSiteConfig(clearCustomArticlesInConfig);
+    setExcludedStoryIds(current => new Set([...current].filter(id => !id.startsWith('manual-'))));
+  }
+
   function rememberWorkingListing(source, audit) {
     const working = audit.attempts?.find(attempt => attempt.headlines > 0 && attempt.collectionMethod === 'firecrawl' && attempt.listingUrl && attempt.listingUrl !== (source.listingUrl || source.url));
     if (!working || !/^source-\d+$/.test(source.id)) return;
@@ -243,6 +255,7 @@ function App() {
       rememberWorkingListing(source, scan.audit);
       setResult(scan.lastPage ? { ...scan.lastPage, headlines: scan.headlines } : null);
       if (scan.audit.status === 'failed') setError(scan.audit.reason);
+      else clearManualStories();
     } catch (e) { setError(e.message); }
     finally { setLoading(false); }
   }
@@ -252,7 +265,7 @@ function App() {
     setError('');
     setResult({ headlines: [], fetchedAt: new Date().toISOString(), batch: true });
     setBatchProgress({ done: 0, total: targetSources.length, failed: 0 });
-    let done = 0, failed = 0;
+    let done = 0, failed = 0, successful = 0;
     const gathered = [];
     const batchId = `batch-${new Date().toISOString()}`;
     setAuditRows([]);
@@ -273,6 +286,7 @@ function App() {
             saveAudit(scan.audit);
             rememberWorkingListing(source, scan.audit);
             if (scan.audit.status === 'failed') failed++;
+            else successful++;
             setResult({ headlines: [...gathered].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date().toISOString(), batch: true });
           }
         } catch (error) { failed++; saveAudit(sourceAudit(source, [], [error.message])); }
@@ -284,6 +298,7 @@ function App() {
     };
     await collectGroup(targetSources.filter(source => config?.feedSourceIds?.includes(source.id)));
     await collectGroup(targetSources.filter(source => !config?.feedSourceIds?.includes(source.id)));
+    if (successful) clearManualStories();
     setLoading(false);
     if (failed) setError(`${failed} source${failed === 1 ? '' : 's'} could not be collected. Other results are shown below.`);
   }

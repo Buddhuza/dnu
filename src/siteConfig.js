@@ -234,6 +234,18 @@ export function addCustomArticleInConfig(config, article, { createSubsection = f
   return { ...config, sections, customCountries, customArticles: [...config.customArticles, { ...article, subsection, country }] };
 }
 
+export function clearCustomArticlesInConfig(config) {
+  if (!config.customArticles.length) return config;
+  const removed = new Set(config.customArticles.map(article => article.id));
+  return {
+    ...config,
+    customArticles: [],
+    articleOrder: config.articleOrder.filter(id => !removed.has(id)),
+    articleEdits: Object.fromEntries(Object.entries(config.articleEdits).filter(([id]) => !removed.has(id))),
+    leadOrigins: Object.fromEntries(Object.entries(config.leadOrigins).filter(([id]) => !removed.has(id)))
+  };
+}
+
 export function canonicalArticleUrl(value) {
   try {
     const url = new URL(value);

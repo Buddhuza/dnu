@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig, toggleLeadStoryInConfig } from './siteConfig.js';
+import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig, toggleLeadStoryInConfig, clearCustomArticlesInConfig } from './siteConfig.js';
 import { MISCELLANEOUS_COUNTRIES } from './newsSections.js';
 
 const articles = [
@@ -242,4 +242,20 @@ test('moving the sole story out of a custom section removes that section', () =>
   const custom = moveArticleInConfig(config, stories, 'one', { sectionId: 'Custom section', subsection: 'Country', country: '' });
   const moved = moveArticleInConfig(custom, stories, 'one', { sectionId: 'Eastern Europe', subsection: 'Ukraine', country: '' });
   assert.ok(!moved.sections.some(item => item.id === 'Custom section'));
+});
+
+test('a new scrape removes manually added stories without discarding site settings or prepared story edits', () => {
+  const config = defaultSiteConfig([]);
+  config.customArticles = [{ id: 'manual-old', url: 'https://example.com/old', title: 'Older imported story' }];
+  config.articleOrder = ['manual-old', 'prepared-story'];
+  config.articleEdits = { 'manual-old': { title: 'Edited import' }, 'prepared-story': { title: 'Edited prepared story' } };
+  config.leadOrigins = { 'manual-old': { sectionId: 'South Caucasus', subsection: 'Georgia' } };
+  config.darkMode = true;
+  const cleared = clearCustomArticlesInConfig(config);
+  assert.deepEqual(cleared.customArticles, []);
+  assert.deepEqual(cleared.articleOrder, ['prepared-story']);
+  assert.deepEqual(cleared.articleEdits, { 'prepared-story': { title: 'Edited prepared story' } });
+  assert.deepEqual(cleared.leadOrigins, {});
+  assert.equal(cleared.darkMode, true);
+  assert.equal(clearCustomArticlesInConfig(cleared), cleared);
 });
