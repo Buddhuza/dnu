@@ -17,7 +17,6 @@ import { disclaimerFirst, disclaimerSecond } from './disclaimer.js';
 import { sourceAudit } from './collectionAudit.js';
 import { formatViennaDateTime, formatViennaCompactDateTime } from './viennaTime.js';
 import { emailSubject, emailUpdateHtml, emailUpdateText } from './emailUpdate.js';
-import { articleBookmarklet, articleUrlFromQuery } from './articleHandoff.js';
 import './styles.css';
 
 const readStored = (key, fallback, legacyKey) => {
@@ -35,8 +34,6 @@ const compactSectionLabels = {
   'Central Asia': 'CA',
   Miscellaneous: 'MISCL'
 };
-const incomingArticleUrl = articleUrlFromQuery(window.location.search);
-const bookmarkletHref = articleBookmarklet(window.location.href);
 
 function scrollReportTo(target, gap) {
   const scroller = target.closest('.daily-scroll');
@@ -74,8 +71,7 @@ function App() {
   const [moveStoryId, setMoveStoryId] = useState('');
   const [dropTarget, setDropTarget] = useState('');
   const pointerDragRef = useRef(null);
-  const [addingArticles, setAddingArticles] = useState(Boolean(incomingArticleUrl));
-  const [pendingArticleUrl, setPendingArticleUrl] = useState(incomingArticleUrl);
+  const [addingArticles, setAddingArticles] = useState(false);
   const [updateSearchOpen, setUpdateSearchOpen] = useState(false);
   const [updateSearchText, setUpdateSearchText] = useState('');
   const [activeSearchResult, setActiveSearchResult] = useState(0);
@@ -111,13 +107,6 @@ function App() {
   useEffect(() => { localStorage.setItem('dnu-source-audit-v1', JSON.stringify(auditRows)); }, [auditRows]);
   useEffect(() => { localStorage.setItem('dnu-excluded-story-ids-v1', JSON.stringify([...excludedStoryIds])); }, [excludedStoryIds]);
   useEffect(() => { localStorage.setItem('dnu-headline-only-v1', JSON.stringify(headlineOnly)); }, [headlineOnly]);
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (!params.has('add')) return;
-    params.delete('add');
-    const query = params.toString();
-    history.replaceState(null, '', `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash}`);
-  }, []);
   const configuredSources = useMemo(() => displaySources(config?.sources ?? [], { ...siteConfig, hiddenSourceIds: [] }), [config, siteConfig]);
   const sources = useMemo(() => displaySources(config?.sources ?? [], siteConfig), [config, siteConfig]);
   const active = configuredSources.find(x => x.id === activeId);
@@ -481,13 +470,13 @@ function App() {
             {siteConfig.showCoverage && <p className="daily-coverage">{coverageNote}</p>}
           </div>}
         </section>}
-        {websiteSource && <section className="website-panel" aria-label={`${websiteSource.name} website`}><div className="website-panel-heading"><div><span className="eyebrow">SOURCE WEBSITE</span><h2>{websiteSource.name}</h2></div><button onClick={() => setWebsiteSourceId('')} aria-label="Close source website">×</button></div><div className="website-panel-actions"><a href={websiteSource.url} target="_blank" rel="noopener noreferrer">Open website in new tab ↗</a><a className="article-bookmarklet" ref={node => node?.setAttribute('href', bookmarkletHref)} onClick={event => { event.preventDefault(); setToast('Drag “Send article to DNU” to your bookmarks bar once.'); }} title="Drag this link to your bookmarks bar once, then click it on any article page">Send article to DNU</a></div><p>Drag “Send article to DNU” to your bookmarks bar once. Open a publisher article in its own tab, then click that bookmark to send its URL to Add. Websites that block the window can still be opened in a new tab.</p><iframe key={websiteSource.id} src={websiteSource.url} title={`${websiteSource.name} website`} referrerPolicy="no-referrer" loading="lazy"/></section>}
+        {websiteSource && <section className="website-panel" aria-label={`${websiteSource.name} website`}><div className="website-panel-heading"><div><span className="eyebrow">SOURCE WEBSITE</span><h2>{websiteSource.name}</h2></div><button onClick={() => setWebsiteSourceId('')} aria-label="Close source website">×</button></div><div className="website-panel-actions"><a href={websiteSource.url} target="_blank" rel="noopener noreferrer">Open website in new tab ↗</a></div><p>To add an article, right-click its headline, copy the link address, then paste it into Add. Some publishers block display here; use the link above if this panel stays blank.</p><iframe key={websiteSource.id} src={websiteSource.url} title={`${websiteSource.name} website`} referrerPolicy="no-referrer" loading="lazy"/></section>}
         </div>
 
       </main>
     </div>{toast && <div className="toast" onClick={() => setToast('')}>{toast} ×</div>}
     {managementEnabled && managing && <SiteManager initialTab={managerTab} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} includeText={includeText} setIncludeText={setIncludeText} excludeText={setExcludeText} setExcludeText={setExcludeText} applyScope={applyScope} onClose={() => setManaging(false)} onReset={() => setSiteConfig(defaultSiteConfig(daily?.articles ?? preparedUpdate.articles))}/>}
-    {addingArticles && config && daily && <AddArticlesDialog initialUrl={pendingArticleUrl} serverAvailable={!staticPreview && Boolean(config.firecrawlConfigured)} sources={configuredSources} sections={siteConfig.sections} customCountries={siteConfig.customCountries} existingArticles={selectedArticles} existingUrls={[...daily.articles.map(item => item.url), ...siteConfig.customArticles.map(item => item.url)]} remainingSlots={100 - siteConfig.customArticles.length} onAdd={(article, placement) => { setSiteConfig(current => addCustomArticleInConfig(current, article, placement)); setCompiledAt(new Date().toISOString()); }} onClose={() => { setAddingArticles(false); setPendingArticleUrl(''); }}/>}
+    {addingArticles && config && daily && <AddArticlesDialog serverAvailable={!staticPreview && Boolean(config.firecrawlConfigured)} sources={configuredSources} sections={siteConfig.sections} customCountries={siteConfig.customCountries} existingArticles={selectedArticles} existingUrls={[...daily.articles.map(item => item.url), ...siteConfig.customArticles.map(item => item.url)]} remainingSlots={100 - siteConfig.customArticles.length} onAdd={(article, placement) => { setSiteConfig(current => addCustomArticleInConfig(current, article, placement)); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}
     {editingStories && storyToMove && <MoveStoryDialog story={storyToMove} sections={siteConfig.sections} articles={displayedArticles} customCountries={siteConfig.customCountries} onMove={moveStory} onClose={() => setMoveStoryId('')}/>}
   </div>;
 }

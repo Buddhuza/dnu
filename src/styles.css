@@ -156,8 +156,6 @@
 .website-panel-heading button{border:0;background:transparent;color:var(--site-text);font-size:28px;line-height:1}
 .website-panel-actions{flex-wrap:wrap}
 .website-panel-actions a,.website-panel-actions button{font-size:14px;color:var(--site-section,#0070c0)}
-.website-panel-actions .article-bookmarklet{display:inline-block;padding:7px 10px;border:1px solid var(--site-section,#0070c0);border-radius:6px;font-weight:700;text-decoration:none;cursor:grab}
-.website-panel-actions .article-bookmarklet:active{cursor:grabbing}
 .website-panel-actions button{border:1px solid #ccd9d6;background:transparent;border-radius:6px;padding:7px 9px}
 .website-panel p{font-size:13px;line-height:1.45;color:var(--site-text);opacity:.7}
 .website-panel iframe{width:100%;height:min(75vh,950px);border:1px solid #dbe4e1;border-radius:6px;background:#fff}
