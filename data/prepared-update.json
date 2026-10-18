@@ -1,6 +1,6 @@
 {
   "title": "DAILY NEWS UPDATE",
-  "checkedAt": "2026-10-18T20:40:08.237Z",
+  "checkedAt": "2026-10-18T20:43:04.911Z",
   "windowHours": 57.74194444444444,
   "windowStart": "2026-10-16T10:00:00.000Z",
   "windowEnd": "2026-10-18T19:44:31.000Z",
@@ -3226,34 +3226,6 @@
       "reviewed": true
     },
     {
-      "id": "https://tass.com/politics/2203747",
-      "url": "https://tass.com/politics/2203747",
-      "sourceId": "source-97",
-      "sourceName": "TASS",
-      "group": "Miscl",
-      "title": "UN Security Council can be involved in creating conditions for dialogue in Gulf — Lavrov",
-      "summary": "The Russian Concept of Collective Security aims to foster dialogue among Gulf nations, involving UN Security Council members if desired.",
-      "publishedAt": "2026-10-18T12:35:07.000Z",
-      "section": "Miscellaneous",
-      "subsection": "RUSSIA / EURASIA",
-      "country": "Russia",
-      "reviewed": true
-    },
-    {
-      "id": "https://tass.com/politics/2203731",
-      "url": "https://tass.com/politics/2203731",
-      "sourceId": "source-97",
-      "sourceName": "TASS",
-      "group": "Miscl",
-      "title": "Russia supports GCC’s efforts to prevent full·scale war in region — Lavrov",
-      "summary": "Russia supports the peacekeeping efforts of the Gulf Cooperation Council aimed at preventing a full-scale war in the Middle East.",
-      "publishedAt": "2026-10-18T11:19:00.000Z",
-      "section": "Miscellaneous",
-      "subsection": "RUSSIA / EURASIA",
-      "country": "Russia",
-      "reviewed": true
-    },
-    {
       "id": "https://tass.com/world/2203729",
       "url": "https://tass.com/world/2203729",
       "sourceId": "source-97",
@@ -3366,20 +3338,6 @@
       "reviewed": true
     },
     {
-      "id": "https://tass.com/politics/2203741",
-      "url": "https://tass.com/politics/2203741",
-      "sourceId": "source-97",
-      "sourceName": "TASS",
-      "group": "Miscl",
-      "title": "Russia and Saudi Arabia aim to continue cooperation within OPEC+ — Foreign Ministry",
-      "summary": "The foreign ministers confirmed the importance of cooperation within OPEC+ during their meeting.",
-      "publishedAt": "2026-10-18T11:50:00.000Z",
-      "section": "Miscellaneous",
-      "subsection": "RUSSIA / EURASIA",
-      "country": "Russia",
-      "reviewed": true
-    },
-    {
       "id": "https://pajhwok.com/2026/10/18/jalali-russian-delegation-discuss-expanding-health-cooperation/",
       "url": "https://pajhwok.com/2026/10/18/jalali-russian-delegation-discuss-expanding-health-cooperation/",
       "sourceId": "source-171",
@@ -3430,34 +3388,6 @@
       "title": "Trump Says Would 'Love' to Have Putin at G20 Summit in Miami",
       "summary": "US Secretary of State Marco Rubio stated that Washington has invited Vladimir Putin to the G20 summit in Miami.",
       "publishedAt": "2026-10-17T03:17:00.000Z",
-      "section": "Miscellaneous",
-      "subsection": "RUSSIA / EURASIA",
-      "country": "Russia",
-      "reviewed": true
-    },
-    {
-      "id": "https://tass.com/politics/2203161",
-      "url": "https://tass.com/politics/2203161",
-      "sourceId": "source-97",
-      "sourceName": "TASS",
-      "group": "Miscl",
-      "title": "Several important Russia-US initiatives to be announced shortly — envoy",
-      "summary": "Investment envoy Kirill Dmitriev cited a recent diesel deal as evidence of progress despite resistance to joint projects.",
-      "publishedAt": "2026-10-16T15:30:04.000Z",
-      "section": "Miscellaneous",
-      "subsection": "RUSSIA / EURASIA",
-      "country": "Russia",
-      "reviewed": true
-    },
-    {
-      "id": "https://tass.com/politics/2203795",
-      "url": "https://tass.com/politics/2203795",
-      "sourceId": "source-97",
-      "sourceName": "TASS",
-      "group": "Miscl",
-      "title": "Situation in Middle East on brink of full-scale war — Lavrov",
-      "summary": "Lavrov stated that the Islamabad memorandum contains necessary provisions to diplomatically resolve the crisis in the Strait of Hormuz.",
-      "publishedAt": "2026-10-18T15:45:58.000Z",
       "section": "Miscellaneous",
       "subsection": "RUSSIA / EURASIA",
       "country": "Russia",
@@ -3534,20 +3464,6 @@
       "reviewed": true
     },
     {
-      "id": "https://tass.com/politics/2203811",
-      "url": "https://tass.com/politics/2203811",
-      "sourceId": "source-97",
-      "sourceName": "TASS",
-      "group": "Miscl",
-      "title": "Trump’s approach to Iranian leadership harmful to stability in region — Lavrov",
-      "summary": "Lavrov stated that Trump's method does not help achieve peace agreements in the region.",
-      "publishedAt": "2026-10-18T15:52:18.000Z",
-      "section": "Miscellaneous",
-      "subsection": "RUSSIA / EURASIA",
-      "country": "Russia",
-      "reviewed": true
-    },
-    {
       "id": "https://apnews.com/article/russia-ukraine-war-energy-diesel-trump-f813d3725b8b5f23958a68a95729fd0d",
       "url": "https://apnews.com/article/russia-ukraine-war-energy-diesel-trump-f813d3725b8b5f23958a68a95729fd0d",
       "sourceId": "source-85",
@@ -3598,20 +3514,6 @@
       "title": "Lithuania foils arson attack on Starlink equipment, suspects Russian involvement",
       "summary": "Lithuanian authorities thwarted an attempted arson attack on Starlink satellite communications equipment.",
       "publishedAt": "2026-10-18T12:57:44.000Z",
-      "section": "Miscellaneous",
-      "subsection": "RUSSIA / EURASIA",
-      "country": "Russia",
-      "reviewed": true
-    },
-    {
-      "id": "https://tass.com/politics/2203735",
-      "url": "https://tass.com/politics/2203735",
-      "sourceId": "source-97",
-      "sourceName": "TASS",
-      "group": "Miscl",
-      "title": "Russia, Kuwait note importance of finding ways to ease tensions in Persian Gulf",
-      "summary": "Russian Foreign Minister Sergey Lavrov and Kuwaiti Foreign Minister Jaber al-Sabah emphasized the need for de-escalation in the Persian Gulf region.",
-      "publishedAt": "2026-10-18T12:09:21.000Z",
       "section": "Miscellaneous",
       "subsection": "RUSSIA / EURASIA",
       "country": "Russia",
@@ -3752,20 +3654,6 @@
       "title": "Russia-Armenia relations enter phase of readjustment, envoy says",
       "summary": "Russian Ambassador Sergey Kopyrkin stated that relations require mutual understanding and a search for a new balance.",
       "publishedAt": "2026-10-17T06:53:00.000Z",
-      "section": "Miscellaneous",
-      "subsection": "RUSSIA / EURASIA",
-      "country": "Russia",
-      "reviewed": true
-    },
-    {
-      "id": "https://iz.ru/en/2185689/2026-10-17/macron-called-agreement-between-russia-and-united-states-fuel-factor-split-europe",
-      "url": "https://iz.ru/en/2185689/2026-10-17/macron-called-agreement-between-russia-and-united-states-fuel-factor-split-europe",
-      "sourceId": "source-98",
-      "sourceName": "Izvestia",
-      "group": "Miscl",
-      "title": "Macron called the agreement between Russia and the United States on fuel a factor in the split with Europe",
-      "summary": "Macron said the deal bred distrust and that he would seek measures to lower fuel prices.",
-      "publishedAt": "2026-10-16T23:26:23.000Z",
       "section": "Miscellaneous",
       "subsection": "RUSSIA / EURASIA",
       "country": "Russia",
@@ -5793,7 +5681,7 @@
       "group": "Miscl",
       "url": "https://tass.com/politics",
       "status": "collected",
-      "reason": "13 verified articles included; 12 original article pages checked."
+      "reason": "6 verified articles included; 12 original article pages checked."
     },
     {
       "id": "source-98",
@@ -5801,7 +5689,7 @@
       "group": "Miscl",
       "url": "https://iz.ru/rubric/mir",
       "status": "collected",
-      "reason": "2 verified articles included; 2 original article pages checked."
+      "reason": "1 verified article included; 2 original article pages checked."
     },
     {
       "id": "source-99",
