@@ -7,6 +7,7 @@ import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, compareCountryLabels } from '..
 import { blockedPlacementReason, isUkrainianOutlet } from '../src/sourcePolicy.js';
 import { preferredRegionalPlacement, ukraineAttackPlacement, russianTerritoryAttackPlacement } from '../src/storyPlacement.js';
 import { deduplicateArticles } from '../src/siteConfig.js';
+import { limitStoriesPerHeading } from '../server/storySelection.js';
 import { excludedHeadlineReason } from '../src/headlinePolicy.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -175,6 +176,9 @@ const middleEast = accepted.filter(article => article.section === 'Miscellaneous
   .sort((a, b) => Number(/\bSaudi Arabia|Saudi|Riyadh|Aramco\b/i.test(a.title)) - Number(/\bSaudi Arabia|Saudi|Riyadh|Aramco\b/i.test(b.title)) || leadScore(b, true) - leadScore(a, true)).slice(0, 2);
 for (const article of ukrainian) { article.section = 'Lead stories'; article.subsection = 'Ukraine'; article.country = ''; }
 for (const article of middleEast) { article.section = 'Lead stories'; article.subsection = 'Middle East'; article.country = ''; }
+const limited = limitStoriesPerHeading(accepted, { windowStart: state.windowStart, windowEnd: state.windowEnd });
+for (const article of limited.removed) excluded.push({ ...article, reason: 'lower editorial priority within 10-story country limit' });
+accepted.splice(0, accepted.length, ...limited.kept);
 accepted.sort((a, b) => (sectionOrder.get(a.section) ?? 999) - (sectionOrder.get(b.section) ?? 999)
   || (subsectionOrder.get(`${a.section}|${a.subsection}`) ?? 999) - (subsectionOrder.get(`${b.section}|${b.subsection}`) ?? 999)
   || compareCountryLabels(a.subsection, a.country, b.country) || editorialScore(b.title, b.summary) - editorialScore(a.title, a.summary) || articleDate(b) - articleDate(a));

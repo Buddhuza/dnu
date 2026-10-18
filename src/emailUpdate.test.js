@@ -15,7 +15,8 @@ test('formatted email follows Word headings, source links, and disclaimer', () =
   assert.match(html, /Organisation for Security and Co-operation in Europe/);
   assert.doesNotMatch(html, /Organization for Security and Co-operation in Europe/);
   assert.match(emailUpdateText(options), /Organisation for Security and Co-operation in Europe/);
-  assert.match(html, /16 Oct 26/);
+  assert.match(html, /16 October 2026/);
+  assert.match(emailUpdateText(options), /16 October 2026/);
   assert.match(html, /WESTERN \/ CENTRAL EUROPE/);
   assert.match(html, /background-color:#d9e2f3[^>]*>FRANCE/);
   assert.match(html, /href="https:\/\/example.com\/story\?a=1&amp;b=2"/);

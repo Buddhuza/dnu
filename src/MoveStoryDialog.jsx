@@ -20,7 +20,7 @@ export default function MoveStoryDialog({ story, sections, articles, customCount
     ...(story.country && story.subsection === subsection ? [story.country] : [])
   ])].sort((a, b) => compareCountryLabels(subsection, a, b)), [articles, customCountries, sectionId, subsection, story.country, story.subsection]);
   const country = countryChoice === NEW ? newCountry.trim() : countryChoice;
-  const sourceRestriction = blockedPlacementReason(story, { sectionId, subsection });
+  const sourceRestriction = blockedPlacementReason(story, { sectionId, subsection, country: miscellaneous ? country : '' });
   const valid = Boolean(section && subsection && (!miscellaneous || country) && !sourceRestriction);
 
   const submit = event => {

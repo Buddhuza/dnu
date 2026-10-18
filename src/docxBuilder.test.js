@@ -20,8 +20,8 @@ test('browser report download creates a readable Word file with country headings
   const document = await zip.file('word/document.xml').async('string');
   assert.match(document, /BELGIUM/);
   assert.match(document.split('MIDDLE EAST')[0].split('<w:p>').at(-1), /<w:shd[^>]*w:fill="D9E2F3"/);
-  assert.match(document, /9 Oct 26/);
-  assert.ok(document.indexOf('DAILY NEWS UPDATE') < document.indexOf('9 Oct 26'));
+  assert.match(document, /9 October 2026/);
+  assert.ok(document.indexOf('DAILY NEWS UPDATE') < document.indexOf('9 October 2026'));
   assert.doesNotMatch(document.split('WESTERN / CENTRAL EUROPE')[0].split('<w:p>').at(-1), /<w:shd/);
   assert.match(document.split('BELGIUM')[0].split('<w:p>').at(-1), /<w:shd[^>]*w:fill="D9E2F3"/);
   assert.match(document, /Exact headline/);
@@ -52,7 +52,7 @@ test('headline-only Word download omits summaries but keeps agencies and links',
   const zip = await JSZip.loadAsync(output);
   const document = await zip.file('word/document.xml').async('string');
   assert.match(document, /OSCE chair visits Armenia\./);
-  assert.match(document, /15 Oct 26/);
+  assert.match(document, /15 October 2026/);
   assert.doesNotMatch(document, /A meeting took place in Yerevan/);
   assert.match(document, /<w:spacing w:after="60" w:line="260" w:lineRule="auto"\/>/);
   assert.match(document, /<w:spacing w:before="240" w:after="80"\/>/);

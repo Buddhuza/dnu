@@ -9,6 +9,7 @@ import { preferredRegionalPlacement, ukraineAttackPlacement, russianTerritoryAtt
 import { deduplicateArticles } from '../src/siteConfig.js';
 import { excludedHeadlineReason } from '../src/headlinePolicy.js';
 import { carryForwardArticles } from '../server/updateCarryForward.js';
+import { limitStoriesPerHeading } from '../server/storySelection.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const day = process.env.COLLECTION_DAY || new Date().toISOString().slice(0, 10);
@@ -21,6 +22,8 @@ const fallback = { sources: {} };
 const recovery = { sources: {} };
 const summariesPath = join(root, `data/collection-${day}-summary-fixes.json`);
 const summaryFixes = existsSync(summariesPath) ? JSON.parse(readFileSync(summariesPath, 'utf8')) : {};
+const prioritiesPath = join(root, `data/editorial-priorities-${day}.json`);
+const editorialPriorities = existsSync(prioritiesPath) ? JSON.parse(readFileSync(prioritiesPath, 'utf8')) : {};
 const verifiedTimesPath = join(root, `data/verified-time-corrections-${day}.json`);
 const verifiedTimes = existsSync(verifiedTimesPath) ? JSON.parse(readFileSync(verifiedTimesPath, 'utf8')) : {};
 const editorialExclusions = Object.assign({}, ...readdirSync(join(root, 'data'))
@@ -104,7 +107,11 @@ const placementOverrides = new Map([
   ['https://www.reuters.com/world/europe/us-floats-unfreezing-some-russian-assets-restart-ukraine-peace-talks-ft-reports-2026-10-14/', { sectionId: 'Eastern Europe', subsection: 'Ukraine', country: '' }],
   ['https://www.itv.com/news/2026-10-14/pm-looks-to-repair-bridges-between-trump-and-zelensky-after-us-diesel-deal', { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'United Kingdom' }],
   ['https://ipn.md/en/ukraine-will-increase-by-20-the-water-flow-discharged-from-novodnestrovsk-prime-minister-tofan/', { sectionId: 'Eastern Europe', subsection: 'Moldova', country: '' }],
-  ['https://www.iranintl.com/en/202610142337', { sectionId: 'Miscellaneous', subsection: 'MIDDLE EAST / NORTH AFRICA', country: 'Iran' }]
+  ['https://www.iranintl.com/en/202610142337', { sectionId: 'Miscellaneous', subsection: 'MIDDLE EAST / NORTH AFRICA', country: 'Iran' }],
+  ['https://www.reuters.com/business/media-telecom/lithuania-says-attempted-starlink-arson-was-russia-linked-sabotage-2026-10-18/', { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Lithuania' }],
+  ['https://euromaidanpress.com/2026/10/16/romania-finally-holds-russia-responsible-for-the-drone-attacks-on-ships-off-its-coast-and-wants-a-joint-nato-command-for-the-black-sea/', { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Romania' }],
+  ['https://www.nbcnews.com/world/iran/norwegian-teen-sentenced-20-years-uk-murder-plot-tied-iran-linked-grou-rcna603857', { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'United Kingdom' }],
+  ['https://www.gazetaexpress.com/en/The-opposition-demands-the-return-of-the-strategic-dialogue-with-the-US--and-VV-says-that-cooperation-will-continue./', { sectionId: 'South Eastern Europe', subsection: 'Serbia / Kosovo', country: '' }]
 ]);
 function placementFromTitle(title) {
   const matches = titlePlaces.map(([sectionId, subsection, country, pattern], priority) => ({ sectionId, subsection, country, priority, index: title.search(pattern) })).filter(item => item.index >= 0);
@@ -137,7 +144,7 @@ for (const article of raw) {
   else if (editorialExclusions[article.url]) reason = editorialExclusions[article.url];
   else if (/T00:00:00(?:\.000)?Z$/.test(article.publishedAt)) reason = 'date-only or midnight time needs review';
   else if (!article.title?.trim() || !article.summary?.trim()) reason = 'headline or summary missing';
-  else if (isUkrainianOutlet(article) && /\b(?:Ukraine|Ukrainian|Kyiv|Zelensk\w*|Oleshky|Volyn|Defen[cs]e Forces)\b/i.test(`${article.title} ${article.summary}`)) reason = 'Ukrainian outlet excluded from Ukraine coverage';
+  else if (isUkrainianOutlet(article) && /\b(?:Ukraine|Ukrainian|Kyiv|Zelensk\w*|Oleshky|Volyn|Sloviansk|Ternopil|Chernihiv|Rivne|Dnipropetrovsk|Zaporizhzhia|Uman|Kharkiv|Odesa|Sumy|Defen[cs]e Forces)\b/i.test(`${article.title} ${article.summary}`)) reason = 'Ukrainian outlet excluded from Ukraine coverage';
   else if (excludedHeadlineReason(article.title)) reason = excludedHeadlineReason(article.title);
   else if (/^live\s*:|^video\s*(?::|\/\/|\.)|\bvideo podcast\b/i.test(article.title)) reason = 'live stream or video page rather than a single news article';
   else if (/\b(?:analyst|expert|commentator)s?\s+(?:says|believes|warns|on\s+what)\b/i.test(article.title)) reason = 'analysis or commentary';
@@ -278,6 +285,9 @@ const middleEast = accepted.filter(article => article.section === 'Miscellaneous
   .sort((a, b) => Number(/\bSaudi Arabia|Saudi|Riyadh|Aramco\b/i.test(a.title)) - Number(/\bSaudi Arabia|Saudi|Riyadh|Aramco\b/i.test(b.title)) || leadScore(b, true) - leadScore(a, true)).slice(0, 2);
 for (const article of ukrainian) { article.section = 'Lead stories'; article.subsection = 'Ukraine'; article.country = ''; }
 for (const article of middleEast) { article.section = 'Lead stories'; article.subsection = 'Middle East'; article.country = ''; }
+const limited = limitStoriesPerHeading(accepted, { windowStart: state.windowStart, windowEnd: state.windowEnd, priorities: editorialPriorities });
+for (const article of limited.removed) excluded.push({ ...article, reason: 'lower editorial priority within 10-story country limit' });
+accepted.splice(0, accepted.length, ...limited.kept);
 accepted.sort((a, b) => (sectionOrder.get(a.section) ?? 999) - (sectionOrder.get(b.section) ?? 999)
   || (subsectionOrder.get(`${a.section}|${a.subsection}`) ?? 999) - (subsectionOrder.get(`${b.section}|${b.subsection}`) ?? 999)
   || compareCountryLabels(a.subsection, a.country, b.country)
@@ -314,7 +324,8 @@ const sourceOutcomes = sources.map(source => {
     + (excludedUkraineCount ? ` ${excludedUkraineCount} Ukraine-placed ${excludedUkraineCount === 1 ? 'article was' : 'articles were'} excluded under the outlet policy.` : '');
   return { id: source.id, name: source.name, group: source.group, url: source.url, status, reason };
 });
-const update = { title: 'DAILY NEWS UPDATE', checkedAt: new Date().toISOString(), windowHours: (end - start) / 3600000, windowStart: state.windowStart, windowEnd: state.windowEnd, articles: accepted, sourceOutcomes };
+const sameEdition = previous.windowStart === state.windowStart && previous.windowEnd === state.windowEnd;
+const update = { title: 'DAILY NEWS UPDATE', checkedAt: sameEdition && previous.checkedAt ? previous.checkedAt : new Date().toISOString(), windowHours: (end - start) / 3600000, windowStart: state.windowStart, windowEnd: state.windowEnd, articles: accepted, sourceOutcomes };
 const output = join(root, `data/daily-update-${day}.json`);
 // Keep each published edition for audit while replacing the active update.
 if (existsSync(previousPath) && previous.checkedAt && previous.checkedAt !== update.checkedAt) {

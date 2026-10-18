@@ -222,7 +222,7 @@ export function addCustomArticleInConfig(config, article, { createSubsection = f
   if (!section || !subsection || (article.sectionId === 'Miscellaneous' && !country) ||
     (section.id === 'Lead stories' && !section.subsections.includes(subsection)) ||
     (!section.subsections.includes(subsection) && !createSubsection) ||
-    blockedPlacementReason(article, { sectionId: section.id, subsection }) ||
+    blockedPlacementReason(article, { sectionId: section.id, subsection, country }) ||
     config.customArticles.some(item => canonicalArticleUrl(item.url) === canonicalArticleUrl(article.url))) return config;
   const alphabetical = new Intl.Collator('en', { sensitivity: 'base', ignorePunctuation: true });
   const sections = !section.subsections.includes(subsection)
@@ -331,7 +331,7 @@ export function moveArticleInConfig(config, articles, movedId, destination, excl
   const requestedCountry = String(destination.country || '').trim().slice(0, 100);
   const countryOptions = [...(MISCELLANEOUS_COUNTRIES[subsection] || []), ...(config.customCountries?.[subsection] || [])];
   const country = countryOptions.find(label => label.toLocaleLowerCase() === requestedCountry.toLocaleLowerCase()) || requestedCountry;
-  if (blockedPlacementReason(moved, { sectionId: section.id, subsection })) return config;
+  if (blockedPlacementReason(moved, { sectionId: section.id, subsection, country })) return config;
   if (destination.createSubsection && !subsection) return config;
   if (destination.createCountry && (!country || section.id !== 'Miscellaneous')) return config;
   const alphabetical = new Intl.Collator('en', { sensitivity: 'base', ignorePunctuation: true });

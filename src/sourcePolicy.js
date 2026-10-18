@@ -7,6 +7,8 @@ const ukrainianHosts = new Set([
 const armenianSourceIds = new Set(Array.from({ length: 9 }, (_, index) => `source-${index + 46}`));
 const azerbaijaniSourceIds = new Set(Array.from({ length: 6 }, (_, index) => `source-${index + 55}`));
 const armenianHosts = new Set(['arminfo.info']);
+const russianSourceIds = new Set(['source-97', 'source-98', 'source-99', 'source-115', 'source-116']);
+const russianHosts = new Set(['tass.com', 'iz.ru', 'sputniknews.com', 'sputnikglobe.com', 'themoscowtimes.com', 'meduza.io']);
 
 function sourceHost(article) {
   try { return new URL(article.url).hostname.replace(/^www\./, '').toLowerCase(); }
@@ -28,6 +30,11 @@ export function isAzerbaijaniOutlet(article) {
   return azerbaijaniSourceIds.has(article.sourceId) || sourceHost(article).endsWith('.az');
 }
 
+export function isRussianOutlet(article) {
+  const host = sourceHost(article);
+  return article.russianSource === true || russianSourceIds.has(article.sourceId) || [...russianHosts].some(value => host === value || host.endsWith(`.${value}`));
+}
+
 export function isUkrainePlacement(place) {
   return (place.sectionId === 'Eastern Europe' || place.sectionId === 'Lead stories' || place.section === 'Eastern Europe' || place.section === 'Lead stories') && place.subsection === 'Ukraine';
 }
@@ -39,6 +46,7 @@ export function disallowedUkraineSource(article, place = article) {
 export function blockedPlacementReason(article, place = article) {
   if (disallowedUkraineSource(article, place)) return 'Ukrainian outlet excluded from Ukraine coverage';
   const section = place.sectionId || place.section;
+  if (isRussianOutlet(article) && (section !== 'Miscellaneous' || place.subsection !== 'RUSSIA / EURASIA' || place.country !== 'Russia')) return 'Russian outlet restricted to Russia';
   if (section !== 'South Caucasus' && section !== 'Lead stories') return '';
   if (place.subsection === 'Armenia' && isAzerbaijaniOutlet(article)) return 'Azerbaijani outlet excluded from Armenia coverage';
   if (place.subsection === 'Azerbaijan' && isArmenianOutlet(article)) return 'Armenian outlet excluded from Azerbaijan coverage';

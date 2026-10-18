@@ -293,6 +293,9 @@
 @media(max-width:720px){.daily-downloads .daily-action,.daily-downloads .daily-action.daily-download{width:30px;height:30px;min-width:30px;padding:5px}.daily-downloads .daily-action svg{width:16px;height:16px}}
 .daily-title-row{flex-direction:column;align-items:flex-start;gap:2px}
 .daily-title-row .report-date{margin:0;font-size:var(--site-body-size,18px)}
+.daily-heading{container-type:inline-size}
+.daily-title-row .report-date .date-short{display:none}
+@container (max-width:280px){.daily-title-row .report-date .date-full{display:none}.daily-title-row .report-date .date-short{display:inline}}
 .daily-story-date{color:#647178;font-size:inherit;line-height:inherit;white-space:nowrap}
 .app-shell[data-mode="dark"] .daily-story-date{color:#b7c2c7}
 .daily-story{border-bottom:0;padding:3px 0 7px}

@@ -36,6 +36,16 @@ test('Armenian and Azerbaijani outlets cannot cover the other country heading', 
   assert.equal(blockedPlacementReason({ url: 'https://oc-media.org/article' }, { sectionId: 'South Caucasus', subsection: 'Armenia' }), '');
 });
 
+test('Russian outlets stay under Russia in display and manual moves', () => {
+  const russian = { id: 'tass', sourceId: 'source-97', url: 'https://tass.com/politics/123', section: 'Miscellaneous', subsection: 'RUSSIA / EURASIA', country: 'Russia', title: 'Russia holds diplomatic talks' };
+  const config = defaultSiteConfig([russian]);
+  assert.equal(blockedPlacementReason(russian), '');
+  assert.match(blockedPlacementReason(russian, { sectionId: 'Lead stories', subsection: 'Russia' }), /Russian outlet/);
+  assert.match(blockedPlacementReason(russian, { sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'OSCE' }), /Russian outlet/);
+  assert.equal(moveArticleInConfig(config, [russian], 'tass', { sectionId: 'Lead stories', subsection: 'Ukraine' }), config);
+  assert.deepEqual(displaySiteContent([russian], config).map(item => item.id), ['tass']);
+});
+
 test('published edition uses international outlets for all Ukraine stories', () => {
   const update = JSON.parse(readFileSync(new URL('../data/daily-update-2026-10-14-15.json', import.meta.url), 'utf8'));
   assert.ok(update.articles.some(article => article.section === 'Lead stories' && article.subsection === 'Ukraine'));
