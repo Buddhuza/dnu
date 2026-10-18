@@ -608,6 +608,20 @@
       "reviewed": true
     },
     {
+      "id": "https://english.republika.mk/world/zelenskyy-and-magyar-discuss-ukraines-eu-path/",
+      "url": "https://english.republika.mk/world/zelenskyy-and-magyar-discuss-ukraines-eu-path/",
+      "sourceId": "source-15",
+      "sourceName": "Republika",
+      "group": "South Eastern Europe",
+      "title": "Zelenskyy and Magyar discuss Ukraine's EU path",
+      "summary": "Magyar stated that Hungary is prepared to assist Ukraine in achieving a ceasefire and a lasting peace.",
+      "publishedAt": "2026-10-16T23:14:36.000Z",
+      "section": "Eastern Europe",
+      "subsection": "Ukraine",
+      "country": "",
+      "reviewed": true
+    },
+    {
       "id": "https://www.euronews.com/2026/10/16/pope-leo-xiv-urges-putin-to-agree-to-truce-in-besieged-ukrainian-city-of-oleshky",
       "url": "https://www.euronews.com/2026/10/16/pope-leo-xiv-urges-putin-to-agree-to-truce-in-besieged-ukrainian-city-of-oleshky",
       "sourceId": "source-82",
@@ -616,6 +630,48 @@
       "title": "Pope Leo XIV urges Putin to agree to truce in besieged Oleshky",
       "summary": "Pope Leo XIV called for a ceasefire to address the humanitarian situation in Oleshky, Ukraine.",
       "publishedAt": "2026-10-16T19:56:30.000Z",
+      "section": "Eastern Europe",
+      "subsection": "Ukraine",
+      "country": "",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.politico.eu/article/zelenskyy-warns-20m-ukrainians-could-flee-to-europe-if-russia-wins-war/",
+      "url": "https://www.politico.eu/article/zelenskyy-warns-20m-ukrainians-could-flee-to-europe-if-russia-wins-war/",
+      "sourceId": "source-81",
+      "sourceName": "Politico.eu",
+      "group": "Miscl",
+      "title": "Zelenskyy warns 20M Ukrainians could flee to Europe if Russia wins war",
+      "summary": "Ukrainian President Zelenskyy warned that 20 million Ukrainians might flee to Europe if Russia prevails.",
+      "publishedAt": "2026-10-16T12:56:42.000Z",
+      "section": "Eastern Europe",
+      "subsection": "Ukraine",
+      "country": "",
+      "reviewed": true
+    },
+    {
+      "id": "https://www.cbc.ca/news/world/eu-summit-ukraine-russia-war-9.7383053",
+      "url": "https://www.cbc.ca/news/world/eu-summit-ukraine-russia-war-9.7383053",
+      "sourceId": "source-126",
+      "sourceName": "CBC",
+      "group": "Miscl",
+      "title": "EU leaders meet with Zelenskyy, as Ukraine relations with the Trump administration ebb again | CBC News",
+      "summary": "At least 3 were killed and 12 were wounded in Russian strikes across Ukraine's Kharkiv and Volyn regions.",
+      "publishedAt": "2026-10-16T11:23:00.000Z",
+      "section": "Eastern Europe",
+      "subsection": "Ukraine",
+      "country": "",
+      "reviewed": true
+    },
+    {
+      "id": "https://georgiatoday.ge/zelensky-offers-elections-if-russia-agrees-to-60-day-ceasefire/",
+      "url": "https://georgiatoday.ge/zelensky-offers-elections-if-russia-agrees-to-60-day-ceasefire/",
+      "sourceId": "source-64",
+      "sourceName": "GT",
+      "group": "South Caucasus",
+      "title": "Zelensky offers elections if Russia agrees to 60-day ceasefire",
+      "summary": "He rejected Trump's call for a change of leadership in Kyiv, saying only Ukrainian voters can choose their president.",
+      "publishedAt": "2026-10-16T11:12:31.000Z",
       "section": "Eastern Europe",
       "subsection": "Ukraine",
       "country": "",
@@ -3191,7 +3247,7 @@
       "group": "South Eastern Europe",
       "url": "https://english.republika.mk/category/macedonia/",
       "status": "collected",
-      "reason": "1 verified article included; 0 original article pages checked."
+      "reason": "2 verified articles included; 0 original article pages checked."
     },
     {
       "id": "source-16",
@@ -3582,8 +3638,8 @@
       "name": "GT",
       "group": "South Caucasus",
       "url": "https://georgiatoday.ge/category/news/",
-      "status": "checked",
-      "reason": "20 links listed and 5 original article pages checked across 4 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-16. Article checks: 4 outside window. Editorial selection: 1 lower editorial priority within 10-story country limit."
+      "status": "collected",
+      "reason": "1 verified article included; 5 original article pages checked."
     },
     {
       "id": "source-65",
@@ -3719,7 +3775,7 @@
       "group": "Miscl",
       "url": "https://www.politico.eu/latest/",
       "status": "collected",
-      "reason": "4 verified articles included; 8 original article pages checked."
+      "reason": "5 verified articles included; 8 original article pages checked."
     },
     {
       "id": "source-82",
@@ -3735,7 +3791,7 @@
       "group": "Miscl",
       "url": "https://www.bbc.com/news",
       "status": "checked",
-      "reason": "12 links listed and 2 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. 1 listing candidates had been scraped in an earlier batch and were not scraped again. Newest dated listing: 2023-10-14. Errors: publisher feed: fetch failed Editorial selection: 2 same development covered by a preferred source; 1 news roundup or analysis; 1 lower editorial priority within 10-story country limit."
+      "reason": "12 links listed and 2 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. 1 listing candidates had been scraped in an earlier batch and were not scraped again. Newest dated listing: 2023-10-14. Errors: publisher feed: fetch failed Editorial selection: 2 same development covered by a preferred source; 1 news roundup or analysis."
     },
     {
       "id": "source-84",
@@ -3863,7 +3919,7 @@
       "group": "Miscl",
       "url": "https://sputnikglobe.com/russia/",
       "status": "checked",
-      "reason": "7 links listed and 5 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2023-10-17. Editorial selection: 5 lower editorial priority within 10-story country limit; 1 same development covered by a preferred source."
+      "reason": "7 links listed and 5 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2023-10-17. Editorial selection: 4 lower editorial priority within 10-story country limit; 1 same development covered by a preferred source."
     },
     {
       "id": "source-100",
@@ -4078,8 +4134,8 @@
       "name": "CBC",
       "group": "Miscl",
       "url": "https://www.cbc.ca/news/politics",
-      "status": "checked",
-      "reason": "25 links listed and 9 original article pages checked across 5 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2023-10-17. Article checks: 5 outside window. Editorial selection: 2 country or organisation needs editorial placement; 1 local campaign feature outside security and external politics; 1 lower editorial priority within 10-story country limit."
+      "status": "collected",
+      "reason": "1 verified article included; 9 original article pages checked."
     },
     {
       "id": "source-127",

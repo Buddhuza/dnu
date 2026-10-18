@@ -4,16 +4,17 @@ import { limitStoriesPerHeading, storyHeadingKey } from './storySelection.js';
 
 const story = (id, section, subsection, country = '') => ({ id, section, subsection, country, sourceName: 'Agency', title: `Security talks ${id}`, summary: 'Officials discussed security cooperation.', publishedAt: '2026-10-18T12:00:00Z' });
 
-test('country limit includes its lead stories and retains the most consequential coverage', () => {
-  const lead = story('lead', 'Lead stories', 'Ukraine');
-  const regional = Array.from({ length: 10 }, (_, index) => story(`local-${index}`, 'Eastern Europe', 'Ukraine'));
+test('country limit excludes lead stories and retains the most consequential regional coverage', () => {
+  const leads = Array.from({ length: 4 }, (_, index) => story(`lead-${index}`, 'Lead stories', 'Ukraine'));
+  const regional = Array.from({ length: 12 }, (_, index) => story(`local-${index}`, 'Eastern Europe', 'Ukraine'));
   regional[0].title = 'Ukraine signs peace agreement with neighbours';
   regional[0].sourceName = 'Reuters';
-  const result = limitStoriesPerHeading([...regional, lead], { windowStart: '2026-10-16T10:00:00Z', windowEnd: '2026-10-18T20:00:00Z' });
-  assert.equal(result.kept.length, 10);
-  assert.ok(result.kept.includes(lead));
+  const result = limitStoriesPerHeading([...regional, ...leads], { windowStart: '2026-10-16T10:00:00Z', windowEnd: '2026-10-18T20:00:00Z' });
+  assert.equal(result.kept.length, 14);
+  assert.ok(leads.every(lead => result.kept.includes(lead)));
   assert.ok(result.kept.includes(regional[0]));
-  assert.equal(result.removed.length, 1);
+  assert.equal(result.removed.length, 2);
+  assert.equal(storyHeadingKey(leads[0]), '');
 });
 
 test('miscellaneous countries and organisations use their own ten-story groups', () => {

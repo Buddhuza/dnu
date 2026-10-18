@@ -3,7 +3,7 @@ import { editorialScore } from './editorialPolicy.js';
 const regionalSections = new Set(['South Eastern Europe', 'Eastern Europe', 'South Caucasus', 'Central Asia']);
 
 export function storyHeadingKey(article) {
-  if (article.section === 'Lead stories') return article.subsection === 'Middle East' ? '' : article.subsection || '';
+  if (article.section === 'Lead stories') return '';
   if (regionalSections.has(article.section)) return article.subsection || '';
   if (article.section === 'Miscellaneous') return article.country || '';
   return '';
