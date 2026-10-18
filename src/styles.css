@@ -249,11 +249,13 @@
 .story-edit-tools{flex:none;display:grid;grid-template-columns:repeat(2,26px);gap:3px;width:55px}
 .daily-story .story-edit-tools button,.daily-story .story-edit-tools .daily-story-checkbox{display:grid;place-items:center;flex:none;width:26px;height:26px;margin:0;padding:0;border:1px solid #aabac2;border-radius:5px;background:var(--site-surface,#fff);color:var(--site-section,#0070c0);line-height:1}
 .daily-story .story-edit-tools button:hover,.daily-story .story-edit-tools button:focus-visible{background:var(--site-bg,#f4efe6);text-decoration:none}
-.daily-story .story-edit-tools svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.daily-story .story-edit-tools .story-drag-handle{font-size:16px;letter-spacing:-.16em;cursor:grab;touch-action:none}
+.daily-story .story-edit-tools svg{display:block;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.daily-story .story-edit-tools .story-drag-handle{cursor:grab;touch-action:none}
+.daily-story .story-edit-tools .story-drag-handle svg{fill:currentColor;stroke:none}
 .daily-story .story-edit-tools .story-star-button.is-lead svg{fill:currentColor}
 .daily-story .story-edit-tools .daily-story-checkbox{appearance:none;cursor:pointer;position:relative}
-.daily-story .story-edit-tools .daily-story-checkbox:checked::after{content:'✓';color:var(--site-section,#0070c0);font-size:18px;font-weight:700}
+.daily-story .story-edit-tools .daily-story-checkbox::before{content:'';width:13px;height:13px;border:1.5px solid currentColor;border-radius:2px}
+.daily-story .story-edit-tools .daily-story-checkbox:checked::after{content:'';position:absolute;width:4px;height:7px;border:solid currentColor;border-width:0 1.7px 1.7px 0;transform:translate(-1px,-1px) rotate(45deg)}
 .daily-story .story-edit-tools .daily-story-checkbox:focus-visible{outline:2px solid var(--site-section,#0070c0);outline-offset:2px}
 .daily-story .story-drag-handle:active{cursor:grabbing}
 .story-drop-target{outline:2px dashed var(--site-section,#0070c0);outline-offset:2px}
