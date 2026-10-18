@@ -18,10 +18,11 @@ test('subsections follow the configured order', () => {
   assert.deepEqual(orderedSubsections(section, ['Serbia / Kosovo', 'Albania', 'Serbia']), ['Albania', 'Serbia', 'Serbia / Kosovo']);
 });
 
-test('lead headings put Ukraine first only when Ukraine and Middle East are the sole headings', () => {
+test('lead headings sort regional countries before Miscellaneous headings', () => {
   const section = NEWS_SECTIONS[0];
   assert.deepEqual(orderedSubsections(section, ['Middle East', 'Ukraine']), ['Ukraine', 'Middle East']);
-  assert.deepEqual(orderedSubsections(section, ['Ukraine', 'Albania', 'Middle East']), ['Albania', 'Middle East', 'Ukraine']);
+  assert.deepEqual(orderedSubsections(section, ['Ukraine', 'Albania', 'Middle East']), ['Albania', 'Ukraine', 'Middle East']);
+  assert.deepEqual(orderedSubsections(section, ['OSCE', 'Serbia', 'Poland', 'Georgia', 'Middle East']), ['Georgia', 'Serbia', 'Middle East', 'OSCE', 'Poland']);
 });
 
 test('international organisations follow editorial priority rather than the alphabet', () => {

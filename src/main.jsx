@@ -7,7 +7,7 @@ import SiteManager from './SiteManager.jsx';
 import AddArticlesDialog from './AddArticlesDialog.jsx';
 import MoveStoryDialog from './MoveStoryDialog.jsx';
 import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig, toggleLeadStoryInConfig, addCustomArticleInConfig, clearCustomArticlesInConfig } from './siteConfig.js';
-import { orderedSubsections } from './newsSections.js';
+import { orderedSubsections, leadRegionalHeadings } from './newsSections.js';
 import { createReportDocxFromTemplate } from './docxBuilder.js';
 import { reportFilename } from './reportFilename.js';
 import { reportShortDateLabel } from './reportDate.js';
@@ -185,12 +185,13 @@ function App() {
       subsections.get(label).push(item);
     }
     const sectionOrder = new Map(siteConfig.sections.map((section, index) => [section.id, index]));
+    const extraRegionalHeadings = leadRegionalHeadings(readingArticles, siteConfig.leadOrigins);
     return [...sections].sort(([a], [b]) => (sectionOrder.get(a) ?? 999) - (sectionOrder.get(b) ?? 999)).map(([sectionId, subsections]) => ({
       sectionId,
       section: siteConfig.sections.find(item => item.id === sectionId)?.name || sectionId,
-      subsections: orderedSubsections(siteConfig.sections.find(item => item.id === sectionId), subsections.keys()).map(label => [label, subsections.get(label)])
+      subsections: orderedSubsections(siteConfig.sections.find(item => item.id === sectionId), subsections.keys(), extraRegionalHeadings).map(label => [label, subsections.get(label)])
     }));
-  }, [readingArticles, siteConfig.sections]);
+  }, [readingArticles, siteConfig.sections, siteConfig.leadOrigins]);
   const selectedSourceStories = selectedArticles.filter(item => item.sourceId === activeId);
   const sourceRequest = source => ({ sourceId: source.id, ...(source.id.startsWith('manual-source-') ? { customSource: source } : {}), ...(source.listingUrl ? { listingUrlOverride: source.listingUrl } : {}), ...scope });
 

@@ -54,7 +54,7 @@ test('star creates a lead heading and removing it restores the original placemen
   assert.equal(unstarred.leadOrigins.armenia, undefined);
 });
 
-test('lead stories use Ukraine first with two headings and alphabetic order with more', () => {
+test('lead stories sort regional headings before Miscellaneous headings', () => {
   const stories = [
     { id: 'me', section: 'Lead stories', subsection: 'Middle East', title: 'Iran story', sourceName: 'Agency', url: 'https://example.com/me' },
     { id: 'ua', section: 'Lead stories', subsection: 'Ukraine', title: 'Ukraine story', sourceName: 'Agency', url: 'https://example.com/ua' },
@@ -64,9 +64,19 @@ test('lead stories use Ukraine first with two headings and alphabetic order with
   assert.deepEqual(displaySiteContent(stories, initial).filter(item => item.sectionId === 'Lead stories').map(item => item.subsection), ['Ukraine', 'Middle East']);
   const config = toggleLeadStoryInConfig(initial, stories, 'other');
   config.sections.find(section => section.id === 'Lead stories').subsections = ['Armenia', 'Middle East', 'Ukraine'];
-  assert.deepEqual(displaySiteContent(stories, config).map(item => item.subsection), ['Armenia', 'Middle East', 'Ukraine']);
+  assert.deepEqual(displaySiteContent(stories, config).map(item => item.subsection), ['Armenia', 'Ukraine', 'Middle East']);
   config.articleEdits.other.hidden = true;
   assert.deepEqual(displaySiteContent(stories, config).map(item => item.subsection), ['Ukraine', 'Middle East']);
+});
+
+test('an Albanian lead precedes Ukraine and Middle East in the website and download order', () => {
+  const stories = [
+    { id: 'me', section: 'Lead stories', subsection: 'Middle East', title: 'Iran story', sourceName: 'Agency', url: 'https://example.com/me' },
+    { id: 'ua', section: 'Lead stories', subsection: 'Ukraine', title: 'Ukraine story', sourceName: 'Agency', url: 'https://example.com/ua' },
+    { id: 'al', section: 'South Eastern Europe', subsection: 'Albania', title: 'Albania story', sourceName: 'Agency', url: 'https://example.com/al' }
+  ];
+  const config = toggleLeadStoryInConfig(defaultSiteConfig(stories), stories, 'al');
+  assert.deepEqual(displaySiteContent(stories, config).map(item => item.subsection), ['Albania', 'Ukraine', 'Middle East']);
 });
 
 test('removing an original Middle East lead creates its relevant country', () => {
