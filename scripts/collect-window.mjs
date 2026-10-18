@@ -8,6 +8,7 @@ import { IMPORT_PROMPT } from '../src/importPrompt.js';
 import { createAutoScrapeHistory } from '../server/autoScrapeHistory.js';
 import { createArticleCache } from '../server/articleCache.js';
 import { passesSourcePolicy } from '../server/editorialPolicy.js';
+import { isUkrainianOutlet } from '../src/sourcePolicy.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const sources = JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'));
@@ -38,6 +39,7 @@ function candidateList(payload, source) {
   const candidates = undatedCandidates(payload, source, [], [], true);
   const listedTimes = new Map(articleArray(payload).map(raw => [String(raw.url || raw.absoluteUrl || raw.link || ''), String(raw.publishedAt || raw.published_at || raw.date || '')]));
   return candidates.filter(item => {
+    if (isUkrainianOutlet({ sourceId: source.id, url: source.url }) && /\b(?:Ukraine|Ukrainian|Kyiv|Zelensk\w*|Kharkiv|Odesa|Dnipro|Lviv|Defen[cs]e Forces)\b/i.test(`${item.title} ${item.summary}`)) return false;
     const listed = listedTimes.get(item.url) || '';
     const time = Date.parse(listed);
     return !Number.isFinite(time) || /T00:00:00(?:\.000)?Z$/i.test(listed) || inWindow(listed);
@@ -127,7 +129,7 @@ async function examineCandidates(source, record, payload, method) {
       try {
         let article = entry?.article;
         if (!article) {
-          const check = reviewedArticleCheck(page, source, candidate.url, end);
+          const check = reviewedArticleCheck(page, source, candidate.url, end, end - start);
           if (!check.article) { attempt.rejected[check.reason] = (attempt.rejected[check.reason] || 0) + 1; save(); continue; }
           const extracted = typeof page.data?.json === 'string' ? JSON.parse(page.data.json) : page.data?.json || {};
           const placement = articlePlacement(extracted, check.article.title, check.article.summary);
@@ -174,7 +176,7 @@ async function scan(source) {
     ['primary Firecrawl listing', async () => process.env.COLLECTION_BATCH_LISTINGS === '1' ? cachedListing() : scrapeHeadlines(source, DEFAULT_INCLUDE, key)],
     ['alternate feed', async () => collectFallbackFeed(source, fetch, () => true)],
     ['alternate Firecrawl listing', async () => { const url = fallbackListingUrl(source); return url ? process.env.COLLECTION_BATCH_ALTERNATE === '1' ? cachedListing(`alternate-listings-${runId}.json`) : scrapeHeadlines({ ...source, listingUrl: url }, DEFAULT_INCLUDE, key) : null; }],
-    ['Firecrawl site search', async () => searchSourceArticles(source, DEFAULT_INCLUDE, key)]
+    ['Firecrawl site search', async () => searchSourceArticles(source, DEFAULT_INCLUDE, key, fetch, Math.ceil((end - start) / 86400000))]
   ];
   const retryPrimary = record.errors.some(error => error.startsWith('primary Firecrawl listing:'))
     ? [['primary Firecrawl listing retry', async () => scrapeHeadlines(source, DEFAULT_INCLUDE, key)]] : [];

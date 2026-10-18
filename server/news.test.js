@@ -73,6 +73,13 @@ test('undated matching links can be checked on their original article pages', ()
   assert.equal(reviewedArticle(aaPage, { ...source, url: 'https://www.aa.com.tr/en/', id: 'source-149' }, 'https://www.aa.com.tr/en/europe/story/4088419', now).publishedAt, '2026-10-09T11:15:01.000Z');
 });
 
+test('a retrospective collection can verify an article older than the usual 48 hours', () => {
+  const end = Date.parse('2026-10-18T19:44:31Z');
+  const page = { data: { metadata: { publishedTime: '2026-10-16T10:00:00Z', ogTitle: 'OSCE convenes security talks' }, json: { summary: 'Delegates agreed to meet again.' } } };
+  assert.equal(reviewedArticleCheck(page, source, 'https://example.com/osce-talks', end).reason, 'outsideWindow');
+  assert.equal(reviewedArticleCheck(page, source, 'https://example.com/osce-talks', end, end - Date.parse('2026-10-16T10:00:00Z')).article?.publishedAt, '2026-10-16T10:00:00.000Z');
+});
+
 test('alternate collection checks the source homepage after a section fails', () => {
   assert.equal(fallbackListingUrl(source), 'https://example.com/');
   assert.equal(fallbackListingUrl({ ...source, url: 'https://example.com/' }), null);

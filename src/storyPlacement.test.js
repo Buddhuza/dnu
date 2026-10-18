@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { preferredRegionalPlacement, sourceHomeCountry, ukraineAttackPlacement } from './storyPlacement.js';
+import { preferredRegionalPlacement, sourceHomeCountry, ukraineAttackPlacement, russianTerritoryAttackPlacement } from './storyPlacement.js';
 
 test('attacks taking place in Ukraine are placed by location rather than the first country named', () => {
   const ukraine = { sectionId: 'Eastern Europe', subsection: 'Ukraine', country: '' };
@@ -10,6 +10,13 @@ test('attacks taking place in Ukraine are placed by location rather than the fir
   assert.deepEqual(ukraineAttackPlacement('Strike on Kyiv kills three'), ukraine);
   assert.equal(ukraineAttackPlacement('Ukrainian drones attack Belgorod in Russia'), null);
   assert.equal(ukraineAttackPlacement('EU pledges military aid to Ukraine'), null);
+});
+
+test('Ukrainian strikes on St Petersburg belong under Russia', () => {
+  const russia = { sectionId: 'Miscellaneous', subsection: 'RUSSIA / EURASIA', country: 'Russia' };
+  assert.deepEqual(russianTerritoryAttackPlacement('Ukraine strikes oil facility in St Petersburg'), russia);
+  assert.deepEqual(russianTerritoryAttackPlacement('St Petersburg oil facilities ablaze as Ukraine launches drones'), russia);
+  assert.equal(russianTerritoryAttackPlacement('Russian drones strike Kyiv energy network'), null);
 });
 
 test('a PAN story about Mirzoyan and Kosovo belongs under Armenia', () => {

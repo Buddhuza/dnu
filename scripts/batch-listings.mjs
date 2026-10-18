@@ -33,12 +33,12 @@ async function request(url, options = {}) {
     const response = await fetch(url, { ...options, headers, signal: AbortSignal.timeout(60000) });
     const body = await response.json().catch(() => ({}));
     if (response.ok && body.success !== false) return body;
-    if (response.status !== 429 || attempt === 3) throw new Error(body.error || `Firecrawl HTTP ${response.status}`);
+    if (![429, 502, 503, 504].includes(response.status) || attempt === 3) throw new Error(body.error || `Firecrawl HTTP ${response.status}`);
     await pause(15000 * (attempt + 1));
   }
 }
 for (let offset = 0; offset < sources.length; offset += 10) {
-  const group = sources.slice(offset, offset + 10).filter(source => !(source.id in state));
+  const group = sources.slice(offset, offset + 10).filter(source => !state[source.id]?.data);
   if (!group.length) continue;
   const byUrl = new Map(group.map(source => [alternate ? fallbackListingUrl(source) : source.listingUrl || source.url, source]));
   try {

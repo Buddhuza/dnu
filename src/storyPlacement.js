@@ -15,6 +15,14 @@ export function ukraineAttackPlacement(title, summary = '') {
   return patterns.some(pattern => pattern.test(text)) ? { sectionId: 'Eastern Europe', subsection: 'Ukraine', country: '' } : null;
 }
 
+export function russianTerritoryAttackPlacement(title) {
+  if (/\b(?:St\.? Petersburg|Leningrad|Moscow|Belgorod|Kursk|Bryansk|Voronezh|Rostov)\b/i.test(title)
+    && /\b(?:drones?|missiles?|oil (?:facilit\w*|site\w*|terminal\w*)|blaze|ablaze|strik\w*|struck|attack\w*)\b/i.test(title)) {
+    return { sectionId: 'Miscellaneous', subsection: 'RUSSIA / EURASIA', country: 'Russia' };
+  }
+  return null;
+}
+
 const countryMentions = [
   ['Albania', /\b(?:Albania|Albanian|Tirana)\b/i],
   ['Bosnia and Herzegovina', /\b(?:Bosnia|Bosnian|Herzegovina|Sarajevo)\b/i],

@@ -1,11 +1,11 @@
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { articlePlacement } from '../server/importArticle.js';
 import { editorialScore, isRussianSource } from '../server/editorialPolicy.js';
 import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, compareCountryLabels } from '../src/newsSections.js';
 import { blockedPlacementReason, isUkrainianOutlet } from '../src/sourcePolicy.js';
-import { preferredRegionalPlacement, ukraineAttackPlacement } from '../src/storyPlacement.js';
+import { preferredRegionalPlacement, ukraineAttackPlacement, russianTerritoryAttackPlacement } from '../src/storyPlacement.js';
 import { deduplicateArticles } from '../src/siteConfig.js';
 import { excludedHeadlineReason } from '../src/headlinePolicy.js';
 import { carryForwardArticles } from '../server/updateCarryForward.js';
@@ -23,8 +23,10 @@ const summariesPath = join(root, `data/collection-${day}-summary-fixes.json`);
 const summaryFixes = existsSync(summariesPath) ? JSON.parse(readFileSync(summariesPath, 'utf8')) : {};
 const verifiedTimesPath = join(root, `data/verified-time-corrections-${day}.json`);
 const verifiedTimes = existsSync(verifiedTimesPath) ? JSON.parse(readFileSync(verifiedTimesPath, 'utf8')) : {};
-const editorialExclusionsPath = join(root, `data/editorial-exclusions-${day}.json`);
-const editorialExclusions = existsSync(editorialExclusionsPath) ? JSON.parse(readFileSync(editorialExclusionsPath, 'utf8')) : {};
+const editorialExclusions = Object.assign({}, ...readdirSync(join(root, 'data'))
+  .filter(name => /^editorial-exclusions-\d{4}-\d{2}-\d{2}\.json$/.test(name))
+  .sort()
+  .map(name => JSON.parse(readFileSync(join(root, 'data', name), 'utf8'))));
 const sourceById = new Map(sources.map(source => [source.id, source]));
 function cleanHeadline(article) {
   let title = String(article.title || '').trim();
@@ -137,6 +139,7 @@ for (const article of raw) {
   else if (!article.title?.trim() || !article.summary?.trim()) reason = 'headline or summary missing';
   else if (isUkrainianOutlet(article) && /\b(?:Ukraine|Ukrainian|Kyiv|Zelensk\w*|Oleshky|Volyn|Defen[cs]e Forces)\b/i.test(`${article.title} ${article.summary}`)) reason = 'Ukrainian outlet excluded from Ukraine coverage';
   else if (excludedHeadlineReason(article.title)) reason = excludedHeadlineReason(article.title);
+  else if (/^live\s*:|^video\s*(?::|\/\/|\.)|\bvideo podcast\b/i.test(article.title)) reason = 'live stream or video page rather than a single news article';
   else if (/\b(?:analyst|expert|commentator)s?\s+(?:says|believes|warns|on\s+what)\b/i.test(article.title)) reason = 'analysis or commentary';
   else if (/^(?:political scientist|expert view|analysis):/i.test(article.title)) reason = 'analysis or commentary';
   else if (/\b(?:would be a mistake|the case for|why .+ matters)\b/i.test(article.title)) reason = 'opinion or analysis';
@@ -189,8 +192,9 @@ for (const article of raw) {
     : /\b(?:Saudi Arabia|Saudi|Aramco|Riyadh)\b/i.test(article.title) ? { sectionId: 'Miscellaneous', subsection: 'MIDDLE EAST / NORTH AFRICA', country: 'Saudi Arabia' }
     : null;
   const ukrainianFocus = isUkrainianOutlet(article) && /\b(?:Ukraine|Ukrainian|Kyiv|Zelenskyy|Zelensky|Zelenskiy|Sybiha|Umerov|Oleshky|Kharkiv|Odesa|Dnipro|Lviv)\b/i.test(article.title);
-  const attackedUkraine = !isUkrainianOutlet(article) && !(source && isRussianSource(source)) ? ukraineAttackPlacement(article.title, article.summary) : null;
-  const inferred = attackedUkraine || placementOverrides.get(article.url) || (ukrainianFocus ? { sectionId: 'Eastern Europe', subsection: 'Ukraine', country: '' } : null) || subjectPlacement || placementFromTitle(article.title) || contextPlaces.get(article.sourceId) || articlePlacement({}, article.title, '');
+  const attackedRussia = russianTerritoryAttackPlacement(article.title);
+  const attackedUkraine = !attackedRussia && !isUkrainianOutlet(article) && !(source && isRussianSource(source)) ? ukraineAttackPlacement(article.title, article.summary) : null;
+  const inferred = attackedRussia || attackedUkraine || placementOverrides.get(article.url) || (ukrainianFocus ? { sectionId: 'Eastern Europe', subsection: 'Ukraine', country: '' } : null) || subjectPlacement || placementFromTitle(article.title) || contextPlaces.get(article.sourceId) || articlePlacement({}, article.title, '');
   let placement = inferred || (article.section ? { sectionId: article.section, subsection: article.subsection, country: article.country } : null);
   if (source && isRussianSource(source)) placement = { sectionId: 'Miscellaneous', subsection: 'RUSSIA / EURASIA', country: 'Russia' };
   if (!placement?.sectionId || !placement.subsection) { excluded.push({ ...article, reason: 'country or organisation needs editorial placement' }); continue; }
@@ -211,6 +215,13 @@ accepted.splice(0, accepted.length, ...accepted.filter(article => keptUrls.has(a
 
 function eventKey(article) {
   const text = `${article.title} ${article.summary}`;
+  if (/\b(?:St\.? Petersburg|Leningrad)\b/i.test(article.title) && /\b(?:drone\w*|oil facilit\w*|oil site\w*|oil terminal\w*|blaze|ablaze|strik\w*|attack\w*)\b/i.test(article.title)) return 'st-petersburg-drone-strike-2026-10-18';
+  if (/\b(?:second|2nd)\b/i.test(article.title) && /\bsupertanker\b/i.test(article.title) && /\bmine\b/i.test(article.title)) return 'hormuz-second-tanker-mine';
+  if (/\b(?:Egypt|Cairo)\b/i.test(article.title) && /\b(?:Saudi Arabia|Riyadh)\b/i.test(article.title) && /\bHouthi\w*\b/i.test(text) && /\b(?:support|help|defend|aid)\b/i.test(article.title)) return 'egypt-supports-saudi-after-houthi-attacks';
+  if (/\bMacron\b/i.test(article.title) && /\b(?:hold accountable|bring down the Republic)\b/i.test(article.title)) return 'macron-protest-accountability';
+  if (/\b(?:Russian defence ministry|Russia says)\b/i.test(article.title) && /\bsteel plants?\b/i.test(article.title) && /\bpower infrastructure\b/i.test(article.title)) return 'russia-ukraine-steel-plants-attack';
+  if (/\bFalcons Meet\b/i.test(article.title) && /\b(?:exercise|training flights)\b/i.test(article.title)) return 'azerbaijan-falcons-meet-exercise';
+  if (/\bRafiyev|Deputy FM\b/i.test(article.title) && /\b52nd OIC\b/i.test(article.title)) return 'azerbaijan-oic-deputy-fm';
   if (/\b(?:Trump|Graham Act|US president)\b/i.test(text) && /\b(?:Russia|Russian|Moscow)\b/i.test(text)
     && /\b(?:sanction\w*|tariff\w*)\b/i.test(text) && /\b(?:waiv\w*|suspend\w*|hold|halt\w*|pause\w*|put\w* on hold|won't impose|slams|regret\w*|delighted)\b/i.test(text)) return 'russia-sanctions-pause';
   if (/\bsettler\w*\b/i.test(text) && /\b(?:West Bank|olive|diplomat\w*|photographer|Washington Post)\b/i.test(text)
@@ -228,6 +239,7 @@ function sourceRank(article) {
   if (/^BBC$/i.test(article.sourceName)) return 4;
   if (/^(?:DW|dpa|Guardian|Politico\.eu|Euronews)$/i.test(article.sourceName)) return 3;
   if (/^(?:Al Jazeera|L'Orient Today|RFE\/RL|Axios|NBC|AsiaOne)$/i.test(article.sourceName)) return 2;
+  if (/^(?:AA|APA)$/i.test(article.sourceName)) return 2;
   return 1;
 }
 const eventWinners = new Map();
@@ -245,12 +257,20 @@ accepted.splice(0, accepted.length, ...eventKept);
 function leadScore(article, middleEast = false) {
   const impact = middleEast
     ? /\b(?:Hormuz|Iranian attack|Iran war|Israeli strike|ceasefire|shipping|missile)\b/i.test(`${article.title} ${article.summary}`) ? 200 : 0
-    : /\b(?:strike\w*|attack\w*|missile\w*|drone\w*|power infrastructure)\b/i.test(article.title) ? 170
+    : /€70 billion|70 billion for 2027/i.test(article.title) ? 190
+      : /\b(?:strike\w*|attack\w*|missile\w*|drone\w*|power infrastructure)\b/i.test(article.title) ? 170
       : /\b(?:sanction\w*|ceasefire|peace talks)\b/i.test(article.title) ? 110
         : /\b(?:EU accession|joint task force|grain cargoes)\b/i.test(article.title) ? 40 : 0;
   return editorialScore(article.title, article.summary) + impact + (agencyPriority.test(article.sourceName) ? (middleEast ? 75 : 1000) : 0) + articleDate(article) / 1e13;
 }
-const ukrainian = accepted.filter(article => article.section === 'Eastern Europe' && article.subsection === 'Ukraine' && agencyPriority.test(article.sourceName)).sort((a, b) => leadScore(b) - leadScore(a)).slice(0, 4);
+const ukrainian = [];
+const ukrainianAgencyCounts = new Map();
+for (const article of accepted.filter(article => article.section === 'Eastern Europe' && article.subsection === 'Ukraine' && agencyPriority.test(article.sourceName)).sort((a, b) => leadScore(b) - leadScore(a))) {
+  if ((ukrainianAgencyCounts.get(article.sourceName) || 0) >= 2) continue;
+  ukrainian.push(article);
+  ukrainianAgencyCounts.set(article.sourceName, (ukrainianAgencyCounts.get(article.sourceName) || 0) + 1);
+  if (ukrainian.length === 4) break;
+}
 const middleEast = accepted.filter(article => article.section === 'Miscellaneous' && article.subsection === 'MIDDLE EAST / NORTH AFRICA'
   && /\b(?:Iran|Iranian|Israel|Israeli|Gaza|Lebanon|Lebanese|Syria|Syrian|Hormuz|Palestinian|Tehran|Beirut)\b/i.test(article.title)
   && /\b(?:war|strike\w*|attack\w*|ceasefire|missile\w*|sanction\w*|peace|talks|negotiat\w*|shipping|vessel\w*|nuclear|hostage\w*|truce|offensive)\b/i.test(article.title)

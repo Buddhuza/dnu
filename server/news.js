@@ -145,7 +145,7 @@ export function shortlistCandidates(candidates, limit = 12) {
   return candidates.filter(candidate => candidate.listingPriority == null || candidate.listingPriority >= 3).slice(0, limit);
 }
 
-export function reviewedArticleCheck(payload, source, url, now = Date.now()) {
+export function reviewedArticleCheck(payload, source, url, now = Date.now(), maxAgeMs = 48 * 60 * 60 * 1000) {
   const data = payload?.data ?? {};
   const extracted = typeof data.json === 'string' ? JSON.parse(data.json) : data.json ?? {};
   const html = data.rawHtml || data.html || '';
@@ -164,7 +164,7 @@ export function reviewedArticleCheck(payload, source, url, now = Date.now()) {
   if (!publishedAt) return { article: null, reason: 'missingHeadlineOrTime' };
   const time = Date.parse(publishedAt);
   if (!Number.isFinite(time)) return { article: null, reason: 'missingHeadlineOrTime' };
-  if (time < now - 48 * 60 * 60 * 1000 || time > now + 300000) return { article: null, reason: 'outsideWindow' };
+  if (time < now - maxAgeMs || time > now + 300000) return { article: null, reason: 'outsideWindow' };
   const title = String(data.metadata?.ogTitle ?? extracted.exactHeadline ?? data.metadata?.title ?? '').trim();
   if (!title) return { article: null, reason: 'missingHeadlineOrTime' };
   const summary = String(extracted.summary ?? '').trim();
@@ -192,11 +192,11 @@ export async function scrapeImportedArticle(url, apiKey, fetchImpl = fetch) {
   return firecrawlPost({ url, formats: ['markdown', 'html', { type: 'json', prompt: IMPORT_PROMPT }], onlyMainContent: true, timeout: 30000 }, apiKey, fetchImpl);
 }
 
-export async function searchSourceArticles(source, include, apiKey, fetchImpl = fetch) {
+export async function searchSourceArticles(source, include, apiKey, fetchImpl = fetch, lookbackDays = 2) {
   const host = new URL(source.url).hostname.replace(/^www\./, '');
   const terms = include.length ? include.slice(0, 8) : ['politics', 'security', 'war', 'election'];
   const query = `site:${host} (${terms.map(term => `"${term.replace(/[^\p{L}\p{N}\s-]/gu, '')}"`).join(' OR ')})`;
-  const payload = await firecrawlPost({ query, limit: 10, tbs: 'qdr:d2' }, apiKey, fetchImpl, 'search');
+  const payload = await firecrawlPost({ query, limit: 10, tbs: `qdr:d${Math.max(1, Math.ceil(lookbackDays))}` }, apiKey, fetchImpl, 'search');
   const results = payload.data?.web ?? [];
   return { data: { json: { articles: results.map(item => ({ title: item.title, url: item.url, summary: item.description })) } }, collectionMethod: 'firecrawl-search', searchQuery: query };
 }
