@@ -27,5 +27,8 @@ test('question, analysis and opinion headlines are excluded before article scrap
   assert.equal(passesSourcePolicy(source, 'Ukraine seeks new security agreement?', summary), false);
   assert.equal(passesSourcePolicy(source, 'Analysis: Ukraine seeks new security agreement', summary), false);
   assert.equal(passesSourcePolicy(source, 'Opinion | Ukraine seeks new security agreement', summary), false);
+  assert.equal(passesSourcePolicy(source, 'Feature: How a lawmaker sees Albania’s protests', summary), false);
+  assert.equal(passesSourcePolicy(source, 'Tougher security response won’t solve Albania’s crisis: Experts', summary), false);
+  assert.equal(passesSourcePolicy(source, 'Calls for more Algarve flights following Lufthansa’s TAP deal', summary), false);
   assert.equal(passesSourcePolicy(source, 'Ukraine seeks new security agreement', summary), true);
 });

@@ -45,5 +45,16 @@
   "https://www.euronews.com/2026/10/18/france-reels-after-cost-of-living-protests-see-widespread-violence": "duplicate: broad recap of French unrest covered by Reuters and AP",
   "https://armenpress.am/en/article/1263099": "duplicate: generic Kyrgyz bilateral-ties remarks from the same Japarov-Pashinyan talks",
   "https://armenpress.am/en/article/1263096": "duplicate: generic Armenian bilateral-ties remarks from the same Japarov-Pashinyan talks",
-  "https://armenpress.am/en/article/1263095": "duplicate: unspecific recap of statements from the Japarov-Pashinyan talks"
+  "https://armenpress.am/en/article/1263095": "duplicate: unspecific recap of statements from the Japarov-Pashinyan talks",
+  "https://www.internazionale.it/ultime-notizie-reuters/2026/10/17/our-land-our-albania-young-lawmaker-demands-new-future-as-protests-rage": "feature-style protest profile; broader events are covered by hard-news stories",
+  "https://www.tiranatimes.com/former-albanian-ministers-face-new-anti-corruption-scrutiny/": "lower-priority development amid major current protests",
+  "https://euronews.al/en/chief-of-general-staff-of-albanian-armed-forces-meets-us-ambassador-eric-wendt/": "routine meeting without a material security development",
+  "https://balkaninsight.com/2026/10/16/tougher-security-response-wont-solve-albanias-growing-crisis-experts/bi/": "expert opinion rather than a reported development",
+  "https://www.aljazeera.com/news/2026/10/18/chaos-in-tirana-demonstrators-determined-to-not-give-up-so-easily": "broad protest recap already covered by more specific reports",
+  "https://www.theportugalnews.com/news/2026-10-17/calls-for-more-algarve-flights-following-lufthansas-tap-deal/1101651": "travel and airline business outside the report scope",
+  "https://english.gazetatema.net/society/protesters-smash-bank-branches-and-atms-across-albania-i347709": "local damage detail overlaps stronger protest coverage",
+  "https://dtt-net.com/albania-opposition-calls-for-investigation-into-e6-billion-gas-deal-for-usa-lng/": "lower-priority, separate domestic political demand amid major protests",
+  "https://euronews.al/en/tirana-protests-us-embassy-tells-euronews-citizens-should-express-their-views-lawfully/": "routine embassy comment amid extensive protest coverage",
+  "https://euronews.al/en/interior-minister-demo-156-injured-in-four-days-of-protests-urges-parents-not-to-let-children-be-used-in-violence/": "older protest injury tally; subsection is being limited to distinct developments",
+  "https://euronews.al/en/127-arrested-in-tirana-public-order-director-communication-channels-identified-calling-for-terrorist-acts/": "older arrest tally; later court hearing covers the detainee development"
 }

@@ -1,6 +1,6 @@
 {
   "title": "DAILY NEWS UPDATE",
-  "checkedAt": "2026-10-18T21:25:44.714Z",
+  "checkedAt": "2026-10-18T21:43:17.425Z",
   "windowHours": 57.74194444444444,
   "windowStart": "2026-10-16T10:00:00.000Z",
   "windowEnd": "2026-10-18T19:44:31.000Z",
@@ -104,48 +104,6 @@
       "reviewed": true
     },
     {
-      "id": "https://balkaninsight.com/2026/10/16/tougher-security-response-wont-solve-albanias-growing-crisis-experts/bi/",
-      "url": "https://balkaninsight.com/2026/10/16/tougher-security-response-wont-solve-albanias-growing-crisis-experts/bi/",
-      "sourceId": "source-2",
-      "sourceName": "BIRN",
-      "group": "South Eastern Europe",
-      "title": "Tougher Security Response Won’t Solve Albania’s Growing Crisis: Experts",
-      "summary": "Demonstrators in Tirana are protesting for the resignation of Prime Minister Edi Rama as unrest spreads to other cities.",
-      "publishedAt": "2026-10-16T14:48:20.000Z",
-      "section": "South Eastern Europe",
-      "subsection": "Albania",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.aljazeera.com/news/2026/10/18/chaos-in-tirana-demonstrators-determined-to-not-give-up-so-easily",
-      "url": "https://www.aljazeera.com/news/2026/10/18/chaos-in-tirana-demonstrators-determined-to-not-give-up-so-easily",
-      "sourceId": "source-122",
-      "sourceName": "Al Jazeera",
-      "group": "Miscl",
-      "title": "Tirana sees sixth day of violent protests as Albania’s PM refuses to resign",
-      "summary": "Hundreds of protesters gathered in front of the Ministry of Education, chanting for PM Rama's resignation amid police clashes.",
-      "publishedAt": "2026-10-18T12:08:18.000Z",
-      "section": "South Eastern Europe",
-      "subsection": "Albania",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://english.gazetatema.net/society/protesters-smash-bank-branches-and-atms-across-albania-i347709",
-      "url": "https://english.gazetatema.net/society/protesters-smash-bank-branches-and-atms-across-albania-i347709",
-      "sourceId": "source-6",
-      "sourceName": "TemA",
-      "group": "South Eastern Europe",
-      "title": "Protesters smash bank branches and ATMs across Albania",
-      "summary": "Violent protests have damaged bank branches, disrupting services for customers across Albania.",
-      "publishedAt": "2026-10-18T11:42:22.000Z",
-      "section": "South Eastern Europe",
-      "subsection": "Albania",
-      "country": "",
-      "reviewed": true
-    },
-    {
       "id": "https://english.gazetatema.net/society/78-protest-detainees-brought-before-tirana-court-i347706",
       "url": "https://english.gazetatema.net/society/78-protest-detainees-brought-before-tirana-court-i347706",
       "sourceId": "source-6",
@@ -154,20 +112,6 @@
       "title": "78 protest detainees brought before Tirana court",
       "summary": "Seventy-eight people arrested during violent protests in Tirana were brought before a court on Sunday.",
       "publishedAt": "2026-10-18T09:51:26.000Z",
-      "section": "South Eastern Europe",
-      "subsection": "Albania",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.theportugalnews.com/news/2026-10-17/calls-for-more-algarve-flights-following-lufthansas-tap-deal/1101651",
-      "url": "https://www.theportugalnews.com/news/2026-10-17/calls-for-more-algarve-flights-following-lufthansas-tap-deal/1101651",
-      "sourceId": "source-146",
-      "sourceName": "Portugal News",
-      "group": "Miscl",
-      "title": "Calls for more Algarve flights following Lufthansa’s TAP deal",
-      "summary": "The CDS-PP Algarve urges the Government to secure new international routes through Faro Airport.",
-      "publishedAt": "2026-10-17T18:03:00.000Z",
       "section": "South Eastern Europe",
       "subsection": "Albania",
       "country": "",
@@ -188,76 +132,6 @@
       "reviewed": true
     },
     {
-      "id": "https://www.internazionale.it/ultime-notizie-reuters/2026/10/17/our-land-our-albania-young-lawmaker-demands-new-future-as-protests-rage",
-      "url": "https://www.internazionale.it/ultime-notizie-reuters/2026/10/17/our-land-our-albania-young-lawmaker-demands-new-future-as-protests-rage",
-      "sourceId": "source-173",
-      "sourceName": "Reuters",
-      "group": "Miscl",
-      "title": "‘Our land, our Albania’: young lawmaker demands new future as protests rage",
-      "summary": "Mass student protests in Tirana demand the resignation of Prime Minister Edi Rama amid growing anger over corruption and lack of jobs.",
-      "publishedAt": "2026-10-17T07:44:11.000Z",
-      "section": "South Eastern Europe",
-      "subsection": "Albania",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://dtt-net.com/albania-opposition-calls-for-investigation-into-e6-billion-gas-deal-for-usa-lng/",
-      "url": "https://dtt-net.com/albania-opposition-calls-for-investigation-into-e6-billion-gas-deal-for-usa-lng/",
-      "sourceId": "source-1",
-      "sourceName": "DTT",
-      "group": "South Eastern Europe",
-      "title": "Albania opposition calls for investigation into €6 billion gas deal for USA LNG",
-      "summary": "The Democratic Party of Albania has demanded an investigation into a €6 billion LNG contract signed in April 2026.",
-      "publishedAt": "2026-10-17T02:06:37.000Z",
-      "section": "South Eastern Europe",
-      "subsection": "Albania",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.tiranatimes.com/former-albanian-ministers-face-new-anti-corruption-scrutiny/",
-      "url": "https://www.tiranatimes.com/former-albanian-ministers-face-new-anti-corruption-scrutiny/",
-      "sourceId": "source-7",
-      "sourceName": "Tirana Times",
-      "group": "South Eastern Europe",
-      "title": "Former Albanian Ministers Face New Anti-Corruption Scrutiny",
-      "summary": "Olta Xhaçka has been placed under investigation on suspicion of corruption and money laundering by Albania’s SPAK.",
-      "publishedAt": "2026-10-16T20:43:45.000Z",
-      "section": "South Eastern Europe",
-      "subsection": "Albania",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://euronews.al/en/tirana-protests-us-embassy-tells-euronews-citizens-should-express-their-views-lawfully/",
-      "url": "https://euronews.al/en/tirana-protests-us-embassy-tells-euronews-citizens-should-express-their-views-lawfully/",
-      "sourceId": "source-4",
-      "sourceName": "Euronews.al",
-      "group": "South Eastern Europe",
-      "title": "Tirana Protests, US Embassy Tells Euronews: Citizens Should Express Their Views Lawfully",
-      "summary": "The US Embassy emphasized the importance of lawful and peaceful demonstrations in Tirana protests.",
-      "publishedAt": "2026-10-16T20:34:57.000Z",
-      "section": "South Eastern Europe",
-      "subsection": "Albania",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://euronews.al/en/chief-of-general-staff-of-albanian-armed-forces-meets-us-ambassador-eric-wendt/",
-      "url": "https://euronews.al/en/chief-of-general-staff-of-albanian-armed-forces-meets-us-ambassador-eric-wendt/",
-      "sourceId": "source-4",
-      "sourceName": "Euronews.al",
-      "group": "South Eastern Europe",
-      "title": "Chief of General Staff of Albanian Armed Forces Meets US Ambassador Eric Wendt",
-      "summary": "Lieutenant General Arben Kingji expressed gratitude for US support in modernizing the Albanian Armed Forces.",
-      "publishedAt": "2026-10-16T20:03:51.000Z",
-      "section": "South Eastern Europe",
-      "subsection": "Albania",
-      "country": "",
-      "reviewed": true
-    },
-    {
       "id": "https://www.euronews.com/2026/10/16/albanian-pm-blames-foreign-hands-for-escalating-anti-government-unrest",
       "url": "https://www.euronews.com/2026/10/16/albanian-pm-blames-foreign-hands-for-escalating-anti-government-unrest",
       "sourceId": "source-82",
@@ -272,20 +146,6 @@
       "reviewed": true
     },
     {
-      "id": "https://euronews.al/en/interior-minister-demo-156-injured-in-four-days-of-protests-urges-parents-not-to-let-children-be-used-in-violence/",
-      "url": "https://euronews.al/en/interior-minister-demo-156-injured-in-four-days-of-protests-urges-parents-not-to-let-children-be-used-in-violence/",
-      "sourceId": "source-4",
-      "sourceName": "Euronews.al",
-      "group": "South Eastern Europe",
-      "title": "Interior Minister Demo: 156 injured in four days of protests, urges parents not to let children be used in violence",
-      "summary": "The Interior Minister reported that 156 individuals, including four minors, were injured during recent protests.",
-      "publishedAt": "2026-10-16T17:01:59.000Z",
-      "section": "South Eastern Europe",
-      "subsection": "Albania",
-      "country": "",
-      "reviewed": true
-    },
-    {
       "id": "https://english.gazetatema.net/politics/ruling-party-mp-tells-rama-not-to-rule-out-new-elections-i347688",
       "url": "https://english.gazetatema.net/politics/ruling-party-mp-tells-rama-not-to-rule-out-new-elections-i347688",
       "sourceId": "source-6",
@@ -294,20 +154,6 @@
       "title": "Ruling party MP tells Rama not to rule out new elections",
       "summary": "Former foreign minister Elisa Spiropali urged Prime Minister Rama to offer a political solution amid ongoing protests.",
       "publishedAt": "2026-10-16T16:25:10.000Z",
-      "section": "South Eastern Europe",
-      "subsection": "Albania",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://euronews.al/en/127-arrested-in-tirana-public-order-director-communication-channels-identified-calling-for-terrorist-acts/",
-      "url": "https://euronews.al/en/127-arrested-in-tirana-public-order-director-communication-channels-identified-calling-for-terrorist-acts/",
-      "sourceId": "source-4",
-      "sourceName": "Euronews.al",
-      "group": "South Eastern Europe",
-      "title": "127 Arrested in Tirana, Public Order Director: Communication Channels Identified Calling for Terrorist Acts",
-      "summary": "127 people have been arrested in Tirana during protests for property destruction and assaulting police officers.",
-      "publishedAt": "2026-10-16T16:09:03.000Z",
       "section": "South Eastern Europe",
       "subsection": "Albania",
       "country": "",
@@ -1484,20 +1330,6 @@
       "title": "Azerbaijan, Bangladesh discuss expanding bilateral cooperation (PHOTO)",
       "summary": "Azerbaijani Foreign Minister Jeyhun Bayramov met with Bangladesh’s state minister for foreign affairs Humayun Kabir regarding cooperation.",
       "publishedAt": "2026-10-16T14:52:45.000Z",
-      "section": "South Caucasus",
-      "subsection": "Azerbaijan",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://en.apa.az/military/next-phase-of-falcons-meet-2026-exercise-conduct-training-flights-video-530682",
-      "url": "https://en.apa.az/military/next-phase-of-falcons-meet-2026-exercise-conduct-training-flights-video-530682",
-      "sourceId": "source-55",
-      "sourceName": "APA",
-      "group": "South Caucasus",
-      "title": "Next phase of “Falcons Meet – 2026” exercise conduct training flights - VIDEO",
-      "summary": "Training flights were conducted with participation from Azerbaijan and UAE military personnel.",
-      "publishedAt": "2026-10-17T11:00:00.000Z",
       "section": "South Caucasus",
       "subsection": "Azerbaijan",
       "country": "",
@@ -4535,7 +4367,7 @@
       "group": "South Eastern Europe",
       "url": "https://dtt-net.com/category/w-balkan-news/",
       "status": "collected",
-      "reason": "4 verified articles included; 7 original article pages checked."
+      "reason": "3 verified articles included; 7 original article pages checked."
     },
     {
       "id": "source-2",
@@ -4543,7 +4375,7 @@
       "group": "South Eastern Europe",
       "url": "https://balkaninsight.com/all-the-news-from-the-balkans/",
       "status": "collected",
-      "reason": "2 verified articles included; 5 original article pages checked."
+      "reason": "1 verified article included; 5 original article pages checked."
     },
     {
       "id": "source-3",
@@ -4558,8 +4390,8 @@
       "name": "Euronews.al",
       "group": "South Eastern Europe",
       "url": "https://euronews.al/en/just-in/",
-      "status": "collected",
-      "reason": "4 verified articles included; 4 original article pages checked."
+      "status": "checked",
+      "reason": "10 links listed and 4 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. 1 listing candidates had been scraped in an earlier batch and were not scraped again. Newest dated listing: 2026-10-16. Editorial selection: 1 older protest injury tally; subsection is being limited to distinct developments; 1 older arrest tally; later court hearing covers the detainee development; 1 routine meeting without a material security development."
     },
     {
       "id": "source-5",
@@ -4575,15 +4407,15 @@
       "group": "South Eastern Europe",
       "url": "https://english.gazetatema.net/category/politics/",
       "status": "collected",
-      "reason": "6 verified articles included; 7 original article pages checked."
+      "reason": "5 verified articles included; 7 original article pages checked."
     },
     {
       "id": "source-7",
       "name": "Tirana Times",
       "group": "South Eastern Europe",
       "url": "https://www.tiranatimes.com/",
-      "status": "collected",
-      "reason": "1 verified article included; 4 original article pages checked."
+      "status": "checked",
+      "reason": "10 links listed and 4 original article pages checked across 5 collection methods; no article from this outlet was verified and included for the requested window. 1 listing candidates had been scraped in an earlier batch and were not scraped again. Newest dated listing: 2026-10-15. Article checks: 3 outside window, 1 outside scope. Editorial selection: 1 lower-priority development amid major current protests."
     },
     {
       "id": "source-8",
@@ -4967,7 +4799,7 @@
       "group": "South Caucasus",
       "url": "https://en.apa.az/all-news",
       "status": "collected",
-      "reason": "4 verified articles included; 9 original article pages checked."
+      "reason": "3 verified articles included; 9 original article pages checked."
     },
     {
       "id": "source-56",
@@ -5503,7 +5335,7 @@
       "group": "Miscl",
       "url": "https://www.aljazeera.com/news/",
       "status": "collected",
-      "reason": "7 verified articles included; 7 original article pages checked."
+      "reason": "6 verified articles included; 7 original article pages checked."
     },
     {
       "id": "source-123",
@@ -5695,7 +5527,7 @@
       "group": "Miscl",
       "url": "https://www.theportugalnews.com/",
       "status": "collected",
-      "reason": "2 verified articles included; 8 original article pages checked."
+      "reason": "1 verified article included; 8 original article pages checked."
     },
     {
       "id": "source-147",
@@ -5911,7 +5743,7 @@
       "group": "Miscl",
       "url": "https://www.internazionale.it/",
       "status": "collected",
-      "reason": "10 verified articles included; 7 original article pages checked."
+      "reason": "9 verified articles included; 7 original article pages checked."
     }
   ]
 }
