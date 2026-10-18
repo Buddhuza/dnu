@@ -33,7 +33,7 @@ export function compareCountryLabels(subsection, a, b) {
 
 export const EDITORIAL_GUIDANCE = [
   'Any international news agency can supply stories in any report section. The source-list category is only for browsing outlets; place each article by the location or organisation it covers.',
-  'Lead stories contain three or four major Ukraine headlines and one or two major Middle East headlines. Use Reuters, AP, AFP, DW, Politico, Euronews, BBC or dpa for Ukraine leads. Do not place Ukrainian outlets under Ukraine in any section; place an international organisation here only for an exceptional OSCE story.',
+  'Lead stories normally contain three or four major Ukraine headlines and one or two major Middle East headlines. When these are the only two lead headings, put Ukraine first; when other headings appear, put all lead headings in alphabetical order. Use Reuters, AP, AFP, DW, Politico, Euronews, BBC or dpa for Ukraine leads. Do not place Ukrainian outlets under Ukraine in any section; place an international organisation here only for an exceptional OSCE story.',
   'Use Serbia / Kosovo for Kosovo coverage and Moldova / Transdniestria for Transdniestria coverage. Use Georgia / Abkhazia / South Ossetia for Georgia’s breakaway republics.',
   'Use Armenian outlets for Armenia and Azerbaijani outlets for Azerbaijan, but do not place either country’s outlets under the other country. Keep each summary to one short sentence that adds a concrete fact from the first two paragraphs beyond the headline.',
   'When a story concerns several countries in South Eastern Europe, Eastern Europe, the South Caucasus or Central Asia, file it under the country of the reporting outlet if that country is one of the story subjects. Otherwise use the principal actor or subject; do not infer a country from a publisher name appended to the headline.',
@@ -43,7 +43,13 @@ export const EDITORIAL_GUIDANCE = [
 ];
 
 export function orderedSubsections(section, labels) {
+  const visibleLabels = [...labels];
+  if (section?.id === 'Lead stories') {
+    if (visibleLabels.every(label => label === 'Ukraine' || label === 'Middle East')) {
+      return visibleLabels.sort((a, b) => Number(a !== 'Ukraine') - Number(b !== 'Ukraine'));
+    }
+    return visibleLabels.sort((a, b) => compareCountryLabels('', a, b));
+  }
   const order = new Map((section?.subsections ?? []).map((label, index) => [label, index]));
-  const leadRank = label => section?.id === 'Lead stories' ? label === 'Ukraine' ? 0 : label === 'Middle East' ? 1 : (order.get(label) ?? 999) + 2 : order.get(label) ?? 999;
-  return [...labels].sort((a, b) => leadRank(a) - leadRank(b));
+  return visibleLabels.sort((a, b) => (order.get(a) ?? 999) - (order.get(b) ?? 999));
 }
