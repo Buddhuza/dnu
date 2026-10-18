@@ -17,6 +17,12 @@ test('does not flag distinct actions involving the same country', () => {
   assert.equal(sameNewsEvent(a, b), false);
 });
 
+test('does not flag separate meetings with the same visiting diplomat', () => {
+  const a = story('a', 'Montenegrin president meets Chinese FM', 'Montenegrin President Jakov Milatovic discussed relations with Chinese FM Wang Yi.');
+  const b = story('b', 'Croatian PM meets Chinese FM', 'Croatian PM Andrej Plenkovic discussed cooperation with Chinese FM Wang Yi.');
+  assert.equal(sameNewsEvent(a, b), false);
+});
+
 test('does not flag similar headlines published days apart', () => {
   const a = story('a', 'Rubio to visit India and Uzbekistan');
   const b = { ...story('b', 'Rubio will travel to India and Uzbekistan'), publishedAt: '2026-10-18T12:00:00Z' };

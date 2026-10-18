@@ -1,6 +1,6 @@
 {
   "title": "DAILY NEWS UPDATE",
-  "checkedAt": "2026-10-18T20:43:04.911Z",
+  "checkedAt": "2026-10-18T21:25:44.714Z",
   "windowHours": 57.74194444444444,
   "windowStart": "2026-10-16T10:00:00.000Z",
   "windowEnd": "2026-10-18T19:44:31.000Z",
@@ -216,20 +216,6 @@
       "reviewed": true
     },
     {
-      "id": "https://dtt-net.com/albania-anti-pm-protests-intensify-and-spread-to-other-towns/",
-      "url": "https://dtt-net.com/albania-anti-pm-protests-intensify-and-spread-to-other-towns/",
-      "sourceId": "source-1",
-      "sourceName": "DTT",
-      "group": "South Eastern Europe",
-      "title": "Albania anti-PM protests intensify and spread to other towns",
-      "summary": "Massive student-led demonstrations in Albania demand the immediate resignation of Prime Minister Edi Rama due to accusations of state corruption.",
-      "publishedAt": "2026-10-17T00:46:16.000Z",
-      "section": "South Eastern Europe",
-      "subsection": "Albania",
-      "country": "",
-      "reviewed": true
-    },
-    {
       "id": "https://www.tiranatimes.com/former-albanian-ministers-face-new-anti-corruption-scrutiny/",
       "url": "https://www.tiranatimes.com/former-albanian-ministers-face-new-anti-corruption-scrutiny/",
       "sourceId": "source-7",
@@ -286,20 +272,6 @@
       "reviewed": true
     },
     {
-      "id": "https://euronews.al/en/qsut-11-injured-during-protest-including-3-minors-3-police-officers-and-2-bystanders/",
-      "url": "https://euronews.al/en/qsut-11-injured-during-protest-including-3-minors-3-police-officers-and-2-bystanders/",
-      "sourceId": "source-4",
-      "sourceName": "Euronews.al",
-      "group": "South Eastern Europe",
-      "title": "QSUT: 11 injured during protest, including 3 minors, 3 police officers and 2 bystanders",
-      "summary": "A total of 11 people, including 6 protesters, have sought medical assistance following the protest.",
-      "publishedAt": "2026-10-16T17:25:01.000Z",
-      "section": "South Eastern Europe",
-      "subsection": "Albania",
-      "country": "",
-      "reviewed": true
-    },
-    {
       "id": "https://euronews.al/en/interior-minister-demo-156-injured-in-four-days-of-protests-urges-parents-not-to-let-children-be-used-in-violence/",
       "url": "https://euronews.al/en/interior-minister-demo-156-injured-in-four-days-of-protests-urges-parents-not-to-let-children-be-used-in-violence/",
       "sourceId": "source-4",
@@ -350,20 +322,6 @@
       "title": "More than 1,200 Bosnian and NATO personnel to take part in major military exercise",
       "summary": "The exercise at Manjaca training ground will assess the operational readiness of Bosnian military units from October 19 to 23.",
       "publishedAt": "2026-10-17T15:53:00.000Z",
-      "section": "South Eastern Europe",
-      "subsection": "Bosnia and Herzegovina",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://sarajevotimes.com/military-exercise-immediate-response-26-more-than-1200-members-of-the-armed-forces-of-bih-participate/",
-      "url": "https://sarajevotimes.com/military-exercise-immediate-response-26-more-than-1200-members-of-the-armed-forces-of-bih-participate/",
-      "sourceId": "source-9",
-      "sourceName": "Sarajevo Times",
-      "group": "South Eastern Europe",
-      "title": "Military Exercise 'Immediate response 26', more than 1,200 Members of the Armed Forces of BiH participate",
-      "summary": "881 members of the declared units of the Armed Forces of Bosnia and Herzegovina will participate in the exercise.",
-      "publishedAt": "2026-10-17T12:00:00.000Z",
       "section": "South Eastern Europe",
       "subsection": "Bosnia and Herzegovina",
       "country": "",
@@ -846,20 +804,6 @@
       "reviewed": true
     },
     {
-      "id": "https://cphpost.dk/2026-10-17/global/moldova-condemns-russia-after-five-drone-incursions/",
-      "url": "https://cphpost.dk/2026-10-17/global/moldova-condemns-russia-after-five-drone-incursions/",
-      "sourceId": "source-113",
-      "sourceName": "Copenhagen Post",
-      "group": "Miscl",
-      "title": "Moldova condemns Russia after five drone incursions",
-      "summary": "Five Russian drones crashed in Moldova's airspace within 17 hours, injuring one person and causing minor damage.",
-      "publishedAt": "2026-10-17T06:40:41.000Z",
-      "section": "Eastern Europe",
-      "subsection": "Moldova",
-      "country": "",
-      "reviewed": true
-    },
-    {
       "id": "https://www.moldpres.md/eng/politics/moldovan-foreign-affairs-ministry-condemns-repeated-violation-of-national-airspace",
       "url": "https://www.moldpres.md/eng/politics/moldovan-foreign-affairs-ministry-condemns-repeated-violation-of-national-airspace",
       "sourceId": "source-30",
@@ -1098,20 +1042,6 @@
       "reviewed": true
     },
     {
-      "id": "https://www.rfi.fr/en/international-news/20261018-zelensky-tells-nbc-thankful-us-has-unblocked-intelligence-sharing",
-      "url": "https://www.rfi.fr/en/international-news/20261018-zelensky-tells-nbc-thankful-us-has-unblocked-intelligence-sharing",
-      "sourceId": "source-92",
-      "sourceName": "RFI",
-      "group": "Miscl",
-      "title": "Zelensky tells NBC 'thankful' US has unblocked intelligence sharing",
-      "summary": "Zelensky stated that the US has resumed intelligence sharing, which is crucial for detecting Russian missile strikes.",
-      "publishedAt": "2026-10-18T14:55:30.000Z",
-      "section": "Eastern Europe",
-      "subsection": "Ukraine",
-      "country": "",
-      "reviewed": true
-    },
-    {
       "id": "https://www.koreaherald.com/article/10906365",
       "url": "https://www.koreaherald.com/article/10906365",
       "sourceId": "source-125",
@@ -1294,20 +1224,6 @@
       "reviewed": true
     },
     {
-      "id": "https://armenpress.am/en/article/1263137",
-      "url": "https://armenpress.am/en/article/1263137",
-      "sourceId": "source-48",
-      "sourceName": "Armenpress",
-      "group": "South Caucasus",
-      "title": "Joint statement signed by Armenian Prime Minister and Kyrgyz President published",
-      "summary": "Armenian Prime Minister Nikol Pashinyan and Kyrgyz President Sadyr Japarov signed a joint statement during Japarov's visit to Armenia.",
-      "publishedAt": "2026-10-17T18:27:00.000Z",
-      "section": "South Caucasus",
-      "subsection": "Armenia",
-      "country": "",
-      "reviewed": true
-    },
-    {
       "id": "https://www.panorama.am/en/news/2026/10/17/Armenia-Kyrgyzstan/3171318",
       "url": "https://www.panorama.am/en/news/2026/10/17/Armenia-Kyrgyzstan/3171318",
       "sourceId": "source-49",
@@ -1330,34 +1246,6 @@
       "title": "Armenia and Kyrgyzstan sign documents on cooperation across various sectors",
       "summary": "Armenian and Kyrgyz officials signed multiple agreements on cooperation in various sectors during a meeting in Yerevan.",
       "publishedAt": "2026-10-17T14:44:00.000Z",
-      "section": "South Caucasus",
-      "subsection": "Armenia",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://armenpress.am/en/article/1263099",
-      "url": "https://armenpress.am/en/article/1263099",
-      "sourceId": "source-48",
-      "sourceName": "Armenpress",
-      "group": "South Caucasus",
-      "title": "Kyrgyzstan keen to develop friendly ties with Armenia, says Sadyr Japarov",
-      "summary": "Kyrgyz President Sadyr Japarov stated that political dialogue between Kyrgyzstan and Armenia has become increasingly active in recent years.",
-      "publishedAt": "2026-10-17T12:15:00.000Z",
-      "section": "South Caucasus",
-      "subsection": "Armenia",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://armenpress.am/en/article/1263096",
-      "url": "https://armenpress.am/en/article/1263096",
-      "sourceId": "source-48",
-      "sourceName": "Armenpress",
-      "group": "South Caucasus",
-      "title": "Armenia and Kyrgyzstan have every basis to give fresh substance to ties, says Pashinyan",
-      "summary": "Pashinyan emphasized cooperation in education, science, and technology during discussions with Kyrgyz President Sadyr Japarov.",
-      "publishedAt": "2026-10-17T12:05:00.000Z",
       "section": "South Caucasus",
       "subsection": "Armenia",
       "country": "",
@@ -1476,20 +1364,6 @@
       "reviewed": true
     },
     {
-      "id": "https://www.pan.am/en/626494",
-      "url": "https://www.pan.am/en/626494",
-      "sourceId": "source-47",
-      "sourceName": "PAN",
-      "group": "South Caucasus",
-      "title": "Pashinyan, Ribera discuss closer Armenia-EU relations",
-      "summary": "Pashinyan and Ribera reviewed progress on liberalizing the visa regime between Armenia and the EU.",
-      "publishedAt": "2026-10-16T14:16:00.000Z",
-      "section": "South Caucasus",
-      "subsection": "Armenia",
-      "country": "",
-      "reviewed": true
-    },
-    {
       "id": "https://www.pan.am/en/626477",
       "url": "https://www.pan.am/en/626477",
       "sourceId": "source-47",
@@ -1532,20 +1406,6 @@
       "reviewed": true
     },
     {
-      "id": "https://armenpress.am/en/article/1263095",
-      "url": "https://armenpress.am/en/article/1263095",
-      "sourceId": "source-48",
-      "sourceName": "Armenpress",
-      "group": "South Caucasus",
-      "title": "Armenian prime minister and Kyrgyz president deliver statements",
-      "summary": "The Armenian prime minister and Kyrgyz president both made statements during their recent meeting.",
-      "publishedAt": "2026-10-17T11:42:00.000Z",
-      "section": "South Caucasus",
-      "subsection": "Armenia",
-      "country": "",
-      "reviewed": true
-    },
-    {
       "id": "https://arka.am/en/news/economy/ministers-from-armenia-and-turkey-discuss-prospects-for-direct-trade-between-the-two-countries/",
       "url": "https://arka.am/en/news/economy/ministers-from-armenia-and-turkey-discuss-prospects-for-direct-trade-between-the-two-countries/",
       "sourceId": "source-52",
@@ -1554,20 +1414,6 @@
       "title": "Ministers from Armenia and Turkey discuss prospects for direct trade between the two countries",
       "summary": "Armenian Minister Gevorg Papoyan and Turkish Minister İbrahim Yumaklı discussed establishing direct trade opportunities.",
       "publishedAt": "2026-10-16T17:43:00.000Z",
-      "section": "South Caucasus",
-      "subsection": "Armenia",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.pan.am/en/626486",
-      "url": "https://www.pan.am/en/626486",
-      "sourceId": "source-47",
-      "sourceName": "PAN",
-      "group": "South Caucasus",
-      "title": "Armenian, Turkish ministers explore direct trade opportunities",
-      "summary": "Armenian Economy Minister Gevorg Papoyan met with Turkish Minister Ibrahim Yumakli to discuss direct trade opportunities.",
-      "publishedAt": "2026-10-16T14:09:00.000Z",
       "section": "South Caucasus",
       "subsection": "Armenia",
       "country": "",
@@ -1882,20 +1728,6 @@
       "reviewed": true
     },
     {
-      "id": "https://akipress.com/news:925519:Sadyr_Japarov_and_Nikol_Pashinyan_hold_talks_in_expanded_format/",
-      "url": "https://akipress.com/news:925519:Sadyr_Japarov_and_Nikol_Pashinyan_hold_talks_in_expanded_format/",
-      "sourceId": "source-76",
-      "sourceName": "AKIpress",
-      "group": "Central Asia",
-      "title": "Sadyr Japarov and Nikol Pashinyan hold talks in expanded format",
-      "summary": "President Sadyr Japarov held talks with Prime Minister Nikol Pashinyan in Yerevan.",
-      "publishedAt": "2026-10-17T15:00:00.000Z",
-      "section": "Central Asia",
-      "subsection": "Kyrgyzstan",
-      "country": "",
-      "reviewed": true
-    },
-    {
       "id": "https://24.kg/en/article/sadyr-japarov-holds-talks-with-armenian-prime-minister-nikol-pashinyan",
       "url": "https://24.kg/en/article/sadyr-japarov-holds-talks-with-armenian-prime-minister-nikol-pashinyan",
       "sourceId": "source-74",
@@ -1960,20 +1792,6 @@
       "title": "Turkmen president proposes developing int'l code for peaceful use of AI in int'l relations, diplomacy",
       "summary": "President Serdar Berdimuhamedov proposed the development of an international code for the peaceful use of AI in diplomacy at the CICA summit.",
       "publishedAt": "2026-10-17T19:03:00.000Z",
-      "section": "Central Asia",
-      "subsection": "Turkmenistan",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.trend.az/casia/turkmenistan/4236037.html",
-      "url": "https://www.trend.az/casia/turkmenistan/4236037.html",
-      "sourceId": "source-56",
-      "sourceName": "Trend",
-      "group": "South Caucasus",
-      "title": "Turkmenistan proposes international code for peaceful AI use in diplomacy",
-      "summary": "Turkmenistan proposed developing an international code governing the peaceful use of artificial intelligence in diplomacy.",
-      "publishedAt": "2026-10-17T06:53:54.000Z",
       "section": "Central Asia",
       "subsection": "Turkmenistan",
       "country": "",
@@ -2134,20 +1952,6 @@
       "reviewed": true
     },
     {
-      "id": "https://cyprus-mail.com/2026/10/17/albanian-police-fire-rubber-bullets-as-student-protests-rage",
-      "url": "https://cyprus-mail.com/2026/10/17/albanian-police-fire-rubber-bullets-as-student-protests-rage",
-      "sourceId": "source-109",
-      "sourceName": "Cyprus Mail",
-      "group": "Miscl",
-      "title": "Albanian police fire rubber bullets as student protests rage",
-      "summary": "Police fired rubber bullets at protesters during student demonstrations demanding Prime Minister Edi Rama's resignation.",
-      "publishedAt": "2026-10-17T15:55:45.000Z",
-      "section": "Miscellaneous",
-      "subsection": "WESTERN / CENTRAL EUROPE",
-      "country": "Cyprus",
-      "reviewed": true
-    },
-    {
       "id": "https://cyprus-mail.com/2026/10/17/european-council-offers-backing-for-cyprus-amalthea-humanitarian-corridor",
       "url": "https://cyprus-mail.com/2026/10/17/european-council-offers-backing-for-cyprus-amalthea-humanitarian-corridor",
       "sourceId": "source-109",
@@ -2274,14 +2078,14 @@
       "reviewed": true
     },
     {
-      "id": "https://www.asiaone.com/world/french-police-arrest-1800-after-violent-clashes-and-looting-mar-protests",
-      "url": "https://www.asiaone.com/world/french-police-arrest-1800-after-violent-clashes-and-looting-mar-protests",
-      "sourceId": "source-104",
-      "sourceName": "AsiaOne",
+      "id": "https://www.euronews.com/2026/10/18/businesses-and-shopkeepers-pick-up-the-pieces-after-protests-in-france-spiral-into-looting",
+      "url": "https://www.euronews.com/2026/10/18/businesses-and-shopkeepers-pick-up-the-pieces-after-protests-in-france-spiral-into-looting",
+      "sourceId": "source-82",
+      "sourceName": "Euronews",
       "group": "Miscl",
-      "title": "French police arrest 1,800 after violent clashes and looting mar protests",
-      "summary": "Police arrested at least 1,800 people across France after violent groups clashed during demonstrations against rising living costs.",
-      "publishedAt": "2026-10-18T11:34:34.000Z",
+      "title": "Businesses pick up the pieces after protests in France bring looting",
+      "summary": "A total of 50 shops were targeted, including 19 Carrefour convenience stores and supermarkets.",
+      "publishedAt": "2026-10-18T12:26:48.000Z",
       "section": "Miscellaneous",
       "subsection": "WESTERN / CENTRAL EUROPE",
       "country": "France",
@@ -2302,20 +2106,6 @@
       "reviewed": true
     },
     {
-      "id": "https://www.internazionale.it/ultime-notizie-reuters/2026/10/17/students-trade-unions-and-yellow-vests-set-to-protest-across-france",
-      "url": "https://www.internazionale.it/ultime-notizie-reuters/2026/10/17/students-trade-unions-and-yellow-vests-set-to-protest-across-france",
-      "sourceId": "source-173",
-      "sourceName": "Reuters",
-      "group": "Miscl",
-      "title": "Mass protests in France spiral into worst riots in years",
-      "summary": "Rioting erupted across France amid protests against rising living costs and declining public services, resulting in violence and property damage.",
-      "publishedAt": "2026-10-17T20:27:16.000Z",
-      "section": "Miscellaneous",
-      "subsection": "WESTERN / CENTRAL EUROPE",
-      "country": "France",
-      "reviewed": true
-    },
-    {
       "id": "https://www.thelocal.fr/20261017/french-far-right-seeks-ouster-of-constitutional-court-chief",
       "url": "https://www.thelocal.fr/20261017/french-far-right-seeks-ouster-of-constitutional-court-chief",
       "sourceId": "source-127",
@@ -2324,20 +2114,6 @@
       "title": "French far-right seeks ouster of constitutional court chief",
       "summary": "Far-right lawmakers urged the constitutional court to remove President Richard Ferrand over Marine Le Pen's referendum plans.",
       "publishedAt": "2026-10-17T14:30:41.000Z",
-      "section": "Miscellaneous",
-      "subsection": "WESTERN / CENTRAL EUROPE",
-      "country": "France",
-      "reviewed": true
-    },
-    {
-      "id": "https://en.apa.az/europe/tear-gas-clashes-hit-french-cities-in-cost-of-living-protests-530699",
-      "url": "https://en.apa.az/europe/tear-gas-clashes-hit-french-cities-in-cost-of-living-protests-530699",
-      "sourceId": "source-55",
-      "sourceName": "APA",
-      "group": "South Caucasus",
-      "title": "Tear gas, clashes hit French cities in cost-of-living protests",
-      "summary": "Police fired tear gas and clashed with protesters in several French cities during violent cost-of-living demonstrations.",
-      "publishedAt": "2026-10-17T13:17:00.000Z",
       "section": "Miscellaneous",
       "subsection": "WESTERN / CENTRAL EUROPE",
       "country": "France",
@@ -2509,20 +2285,6 @@
       "section": "Miscellaneous",
       "subsection": "WESTERN / CENTRAL EUROPE",
       "country": "Latvia",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.euronews.com/2026/10/18/possible-drone-explosion-in-northern-lithuania-near-latvian-border",
-      "url": "https://www.euronews.com/2026/10/18/possible-drone-explosion-in-northern-lithuania-near-latvian-border",
-      "sourceId": "source-82",
-      "sourceName": "Euronews",
-      "group": "Miscl",
-      "title": "Possible drone explosion in northern Lithuania near Latvian border",
-      "summary": "NATO fighter jets were scrambled after a suspected drone entered Lithuanian airspace and possibly detonated on its own.",
-      "publishedAt": "2026-10-18T08:14:31.000Z",
-      "section": "Miscellaneous",
-      "subsection": "WESTERN / CENTRAL EUROPE",
-      "country": "Lithuania",
       "reviewed": true
     },
     {
@@ -3156,20 +2918,6 @@
       "reviewed": true
     },
     {
-      "id": "https://turkishminute.com/2026/10/17/turkish-gang-may-have-carried-out-starlink-attack-in-poland-for-russia-report/",
-      "url": "https://turkishminute.com/2026/10/17/turkish-gang-may-have-carried-out-starlink-attack-in-poland-for-russia-report/",
-      "sourceId": "source-147",
-      "sourceName": "Turkish Minute",
-      "group": "Miscl",
-      "title": "Turkish gang may have carried out Starlink attack in Poland for Russia: report",
-      "summary": "Two Turkish citizens were detained in Germany for an arson attack on a Starlink station in Poland.",
-      "publishedAt": "2026-10-17T12:26:21.000Z",
-      "section": "Miscellaneous",
-      "subsection": "MIDDLE EAST / NORTH AFRICA",
-      "country": "Türkiye",
-      "reviewed": true
-    },
-    {
       "id": "https://arminfo.info/full_news.php?id=105032&lang=3",
       "url": "https://arminfo.info/full_news.php?id=105032&lang=3",
       "sourceId": "source-51",
@@ -3506,20 +3254,6 @@
       "reviewed": true
     },
     {
-      "id": "https://kyivindependent.com/lithuania-foils-arson-attack-on-starlink-equipment-suspects-russian-involvement/",
-      "url": "https://kyivindependent.com/lithuania-foils-arson-attack-on-starlink-equipment-suspects-russian-involvement/",
-      "sourceId": "source-39",
-      "sourceName": "Kyiv Independent",
-      "group": "East Europe",
-      "title": "Lithuania foils arson attack on Starlink equipment, suspects Russian involvement",
-      "summary": "Lithuanian authorities thwarted an attempted arson attack on Starlink satellite communications equipment.",
-      "publishedAt": "2026-10-18T12:57:44.000Z",
-      "section": "Miscellaneous",
-      "subsection": "RUSSIA / EURASIA",
-      "country": "Russia",
-      "reviewed": true
-    },
-    {
       "id": "https://www.ukrinform.net/rubric-ato/4175566-russian-shelling-in-chernihiv-region-injures-one-person.html",
       "url": "https://www.ukrinform.net/rubric-ato/4175566-russian-shelling-in-chernihiv-region-injures-one-person.html",
       "sourceId": "source-34",
@@ -3556,20 +3290,6 @@
       "title": "Russian forces launch massive attack on Rivne and surrounding area in early morning strike",
       "summary": "Russian troops targeted civilian infrastructure in Rivne, with emergency services responding to contain fires.",
       "publishedAt": "2026-10-18T10:17:00.000Z",
-      "section": "Miscellaneous",
-      "subsection": "RUSSIA / EURASIA",
-      "country": "Russia",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.lrt.lt/en/news-in-english/19/3086054/attempted-arson-at-lithuanian-firm-storing-starlink-equipment-pm-blames-russia",
-      "url": "https://www.lrt.lt/en/news-in-english/19/3086054/attempted-arson-at-lithuanian-firm-storing-starlink-equipment-pm-blames-russia",
-      "sourceId": "source-95",
-      "sourceName": "LRT",
-      "group": "Miscl",
-      "title": "Attempted arson at Lithuanian firm storing Starlink equipment, PM blames Russia",
-      "summary": "An attempt was made to set fire to a Lithuanian company storing Starlink communications equipment.",
-      "publishedAt": "2026-10-18T09:49:00.000Z",
       "section": "Miscellaneous",
       "subsection": "RUSSIA / EURASIA",
       "country": "Russia",
@@ -3668,34 +3388,6 @@
       "title": "Moscow discussions focus on South Caucasus energy projects under “3+3” framework",
       "summary": "A roundtable in Moscow discussed prospects for electricity trade and coordination of regional energy strategies.",
       "publishedAt": "2026-10-16T22:12:00.000Z",
-      "section": "Miscellaneous",
-      "subsection": "RUSSIA / EURASIA",
-      "country": "Russia",
-      "reviewed": true
-    },
-    {
-      "id": "https://arminfo.info/full_news.php?id=105040&lang=3",
-      "url": "https://arminfo.info/full_news.php?id=105040&lang=3",
-      "sourceId": "source-51",
-      "sourceName": "Arminfo",
-      "group": "South Caucasus",
-      "title": "Arminfo: Kopyrkin: Relations between Russia and Armenia are going through a phase that requires mutual understanding and a search for a new balance.",
-      "summary": "Russian Ambassador to Armenia Sergey Kopyrkin emphasized the importance of mutual understanding in current relations between the two countries.",
-      "publishedAt": "2026-10-16T20:32:00.000Z",
-      "section": "Miscellaneous",
-      "subsection": "RUSSIA / EURASIA",
-      "country": "Russia",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.azernews.az/region/265717.html",
-      "url": "https://www.azernews.az/region/265717.html",
-      "sourceId": "source-58",
-      "sourceName": "Azernews",
-      "group": "South Caucasus",
-      "title": "Peskov: Russia agrees with Trump on Zelensky",
-      "summary": "Kremlin Press Secretary Dmitry Peskov stated that Zelensky is unwilling to take responsibility for peace.",
-      "publishedAt": "2026-10-16T18:04:00.000Z",
       "section": "Miscellaneous",
       "subsection": "RUSSIA / EURASIA",
       "country": "Russia",
@@ -3884,20 +3576,6 @@
       "reviewed": true
     },
     {
-      "id": "https://english.news.cn/20261018/a2d2c4a324c947209afed604862c3079/c.html",
-      "url": "https://english.news.cn/20261018/a2d2c4a324c947209afed604862c3079/c.html",
-      "sourceId": "source-102",
-      "sourceName": "Xinhua",
-      "group": "Miscl",
-      "title": "China, Uzbekistan seek tangible gains from expanding cooperation during premier's visit",
-      "summary": "China is ready to work with Uzbekistan to expand bilateral trade and optimize its structure.",
-      "publishedAt": "2026-10-18T18:34:15.000Z",
-      "section": "Miscellaneous",
-      "subsection": "NORTH EAST ASIA",
-      "country": "China",
-      "reviewed": true
-    },
-    {
       "id": "https://english.news.cn/20261018/3713f96fcf984160b12caa78012ac805/c.html",
       "url": "https://english.news.cn/20261018/3713f96fcf984160b12caa78012ac805/c.html",
       "sourceId": "source-102",
@@ -4060,20 +3738,6 @@
       "title": "Multiple people killed as Canadian authorities tackle active blaze at Alberta military base",
       "summary": "A deadly blaze at CFB Wainwright has resulted in multiple fatalities and injuries, according to Canada’s defense minister.",
       "publishedAt": "2026-10-18T15:31:33.000Z",
-      "section": "Miscellaneous",
-      "subsection": "NORTH AMERICA",
-      "country": "Canada",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.npr.org/2026/10/18/nx-s1-6007276/fire-alberta-deadly-canada-military-base",
-      "url": "https://www.npr.org/2026/10/18/nx-s1-6007276/fire-alberta-deadly-canada-military-base",
-      "sourceId": "source-154",
-      "sourceName": "NPR",
-      "group": "Miscl",
-      "title": "Major fire breaks out in Alberta after deadly incident at military base",
-      "summary": "A fire at Canadian Forces Base Wainwright resulted in multiple fatalities and injuries, overwhelming local hospitals.",
-      "publishedAt": "2026-10-18T07:56:08.000Z",
       "section": "Miscellaneous",
       "subsection": "NORTH AMERICA",
       "country": "Canada",
@@ -4276,20 +3940,6 @@
       "reviewed": true
     },
     {
-      "id": "https://www.rfi.fr/en/international-news/20261018-trump-backs-ally-netanyahu-ahead-of-israel-s-tight-election",
-      "url": "https://www.rfi.fr/en/international-news/20261018-trump-backs-ally-netanyahu-ahead-of-israel-s-tight-election",
-      "sourceId": "source-92",
-      "sourceName": "RFI",
-      "group": "Miscl",
-      "title": "Trump backs ally Netanyahu ahead of Israel's tight election",
-      "summary": "US President Donald Trump endorsed Benjamin Netanyahu before Israel's parliamentary election on October 27.",
-      "publishedAt": "2026-10-18T18:17:30.000Z",
-      "section": "Miscellaneous",
-      "subsection": "NORTH AMERICA",
-      "country": "United States",
-      "reviewed": true
-    },
-    {
       "id": "https://www.iranintl.com/en/202610182359",
       "url": "https://www.iranintl.com/en/202610182359",
       "sourceId": "source-119",
@@ -4298,20 +3948,6 @@
       "title": "Trump says US may ‘soon finish the job’ on Iran, Netanyahu vows to topple regime",
       "summary": "Trump warned the U.S. could act against Iran unless it changes its aggressive stance.",
       "publishedAt": "2026-10-18T17:12:26.630Z",
-      "section": "Miscellaneous",
-      "subsection": "NORTH AMERICA",
-      "country": "United States",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.pbs.org/newshour/politics/trump-endorses-embattled-israeli-prime-minister-benjamin-netanyahu-for-reelection",
-      "url": "https://www.pbs.org/newshour/politics/trump-endorses-embattled-israeli-prime-minister-benjamin-netanyahu-for-reelection",
-      "sourceId": "source-155",
-      "sourceName": "PBS",
-      "group": "Miscl",
-      "title": "Trump endorses embattled Israeli Prime Minister Benjamin Netanyahu for reelection",
-      "summary": "Trump endorsed Netanyahu ahead of Israel's elections on October 27, boosting the Prime Minister's reelection campaign.",
-      "publishedAt": "2026-10-18T16:18:14.000Z",
       "section": "Miscellaneous",
       "subsection": "NORTH AMERICA",
       "country": "United States",
@@ -4452,20 +4088,6 @@
       "title": "Expert: Trump does not have the power to force Ukraine to capitulate",
       "summary": "Trump has recently pressured Zelenskyy for peace and signed a diesel fuel deal with Putin.",
       "publishedAt": "2026-10-16T10:21:00.000Z",
-      "section": "Miscellaneous",
-      "subsection": "NORTH AMERICA",
-      "country": "United States",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.novinite.com/articles/241095/Trump+Rejects+Zelensky+and+Criticizes+Ukraine%E2%80%99s+Attacks+on+Russian+Refineries",
-      "url": "https://www.novinite.com/articles/241095/Trump+Rejects+Zelensky+and+Criticizes+Ukraine%E2%80%99s+Attacks+on+Russian+Refineries",
-      "sourceId": "source-107",
-      "sourceName": "Novinite",
-      "group": "Miscl",
-      "title": "Trump Rejects Zelensky and Criticizes Ukraine’s Attacks on Russian Refineries",
-      "summary": "Trump condemned Ukraine's attacks on Russian oil refineries, calling them a disgrace and a driver of global energy prices.",
-      "publishedAt": "2026-10-16T10:09:00.000Z",
       "section": "Miscellaneous",
       "subsection": "NORTH AMERICA",
       "country": "United States",
@@ -4913,7 +4535,7 @@
       "group": "South Eastern Europe",
       "url": "https://dtt-net.com/category/w-balkan-news/",
       "status": "collected",
-      "reason": "5 verified articles included; 7 original article pages checked."
+      "reason": "4 verified articles included; 7 original article pages checked."
     },
     {
       "id": "source-2",
@@ -4937,7 +4559,7 @@
       "group": "South Eastern Europe",
       "url": "https://euronews.al/en/just-in/",
       "status": "collected",
-      "reason": "5 verified articles included; 4 original article pages checked."
+      "reason": "4 verified articles included; 4 original article pages checked."
     },
     {
       "id": "source-5",
@@ -4977,7 +4599,7 @@
       "group": "South Eastern Europe",
       "url": "https://sarajevotimes.com/",
       "status": "collected",
-      "reason": "4 verified articles included; 2 original article pages checked."
+      "reason": "3 verified articles included; 2 original article pages checked."
     },
     {
       "id": "source-10",
@@ -5216,8 +4838,8 @@
       "name": "Kyiv Independent",
       "group": "East Europe",
       "url": "https://kyivindependent.com/news-archive/",
-      "status": "collected",
-      "reason": "1 verified article included; 1 original article pages checked."
+      "status": "checked",
+      "reason": "32 links listed and 1 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. 1 listing candidates had been scraped in an earlier batch and were not scraped again. Newest dated listing: 2026-10-18. Editorial selection: 1 duplicate: same Lithuania Starlink arson attempt covered by Reuters; 1 same development covered by a preferred source."
     },
     {
       "id": "source-40",
@@ -5281,7 +4903,7 @@
       "group": "South Caucasus",
       "url": "https://www.pan.am/en/newsfeed",
       "status": "collected",
-      "reason": "8 verified articles included; 12 original article pages checked."
+      "reason": "6 verified articles included; 12 original article pages checked."
     },
     {
       "id": "source-48",
@@ -5289,7 +4911,7 @@
       "group": "South Caucasus",
       "url": "https://armenpress.am/en/articles",
       "status": "collected",
-      "reason": "7 verified articles included; 11 original article pages checked."
+      "reason": "3 verified articles included; 11 original article pages checked."
     },
     {
       "id": "source-49",
@@ -5313,7 +4935,7 @@
       "group": "South Caucasus",
       "url": "https://arminfo.info/allnews.php?lang=3",
       "status": "collected",
-      "reason": "6 verified articles included; 8 original article pages checked."
+      "reason": "5 verified articles included; 8 original article pages checked."
     },
     {
       "id": "source-52",
@@ -5345,7 +4967,7 @@
       "group": "South Caucasus",
       "url": "https://en.apa.az/all-news",
       "status": "collected",
-      "reason": "5 verified articles included; 9 original article pages checked."
+      "reason": "4 verified articles included; 9 original article pages checked."
     },
     {
       "id": "source-56",
@@ -5353,7 +4975,7 @@
       "group": "South Caucasus",
       "url": "https://www.trend.az/azerbaijan/",
       "status": "collected",
-      "reason": "6 verified articles included; 5 original article pages checked."
+      "reason": "5 verified articles included; 5 original article pages checked."
     },
     {
       "id": "source-57",
@@ -5369,7 +4991,7 @@
       "group": "South Caucasus",
       "url": "https://www.azernews.az/latest/",
       "status": "collected",
-      "reason": "3 verified articles included; 3 original article pages checked."
+      "reason": "2 verified articles included; 3 original article pages checked."
     },
     {
       "id": "source-59",
@@ -5512,8 +5134,8 @@
       "name": "AKIpress",
       "group": "Central Asia",
       "url": "https://akipress.com/allnews/",
-      "status": "collected",
-      "reason": "1 verified article included; 2 original article pages checked."
+      "status": "checked",
+      "reason": "5 links listed and 2 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. 2 listing candidates had been scraped in an earlier batch and were not scraped again. Article checks: 2 outside scope. Editorial selection: 1 country or organisation needs editorial placement; 1 duplicate: same Japarov-Pashinyan talks covered with more detail by 24.kg."
     },
     {
       "id": "source-77",
@@ -5545,7 +5167,7 @@
       "group": "Miscl",
       "url": "https://www.dw.com/en/top-stories/s-9097",
       "status": "checked",
-      "reason": "10 links listed and 5 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-17. Article checks: 3 outside window. Errors: publisher feed: fetch failed Editorial selection: 1 news roundup or analysis; 1 same development covered by a preferred source."
+      "reason": "10 links listed and 5 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-17. Article checks: 3 outside window. Errors: publisher feed: fetch failed Editorial selection: 1 duplicate: French unrest arrest tally covered in AP report; extracted headline also contains a number typo; 1 news roundup or analysis."
     },
     {
       "id": "source-81",
@@ -5641,7 +5263,7 @@
       "group": "Miscl",
       "url": "https://www.rfi.fr/en/live-news/",
       "status": "collected",
-      "reason": "4 verified articles included; 5 original article pages checked."
+      "reason": "2 verified articles included; 5 original article pages checked."
     },
     {
       "id": "source-93",
@@ -5665,7 +5287,7 @@
       "group": "Miscl",
       "url": "https://www.lrt.lt/en/news-in-english",
       "status": "collected",
-      "reason": "4 verified articles included; 5 original article pages checked."
+      "reason": "3 verified articles included; 5 original article pages checked."
     },
     {
       "id": "source-96",
@@ -5721,7 +5343,7 @@
       "group": "Miscl",
       "url": "https://english.news.cn/list/china-chinaworld.htm",
       "status": "collected",
-      "reason": "5 verified articles included; 9 original article pages checked."
+      "reason": "4 verified articles included; 9 original article pages checked."
     },
     {
       "id": "source-103",
@@ -5737,7 +5359,7 @@
       "group": "Miscl",
       "url": "https://www.asiaone.com/lite",
       "status": "collected",
-      "reason": "3 verified articles included; 4 original article pages checked."
+      "reason": "2 verified articles included; 4 original article pages checked."
     },
     {
       "id": "source-105",
@@ -5761,7 +5383,7 @@
       "group": "Miscl",
       "url": "https://www.novinite.com/",
       "status": "collected",
-      "reason": "4 verified articles included; 4 original article pages checked."
+      "reason": "3 verified articles included; 4 original article pages checked."
     },
     {
       "id": "source-108",
@@ -5777,7 +5399,7 @@
       "group": "Miscl",
       "url": "https://cyprus-mail.com/",
       "status": "collected",
-      "reason": "4 verified articles included; 5 original article pages checked."
+      "reason": "3 verified articles included; 5 original article pages checked."
     },
     {
       "id": "source-110",
@@ -5808,8 +5430,8 @@
       "name": "Copenhagen Post",
       "group": "Miscl",
       "url": "https://cphpost.dk/",
-      "status": "collected",
-      "reason": "1 verified article included; 2 original article pages checked."
+      "status": "checked",
+      "reason": "8 links listed and 2 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. 2 listing candidates had been scraped in an earlier batch and were not scraped again. Newest dated listing: 2026-10-14. Article checks: 2 outside window. Editorial selection: 1 duplicate: same Moldovan drone incursions and condemnation covered by Moldpres; 1 same Trump-Zelensky development covered by Reuters."
     },
     {
       "id": "source-114",
@@ -6080,8 +5702,8 @@
       "name": "Turkish Minute",
       "group": "Miscl",
       "url": "https://turkishminute.com/category/national/",
-      "status": "collected",
-      "reason": "1 verified article included; 3 original article pages checked."
+      "status": "checked",
+      "reason": "5 links listed and 3 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. 1 listing candidates had been scraped in an earlier batch and were not scraped again. Newest dated listing: 2026-10-17. Article checks: 3 outside scope. Editorial selection: 1 duplicate: same alleged Turkish-gang Starlink arson report covered by Meduza."
     },
     {
       "id": "source-148",
@@ -6137,7 +5759,7 @@
       "group": "Miscl",
       "url": "https://www.npr.org/sections/world/",
       "status": "collected",
-      "reason": "2 verified articles included; 4 original article pages checked."
+      "reason": "1 verified article included; 4 original article pages checked."
     },
     {
       "id": "source-155",
@@ -6145,7 +5767,7 @@
       "group": "Miscl",
       "url": "https://www.pbs.org/newshour/world",
       "status": "collected",
-      "reason": "3 verified articles included; 7 original article pages checked."
+      "reason": "2 verified articles included; 7 original article pages checked."
     },
     {
       "id": "source-156",
@@ -6289,7 +5911,7 @@
       "group": "Miscl",
       "url": "https://www.internazionale.it/",
       "status": "collected",
-      "reason": "11 verified articles included; 7 original article pages checked."
+      "reason": "10 verified articles included; 7 original article pages checked."
     }
   ]
 }
