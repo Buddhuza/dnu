@@ -17,6 +17,8 @@ import { disclaimerFirst, disclaimerSecond } from './disclaimer.js';
 import { sourceAudit } from './collectionAudit.js';
 import { formatViennaDateTime, formatViennaCompactDateTime } from './viennaTime.js';
 import { emailSubject, emailUpdateHtml, emailUpdateText } from './emailUpdate.js';
+import { loadFullArticle } from './articleBodyClient.js';
+import { createSpreadsheet, spreadsheetRow } from './spreadsheetExport.js';
 import './styles.css';
 
 const readStored = (key, fallback, legacyKey) => {
@@ -65,6 +67,7 @@ function App() {
   const [auditRows, setAuditRows] = useState(() => { const saved = readStored('dnu-source-audit-v1', []); return Array.isArray(saved) ? saved : []; });
   const [error, setError] = useState('');
   const [toast, setToast] = useState('');
+  const [exportingSheet, setExportingSheet] = useState(false);
   const [managing, setManaging] = useState(false);
   const [editingStories, setEditingStories] = useState(false);
   const [headlineOnly, setHeadlineOnly] = useState(() => readStored('dnu-headline-only-v1', false) === true);
@@ -333,6 +336,40 @@ function App() {
     }
   }
 
+  async function exportSpreadsheet() {
+    if (exportingSheet || !selectedArticles.length) return;
+    setExportingSheet(true);
+    const rows = new Array(selectedArticles.length);
+    const failures = [];
+    let cursor = 0, completed = 0;
+    setToast(`Collecting full articles: 0/${selectedArticles.length}`);
+    const worker = async () => {
+      while (cursor < selectedArticles.length && !failures.length) {
+        const index = cursor++;
+        const article = selectedArticles[index];
+        try {
+          const page = await loadFullArticle(article, { serverAvailable: !staticPreview });
+          rows[index] = spreadsheetRow(article, page, siteConfig.leadOrigins);
+        } catch (error) { failures.push(`${article.sourceName}: ${article.title} (${error.message})`); }
+        completed++;
+        setToast(`Collecting full articles: ${completed}/${selectedArticles.length}${failures.length ? ` · ${failures.length} unavailable` : ''}`);
+      }
+    };
+    try {
+      await Promise.all(Array.from({ length: Math.min(3, selectedArticles.length) }, worker));
+      if (failures.length) throw new Error(`${failures.length} full article${failures.length === 1 ? '' : 's'} unavailable. No incomplete spreadsheet was exported. ${failures.slice(0, 2).join('; ')}${failures.length > 2 ? '…' : ''} Uncheck those stories or retry after adding your Firecrawl key.`);
+      const file = await createSpreadsheet(rows);
+      const url = URL.createObjectURL(file);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Daily news update - ${reportEndDateLabel(compiledAt)}.xlsx`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+      setToast(`Exported ${rows.length} full articles to spreadsheet.`);
+    } catch (error) { setToast(error.message || 'Could not export the spreadsheet.'); }
+    finally { setExportingSheet(false); }
+  }
+
   const readStoryDrafts = () => Object.fromEntries([...document.querySelectorAll('.daily-scroll .daily-story[data-story-id]')].map(story => [story.dataset.storyId, {
     title: story.querySelector('[data-edit-field="title"]')?.innerText.trim() || '',
     summary: story.querySelector('[data-edit-field="summary"]')?.innerText.trim() || '',
@@ -397,6 +434,7 @@ function App() {
     <button className={`daily-action daily-edit ${headlineOnly ? 'is-active' : ''}`} type="button" aria-label={headlineOnly ? 'Show summaries' : 'Show headlines only'} title={editingStories ? 'Save edits before switching views' : headlineOnly ? 'Show headlines and summaries' : 'Show headlines only'} aria-pressed={headlineOnly} disabled={editingStories} onClick={() => { rememberReadingPosition(); setHeadlineOnly(current => !current); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16"/>{!headlineOnly && <path d="M4 15h16"/>}</svg></button>
     <button className="daily-action daily-download" type="button" aria-label="Download update" title={editingStories ? 'Save edits before downloading' : headlineOnly ? 'Download headlines-only Word update' : 'Download Word update with summaries'} disabled={!selectedArticles.length || editingStories} onClick={downloadManagedDocx}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 17v3h16v-3"/></svg></button>
     <button className="daily-action daily-edit" type="button" aria-label="Email update" title={editingStories ? 'Save edits before emailing' : 'Copy formatted update and open your email app; paste into the message body'} disabled={!selectedArticles.length || editingStories} onClick={emailManagedUpdate}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5h18v13H3z"/><path d="m3 6 9 7 9-7"/></svg></button>
+    <button className="daily-action daily-edit" type="button" aria-label="Export spreadsheet" title={editingStories ? 'Save edits before exporting' : 'Export visible full articles to spreadsheet'} disabled={!selectedArticles.length || editingStories || exportingSheet} onClick={exportSpreadsheet}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 9h18M3 14h18M10 9v11M16 9v11"/></svg></button>
     <button className="daily-action daily-edit daily-search-toggle" type="button" aria-label="Search update" title="Search within the update" aria-expanded={updateSearchOpen} onClick={() => setUpdateSearchOpen(current => !current)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"/><path d="m16 16 5 5"/></svg></button>
   </div>;
   const highlightSearch = value => {

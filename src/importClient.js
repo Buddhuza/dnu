@@ -1,5 +1,7 @@
 import { IMPORT_PROMPT } from './importPrompt.js';
 import { importedArticle, publicArticleUrl, sourceForArticle } from '../server/importArticle.js';
+import { extractBrowserArticleBody } from './articleBodyText.js';
+import { storeArticleBody } from './articleBodyStore.js';
 
 export async function importDirectArticle(value, apiKey, sources, fetchImpl = fetch, options = {}) {
   const url = publicArticleUrl(value);
@@ -12,5 +14,9 @@ export async function importDirectArticle(value, apiKey, sources, fetchImpl = fe
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok || payload.success === false) throw new Error(payload.error || payload.message || `Firecrawl returned HTTP ${response.status}`);
-  return importedArticle(payload, url, sourceForArticle(url, sources), options);
+  const article = importedArticle(payload, url, sourceForArticle(url, sources), options);
+  const page = payload.data || payload;
+  const body = extractBrowserArticleBody(page, article.title);
+  if (body.split(/\s+/).length >= 25) await storeArticleBody(url.href, { heading: String(page.metadata?.title || page.json?.exactHeadline || article.title).trim(), body });
+  return article;
 }

@@ -10,6 +10,8 @@ import { currentDailyUpdate } from './daily.js';
 import { reportFilename } from '../src/reportFilename.js';
 import { createAutoScrapeHistory } from './autoScrapeHistory.js';
 import { createArticleCache } from './articleCache.js';
+import { extractArticleBody } from './articleBody.js';
+import { load as loadHtml } from 'cheerio';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const sources = JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'));
@@ -177,6 +179,27 @@ app.post('/api/import-article', async (req, res) => {
     }
     res.json(importedArticle({ data: entry.page }, articleUrl, sourceForArticle(articleUrl, sources), { allowUnplaced: req.body?.allowUnplaced === true }));
   } catch (error) { res.status(422).json({ error: error.message || 'The article could not be imported.' }); }
+});
+
+app.post('/api/article-body', async (req, res) => {
+  const articleUrl = publicArticleUrl(req.body?.url);
+  if (!articleUrl) return res.status(400).json({ error: 'Enter a public HTTPS article URL.' });
+  try {
+    let entry = articleCache.get(articleUrl.href);
+    if (!entry?.page) {
+      if (!process.env.FIRECRAWL_API_KEY) return res.status(503).json({ error: 'Firecrawl is not configured and this page is not cached.' });
+      articleCache.putPage(articleUrl.href, (await scrapeImportedArticle(articleUrl.href, process.env.FIRECRAWL_API_KEY)).data);
+      entry = articleCache.get(articleUrl.href);
+    }
+    const body = extractArticleBody(entry.page, String(entry.page?.json?.exactHeadline || entry.article?.title || ''));
+    if (body.split(/\s+/).length < 25) return res.status(422).json({ error: 'The publisher page did not provide a full readable article body.' });
+    const $ = loadHtml(entry.page?.html || '');
+    const headingCandidates = $('h1').map((_index, node) => $(node).text().replace(/\s+/g, ' ').trim()).get();
+    const expected = String(entry.article?.title || '').toLowerCase().match(/[a-z]{5,}/g) || [];
+    const heading = headingCandidates.find(value => value.length > 15 && expected.filter(word => value.toLowerCase().includes(word)).length >= Math.min(2, expected.length))
+      || entry.page?.metadata?.title || entry.page?.json?.exactHeadline || entry.article?.title || '';
+    res.json({ heading: String(heading).trim(), body });
+  } catch (error) { res.status(502).json({ error: `Could not collect full article: ${error.message}` }); }
 });
 
 app.post('/api/report.docx', async (req, res) => {
