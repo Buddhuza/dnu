@@ -8,6 +8,8 @@ test('attacks taking place in Ukraine are placed by location rather than the fir
   assert.deepEqual(ukraineAttackPlacement('Russia bombs Ukraine overnight'), ukraine);
   assert.deepEqual(ukraineAttackPlacement('Russian drones strike Kyiv energy network'), ukraine);
   assert.deepEqual(ukraineAttackPlacement('Strike on Kyiv kills three'), ukraine);
+  assert.deepEqual(ukraineAttackPlacement('Russian strike on Kramatorsk kills three civilians'), ukraine);
+  assert.deepEqual(ukraineAttackPlacement('Railway station damaged in overnight attack in Zhytomyr region'), ukraine);
   assert.equal(ukraineAttackPlacement('Ukrainian drones attack Belgorod in Russia'), null);
   assert.equal(ukraineAttackPlacement('EU pledges military aid to Ukraine'), null);
 });

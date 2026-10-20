@@ -38,7 +38,7 @@ function cleanHeadline(article) {
   const brand = source.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const host = new URL(source.url).hostname.replace(/^www\./, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   title = title.replace(new RegExp(`\\s[-–|]\\s(?:${brand}|${host})$`, 'i'), '').trim();
-  title = title.replace(/\s[-–|]\s(?:Euronews Albania|Republika English|Civil Georgia|Khaama Press|The Copenhagen Post|Novinite\.com - Sofia News Agency)$/i, '').trim();
+  title = title.replace(/\s[-–|]\s(?:Euronews Albania|Republika English|Civil Georgia|Khaama Press|The Copenhagen Post|Novinite\.com - Sofia News Agency|The Malta Independent|Yonhap News Agency|ITV News|The Moscow Times|CNN Politics)$/i, '').trim();
   if (source.id === 'source-93') title = title.replace(/\s-\s(?:TopNews|News from Embassies)(?:\s-\sAnsa\.it)?$/i, '').trim();
   return title;
 }
@@ -113,6 +113,10 @@ const placementOverrides = new Map([
   ['https://www.nbcnews.com/world/iran/norwegian-teen-sentenced-20-years-uk-murder-plot-tied-iran-linked-grou-rcna603857', { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'United Kingdom' }],
   ['https://www.gazetaexpress.com/en/The-opposition-demands-the-return-of-the-strategic-dialogue-with-the-US--and-VV-says-that-cooperation-will-continue./', { sectionId: 'South Eastern Europe', subsection: 'Serbia / Kosovo', country: '' }]
 ]);
+const editionPlacementPath = join(root, `data/editorial-placement-${day}.json`);
+if (existsSync(editionPlacementPath)) {
+  for (const [url, placement] of Object.entries(JSON.parse(readFileSync(editionPlacementPath, 'utf8')))) placementOverrides.set(url, placement);
+}
 function placementFromTitle(title) {
   const matches = titlePlaces.map(([sectionId, subsection, country, pattern], priority) => ({ sectionId, subsection, country, priority, index: title.search(pattern) })).filter(item => item.index >= 0);
   matches.sort((a, b) => a.index - b.index || a.priority - b.priority);
@@ -144,7 +148,9 @@ for (const article of raw) {
   else if (editorialExclusions[article.url]) reason = editorialExclusions[article.url];
   else if (/T00:00:00(?:\.000)?Z$/.test(article.publishedAt)) reason = 'date-only or midnight time needs review';
   else if (!article.title?.trim() || !article.summary?.trim()) reason = 'headline or summary missing';
-  else if (isUkrainianOutlet(article) && /\b(?:Ukraine|Ukrainian|Kyiv|Zelensk\w*|Oleshky|Volyn|Sloviansk|Ternopil|Chernihiv|Rivne|Dnipropetrovsk|Zaporizhzhia|Uman|Kharkiv|Odesa|Sumy|Defen[cs]e Forces)\b/i.test(`${article.title} ${article.summary}`)) reason = 'Ukrainian outlet excluded from Ukraine coverage';
+  else if (isUkrainianOutlet(article) && (article.section === 'Eastern Europe' && article.subsection === 'Ukraine'
+    || ukraineAttackPlacement(article.title, article.summary)
+    || /\b(?:Ukraine|Ukrainian|Kyiv|Zelensk\w*|Oleshky|Volyn|Sloviansk|Ternopil|Chernihiv|Rivne|Dnipropetrovsk|Zaporizhzhia|Uman|Kharkiv|Odesa|Sumy|Defen[cs]e Forces)\b/i.test(`${article.title} ${article.summary}`))) reason = 'Ukrainian outlet excluded from Ukraine coverage';
   else if (excludedHeadlineReason(article.title)) reason = excludedHeadlineReason(article.title);
   else if (/^live\s*:|^video\s*(?::|\/\/|\.)|\bvideo podcast\b/i.test(article.title)) reason = 'live stream or video page rather than a single news article';
   else if (/\b(?:analyst|expert|commentator)s?\s+(?:says|believes|warns|on\s+what)\b/i.test(article.title)) reason = 'analysis or commentary';
@@ -201,11 +207,12 @@ for (const article of raw) {
   const ukrainianFocus = isUkrainianOutlet(article) && /\b(?:Ukraine|Ukrainian|Kyiv|Zelenskyy|Zelensky|Zelenskiy|Sybiha|Umerov|Oleshky|Kharkiv|Odesa|Dnipro|Lviv)\b/i.test(article.title);
   const attackedRussia = russianTerritoryAttackPlacement(article.title);
   const attackedUkraine = !attackedRussia && !isUkrainianOutlet(article) && !(source && isRussianSource(source)) ? ukraineAttackPlacement(article.title, article.summary) : null;
-  const inferred = attackedRussia || attackedUkraine || placementOverrides.get(article.url) || (ukrainianFocus ? { sectionId: 'Eastern Europe', subsection: 'Ukraine', country: '' } : null) || subjectPlacement || placementFromTitle(article.title) || contextPlaces.get(article.sourceId) || articlePlacement({}, article.title, '');
+  const explicitPlacement = placementOverrides.get(article.url);
+  const inferred = explicitPlacement || attackedRussia || attackedUkraine || (ukrainianFocus ? { sectionId: 'Eastern Europe', subsection: 'Ukraine', country: '' } : null) || subjectPlacement || placementFromTitle(article.title) || contextPlaces.get(article.sourceId) || articlePlacement({}, article.title, '');
   let placement = inferred || (article.section ? { sectionId: article.section, subsection: article.subsection, country: article.country } : null);
   if (source && isRussianSource(source)) placement = { sectionId: 'Miscellaneous', subsection: 'RUSSIA / EURASIA', country: 'Russia' };
   if (!placement?.sectionId || !placement.subsection) { excluded.push({ ...article, reason: 'country or organisation needs editorial placement' }); continue; }
-  placement = attackedUkraine || preferredRegionalPlacement(article, placement);
+  if (!(source && isRussianSource(source))) placement = explicitPlacement || attackedUkraine || preferredRegionalPlacement(article, placement);
   const blockedSource = blockedPlacementReason(article, placement);
   if (blockedSource) { excluded.push({ ...article, reason: blockedSource }); continue; }
   if (placement.subsection === 'AFGHANISTAN / PAKISTAN' && !/\b(?:Russia|Russian|Kazakh\w*|Kyrgyz\w*|Tajik\w*|Turkmen\w*|Uzbek\w*|Central Asia\w*)\b/i.test(`${article.title} ${article.summary}`)) { excluded.push({ ...article, reason: 'Afghanistan story has no stated Russia or Central Asia connection' }); continue; }
@@ -268,7 +275,8 @@ function leadScore(article, middleEast = false) {
       : /\b(?:strike\w*|attack\w*|missile\w*|drone\w*|power infrastructure)\b/i.test(article.title) ? 170
       : /\b(?:sanction\w*|ceasefire|peace talks)\b/i.test(article.title) ? 110
         : /\b(?:EU accession|joint task force|grain cargoes)\b/i.test(article.title) ? 40 : 0;
-  return editorialScore(article.title, article.summary) + impact + (agencyPriority.test(article.sourceName) ? (middleEast ? 75 : 1000) : 0) + articleDate(article) / 1e13;
+  return editorialScore(article.title, article.summary) + impact + (Number(editorialPriorities[article.url]) || 0)
+    + (agencyPriority.test(article.sourceName) ? (middleEast ? 75 : 1000) : 0) + articleDate(article) / 1e13;
 }
 const ukrainian = [];
 const ukrainianAgencyCounts = new Map();

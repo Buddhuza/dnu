@@ -5,7 +5,7 @@ const regionalSections = new Set(['South Eastern Europe', 'Eastern Europe', 'Sou
 // Russian territory out of this rule.
 export function ukraineAttackPlacement(title, summary = '') {
   const text = `${title} ${summary}`;
-  const ukrainianPlace = '(?:Ukraine|Ukrainian (?:cities|towns|villages|territory|infrastructure)|Kyiv|Kiev|Kharkiv|Odesa|Odessa|Dnipro|Lviv|Zaporizhzhia|Sumy|Chernihiv|Mykolaiv|Oleshky)';
+  const ukrainianPlace = '(?:Ukraine|Ukrainian (?:cities|towns|villages|territory|infrastructure)|Kyiv|Kiev|Kharkiv|Odesa|Odessa|Dnipro|Lviv|Zaporizhzhia|Sumy|Chernihiv|Mykolaiv|Oleshky|Kramatorsk|Zhytomyr|Kryvyi Rih|Kherson|Poltava|Vinnytsia|Ternopil|Uman|Rivne|Cherkasy|Sloviansk|Pokrovsk)';
   const attack = '(?:attack\\w*|strik\\w*|bomb\\w*|shell\\w*|hit|hits|target\\w*|pound\\w*|kill\\w*|injur\\w*|launch\\w* (?:missiles|drones))';
   const patterns = [
     new RegExp(`\\b(?:Russia|Russian)\\b.{0,90}\\b${attack}\\b.{0,90}\\b${ukrainianPlace}\\b`, 'i'),
