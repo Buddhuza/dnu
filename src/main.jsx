@@ -4,7 +4,6 @@ import preparedUpdate from '../data/prepared-update.json';
 import preparedSources from '../sources.json';
 import publishedSiteConfig from '../data/site-config.json';
 import SiteManager from './SiteManager.jsx';
-import EditorialPolicy from './EditorialPolicy.jsx';
 import AddArticlesDialog from './AddArticlesDialog.jsx';
 import MoveStoryDialog from './MoveStoryDialog.jsx';
 import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig, toggleLeadStoryInConfig, addCustomArticleInConfig, clearCustomArticlesInConfig } from './siteConfig.js';
@@ -72,7 +71,6 @@ function App() {
   const [exportingSheet, setExportingSheet] = useState(false);
   const [spreadsheetResults, setSpreadsheetResults] = useState(null);
   const [managing, setManaging] = useState(false);
-  const [showEditorialPolicy, setShowEditorialPolicy] = useState(false);
   const [editingStories, setEditingStories] = useState(false);
   const [headlineOnly, setHeadlineOnly] = useState(() => readStored('dnu-headline-only-v1', false) === true);
   const [moveStoryId, setMoveStoryId] = useState('');
@@ -527,7 +525,7 @@ function App() {
   );
 
   return <div className="app-shell" data-mode={siteConfig.darkMode ? 'dark' : 'light'} style={themeStyle}>
-    <header className="topbar"><div className="brand-text"><strong>{siteConfig.brandName}</strong><small>{siteConfig.brandTagline}</small></div><span className="topbar-spacer"/><button className="mode-button" aria-pressed={siteConfig.darkMode} onClick={() => setSiteConfig(current => ({ ...current, darkMode: !current.darkMode }))}>{siteConfig.darkMode ? '☀ Light mode' : '☾ Dark mode'}</button><button className="policy-link" type="button" onClick={() => setShowEditorialPolicy(true)}>Editorial policy</button>{managementEnabled && <button className="manage-button" onClick={() => { setManagerTab('Content'); setManaging(true); }}>⚙ Manage site</button>}<time className="topbar-date" dateTime={currentTime.toISOString()} title="Vienna time">{formatViennaCompactDateTime(currentTime)}</time></header>
+    <header className="topbar"><div className="brand-text"><strong>{siteConfig.brandName}</strong><small>{siteConfig.brandTagline}</small></div><span className="topbar-spacer"/><button className="mode-button" aria-pressed={siteConfig.darkMode} onClick={() => setSiteConfig(current => ({ ...current, darkMode: !current.darkMode }))}>{siteConfig.darkMode ? '☀ Light mode' : '☾ Dark mode'}</button>{managementEnabled && <button className="manage-button" onClick={() => { setManagerTab('Content'); setManaging(true); }}>⚙ Manage site</button>}<time className="topbar-date" dateTime={currentTime.toISOString()} title="Vienna time">{formatViennaCompactDateTime(currentTime)}</time></header>
     <div className={`workspace ${siteConfig.showSources ? '' : 'no-sidebar'}`}>
       {siteConfig.showSources && <aside className="sidebar">
         <div className="sidebar-heading"><h2>Sources <em>{sources.length}</em></h2></div>
@@ -573,7 +571,6 @@ function App() {
     {managementEnabled && managing && <SiteManager initialTab={managerTab} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} includeText={includeText} setIncludeText={setIncludeText} excludeText={setExcludeText} setExcludeText={setExcludeText} applyScope={applyScope} onClose={() => setManaging(false)} onReset={() => setSiteConfig(defaultSiteConfig(daily?.articles ?? preparedUpdate.articles))}/>}
     {addingArticles && config && daily && <AddArticlesDialog serverAvailable={!staticPreview && Boolean(config.firecrawlConfigured)} sources={configuredSources} sections={siteConfig.sections} customCountries={siteConfig.customCountries} existingArticles={selectedArticles} existingUrls={[...daily.articles.map(item => item.url), ...siteConfig.customArticles.map(item => item.url)]} remainingSlots={100 - siteConfig.customArticles.length} onAdd={(article, placement) => { setSiteConfig(current => addCustomArticleInConfig(current, article, placement)); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}
     {editingStories && storyToMove && <MoveStoryDialog story={storyToMove} sections={siteConfig.sections} articles={displayedArticles} customCountries={siteConfig.customCountries} onMove={moveStory} onClose={() => setMoveStoryId('')}/>}
-    {showEditorialPolicy && <EditorialPolicy onClose={() => setShowEditorialPolicy(false)}/>}
   </div>;
 }
 
