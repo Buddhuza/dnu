@@ -1,8 +1,8 @@
 # DNU
 
-## Editorial policy
+## Project instructions
 
-The consolidated, versioned brief is [public/editorial-policy.md](public/editorial-policy.md). On a GitHub Pages deployment it is available directly at `/dnu/editorial-policy.md`, without a link in the public site header. Read it before collecting an edition or changing selection, placement, presentation or export. When an instruction changes, update this file and the corresponding code; displaying a rule does not by itself enforce it. Public Manage site remains disabled on GitHub Pages, so this policy is published as a read-only document.
+The versioned [editorial policy](public/editorial-policy.md) covers collection, selection, placement and story text. The separate [site specification](public/site-specification.md) covers the interface, design and exports. On GitHub Pages, both are directly available under `/dnu/`, without links in the public site header. Read and update the relevant document alongside code changes; a written rule does not by itself enforce behavior. Public Manage site remains disabled on GitHub Pages.
 
 A local news review app for the 173 outlets in `sources.json` (transcribed from the supplied `agencies_updated.txt`). Choose a source, collect its headlines from a publisher feed where available or Firecrawl otherwise, and refine the results with included and excluded phrases. The prepared news stream can be edited and exported as a Word update.
 
