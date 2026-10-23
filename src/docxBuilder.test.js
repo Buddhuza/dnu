@@ -21,6 +21,8 @@ test('browser report download creates a readable Word file with country headings
   assert.match(document, /BELGIUM/);
   assert.match(document.split('MIDDLE EAST')[0].split('<w:p>').at(-1), /<w:shd[^>]*w:fill="D9E2F3"/);
   assert.match(document, /9 October 2026/);
+  assert.match(document, /<w:spacing w:before="360" w:after="120"\/>[\s\S]*?<w:t xml:space="preserve">LEAD STORIES<\/w:t>/);
+  assert.match(document, /<w:spacing w:before="480" w:after="120"\/>[\s\S]*?<w:t xml:space="preserve">MISCELLANEOUS<\/w:t>/);
   assert.ok(document.indexOf('DAILY NEWS UPDATE') < document.indexOf('9 October 2026'));
   assert.doesNotMatch(document.split('WESTERN / CENTRAL EUROPE')[0].split('<w:p>').at(-1), /<w:shd/);
   assert.match(document.split('BELGIUM')[0].split('<w:p>').at(-1), /<w:shd[^>]*w:fill="D9E2F3"/);
@@ -73,7 +75,7 @@ test('headline-only Word download omits summaries but keeps agencies and links',
   assert.match(document, /15 October 2026/);
   assert.doesNotMatch(document, /A meeting took place in Yerevan/);
   assert.match(document, /<w:spacing w:after="60" w:line="260" w:lineRule="auto"\/>/);
-  assert.match(document, /<w:spacing w:before="240" w:after="80"\/>/);
+  assert.match(document, /<w:spacing w:before="360" w:after="80"\/>/);
   assert.match(document, /<w:spacing w:before="190" w:after="40"\/>/);
   assert.match(document, /Agency/);
   assert.match(await zip.file('word/_rels/document.xml.rels').async('string'), /https:\/\/example.com\/story/);

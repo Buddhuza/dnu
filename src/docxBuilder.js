@@ -9,8 +9,9 @@ const escapeXml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&
 const textRun = (value, properties = '') => `<w:r><w:rPr>${properties}</w:rPr><w:t xml:space="preserve">${escapeXml(value)}</w:t></w:r>`;
 const calibri = '<w:rFonts w:eastAsia="Calibri" w:cs="Calibri"/>';
 
-function sectionParagraph(value, headlineOnly = false) {
-  return `<w:p><w:pPr><w:pStyle w:val="Heading1"/><w:keepNext/><w:spacing w:before="${headlineOnly ? 240 : 360}" w:after="${headlineOnly ? 80 : 120}"/><w:rPr><w:b/><w:bCs/></w:rPr></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:bCs/>`)}</w:p>`;
+function sectionParagraph(value, headlineOnly = false, lead = false) {
+  const before = lead ? (headlineOnly ? 240 : 360) : (headlineOnly ? 360 : 480);
+  return `<w:p><w:pPr><w:pStyle w:val="Heading1"/><w:keepNext/><w:spacing w:before="${before}" w:after="${headlineOnly ? 80 : 120}"/><w:rPr><w:b/><w:bCs/></w:rPr></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:bCs/>`)}</w:p>`;
 }
 
 function subsectionParagraph(value, plainTopic = false, headlineOnly = false, country = false) {
@@ -49,7 +50,7 @@ export async function createReportDocxFromTemplate(templateBytes, { title, windo
       currentSection = section;
       currentSubsection = '';
       currentCountry = '';
-      paragraphs.push(sectionParagraph(section, headlineOnly));
+      paragraphs.push(sectionParagraph(section, headlineOnly, item.sectionId === 'Lead stories' || section === 'Lead stories'));
     }
     if (item.subsection && item.subsection !== currentSubsection) {
       currentSubsection = item.subsection;

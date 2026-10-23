@@ -21,7 +21,9 @@ export function emailUpdateHtml({ title = 'DAILY NEWS UPDATE', compiledAt, artic
       section = nextSection;
       subsection = '';
       country = '';
-      paragraphs.push(`<h2 style="font-size:15pt;color:#0070c0;margin:${headlineOnly ? '10pt' : '16pt'} 0 5pt">${escapeHtml(section.toUpperCase())}</h2>`);
+      const lead = article.sectionId === 'Lead stories' || section === 'Lead stories';
+      const before = lead ? (headlineOnly ? '10pt' : '16pt') : (headlineOnly ? '16pt' : '22pt');
+      paragraphs.push(`<h2 style="font-size:15pt;color:#0070c0;margin:${before} 0 5pt">${escapeHtml(section.toUpperCase())}</h2>`);
     }
     if (article.subsection && article.subsection !== subsection) {
       subsection = article.subsection;
