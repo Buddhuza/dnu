@@ -33,17 +33,6 @@ export function compareCountryLabels(subsection, a, b) {
   return rank(a) - rank(b) || alphabetical;
 }
 
-export const EDITORIAL_GUIDANCE = [
-  'Any international news agency can supply stories in any report section. The source-list category is only for browsing outlets; place each article by the location or organisation it covers.',
-  'Lead stories normally contain three or four major Ukraine headlines and one or two major Middle East headlines. Put lead headings from South Eastern Europe, Eastern Europe, South Caucasus and Central Asia first in alphabetical order, followed by Miscellaneous headings in alphabetical order. Use Reuters, AP, AFP, DW, Politico, Euronews, BBC or dpa for Ukraine leads. Do not place Ukrainian outlets under Ukraine in any section; place an international organisation here only for an exceptional OSCE story.',
-  'Use Serbia / Kosovo for Kosovo coverage and Moldova / Transdniestria for Transdniestria coverage. Use Georgia / Abkhazia / South Ossetia for Georgia’s breakaway republics.',
-  'Use Armenian outlets for Armenia and Azerbaijani outlets for Azerbaijan, but do not place either country’s outlets under the other country. Keep each summary to one short sentence that adds a concrete fact from the first two paragraphs beyond the headline.',
-  'When a story concerns several countries in South Eastern Europe, Eastern Europe, the South Caucasus or Central Asia, file it under the country of the reporting outlet if that country is one of the story subjects. Otherwise use the principal actor or subject; do not infer a country from a publisher name appended to the headline.',
-  'Western / Central Europe includes Iceland and the UK, while Belarus, Moldova and Ukraine belong in Eastern Europe. Middle East / North Africa focuses especially on the Iran war and the Strait of Hormuz.',
-  'Afghanistan / Pakistan is reserved for Afghanistan stories connected to Russia or Central Asian countries. Russia / Eurasia covers Russia only.',
-  'North East Asia covers China, Japan, Mongolia and both Koreas. North America covers Canada and the US. International Organisations places OSCE, EU, UN, NATO and IMF first, then other Western bodies, followed by CIS, CSTO, BRICS and other Eurasian organisations.'
-];
-
 export function leadRegionalHeadings(articles, leadOrigins = {}) {
   return new Set(articles.filter(article => article.sectionId === 'Lead stories' && regionalSectionIds.has(leadOrigins[article.id]?.sectionId)).map(article => article.subsection));
 }

@@ -1,5 +1,9 @@
 # DNU
 
+## Editorial policy
+
+The consolidated, versioned brief is [public/editorial-policy.md](public/editorial-policy.md). The website exposes it through **Editorial policy** in the header, with a copy button for use in another ChatGPT conversation. On a GitHub Pages deployment it is also available directly at `/dnu/editorial-policy.md`. Read it before collecting an edition or changing selection, placement, presentation or export. When an instruction changes, update this file and the corresponding code; displaying a rule does not by itself enforce it. Public Manage site remains disabled on GitHub Pages, so this policy is published as a read-only document.
+
 A local news review app for the 173 outlets in `sources.json` (transcribed from the supplied `agencies_updated.txt`). Choose a source, collect its headlines from a publisher feed where available or Firecrawl otherwise, and refine the results with included and excluded phrases. The prepared news stream can be edited and exported as a Word update.
 
 The homepage opens with the selected English-language edition in `data/prepared-update.json`. Its source audit records the result for every listed outlet. This is a prepared snapshot; it does not refresh automatically. Dated editions remain in `data/`.
