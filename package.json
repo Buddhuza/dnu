@@ -9,6 +9,7 @@
     "dev:web": "vite --host 0.0.0.0",
     "build": "vite build",
     "build:pages": "GITHUB_PAGES=1 vite build",
+    "build:pages:with-cache": "npm run build:pages && node scripts/build-article-body-snapshot.mjs dist/article-bodies.json",
     "collect:daily": "bash scripts/collect-daily.sh",
     "start": "NODE_USE_ENV_PROXY=1 node server/index.js",
     "test": "node --test"

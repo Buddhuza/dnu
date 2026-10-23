@@ -68,6 +68,7 @@ function App() {
   const [error, setError] = useState('');
   const [toast, setToast] = useState('');
   const [exportingSheet, setExportingSheet] = useState(false);
+  const [spreadsheetResults, setSpreadsheetResults] = useState(null);
   const [managing, setManaging] = useState(false);
   const [editingStories, setEditingStories] = useState(false);
   const [headlineOnly, setHeadlineOnly] = useState(() => readStored('dnu-headline-only-v1', false) === true);
@@ -339,12 +340,13 @@ function App() {
   async function exportSpreadsheet() {
     if (exportingSheet || !selectedArticles.length) return;
     setExportingSheet(true);
+    setSpreadsheetResults(null);
     const rows = new Array(selectedArticles.length);
     const failures = [];
     let cursor = 0, completed = 0;
     setToast(`Collecting full articles: 0/${selectedArticles.length}`);
     const worker = async () => {
-      while (cursor < selectedArticles.length && !failures.length) {
+      while (cursor < selectedArticles.length) {
         const index = cursor++;
         const article = selectedArticles[index];
         try {
@@ -357,16 +359,22 @@ function App() {
     };
     try {
       await Promise.all(Array.from({ length: Math.min(3, selectedArticles.length) }, worker));
-      if (failures.length) throw new Error(`${failures.length} full article${failures.length === 1 ? '' : 's'} unavailable. No incomplete spreadsheet was exported. ${failures.slice(0, 2).join('; ')}${failures.length > 2 ? '…' : ''} Uncheck those stories or retry after adding your Firecrawl key.`);
-      const file = await createSpreadsheet(rows);
-      const url = URL.createObjectURL(file);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Daily news update - ${reportEndDateLabel(compiledAt)}.xlsx`;
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 60_000);
-      setToast(`Exported ${rows.length} full articles to spreadsheet.`);
-    } catch (error) { setToast(error.message || 'Could not export the spreadsheet.'); }
+      const successfulRows = rows.filter(Boolean);
+      if (successfulRows.length) {
+        const file = await createSpreadsheet(successfulRows);
+        const url = URL.createObjectURL(file);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Daily news update - ${reportEndDateLabel(compiledAt)}.xlsx`;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 60_000);
+      }
+      setSpreadsheetResults({ exported: successfulRows.length, attempted: selectedArticles.length, failures, downloaded: successfulRows.length > 0 });
+      setToast('Spreadsheet export finished.');
+    } catch (error) {
+      setSpreadsheetResults({ exported: 0, attempted: selectedArticles.length, failures, downloaded: false, error: error.message || 'Could not create the spreadsheet.' });
+      setToast('Could not create the spreadsheet.');
+    }
     finally { setExportingSheet(false); }
   }
 
@@ -558,6 +566,7 @@ function App() {
 
       </main>
     </div>{toast && <div className="toast" onClick={() => setToast('')}>{toast} ×</div>}
+    {spreadsheetResults && <div className="add-backdrop" onClick={() => setSpreadsheetResults(null)}><section className="add-dialog spreadsheet-results" role="dialog" aria-modal="true" aria-labelledby="spreadsheet-results-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="spreadsheet-results-title">Spreadsheet export results</h2><button type="button" aria-label="Close export results" onClick={() => setSpreadsheetResults(null)}>×</button></div><p>{spreadsheetResults.downloaded ? `Downloaded ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} visible full articles.` : `No spreadsheet downloaded. ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} articles available.`}</p>{spreadsheetResults.error && <p role="alert">{spreadsheetResults.error}</p>}{spreadsheetResults.failures.length > 0 && <><h3>{spreadsheetResults.failures.length} unavailable</h3><ul>{spreadsheetResults.failures.map((failure, index) => <li key={index}>{failure}</li>)}</ul></>}<div className="add-dialog-actions"><button type="button" onClick={() => setSpreadsheetResults(null)}>Close</button></div></section></div>}
     {managementEnabled && managing && <SiteManager initialTab={managerTab} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} includeText={includeText} setIncludeText={setIncludeText} excludeText={setExcludeText} setExcludeText={setExcludeText} applyScope={applyScope} onClose={() => setManaging(false)} onReset={() => setSiteConfig(defaultSiteConfig(daily?.articles ?? preparedUpdate.articles))}/>}
     {addingArticles && config && daily && <AddArticlesDialog serverAvailable={!staticPreview && Boolean(config.firecrawlConfigured)} sources={configuredSources} sections={siteConfig.sections} customCountries={siteConfig.customCountries} existingArticles={selectedArticles} existingUrls={[...daily.articles.map(item => item.url), ...siteConfig.customArticles.map(item => item.url)]} remainingSlots={100 - siteConfig.customArticles.length} onAdd={(article, placement) => { setSiteConfig(current => addCustomArticleInConfig(current, article, placement)); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}
     {editingStories && storyToMove && <MoveStoryDialog story={storyToMove} sections={siteConfig.sections} articles={displayedArticles} customCountries={siteConfig.customCountries} onMove={moveStory} onClose={() => setMoveStoryId('')}/>}

@@ -1,6 +1,18 @@
 import { extractBrowserArticleBody } from './articleBodyText.js';
 import { getStoredArticleBody, storeArticleBody } from './articleBodyStore.js';
 
+let onlineSnapshotPromise;
+async function cachedOnlineBody(url, fetchImpl) {
+  if (!onlineSnapshotPromise) {
+    const base = import.meta.env?.BASE_URL || '/';
+    onlineSnapshotPromise = fetchImpl(`${base}article-bodies.json`, { cache: 'no-cache' })
+      .then(response => response.ok ? response.json() : null)
+      .catch(() => null);
+  }
+  const snapshot = await onlineSnapshotPromise;
+  return snapshot?.articles?.[url]?.body ? snapshot.articles[url] : null;
+}
+
 export async function loadFullArticle(article, { serverAvailable = false, fetchImpl = fetch } = {}) {
   const cached = await getStoredArticleBody(article.url);
   if (cached?.body) return cached;
@@ -14,7 +26,9 @@ export async function loadFullArticle(article, { serverAvailable = false, fetchI
       if (!/Failed to fetch|NetworkError|HTTP 503/i.test(error.message)) throw error;
     }
   }
-  const apiKey = localStorage.getItem('dnu-firecrawl-api-key-v1');
+  const online = await cachedOnlineBody(article.url, fetchImpl);
+  if (online) { await storeArticleBody(article.url, online); return online; }
+  const apiKey = localStorage.getItem('dnu-firecrawl-api-key-v1') || sessionStorage.getItem('dnu-firecrawl-api-key-session-v1');
   if (!apiKey) throw new Error('Firecrawl key needed on this browser. Save it in Add articles, then retry.');
   const response = await fetchImpl('https://api.firecrawl.dev/v2/scrape', {
     method: 'POST', headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },

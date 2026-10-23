@@ -8,15 +8,16 @@ import { duplicateGroups, duplicateGroupHue } from './storyDuplicates.js';
 import { excludedHeadlineReason } from './headlinePolicy.js';
 
 const firecrawlKeyStorage = 'dnu-firecrawl-api-key-v1';
+const firecrawlSessionKeyStorage = 'dnu-firecrawl-api-key-session-v1';
 const NEW = '__new__';
-const savedFirecrawlKey = () => { try { return localStorage.getItem(firecrawlKeyStorage) || ''; } catch { return ''; } };
+const savedFirecrawlKey = () => { try { return localStorage.getItem(firecrawlKeyStorage) || sessionStorage.getItem(firecrawlSessionKeyStorage) || ''; } catch { return ''; } };
 
 export default function AddArticlesDialog({ serverAvailable, sources, sections, customCountries = {}, existingArticles = [], existingUrls, remainingSlots, onAdd, onClose }) {
   const [value, setValue] = useState('');
   const [manual, setManual] = useState({ title: '', summary: '', sourceName: '', url: '' });
   const [manualError, setManualError] = useState('');
   const [apiKey, setApiKey] = useState(savedFirecrawlKey);
-  const [rememberKey, setRememberKey] = useState(() => Boolean(savedFirecrawlKey()));
+  const [rememberKey, setRememberKey] = useState(() => Boolean(localStorage.getItem(firecrawlKeyStorage)));
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState('');
   const [results, setResults] = useState([]);
@@ -33,6 +34,8 @@ export default function AddArticlesDialog({ serverAvailable, sources, sections, 
     try {
       if (rememberKey && apiKey.trim()) localStorage.setItem(firecrawlKeyStorage, apiKey.trim());
       else localStorage.removeItem(firecrawlKeyStorage);
+      if (apiKey.trim()) sessionStorage.setItem(firecrawlSessionKeyStorage, apiKey.trim());
+      else sessionStorage.removeItem(firecrawlSessionKeyStorage);
     } catch { /* Browser storage may be disabled. */ }
   }, [apiKey, rememberKey]);
 
