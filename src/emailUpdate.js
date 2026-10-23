@@ -27,11 +27,11 @@ export function emailUpdateHtml({ title = 'DAILY NEWS UPDATE', compiledAt, artic
       subsection = article.subsection;
       country = '';
       const highlight = section === 'Miscellaneous' ? '' : 'background-color:#d9e2f3;';
-      paragraphs.push(`<h3 style="font-size:12pt;color:#0070c0;${highlight}margin:${headlineOnly ? '10pt' : '13pt'} 0 4pt;padding:2pt 3pt">${escapeHtml(reportHeadingLabel(subsection).toUpperCase())}</h3>`);
+      paragraphs.push(`<h3 style="font-size:13pt;color:#0070c0;${highlight}margin:${headlineOnly ? '10pt' : '13pt'} 0 2pt;padding:2pt 3pt">${escapeHtml(reportHeadingLabel(subsection).toUpperCase())}</h3>`);
     }
     if (article.country && article.country !== country) {
       country = article.country;
-      paragraphs.push(`<h4 style="font-size:12pt;color:#0070c0;background-color:#d9e2f3;margin:${headlineOnly ? '10pt' : '13pt'} 0 4pt;padding:2pt 3pt">${escapeHtml(reportHeadingLabel(country).toUpperCase())}</h4>`);
+      paragraphs.push(`<h4 style="font-size:13pt;color:#0070c0;background-color:#d9e2f3;margin:${headlineOnly ? '10pt' : '13pt'} 0 2pt;padding:2pt 3pt">${escapeHtml(reportHeadingLabel(country).toUpperCase())}</h4>`);
     }
     const { headline, summary } = reportStoryText(article);
     const detail = !headlineOnly && summary ? ` ${escapeHtml(summary)}` : '';
