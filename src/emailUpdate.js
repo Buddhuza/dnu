@@ -31,11 +31,14 @@ export function emailUpdateHtml({ title = 'DAILY NEWS UPDATE', compiledAt, artic
       country = '';
       const highlight = section === 'Miscellaneous' ? '' : 'background-color:#d9e2f3;';
       const before = firstAfterSection ? (headlineOnly ? '5pt' : '7pt') : (headlineOnly ? '10pt' : '13pt');
-      paragraphs.push(`<h3 style="font-size:13pt;color:#0070c0;${highlight}margin:${before} 0 2pt;padding:2pt 3pt">${escapeHtml(reportHeadingLabel(subsection).toUpperCase())}</h3>`);
+      const compactAfter = section === 'Miscellaneous' || (article.sectionId === 'Lead stories' || section === 'Lead stories') && subsection === 'Middle East';
+      paragraphs.push(`<h3 style="font-size:13pt;color:#0070c0;${highlight}margin:${before} 0 ${compactAfter ? '0pt' : '2pt'};padding:2pt 3pt">${escapeHtml(reportHeadingLabel(subsection).toUpperCase())}</h3>`);
     }
     if (article.country && article.country !== country) {
+      const afterTopic = section === 'Miscellaneous' && !country && Boolean(subsection);
       country = article.country;
-      paragraphs.push(`<h4 style="font-size:12pt;color:#0070c0;background-color:#d9e2f3;margin:${headlineOnly ? '10pt' : '13pt'} 0 2pt;padding:2pt 3pt">${escapeHtml(reportHeadingLabel(country).toUpperCase())}</h4>`);
+      const before = afterTopic ? (headlineOnly ? '5pt' : '7pt') : (headlineOnly ? '10pt' : '13pt');
+      paragraphs.push(`<h4 style="font-size:12pt;color:#0070c0;background-color:#d9e2f3;margin:${before} 0 2pt;padding:2pt 3pt">${escapeHtml(reportHeadingLabel(country).toUpperCase())}</h4>`);
     }
     const { headline, summary } = reportStoryText(article);
     const detail = !headlineOnly && summary ? ` ${escapeHtml(summary)}` : '';

@@ -18,6 +18,8 @@ test('formatted email follows Word headings, source links, and disclaimer', () =
   assert.match(html, /16 October 2026/);
   assert.match(emailUpdateText(options), /16 October 2026/);
   assert.match(html, /WESTERN \/ CENTRAL EUROPE/);
+  assert.match(html, /margin:7pt 0 0pt;[^>]*>WESTERN \/ CENTRAL EUROPE/);
+  assert.match(html, /margin:7pt 0 2pt;[^>]*>FRANCE/);
   assert.match(html, /background-color:#d9e2f3[^>]*>FRANCE/);
   assert.match(html, /href="https:\/\/example.com\/story\?a=1&amp;b=2"/);
   assert.match(html, /<strong>EU leaders discuss security talks\.<\/strong> Ministers agreed to meet in Paris\./);

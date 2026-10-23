@@ -23,7 +23,8 @@ test('browser report download creates a readable Word file with country headings
   assert.match(document, /9 October 2026/);
   assert.match(document, /<w:spacing w:before="360" w:after="80"\/>[\s\S]*?<w:t xml:space="preserve">LEAD STORIES<\/w:t>/);
   assert.match(document, /<w:spacing w:before="480" w:after="80"\/>[\s\S]*?<w:t xml:space="preserve">MISCELLANEOUS<\/w:t>/);
-  assert.match(document, /<w:spacing w:before="120" w:after="80"\/>[\s\S]*?<w:t xml:space="preserve">WESTERN \/ CENTRAL EUROPE<\/w:t>/);
+  assert.match(document, /<w:spacing w:before="120" w:after="20"\/>[\s\S]*?<w:t xml:space="preserve">WESTERN \/ CENTRAL EUROPE<\/w:t>/);
+  assert.match(document, /<w:spacing w:before="140" w:after="80"\/>[\s\S]*?<w:t xml:space="preserve">BELGIUM<\/w:t>/);
   assert.ok(document.indexOf('DAILY NEWS UPDATE') < document.indexOf('9 October 2026'));
   assert.doesNotMatch(document.split('WESTERN / CENTRAL EUROPE')[0].split('<w:p>').at(-1), /<w:shd/);
   assert.match(document.split('BELGIUM')[0].split('<w:p>').at(-1), /<w:shd[^>]*w:fill="D9E2F3"/);
