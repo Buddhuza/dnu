@@ -2,6 +2,8 @@
 
 This is the durable brief for SITUATION ROOM / DNU. It consolidates the current instructions from the project conversation as of 23 October 2026. Use it when preparing an update or changing the application, including from a different ChatGPT account. Later instructions supersede earlier ones. This document records the intended rules; the collection scripts and browser may still need changes to enforce a rule. Do not treat a displayed policy as proof that a source was successfully checked.
 
+When a user gives a new standing editorial or product rule, update this document and the relevant implementation together. A one-off request for a particular edition or coverage window does not become a permanent rule unless the user says so. The website does not automatically save chat messages to this file.
+
 ## 1. Purpose and scope
 
 - Produce a factual daily monitoring update about security, war, conflict, terrorism, defence, diplomacy, external cooperation and politics. Give OSCE news particular attention.
@@ -59,6 +61,7 @@ This is the durable brief for SITUATION ROOM / DNU. It consolidates the current 
 - The source list opens the outlet website beside the update for browsing. Adding an article uses its copied URL in Add. Do not spend Firecrawl credits merely to show a website in that panel. No Grab or Send article to DNU control is required.
 - Search finds text within the update. The top header and source area stay fixed on desktop while update text scrolls. On narrow screens hide the Sources area; allow the page header to scroll away while the compact update header stays sticky. Section shortcuts remain one line and shorten to LEAD, SEE, EE, SC, CA and MISCL on narrow screens.
 - The public GitHub Pages site has Manage site disabled because it cannot securely verify a password. Browser-local changes are private to that browser and are not a shared policy or a replacement for the versioned project files.
+- Keep the editorial policy available at its direct `/dnu/editorial-policy.md` URL, but do not show an Editorial policy link or button on the main public site.
 - The top-right clock uses “dd.mm.yyyy HH:MM” in Vienna time and matches the Manage site text colour and size. The project and website are named DNU / SITUATION ROOM, rather than scrapeandreport.
 
 ## 7. Word, email and spreadsheet outputs
