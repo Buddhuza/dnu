@@ -44,6 +44,21 @@ test('download filename uses coverage dates and Vienna times', () => {
   assert.equal(reportFilename({ windowStart: '2026-10-04T22:00:00Z', windowEnd: '2026-10-09T21:59:59Z' }), 'Daily news update - 2026-10-05 00-00 to 2026-10-09 23-59.docx');
 });
 
+test('Word country and organisation headings use US, UK and UN', async () => {
+  const template = readFileSync(new URL('../public/daily-update-template.docx', import.meta.url));
+  const output = await createReportDocxFromTemplate(template, {
+    title: 'DAILY NEWS UPDATE', compiledAt: '2026-10-20T10:00:00Z',
+    articles: [
+      { section: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'United Kingdom', title: 'UK story', sourceName: 'AP', url: 'https://example.com/uk' },
+      { section: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States', title: 'US story', sourceName: 'AP', url: 'https://example.com/us' },
+      { section: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'United Nations', title: 'UN story', sourceName: 'AP', url: 'https://example.com/un' }
+    ]
+  });
+  const xml = await (await JSZip.loadAsync(output)).file('word/document.xml').async('string');
+  for (const label of ['UK', 'US', 'UN']) assert.match(xml, new RegExp(`<w:t xml:space="preserve">${label}</w:t>`));
+  for (const old of ['United Kingdom', 'United States', 'United Nations']) assert.doesNotMatch(xml, new RegExp(old));
+});
+
 test('headline-only Word download omits summaries but keeps agencies and links', async () => {
   const template = readFileSync(new URL('../public/daily-update-template.docx', import.meta.url));
   const output = await createReportDocxFromTemplate(template, {

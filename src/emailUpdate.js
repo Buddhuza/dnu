@@ -2,6 +2,7 @@ import { reportEndDateLabel } from './reportDate.js';
 import { reportStoryText } from './reportText.js';
 import { disclaimerFirst, disclaimerSecond } from './disclaimer.js';
 import { displaySourceName } from './sourceNames.js';
+import { reportHeadingLabel } from './reportLabels.js';
 
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 
@@ -26,11 +27,11 @@ export function emailUpdateHtml({ title = 'DAILY NEWS UPDATE', compiledAt, artic
       subsection = article.subsection;
       country = '';
       const highlight = section === 'Miscellaneous' ? '' : 'background-color:#d9e2f3;';
-      paragraphs.push(`<h3 style="font-size:12pt;color:#0070c0;${highlight}margin:${headlineOnly ? '7pt' : '10pt'} 0 4pt;padding:2pt 3pt">${escapeHtml(subsection.toUpperCase())}</h3>`);
+      paragraphs.push(`<h3 style="font-size:12pt;color:#0070c0;${highlight}margin:${headlineOnly ? '7pt' : '10pt'} 0 4pt;padding:2pt 3pt">${escapeHtml(reportHeadingLabel(subsection).toUpperCase())}</h3>`);
     }
     if (article.country && article.country !== country) {
       country = article.country;
-      paragraphs.push(`<h4 style="font-size:12pt;color:#0070c0;background-color:#d9e2f3;margin:${headlineOnly ? '7pt' : '10pt'} 0 4pt;padding:2pt 3pt">${escapeHtml(country.toUpperCase())}</h4>`);
+      paragraphs.push(`<h4 style="font-size:12pt;color:#0070c0;background-color:#d9e2f3;margin:${headlineOnly ? '7pt' : '10pt'} 0 4pt;padding:2pt 3pt">${escapeHtml(reportHeadingLabel(country).toUpperCase())}</h4>`);
     }
     const { headline, summary } = reportStoryText(article);
     const detail = !headlineOnly && summary ? ` ${escapeHtml(summary)}` : '';
@@ -46,8 +47,8 @@ export function emailUpdateText({ title = 'DAILY NEWS UPDATE', compiledAt, artic
   for (const article of articles) {
     const nextSection = article.section || 'Miscellaneous';
     if (nextSection !== section) { section = nextSection; subsection = ''; country = ''; lines.push(section.toUpperCase()); }
-    if (article.subsection && article.subsection !== subsection) { subsection = article.subsection; country = ''; lines.push(subsection.toUpperCase()); }
-    if (article.country && article.country !== country) { country = article.country; lines.push(country.toUpperCase()); }
+    if (article.subsection && article.subsection !== subsection) { subsection = article.subsection; country = ''; lines.push(reportHeadingLabel(subsection).toUpperCase()); }
+    if (article.country && article.country !== country) { country = article.country; lines.push(reportHeadingLabel(country).toUpperCase()); }
     const { headline, summary } = reportStoryText(article);
     lines.push(`${headline}${!headlineOnly && summary ? ` ${summary}` : ''} (${displaySourceName(article.sourceName)}: ${article.url})`, '');
   }

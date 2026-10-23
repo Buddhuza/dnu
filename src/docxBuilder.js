@@ -3,6 +3,7 @@ import { reportEndDateLabel } from './reportDate.js';
 import { reportStoryText } from './reportText.js';
 import { disclaimerFirst, disclaimerSecond } from './disclaimer.js';
 import { displaySourceName } from './sourceNames.js';
+import { reportHeadingLabel } from './reportLabels.js';
 
 const escapeXml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[char]);
 const textRun = (value, properties = '') => `<w:r><w:rPr>${properties}</w:rPr><w:t xml:space="preserve">${escapeXml(value)}</w:t></w:r>`;
@@ -53,11 +54,11 @@ export async function createReportDocxFromTemplate(templateBytes, { title, windo
     if (item.subsection && item.subsection !== currentSubsection) {
       currentSubsection = item.subsection;
       currentCountry = '';
-      paragraphs.push(subsectionParagraph(item.subsection, section === 'Miscellaneous', headlineOnly));
+      paragraphs.push(subsectionParagraph(reportHeadingLabel(item.subsection), section === 'Miscellaneous', headlineOnly));
     }
     if (item.country && item.country !== currentCountry) {
       currentCountry = item.country;
-      paragraphs.push(subsectionParagraph(item.country, false, headlineOnly));
+      paragraphs.push(subsectionParagraph(reportHeadingLabel(item.country), false, headlineOnly));
     }
     const relationshipId = `rIdStory${index + 1}`;
     paragraphs.push(storyParagraph(item, relationshipId, headlineOnly));

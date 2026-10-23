@@ -19,6 +19,7 @@ import { formatViennaDateTime, formatViennaCompactDateTime } from './viennaTime.
 import { emailSubject, emailUpdateHtml, emailUpdateText } from './emailUpdate.js';
 import { loadFullArticle } from './articleBodyClient.js';
 import { createSpreadsheet, spreadsheetRow } from './spreadsheetExport.js';
+import { reportHeadingLabel } from './reportLabels.js';
 import './styles.css';
 
 const readStored = (key, fallback, legacyKey) => {
@@ -148,7 +149,7 @@ function App() {
   const updateSearchQuery = updateSearchText.trim().toLocaleLowerCase();
   const updateSearchResults = useMemo(() => updateSearchQuery ? readingArticles.filter(item => {
     const story = reportStoryText(item);
-    return [item.section, item.subsection, item.country, story.headline, ...(headlineOnly && !editingStories ? [] : [story.summary]), item.sourceName, reportShortDateLabel(item.publishedAt)]
+    return [item.section, item.subsection, item.country, reportHeadingLabel(item.subsection), reportHeadingLabel(item.country), story.headline, ...(headlineOnly && !editingStories ? [] : [story.summary]), item.sourceName, reportShortDateLabel(item.publishedAt)]
       .some(value => String(value || '').toLocaleLowerCase().includes(updateSearchQuery));
   }) : [], [readingArticles, updateSearchQuery, headlineOnly, editingStories]);
   const updateSearchIds = useMemo(() => new Set(updateSearchResults.map(item => item.id)), [updateSearchResults]);
@@ -541,9 +542,9 @@ function App() {
             {dailySections.map(({ sectionId, section, subsections }, sectionIndex) => <div className="daily-section" id={`daily-section-${sectionIndex}`} key={sectionId}>
               <h3 data-drop-kind="section" data-section-id={sectionId} className={dropTarget === `section:${sectionId}::` ? 'story-drop-target' : ''}>{highlightSearch(section)}</h3>
               {subsections.map(([subsection, items]) => <div key={subsection || 'direct'}>
-                {subsection && <h4 data-drop-kind="subsection" data-section-id={sectionId} data-subsection={subsection} className={`${section === 'Miscellaneous' ? 'plain-topic' : ''} ${dropTarget === `subsection:${sectionId}:${subsection}:` ? 'story-drop-target' : ''}`}>{highlightSearch(subsection)}</h4>}
+                {subsection && <h4 data-drop-kind="subsection" data-section-id={sectionId} data-subsection={subsection} className={`${section === 'Miscellaneous' ? 'plain-topic' : ''} ${dropTarget === `subsection:${sectionId}:${subsection}:` ? 'story-drop-target' : ''}`}>{highlightSearch(reportHeadingLabel(subsection))}</h4>}
                 {items.map((item, index) => <React.Fragment key={item.id}>
-                  {item.country && (index === 0 || items[index - 1].country !== item.country) && <h5 data-drop-kind="country" data-section-id={sectionId} data-subsection={subsection} data-country={item.country} className={`daily-country ${dropTarget === `country:${sectionId}:${subsection}:${item.country}` ? 'story-drop-target' : ''}`}>{highlightSearch(item.country)}</h5>}
+                  {item.country && (index === 0 || items[index - 1].country !== item.country) && <h5 data-drop-kind="country" data-section-id={sectionId} data-subsection={subsection} data-country={item.country} className={`daily-country ${dropTarget === `country:${sectionId}:${subsection}:${item.country}` ? 'story-drop-target' : ''}`}>{highlightSearch(reportHeadingLabel(item.country))}</h5>}
                   <article data-drop-kind="story" data-section-id={item.sectionId} data-subsection={item.subsection || ''} data-country={item.country || ''} data-story-id={item.id} className={`daily-story ${editingStories ? 'daily-story-editing' : ''} ${updateSearchOpen && updateSearchIds.has(item.id) ? 'search-match' : ''} ${updateSearchOpen && updateSearchResults[Math.min(activeSearchResult, updateSearchResults.length - 1)]?.id === item.id ? 'active-search-match' : ''} ${dropTarget === `story:${item.id}:before` ? 'story-drop-before' : ''} ${dropTarget === `story:${item.id}:after` ? 'story-drop-after' : ''}`}>
                     {editingStories && <div className="story-edit-tools">
                       <button type="button" className="story-drag-handle" aria-label={`Drag story: ${item.title}`} title="Drag to another visible heading or story" onPointerDown={event => startStoryDrag(event, item.id)} onPointerMove={moveStoryDrag} onPointerUp={finishStoryDrag} onPointerCancel={() => { pointerDragRef.current = null; setDropTarget(''); }}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="6" r="1.6"/><circle cx="12" cy="6" r="1.6"/><circle cx="18" cy="6" r="1.6"/><circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18" cy="12" r="1.6"/><circle cx="6" cy="18" r="1.6"/><circle cx="12" cy="18" r="1.6"/><circle cx="18" cy="18" r="1.6"/></svg></button>

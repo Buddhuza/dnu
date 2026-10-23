@@ -1,6 +1,7 @@
 import JSZip from 'jszip';
 import { MISCELLANEOUS_COUNTRIES, NEWS_SECTIONS } from './newsSections.js';
 import { displaySourceName } from './sourceNames.js';
+import { reportHeadingLabel } from './reportLabels.js';
 
 export const SPREADSHEET_COLUMNS = ['Date', 'Source', 'Region', 'Countries', 'Local Regions', 'Organizations', 'Themes', 'Types', 'Source URL', 'Heading', 'Body'];
 const exportRegions = {
@@ -54,7 +55,7 @@ export function spreadsheetRow(article, page, leadOrigins = {}) {
     ? original?.sectionId === 'Miscellaneous' ? original.subsection : original?.sectionId && original.sectionId !== 'Lead stories' ? original.sectionId
       : subsection === 'Middle East' ? 'MIDDLE EAST / NORTH AFRICA' : NEWS_SECTIONS.slice(1, 5).find(item => item.subsections.includes(subsection))?.id || subsection
     : section;
-  const initial = section === 'Miscellaneous' ? article.country : section === 'Lead stories' ? original?.country || original?.subsection || subsection : subsection;
+  const initial = reportHeadingLabel(section === 'Miscellaneous' ? article.country : section === 'Lead stories' ? original?.country || original?.subsection || subsection : subsection);
   const context = `${page.heading || article.title} ${article.summary || ''} ${String(page.body || '').slice(0, 1300)}`;
   const found = new Set();
   if (initial && !organisations.some(([name]) => name === initial) && initial !== 'Middle East') found.add(initial);
@@ -69,7 +70,7 @@ export function spreadsheetRow(article, page, leadOrigins = {}) {
   for (const [name, pattern] of organisations) if (pattern.test(context)) organisationsFound.add(name);
   const source = article.sourceName === 'IPN' && (article.sourceId === 'source-63' || /^https?:\/\/(?:www\.)?interpressnews\.ge\//i.test(article.url || ''))
     ? 'InterPressNews' : displaySourceName(article.sourceName);
-  return [date(article.publishedAt || article.addedAt), source, Object.hasOwn(exportRegions, region) ? exportRegions[region] : region, [...found].join(', '), '', [...organisationsFound].join(', '), '', '', article.url, page.heading || article.title, page.body];
+  return [date(article.publishedAt || article.addedAt), source, Object.hasOwn(exportRegions, region) ? exportRegions[region] : region, [...new Set([...found].map(reportHeadingLabel))].join(', '), '', [...new Set([...organisationsFound].map(reportHeadingLabel))].join(', '), '', '', article.url, page.heading || article.title, page.body];
 }
 
 export async function createSpreadsheet(rows) {
