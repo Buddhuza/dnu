@@ -14,7 +14,7 @@ function sectionParagraph(value, headlineOnly = false) {
 }
 
 function subsectionParagraph(value, plainTopic = false, headlineOnly = false) {
-  return `<w:p><w:pPr><w:keepNext/>${plainTopic ? '' : '<w:shd w:val="clear" w:color="auto" w:fill="D9E2F3"/>'}<w:spacing w:before="${headlineOnly ? 130 : 200}" w:after="${headlineOnly ? 70 : 120}"/><w:jc w:val="both"/></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:color w:val="0070C0"/><w:sz w:val="24"/>`)}</w:p>`;
+  return `<w:p><w:pPr><w:keepNext/>${plainTopic ? '' : '<w:shd w:val="clear" w:color="auto" w:fill="D9E2F3"/>'}<w:spacing w:before="${headlineOnly ? 190 : 260}" w:after="${headlineOnly ? 70 : 120}"/><w:jc w:val="both"/></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:color w:val="0070C0"/><w:sz w:val="24"/>`)}</w:p>`;
 }
 
 function storyParagraph(item, relationshipId, headlineOnly = false) {

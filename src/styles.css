@@ -114,7 +114,7 @@
 
 .brand-text strong{font-size:20px}
 .brand-text small{font-size:13px}
-.daily-country{font:800 calc(var(--site-body-size,18px) - 2px)/1.4 var(--site-font,'DM Sans',sans-serif);text-transform:uppercase;letter-spacing:.09em;color:var(--site-section,#0070c0);margin:18px 0 7px}
+.daily-country{font:800 calc(var(--site-body-size,18px) - 2px)/1.4 var(--site-font,'DM Sans',sans-serif);text-transform:uppercase;letter-spacing:.09em;color:var(--site-section,#0070c0);margin:23px 0 7px}
 .daily-section h4,.daily-country{background:#d9e2f3;color:#0070c0;padding:6px 10px}
 .daily-section h4.plain-topic{background:transparent;color:var(--site-section,#0070c0);padding:0}
 .daily-coverage{margin:28px 0 0}
@@ -307,15 +307,15 @@
 .daily-section{margin-top:12px;padding-top:8px}
 .daily-section:first-child{margin-top:8px;padding-top:8px;border-top:0}
 .daily-section h3{margin-bottom:8px}
-.daily-section h4{margin-top:8px}
+.daily-section h4{margin-top:14px}
 .daily-update.headline-only .daily-story{padding:1px 0 7px}
 .daily-update.headline-only .daily-story p{line-height:1.3}
 .daily-update.headline-only .daily-section{margin-top:8px;padding-top:5px}
 .daily-update.headline-only .daily-section:first-child{margin-top:5px;padding-top:5px}
 .daily-update.headline-only .daily-section h3{margin-bottom:5px}
-.daily-update.headline-only .daily-section h4{margin:6px 0 4px;padding-top:4px;padding-bottom:4px}
+.daily-update.headline-only .daily-section h4{margin:11px 0 4px;padding-top:4px;padding-bottom:4px}
 .daily-update.headline-only .daily-section h4.plain-topic{padding:0}
-.daily-update.headline-only .daily-country{margin:10px 0 4px;padding-top:4px;padding-bottom:4px}
+.daily-update.headline-only .daily-country{margin:14px 0 4px;padding-top:4px;padding-bottom:4px}
 @media(max-width:800px){.reading-layout.website-open{grid-template-rows:minmax(0,1fr) minmax(0,1fr)}.website-panel{padding:12px}.website-panel-heading h2{margin:2px 0 6px;font-size:20px}.website-panel p{display:none}}
 
 /* Narrow screens use the page scroll so the report heading can stay in view. */
