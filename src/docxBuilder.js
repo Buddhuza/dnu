@@ -13,8 +13,8 @@ function sectionParagraph(value, headlineOnly = false) {
   return `<w:p><w:pPr><w:pStyle w:val="Heading1"/><w:keepNext/><w:spacing w:before="${headlineOnly ? 240 : 360}" w:after="${headlineOnly ? 80 : 120}"/><w:rPr><w:b/><w:bCs/></w:rPr></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:bCs/>`)}</w:p>`;
 }
 
-function subsectionParagraph(value, plainTopic = false, headlineOnly = false) {
-  return `<w:p><w:pPr><w:keepNext/>${plainTopic ? '' : '<w:shd w:val="clear" w:color="auto" w:fill="D9E2F3"/>'}<w:spacing w:before="${headlineOnly ? 190 : 260}" w:after="${headlineOnly ? 40 : 80}"/><w:jc w:val="both"/></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:color w:val="0070C0"/><w:sz w:val="26"/>`)}</w:p>`;
+function subsectionParagraph(value, plainTopic = false, headlineOnly = false, country = false) {
+  return `<w:p><w:pPr><w:keepNext/>${plainTopic ? '' : '<w:shd w:val="clear" w:color="auto" w:fill="D9E2F3"/>'}<w:spacing w:before="${headlineOnly ? 190 : 260}" w:after="${headlineOnly ? 40 : 80}"/><w:jc w:val="both"/></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:color w:val="0070C0"/><w:sz w:val="${country ? 24 : 26}"/>`)}</w:p>`;
 }
 
 function storyParagraph(item, relationshipId, headlineOnly = false) {
@@ -58,7 +58,7 @@ export async function createReportDocxFromTemplate(templateBytes, { title, windo
     }
     if (item.country && item.country !== currentCountry) {
       currentCountry = item.country;
-      paragraphs.push(subsectionParagraph(reportHeadingLabel(item.country), false, headlineOnly));
+      paragraphs.push(subsectionParagraph(reportHeadingLabel(item.country), false, headlineOnly, true));
     }
     const relationshipId = `rIdStory${index + 1}`;
     paragraphs.push(storyParagraph(item, relationshipId, headlineOnly));

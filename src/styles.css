@@ -114,7 +114,7 @@
 
 .brand-text strong{font-size:20px}
 .brand-text small{font-size:13px}
-.daily-country{font:800 calc(var(--site-body-size,18px) - 1px)/1.4 var(--site-font,'DM Sans',sans-serif);font-size:min(calc(var(--site-body-size,18px) - 1px),calc(var(--section-heading-size,26px) - 3px));text-transform:uppercase;letter-spacing:.09em;color:var(--site-section,#0070c0);margin:23px 0 4px}
+.daily-country{font:800 calc(var(--site-body-size,18px) - 2px)/1.4 var(--site-font,'DM Sans',sans-serif);text-transform:uppercase;letter-spacing:.09em;color:var(--site-section,#0070c0);margin:23px 0 4px}
 .daily-section h4,.daily-country{background:#d9e2f3;color:#0070c0;padding:6px 10px}
 .daily-section h4.plain-topic{background:transparent;color:var(--site-section,#0070c0);padding:0}
 .daily-coverage{margin:28px 0 0}

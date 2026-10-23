@@ -56,6 +56,8 @@ test('Word country and organisation headings use US, UK and UN', async () => {
   });
   const xml = await (await JSZip.loadAsync(output)).file('word/document.xml').async('string');
   for (const label of ['UK', 'US', 'UN']) assert.match(xml, new RegExp(`<w:t xml:space="preserve">${label}</w:t>`));
+  assert.match(xml, /<w:sz w:val="26"\/><\/w:rPr><w:t xml:space="preserve">WESTERN \/ CENTRAL EUROPE<\/w:t>/);
+  for (const label of ['UK', 'US', 'UN']) assert.match(xml, new RegExp(`<w:sz w:val="24"/><\\/w:rPr><w:t xml:space="preserve">${label}<\\/w:t>`));
   for (const old of ['United Kingdom', 'United States', 'United Nations']) assert.doesNotMatch(xml, new RegExp(old));
 });
 
