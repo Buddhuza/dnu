@@ -12,7 +12,7 @@ test('browser report download creates a readable Word file with country headings
     sourceOutcomes: [{ name: 'Uncollected agency', status: 'source page could not be fetched' }],
     articles: [
       { section: 'Lead stories', subsection: 'Middle East', title: 'Lead headline', summary: 'A factual lead sentence.', sourceName: 'Agency', url: 'https://example.com/lead' },
-      { section: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Belgium', title: 'Exact headline', summary: 'A factual second sentence.', sourceName: 'Agency', url: 'https://example.com/story' }
+      { section: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Belgium', title: 'Exact headline', summary: 'A factual second sentence.', sourceName: 'Local France', url: 'https://example.com/story' }
     ]
   });
   assert.ok(output instanceof Uint8Array);
@@ -26,7 +26,8 @@ test('browser report download creates a readable Word file with country headings
   assert.match(document.split('BELGIUM')[0].split('<w:p>').at(-1), /<w:shd[^>]*w:fill="D9E2F3"/);
   assert.match(document, /Exact headline/);
   assert.match(document, /A factual second sentence/);
-  assert.match(document, /Exact headline\.[\s\S]*?A factual second sentence\.[\s\S]*?Agency/);
+  assert.match(document, /Exact headline\.[\s\S]*?A factual second sentence\.[\s\S]*?Local\.fr/);
+  assert.doesNotMatch(document, /Local France/);
   assert.doesNotMatch(document, /Exact headline\.[\s\S]*?<w:br\/>[\s\S]*?A factual second sentence/);
   assert.doesNotMatch(document, /COVERAGE NOTE|This coverage note must not appear/);
   assert.doesNotMatch(document, /Uncollected agency/);

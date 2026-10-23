@@ -821,7 +821,7 @@
       "id": "https://www.thelocal.fr/20261020/france-arrests-man-and-calls-in-anti-terror-police-over-town-hall-fire",
       "url": "https://www.thelocal.fr/20261020/france-arrests-man-and-calls-in-anti-terror-police-over-town-hall-fire",
       "sourceId": "source-127",
-      "sourceName": "Local France",
+      "sourceName": "Local.fr",
       "group": "Miscl",
       "title": "France arrests suspect and calls in anti-terror police over Limoges town hall fire",
       "summary": "A 40-year-old man linked to ultra-left movements was arrested in connection to the Limoges town hall fire.",
@@ -2551,7 +2551,7 @@
     },
     {
       "id": "source-114",
-      "name": "Local Sweden",
+      "name": "Local.se",
       "group": "Miscl",
       "url": "https://www.thelocal.se/",
       "status": "checked",
@@ -2655,7 +2655,7 @@
     },
     {
       "id": "source-127",
-      "name": "Local France",
+      "name": "Local.fr",
       "group": "Miscl",
       "url": "https://www.thelocal.fr/",
       "status": "collected",
@@ -2663,7 +2663,7 @@
     },
     {
       "id": "source-128",
-      "name": "Local Germany",
+      "name": "Local.de",
       "group": "Miscl",
       "url": "https://www.thelocal.de/",
       "status": "checked",
@@ -2671,7 +2671,7 @@
     },
     {
       "id": "source-129",
-      "name": "Local Spain",
+      "name": "Local.es",
       "group": "Miscl",
       "url": "https://www.thelocal.es/",
       "status": "checked",
@@ -2727,7 +2727,7 @@
     },
     {
       "id": "source-136",
-      "name": "Local Switzerland",
+      "name": "Local.ch",
       "group": "Miscl",
       "url": "https://www.thelocal.ch/",
       "status": "checked",
@@ -2735,7 +2735,7 @@
     },
     {
       "id": "source-137",
-      "name": "Local Austria",
+      "name": "Local.at",
       "group": "Miscl",
       "url": "https://www.thelocal.at/",
       "status": "checked",

@@ -1,5 +1,6 @@
 import JSZip from 'jszip';
 import { MISCELLANEOUS_COUNTRIES, NEWS_SECTIONS } from './newsSections.js';
+import { displaySourceName } from './sourceNames.js';
 
 export const SPREADSHEET_COLUMNS = ['Date', 'Source', 'Region', 'Countries', 'Local Regions', 'Organizations', 'Themes', 'Types', 'Source URL', 'Heading', 'Body'];
 const exportRegions = {
@@ -67,7 +68,7 @@ export function spreadsheetRow(article, page, leadOrigins = {}) {
   const organisationsFound = new Set(initial && organisations.some(([name]) => name === initial) ? [initial] : []);
   for (const [name, pattern] of organisations) if (pattern.test(context)) organisationsFound.add(name);
   const source = article.sourceName === 'IPN' && (article.sourceId === 'source-63' || /^https?:\/\/(?:www\.)?interpressnews\.ge\//i.test(article.url || ''))
-    ? 'InterPressNews' : article.sourceName;
+    ? 'InterPressNews' : displaySourceName(article.sourceName);
   return [date(article.publishedAt || article.addedAt), source, Object.hasOwn(exportRegions, region) ? exportRegions[region] : region, [...found].join(', '), '', [...organisationsFound].join(', '), '', '', article.url, page.heading || article.title, page.body];
 }
 

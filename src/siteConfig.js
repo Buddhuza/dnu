@@ -1,6 +1,7 @@
 import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, orderedSubsections, leadRegionalHeadings, compareCountryLabels } from './newsSections.js';
 import { blockedPlacementReason } from './sourcePolicy.js';
 import { excludedHeadlineReason } from './headlinePolicy.js';
+import { displaySourceName } from './sourceNames.js';
 
 export const THEME_PRESETS = {
   forest: { name: 'Forest', primary: '#123e47', accent: '#bce081', background: '#f4efe6', surface: '#fdfaf4', text: '#182a36', section: '#0070c0', font: 'DM Sans' },
@@ -172,10 +173,10 @@ export function displaySources(baseSources, config) {
   return [...baseSources.map(source => {
     const alternate = config.sourceListingOverrides?.[source.id];
     try {
-      if (alternate && new URL(alternate).origin === new URL(source.url).origin) return { ...source, listingUrl: alternate };
+    if (alternate && new URL(alternate).origin === new URL(source.url).origin) return { ...source, name: displaySourceName(source.name), listingUrl: alternate };
     } catch { /* Ignore an invalid local override. */ }
-    return source;
-  }), ...config.customSources].filter(source => !hidden.has(source.id));
+    return { ...source, name: displaySourceName(source.name) };
+  }), ...config.customSources.map(source => ({ ...source, name: displaySourceName(source.name) }))].filter(source => !hidden.has(source.id));
 }
 
 export function displaySiteContent(articles, config, excludedIds = new Set()) {
@@ -190,7 +191,7 @@ export function displaySiteContent(articles, config, excludedIds = new Set()) {
       ...article,
       title: edit?.title?.trim() || article.title,
       summary: edit?.summaryEdited ? edit.summary : edit?.summary?.trim() || article.summary,
-      sourceName: edit?.sourceName?.trim() || article.sourceName,
+      sourceName: displaySourceName(edit?.sourceName?.trim() || article.sourceName),
       section: sectionById.get(sectionId)?.name || sectionId,
       sectionId,
       subsection: edit?.sectionId ? edit.subsection : edit?.subsection || (legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : article.subsection),
@@ -200,7 +201,7 @@ export function displaySiteContent(articles, config, excludedIds = new Set()) {
   }
   for (const article of config.customArticles) {
     if (article.hidden || sectionById.get(article.sectionId)?.visible === false) continue;
-    if (!blockedPlacementReason(article) && !excludedHeadlineReason(article.title)) items.push({ ...article, section: sectionById.get(article.sectionId)?.name || article.sectionId });
+    if (!blockedPlacementReason(article) && !excludedHeadlineReason(article.title)) items.push({ ...article, sourceName: displaySourceName(article.sourceName), section: sectionById.get(article.sectionId)?.name || article.sectionId });
   }
   const uniqueItems = deduplicateArticles(items, excludedIds);
   const order = new Map(config.sections.map((section, index) => [section.id, index]));

@@ -1,6 +1,7 @@
 import { reportEndDateLabel } from './reportDate.js';
 import { reportStoryText } from './reportText.js';
 import { disclaimerFirst, disclaimerSecond } from './disclaimer.js';
+import { displaySourceName } from './sourceNames.js';
 
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 
@@ -33,7 +34,7 @@ export function emailUpdateHtml({ title = 'DAILY NEWS UPDATE', compiledAt, artic
     }
     const { headline, summary } = reportStoryText(article);
     const detail = !headlineOnly && summary ? ` ${escapeHtml(summary)}` : '';
-    paragraphs.push(`<p style="font-size:12pt;line-height:${headlineOnly ? '1.25' : '1.4'};margin:0 0 ${headlineOnly ? '3pt' : '8pt'}"><strong>${escapeHtml(headline)}</strong>${detail} (<a style="color:#0563c1;text-decoration:underline" href="${escapeHtml(article.url)}">${escapeHtml(article.sourceName)}</a>)</p>`);
+    paragraphs.push(`<p style="font-size:12pt;line-height:${headlineOnly ? '1.25' : '1.4'};margin:0 0 ${headlineOnly ? '3pt' : '8pt'}"><strong>${escapeHtml(headline)}</strong>${detail} (<a style="color:#0563c1;text-decoration:underline" href="${escapeHtml(article.url)}">${escapeHtml(displaySourceName(article.sourceName))}</a>)</p>`);
   }
   paragraphs.push(`<div style="border-top:1px solid #808080;margin-top:18pt;padding-top:7pt;font-size:9pt;line-height:1.35"><p style="margin:0 0 7pt"><strong>Disclaimer:</strong> ${escapeHtml(disclaimerFirst)}</p><p style="margin:0">${escapeHtml(disclaimerSecond)}</p></div></div>`);
   return paragraphs.join('');
@@ -48,7 +49,7 @@ export function emailUpdateText({ title = 'DAILY NEWS UPDATE', compiledAt, artic
     if (article.subsection && article.subsection !== subsection) { subsection = article.subsection; country = ''; lines.push(subsection.toUpperCase()); }
     if (article.country && article.country !== country) { country = article.country; lines.push(country.toUpperCase()); }
     const { headline, summary } = reportStoryText(article);
-    lines.push(`${headline}${!headlineOnly && summary ? ` ${summary}` : ''} (${article.sourceName}: ${article.url})`, '');
+    lines.push(`${headline}${!headlineOnly && summary ? ` ${summary}` : ''} (${displaySourceName(article.sourceName)}: ${article.url})`, '');
   }
   lines.push(`Disclaimer: ${disclaimerFirst}`, '', disclaimerSecond);
   return lines.join('\n');
