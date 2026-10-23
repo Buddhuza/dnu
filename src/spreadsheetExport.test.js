@@ -15,6 +15,33 @@ test('spreadsheet rows use article dates, regional labels and multi-country subj
   assert.equal(row[10], 'Officials from Russia and Ukraine held talks with the OSCE.');
 });
 
+test('spreadsheet uses database region names, including original placements of lead stories', () => {
+  const page = { heading: 'Talks continue', body: 'Officials held talks.' };
+  const article = { id: 'story', sourceName: 'AP', section: 'Miscellaneous', url: 'https://example.com/story', title: 'Talks continue' };
+  for (const [subsection, expected] of [
+    ['MIDDLE EAST / NORTH AFRICA', 'Middle East'],
+    ['WESTERN / CENTRAL EUROPE', 'Europe'],
+    ['RUSSIA / EURASIA', 'Eurasia'],
+    ['NORTH EAST ASIA', 'North East Asia'],
+    ['NORTH AMERICA', 'North America'],
+    ['INTERNATIONAL ORGANISATIONS', ''],
+    ['AFGHANISTAN / PAKISTAN', 'AFGHANISTAN / PAKISTAN']
+  ]) {
+    assert.equal(spreadsheetRow({ ...article, subsection }, page)[2], expected, subsection);
+  }
+  const lead = { ...article, section: 'Lead stories', subsection: 'Middle East' };
+  assert.equal(spreadsheetRow(lead, page)[2], 'Middle East');
+  assert.equal(spreadsheetRow(lead, page, { story: { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE' } })[2], 'Europe');
+});
+
+test('spreadsheet distinguishes Georgian InterPressNews from Moldovan IPN', () => {
+  const page = { heading: 'Talks continue', body: 'Officials held talks.' };
+  const article = { sourceName: 'IPN', section: 'South Caucasus', subsection: 'Georgia', title: 'Talks continue' };
+  assert.equal(spreadsheetRow({ ...article, sourceId: 'source-63', url: 'https://www.interpressnews.ge/en/story' }, page)[1], 'InterPressNews');
+  assert.equal(spreadsheetRow({ ...article, url: 'https://www.interpressnews.ge/en/story' }, page)[1], 'InterPressNews');
+  assert.equal(spreadsheetRow({ ...article, sourceId: 'source-32', url: 'https://ipn.md/en/story' }, page)[1], 'IPN');
+});
+
 test('spreadsheet writes an importable workbook with exact column names and full body text', async () => {
   const row = ['2026-10-20', 'AP', 'South Eastern Europe', 'Serbia / Kosovo', '', 'EU', '', '', 'https://example.com/article', 'Headline', 'First paragraph.\n\nSecond paragraph.'];
   const blob = await createSpreadsheet([row]);

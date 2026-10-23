@@ -2,6 +2,14 @@ import JSZip from 'jszip';
 import { MISCELLANEOUS_COUNTRIES, NEWS_SECTIONS } from './newsSections.js';
 
 export const SPREADSHEET_COLUMNS = ['Date', 'Source', 'Region', 'Countries', 'Local Regions', 'Organizations', 'Themes', 'Types', 'Source URL', 'Heading', 'Body'];
+const exportRegions = {
+  'MIDDLE EAST / NORTH AFRICA': 'Middle East',
+  'WESTERN / CENTRAL EUROPE': 'Europe',
+  'RUSSIA / EURASIA': 'Eurasia',
+  'NORTH EAST ASIA': 'North East Asia',
+  'NORTH AMERICA': 'North America',
+  'INTERNATIONAL ORGANISATIONS': ''
+};
 const countryNames = [...new Set([...NEWS_SECTIONS.slice(1, 5).flatMap(section => section.subsections), ...Object.values(MISCELLANEOUS_COUNTRIES).flat()])]
   .filter(name => !MISCELLANEOUS_COUNTRIES['INTERNATIONAL ORGANISATIONS'].includes(name) && !['Serbia / Kosovo', 'Moldova / Transdniestria', 'Georgia / Abkhazia / South Ossetia'].includes(name));
 const aliases = {
@@ -58,7 +66,9 @@ export function spreadsheetRow(article, page, leadOrigins = {}) {
   if (found.has('Georgia / Abkhazia / South Ossetia')) found.delete('Georgia');
   const organisationsFound = new Set(initial && organisations.some(([name]) => name === initial) ? [initial] : []);
   for (const [name, pattern] of organisations) if (pattern.test(context)) organisationsFound.add(name);
-  return [date(article.publishedAt || article.addedAt), article.sourceName, region, [...found].join(', '), '', [...organisationsFound].join(', '), '', '', article.url, page.heading || article.title, page.body];
+  const source = article.sourceName === 'IPN' && (article.sourceId === 'source-63' || /^https?:\/\/(?:www\.)?interpressnews\.ge\//i.test(article.url || ''))
+    ? 'InterPressNews' : article.sourceName;
+  return [date(article.publishedAt || article.addedAt), source, Object.hasOwn(exportRegions, region) ? exportRegions[region] : region, [...found].join(', '), '', [...organisationsFound].join(', '), '', '', article.url, page.heading || article.title, page.body];
 }
 
 export async function createSpreadsheet(rows) {
