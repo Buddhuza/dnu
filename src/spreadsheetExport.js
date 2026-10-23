@@ -43,6 +43,10 @@ const organisations = [
   ['WTO', /\bWTO\b|World Trade Organization|World Trade Organisation/i], ['CIS', /\bCIS\b|Commonwealth of Independent States/i],
   ['CSTO', /\bCSTO\b/], ['BRICS', /\bBRICS\b/]
 ];
+const georgianRegions = [
+  ['Abkhazia', /\bAbkhaz(?:ia|ian|i)?\b/i],
+  ['South Ossetia', /\bSouth Osseti(?:a|an|ans)\b|\bTskhinvali\b/i]
+];
 const xml = value => String(value ?? '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[character]);
 const column = index => { let label = ''; for (let n = index + 1; n; n = Math.floor((n - 1) / 26)) label = String.fromCharCode(65 + (n - 1) % 26) + label; return label; };
 const date = value => Number.isFinite(Date.parse(value)) ? new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Vienna', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(value)) : '';
@@ -56,21 +60,24 @@ export function spreadsheetRow(article, page, leadOrigins = {}) {
       : subsection === 'Middle East' ? 'MIDDLE EAST / NORTH AFRICA' : NEWS_SECTIONS.slice(1, 5).find(item => item.subsections.includes(subsection))?.id || subsection
     : section;
   const initial = reportHeadingLabel(section === 'Miscellaneous' ? article.country : section === 'Lead stories' ? original?.country || original?.subsection || subsection : subsection);
-  const context = `${page.heading || article.title} ${article.summary || ''} ${String(page.body || '').slice(0, 1300)}`;
+  const leadContext = `${page.heading || article.title} ${article.summary || ''}`;
+  const context = `${leadContext} ${String(page.body || '').slice(0, 1300)}`;
+  const localRegionContext = georgianRegions.some(([, pattern]) => pattern.test(leadContext)) ? leadContext : String(page.body || '');
+  const localRegions = georgianRegions.filter(([, pattern]) => pattern.test(localRegionContext)).map(([name]) => name);
   const found = new Set();
-  if (initial && !organisations.some(([name]) => name === initial) && initial !== 'Middle East') found.add(initial);
+  if (initial && !organisations.some(([name]) => name === initial) && initial !== 'Middle East') found.add(initial === 'Georgia / Abkhazia / South Ossetia' ? 'Georgia' : initial);
   if (/\b(?:Kosovo|Kosovar|Pristina|Prishtina)\b/i.test(context)) found.add('Serbia / Kosovo');
   if (/\b(?:Transdniestria|Transnistria|Tiraspol)\b/i.test(context)) found.add('Moldova / Transdniestria');
-  if (/\b(?:Abkhazia|South Ossetia)\b/i.test(context)) found.add('Georgia / Abkhazia / South Ossetia');
+  if (localRegions.length) found.add('Georgia');
   for (const name of countryNames) if ((name === 'United States' && /\bUS\b/.test(context)) || (aliases[name] || new RegExp(`\\b${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i')).test(context)) found.add(name);
   if (found.has('Serbia / Kosovo')) { found.delete('Serbia'); found.delete('Kosovo'); }
   if (found.has('Moldova / Transdniestria')) found.delete('Moldova');
-  if (found.has('Georgia / Abkhazia / South Ossetia')) found.delete('Georgia');
+  found.delete('Georgia / Abkhazia / South Ossetia');
   const organisationsFound = new Set(initial && organisations.some(([name]) => name === initial) ? [initial] : []);
   for (const [name, pattern] of organisations) if (pattern.test(context)) organisationsFound.add(name);
   const source = article.sourceName === 'IPN' && (article.sourceId === 'source-63' || /^https?:\/\/(?:www\.)?interpressnews\.ge\//i.test(article.url || ''))
     ? 'InterPressNews' : displaySourceName(article.sourceName);
-  return [date(article.publishedAt || article.addedAt), source, Object.hasOwn(exportRegions, region) ? exportRegions[region] : region, [...new Set([...found].map(reportHeadingLabel))].join(', '), '', [...new Set([...organisationsFound].map(reportHeadingLabel))].join(', '), '', '', article.url, page.heading || article.title, page.body];
+  return [date(article.publishedAt || article.addedAt), source, Object.hasOwn(exportRegions, region) ? exportRegions[region] : region, [...new Set([...found].map(reportHeadingLabel))].join(', '), localRegions.join(', '), [...new Set([...organisationsFound].map(reportHeadingLabel))].join(', '), '', '', article.url, page.heading || article.title, page.body];
 }
 
 export async function createSpreadsheet(rows) {

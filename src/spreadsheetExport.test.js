@@ -42,6 +42,25 @@ test('spreadsheet distinguishes Georgian InterPressNews from Moldovan IPN', () =
   assert.equal(spreadsheetRow({ ...article, sourceId: 'source-32', url: 'https://ipn.md/en/story' }, page)[1], 'IPN');
 });
 
+test('spreadsheet files Abkhazia and South Ossetia under Georgia and identifies the relevant local regions', () => {
+  const article = { id: 'georgia', sourceName: 'AP', section: 'South Caucasus', subsection: 'Georgia / Abkhazia / South Ossetia', title: 'Talks continue', url: 'https://example.com/georgia' };
+  const cases = [
+    [{ heading: 'South Ossetia announces new measures', body: 'Abkhazia was mentioned only as background.' }, 'South Ossetia'],
+    [{ heading: 'Abkhaz officials meet Georgian delegation', body: 'The meeting was held in Abkhazia.' }, 'Abkhazia'],
+    [{ heading: 'Abkhazia and South Ossetia hold talks', body: 'Delegations met.' }, 'Abkhazia, South Ossetia'],
+    [{ heading: 'Talks continue', body: 'Officials met in Tskhinvali.' }, 'South Ossetia'],
+    [{ heading: 'Talks continue', body: 'Officials met again.' }, '']
+  ];
+  for (const [page, regions] of cases) {
+    const row = spreadsheetRow(article, page);
+    assert.equal(row[3], 'Georgia');
+    assert.equal(row[4], regions);
+  }
+  const crossBorder = spreadsheetRow({ ...article, subsection: 'Georgia' }, { heading: 'Russia and Abkhazia hold talks', body: 'Delegations met.' });
+  assert.equal(crossBorder[3], 'Georgia, Russia');
+  assert.equal(crossBorder[4], 'Abkhazia');
+});
+
 test('spreadsheet writes an importable workbook with exact column names and full body text', async () => {
   const row = ['2026-10-20', 'AP', 'South Eastern Europe', 'Serbia / Kosovo', '', 'EU', '', '', 'https://example.com/article', 'Headline', 'First paragraph.\n\nSecond paragraph.'];
   const blob = await createSpreadsheet([row]);
