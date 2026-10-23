@@ -11,11 +11,12 @@ const calibri = '<w:rFonts w:eastAsia="Calibri" w:cs="Calibri"/>';
 
 function sectionParagraph(value, headlineOnly = false, lead = false) {
   const before = lead ? (headlineOnly ? 240 : 360) : (headlineOnly ? 360 : 480);
-  return `<w:p><w:pPr><w:pStyle w:val="Heading1"/><w:keepNext/><w:spacing w:before="${before}" w:after="${headlineOnly ? 80 : 120}"/><w:rPr><w:b/><w:bCs/></w:rPr></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:bCs/>`)}</w:p>`;
+  return `<w:p><w:pPr><w:pStyle w:val="Heading1"/><w:keepNext/><w:spacing w:before="${before}" w:after="${headlineOnly ? 40 : 80}"/><w:rPr><w:b/><w:bCs/></w:rPr></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:bCs/>`)}</w:p>`;
 }
 
-function subsectionParagraph(value, plainTopic = false, headlineOnly = false, country = false) {
-  return `<w:p><w:pPr><w:keepNext/>${plainTopic ? '' : '<w:shd w:val="clear" w:color="auto" w:fill="D9E2F3"/>'}<w:spacing w:before="${headlineOnly ? 190 : 260}" w:after="${headlineOnly ? 40 : 80}"/><w:jc w:val="both"/></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:color w:val="0070C0"/><w:sz w:val="${country ? 24 : 26}"/>`)}</w:p>`;
+function subsectionParagraph(value, plainTopic = false, headlineOnly = false, country = false, firstAfterSection = false) {
+  const before = firstAfterSection ? (headlineOnly ? 80 : 120) : (headlineOnly ? 190 : 260);
+  return `<w:p><w:pPr><w:keepNext/>${plainTopic ? '' : '<w:shd w:val="clear" w:color="auto" w:fill="D9E2F3"/>'}<w:spacing w:before="${before}" w:after="${headlineOnly ? 40 : 80}"/><w:jc w:val="both"/></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:color w:val="0070C0"/><w:sz w:val="${country ? 24 : 26}"/>`)}</w:p>`;
 }
 
 function storyParagraph(item, relationshipId, headlineOnly = false) {
@@ -53,9 +54,10 @@ export async function createReportDocxFromTemplate(templateBytes, { title, windo
       paragraphs.push(sectionParagraph(section, headlineOnly, item.sectionId === 'Lead stories' || section === 'Lead stories'));
     }
     if (item.subsection && item.subsection !== currentSubsection) {
+      const firstAfterSection = !currentSubsection;
       currentSubsection = item.subsection;
       currentCountry = '';
-      paragraphs.push(subsectionParagraph(reportHeadingLabel(item.subsection), section === 'Miscellaneous', headlineOnly));
+      paragraphs.push(subsectionParagraph(reportHeadingLabel(item.subsection), section === 'Miscellaneous', headlineOnly, false, firstAfterSection));
     }
     if (item.country && item.country !== currentCountry) {
       currentCountry = item.country;

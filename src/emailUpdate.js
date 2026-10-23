@@ -23,13 +23,15 @@ export function emailUpdateHtml({ title = 'DAILY NEWS UPDATE', compiledAt, artic
       country = '';
       const lead = article.sectionId === 'Lead stories' || section === 'Lead stories';
       const before = lead ? (headlineOnly ? '10pt' : '16pt') : (headlineOnly ? '16pt' : '22pt');
-      paragraphs.push(`<h2 style="font-size:15pt;color:#0070c0;margin:${before} 0 5pt">${escapeHtml(section.toUpperCase())}</h2>`);
+      paragraphs.push(`<h2 style="font-size:15pt;color:#0070c0;margin:${before} 0 2pt">${escapeHtml(section.toUpperCase())}</h2>`);
     }
     if (article.subsection && article.subsection !== subsection) {
+      const firstAfterSection = !subsection;
       subsection = article.subsection;
       country = '';
       const highlight = section === 'Miscellaneous' ? '' : 'background-color:#d9e2f3;';
-      paragraphs.push(`<h3 style="font-size:13pt;color:#0070c0;${highlight}margin:${headlineOnly ? '10pt' : '13pt'} 0 2pt;padding:2pt 3pt">${escapeHtml(reportHeadingLabel(subsection).toUpperCase())}</h3>`);
+      const before = firstAfterSection ? (headlineOnly ? '5pt' : '7pt') : (headlineOnly ? '10pt' : '13pt');
+      paragraphs.push(`<h3 style="font-size:13pt;color:#0070c0;${highlight}margin:${before} 0 2pt;padding:2pt 3pt">${escapeHtml(reportHeadingLabel(subsection).toUpperCase())}</h3>`);
     }
     if (article.country && article.country !== country) {
       country = article.country;
