@@ -7,7 +7,7 @@ This document preserves standing instructions about the website interface, visua
 - Show article dates as, for example, “14 Oct 26”, and use Vienna time (CET/CEST as applicable) for other displayed times.
 - Duplicate groups remaining visible for editorial review receive distinct colours and group numbers. Remove the warning when only one checked/visible story in a group remains.
 - Hide empty country and section headings when their last story moves away. In Edit mode, permit moving any story to another section, country or organisation and creating a missing heading; retain drag and drop and the move control.
-- Both summary and headline-only modes have compact, comfortable line spacing; headline-only paragraphs have a little more separation than their line spacing.
+- Both summary and compressed modes have compact, comfortable line spacing; compressed paragraphs have a little more separation than their line spacing. Compressed mode shows the headline without a trailing period, followed by the agency.
 
 ## Editing, adding and navigation
 
@@ -21,7 +21,7 @@ This document preserves standing instructions about the website interface, visua
 
 ## Word, email and spreadsheet outputs
 
-- Download exports only the currently visible/checked stories and respects summary versus headline-only mode. The Word file follows the supplied example’s logo, font, colours and section styling. Its filename and title date use the report/coverage date appropriate to the edition. Do not add a coverage note inside Word.
+- Download exports only the currently visible/checked stories and respects summary versus compressed mode, including the absence of a trailing headline period in compressed mode. The Word file follows the supplied example’s logo, font, colours and section styling. Its filename and title date use the report/coverage date appropriate to the edition. Do not add a coverage note inside Word.
 - At the bottom of the final Word page, put a rule followed by the supplied two-paragraph disclaimer. Display that disclaimer at the bottom of the web update before the coverage note. The email action copies the formatted current update, including the logo, to the clipboard and opens a draft for pasting; the subject is “OSCE SITROOM DAILY NEWS UPDATE, DD Month YYYY”.
 - Disclaimer text, paragraph 1: “Disclaimer: This product is based on open media sources only and the material used is not always fully validated. Items selected are abridged from the original or are \"verbatim\". All views, opinions and accounts contained herein are those of the original authors, and do not imply official endorsement or acceptance by the OSCE.”
 - Disclaimer text, paragraph 2: “We would like to remind all our recipients that SitRoom News Updates are for internal use only and is not intended for further dissemination or distribution. Thank you for your understanding and co-operation regarding this matter.”
@@ -33,7 +33,7 @@ This document preserves standing instructions about the website interface, visua
 
 - The page brand is SITUATION ROOM and the update is DAILY NEWS UPDATE; omit the OSCE logo from the web header. Use a slightly beige light background and a working dark-mode switch. Section headings are uppercase and larger than subsection headings; subsection headings are larger than country headings. Keep country heading size at the established smaller size.
 - Countries and organisations have pale blue highlighted headings in web and Word. The seven Miscellaneous subsection headings themselves are not highlighted. In Lead stories, Middle East retains its highlight. Keep the specified spacing: more above main sections other than Lead stories, little below section/subsection headings, and a little more above subsection headings.
-- Keep the update column readable rather than page-wide. Use compact top bars and controls. The update controls are Add, Edit/Save, headline-only toggle, Download, Email, spreadsheet export and Search; prefer small blue icon buttons with clear hover labels. Section shortcut buttons are centred and evenly distributed.
+- Keep the update column readable rather than page-wide. Use compact top bars and controls. The update controls are Add, Edit/Save, compressed-view toggle, Download, Email, spreadsheet export and Search; prefer small blue icon buttons with clear hover labels. Section shortcut buttons are centred and evenly distributed.
 - Do not show the removed promotional banner, Google News, a second bottom toolbar, or a “Websites without selected articles” block at the end of the report. Source diagnostics belong in the collection audit, where the reason for each missing outlet can be inspected.
 
 ## Export review
