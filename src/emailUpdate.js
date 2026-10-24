@@ -40,7 +40,7 @@ export function emailUpdateHtml({ title = 'DAILY NEWS UPDATE', compiledAt, artic
       const before = afterTopic ? (headlineOnly ? '5pt' : '7pt') : (headlineOnly ? '10pt' : '13pt');
       paragraphs.push(`<h4 style="font-size:12pt;color:#0070c0;background-color:#d9e2f3;margin:${before} 0 2pt;padding:2pt 3pt">${escapeHtml(reportHeadingLabel(country).toUpperCase())}</h4>`);
     }
-    const { headline, summary } = reportStoryText(article);
+    const { headline, summary } = reportStoryText(article, headlineOnly);
     const detail = !headlineOnly && summary ? ` ${escapeHtml(summary)}` : '';
     paragraphs.push(`<p style="font-size:12pt;line-height:${headlineOnly ? '1.25' : '1.4'};margin:0 0 ${headlineOnly ? '3pt' : '8pt'}"><strong>${escapeHtml(headline)}</strong>${detail} (<a style="color:#0563c1;text-decoration:underline" href="${escapeHtml(article.url)}">${escapeHtml(displaySourceName(article.sourceName))}</a>)</p>`);
   }
@@ -56,7 +56,7 @@ export function emailUpdateText({ title = 'DAILY NEWS UPDATE', compiledAt, artic
     if (nextSection !== section) { section = nextSection; subsection = ''; country = ''; lines.push(section.toUpperCase()); }
     if (article.subsection && article.subsection !== subsection) { subsection = article.subsection; country = ''; lines.push(reportHeadingLabel(subsection).toUpperCase()); }
     if (article.country && article.country !== country) { country = article.country; lines.push(reportHeadingLabel(country).toUpperCase()); }
-    const { headline, summary } = reportStoryText(article);
+    const { headline, summary } = reportStoryText(article, headlineOnly);
     lines.push(`${headline}${!headlineOnly && summary ? ` ${summary}` : ''} (${displaySourceName(article.sourceName)}: ${article.url})`, '');
   }
   lines.push(`Disclaimer: ${disclaimerFirst}`, '', disclaimerSecond);

@@ -26,4 +26,6 @@ test('formatted email follows Word headings, source links, and disclaimer', () =
   assert.match(html, /Disclaimer:/);
   assert.doesNotMatch(emailUpdateHtml({ ...options, headlineOnly: true }), /Ministers agreed to meet/);
   assert.doesNotMatch(emailUpdateText({ ...options, headlineOnly: true }), /Ministers agreed to meet/);
+  assert.match(emailUpdateHtml({ ...options, headlineOnly: true }), /<strong>EU leaders discuss security talks<\/strong> \(<a/);
+  assert.match(emailUpdateText({ ...options, headlineOnly: true }), /EU leaders discuss security talks \(Example News:/);
 });

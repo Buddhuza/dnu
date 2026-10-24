@@ -20,6 +20,11 @@ test('report text places one period after the headline and summary', () => {
   assert.deepEqual(reportStoryText({ title: 'NATO Begins Annual Nuclear Exercise in Italy', summary: 'Seventeen nations are taking part' }), { headline: 'NATO begins annual nuclear exercise in Italy.', summary: 'Seventeen nations are taking part.' });
 });
 
+test('compressed view removes a trailing headline period', () => {
+  assert.equal(reportStoryText({ title: 'NATO Begins Annual Nuclear Exercise in Italy.' }, true).headline, 'NATO begins annual nuclear exercise in Italy');
+  assert.equal(reportStoryText({ title: 'NATO Begins Annual Nuclear Exercise in Italy' }, true).headline, 'NATO begins annual nuclear exercise in Italy');
+});
+
 test('OSCE name uses Organisation in displayed report text', () => {
   const text = reportStoryText({ title: 'Organization for Security and Co-operation in Europe meets', summary: 'The Organization for Security and Co-operation in Europe sent observers' });
   assert.match(text.headline, /Organisation for Security and Co-operation in Europe/);

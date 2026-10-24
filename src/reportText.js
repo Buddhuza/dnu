@@ -33,7 +33,8 @@ export function withPeriod(value) {
   return /[.!?]$/.test(text) ? text : `${text}.`;
 }
 
-export function reportStoryText(item) {
+export function reportStoryText(item, compressed = false) {
   const osceSpelling = value => String(value ?? '').replace(/Organization for Security and Co-operation in Europe/gi, 'Organisation for Security and Co-operation in Europe');
-  return { headline: withPeriod(osceSpelling(sentenceCaseHeadline(item.title, item.summary))), summary: item.summary ? withPeriod(osceSpelling(item.summary)) : '' };
+  const headline = osceSpelling(sentenceCaseHeadline(item.title, item.summary));
+  return { headline: compressed ? headline.replace(/\.$/, '') : withPeriod(headline), summary: item.summary ? withPeriod(osceSpelling(item.summary)) : '' };
 }

@@ -73,7 +73,8 @@ test('headline-only Word download omits summaries but keeps agencies and links',
   });
   const zip = await JSZip.loadAsync(output);
   const document = await zip.file('word/document.xml').async('string');
-  assert.match(document, /OSCE chair visits Armenia\./);
+  assert.match(document, /OSCE chair visits Armenia<\/w:t>/);
+  assert.doesNotMatch(document, /OSCE chair visits Armenia\./);
   assert.match(document, /15 October 2026/);
   assert.doesNotMatch(document, /A meeting took place in Yerevan/);
   assert.match(document, /<w:spacing w:after="60" w:line="260" w:lineRule="auto"\/>/);

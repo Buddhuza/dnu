@@ -21,7 +21,7 @@ function subsectionParagraph(value, { plainTopic = false, headlineOnly = false, 
 }
 
 function storyParagraph(item, relationshipId, headlineOnly = false) {
-  const { headline, summary } = reportStoryText(item);
+  const { headline, summary } = reportStoryText(item, headlineOnly);
   const detail = !headlineOnly && summary ? textRun(` ${summary}`, `${calibri}<w:sz w:val="24"/>`) : '';
   return `<w:p><w:pPr><w:spacing w:after="${headlineOnly ? 60 : 160}"${headlineOnly ? ' w:line="260" w:lineRule="auto"' : ''}/><w:jc w:val="both"/></w:pPr>${textRun(headline, `${calibri}<w:b/><w:sz w:val="24"/>`)}${detail}${textRun(' (', `${calibri}<w:sz w:val="24"/>`)}<w:hyperlink r:id="${relationshipId}">${textRun(displaySourceName(item.sourceName), '<w:color w:val="0563C1"/><w:sz w:val="24"/><w:u w:val="single"/>')}</w:hyperlink>${textRun(')', `${calibri}<w:sz w:val="24"/>`)}</w:p>`;
 }
