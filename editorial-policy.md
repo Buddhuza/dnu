@@ -8,7 +8,7 @@ When a user gives a new standing editorial rule, update this document and the re
 
 - Produce a factual daily monitoring update about security, war, conflict, terrorism, defence, diplomacy, external cooperation and politics. Give OSCE news particular attention.
 - Prefer developments involving international relations, negotiations, cross-border security and external cooperation over routine internal party politics. Include a major domestic development when its consequences warrant coverage.
-- Use English-language articles only. Do not include opinion, analysis, commentary, features, speculative pieces or questions posed as headlines. Exclude headlines beginning with “Analysis” or “Opinion”, headlines containing a question mark, and irrelevant subjects such as leisure travel.
+- Publish article headlines and summaries in English. If a relevant suggested article is originally in another language, translate its headline and factual summary into English and prefix the displayed headline with exactly “(文A)”. Retain the original link and original headline for verification. Do not add an article when a reliable English translation cannot be extracted. Do not include opinion, analysis, commentary, features, speculative pieces or questions posed as headlines. Exclude headlines beginning with “Analysis” or “Opinion”, headlines containing a question mark, and irrelevant subjects such as leisure travel.
 - Report facts without opinions or analysis. Do not fill space with weak, repetitive or merely descriptive stories. Select the most consequential recent developments.
 - The coverage window is specified for each collection request; otherwise use the last 24 hours. Report date is the date of compilation. Use Vienna time (CET/CEST as applicable) when determining dates and coverage.
 - For automatic collection, verify publication time on the original article page, including a date or time visible there. A listing timestamp alone is insufficient for a verified-window story. Exclude an article outside the window even if it appears on a current listing. Manually added articles may be of any age: use the page timestamp, then a date inferred from the article or URL, and finally the import time, clearly tracked as such.
@@ -54,6 +54,6 @@ When a user gives a new standing editorial rule, update this document and the re
 
 ## 6. Editorial review before publication
 
-- Confirm the requested coverage window and the article-page date for every selected automatic story. Confirm the original link, agency, English language, relevance, placement, source restrictions, headline and one-sentence summary.
+- Confirm the requested coverage window and the article-page date for every selected automatic story. Confirm the original link, agency, English text or a faithful English translation, relevance, placement, source restrictions, headline and one-sentence summary.
 - Compare stories by event to remove duplication, review lead order and importance, enforce the country cap, and check source diversity. Keep a per-source audit that explains omissions without equating “not selected” to “unreachable”.
 
