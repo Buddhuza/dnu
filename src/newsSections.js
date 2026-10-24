@@ -9,7 +9,7 @@ export const NEWS_SECTIONS = [
 
 export const MISCELLANEOUS_COUNTRIES = {
   'WESTERN / CENTRAL EUROPE': ['Austria', 'Belgium', 'Bulgaria', 'Croatia', 'Cyprus', 'Czechia', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Greece', 'Hungary', 'Iceland', 'Ireland', 'Italy', 'Latvia', 'Lithuania', 'Luxembourg', 'Malta', 'Netherlands', 'Norway', 'Poland', 'Portugal', 'Romania', 'Slovakia', 'Slovenia', 'Spain', 'Sweden', 'Switzerland', 'United Kingdom'],
-  'MIDDLE EAST / NORTH AFRICA': ['Iran', 'Israel', 'Lebanon', 'Libya', 'Saudi Arabia', 'Syria', 'Türkiye'],
+  'MIDDLE EAST / NORTH AFRICA': ['Iran', 'Israel', 'Jordan', 'Lebanon', 'Libya', 'Saudi Arabia', 'Syria', 'Türkiye'],
   'RUSSIA / EURASIA': ['Russia'],
   'AFGHANISTAN / PAKISTAN': ['Afghanistan'],
   'NORTH EAST ASIA': ['China', 'Japan', 'Mongolia', 'South Korea', 'North Korea'],

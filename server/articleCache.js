@@ -1,5 +1,6 @@
-import { appendFileSync, existsSync, readFileSync } from 'node:fs';
+import { appendFileSync, existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { gzipSync, gunzipSync } from 'node:zlib';
+import { basename, dirname, join } from 'node:path';
 import { canonicalUrl } from './previousCoverage.js';
 
 const failedRetryMs = 6 * 60 * 60 * 1000;
@@ -9,14 +10,22 @@ const failedRetryMs = 6 * 60 * 60 * 1000;
 // the same URL updates only the supplied fields.
 export function createArticleCache(path) {
   const entries = new Map();
-  if (existsSync(path)) for (const line of readFileSync(path, 'utf8').split('\n')) {
-    if (!line.trim()) continue;
-    try {
-      const record = JSON.parse(line);
-      const key = canonicalUrl(record.url);
-      if (key) entries.set(key, { ...entries.get(key), ...record });
-    } catch { /* Ignore an incomplete final line after an interrupted write. */ }
+  const directory = dirname(path);
+  const stem = basename(path, '.jsonl');
+  const shardPattern = new RegExp(`^${stem.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}-\\d{4}-\\d{2}-\\d{2}(?:-\\d+)?\\.jsonl$`);
+  const shards = existsSync(directory) ? readdirSync(directory).filter(name => shardPattern.test(name)).sort().map(name => join(directory, name)) : [];
+  for (const file of [path, ...shards]) {
+    if (!existsSync(file)) continue;
+    for (const line of readFileSync(file, 'utf8').split('\n')) {
+      if (!line.trim()) continue;
+      try {
+        const record = JSON.parse(line);
+        const key = canonicalUrl(record.url);
+        if (key) entries.set(key, { ...entries.get(key), ...record });
+      } catch { /* Ignore an incomplete final line after an interrupted write. */ }
+    }
   }
+  let writePath = shards.at(-1) || path;
 
   function get(url) {
     const record = entries.get(canonicalUrl(url));
@@ -32,7 +41,14 @@ export function createArticleCache(path) {
     const key = canonicalUrl(url);
     if (!key) throw new Error('Article cache needs a valid URL');
     const record = { url, ...change };
-    appendFileSync(path, `${JSON.stringify(record)}\n`);
+    const line = `${JSON.stringify(record)}\n`;
+    if (existsSync(writePath) && statSync(writePath).size + Buffer.byteLength(line) > 90_000_000) {
+      const today = new Date().toISOString().slice(0, 10);
+      let next = join(directory, `${stem}-${today}.jsonl`);
+      for (let number = 2; existsSync(next); number++) next = join(directory, `${stem}-${today}-${number}.jsonl`);
+      writePath = next;
+    }
+    appendFileSync(writePath, line);
     entries.set(key, { ...entries.get(key), ...record });
   }
 

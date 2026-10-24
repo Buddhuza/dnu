@@ -39,7 +39,10 @@ function cleanHeadline(article) {
   const host = new URL(source.url).hostname.replace(/^www\./, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   title = title.replace(new RegExp(`\\s[-–|]\\s(?:${brand}|${host})$`, 'i'), '').trim();
   title = title.replace(/\s[-–|]\s(?:Euronews Albania|Republika English|Civil Georgia|Khaama Press|The Copenhagen Post|Novinite\.com - Sofia News Agency|The Malta Independent|Yonhap News Agency|ITV News|The Moscow Times|CNN Politics)$/i, '').trim();
+  title = title.replace(/\s[-–|]\s(?:SkopjeDiem|The Astana Times|The Times Of Central Asia)$/i, '').trim();
   if (source.id === 'source-93') title = title.replace(/\s-\s(?:TopNews|News from Embassies)(?:\s-\sAnsa\.it)?$/i, '').trim();
+  if (source.id === 'source-63') title = title.replace(/\s*\|\s*News agency [«"]?Interpressnews[»"]?$/i, '').trim();
+  if (source.id === 'source-51') title = title.replace(/^Arminfo:\s*/i, '').trim();
   return title;
 }
 const start = Date.parse(state.windowStart);
@@ -83,6 +86,7 @@ const titlePlaces = [
   ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Iran', /\bIran|Iranian|Tehran|Hormuz\b/i],
   ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Saudi Arabia', /\bSaudi Arabia|Saudi|Riyadh|Aramco\b/i],
   ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Israel', /\bIsrael|Israeli|Palestinian|Gaza|West Bank\b/i],
+  ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Jordan', /\bJordan|Jordanian|Amman\b/i],
   ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Lebanon', /\bLebanon|Lebanese|Beirut\b/i],
   ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Syria', /\bSyria|Syrian|Damascus\b/i],
   ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Libya', /\bLibya|Libyan\b/i],
@@ -219,7 +223,7 @@ for (const article of raw) {
   if (placement.sectionId === 'Miscellaneous' && !MISCELLANEOUS_COUNTRIES[placement.subsection]?.includes(placement.country)) { excluded.push({ ...article, reason: 'country or organisation outside configured sections' }); continue; }
   seenUrls.add(article.url);
   seenTitles.add(titleKey(article.title));
-  accepted.push({ ...article, section: placement.sectionId, subsection: placement.subsection, country: placement.country || '' });
+  accepted.push({ ...article, sourceName: article.sourceId === 'source-63' ? 'InterPressNews' : article.sourceName, section: placement.sectionId, subsection: placement.subsection, country: placement.country || '' });
 }
 
 const unique = deduplicateArticles(accepted.map(article => ({ ...article, sectionId: article.section })));

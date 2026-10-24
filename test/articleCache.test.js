@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, rmSync, renameSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createArticleCache } from '../server/articleCache.js';
@@ -30,5 +30,19 @@ test('failed page attempts wait before they can be retried', () => {
     const entry = createArticleCache(path).get('https://example.com/missing');
     assert.ok(entry.retryAfter > Date.now() + 5 * 60 * 60 * 1000);
     assert.equal(entry.page, null);
+  } finally { rmSync(directory, { recursive: true, force: true }); }
+});
+
+test('a scan reuses article pages stored in an older cache shard', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'dnu-article-cache-shards-'));
+  try {
+    const path = join(directory, 'articles.jsonl');
+    const url = 'https://example.com/sharded-article';
+    createArticleCache(path).putPage(url, { markdown: 'Previously scraped article body' });
+    renameSync(path, join(directory, 'articles-2026-10-23.jsonl'));
+    createArticleCache(path).putArticle(url, { title: 'Previously scraped headline' });
+    const entry = createArticleCache(path).get(url);
+    assert.equal(entry.page.markdown, 'Previously scraped article body');
+    assert.equal(entry.article.title, 'Previously scraped headline');
   } finally { rmSync(directory, { recursive: true, force: true }); }
 });
