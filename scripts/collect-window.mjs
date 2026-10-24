@@ -125,11 +125,20 @@ async function examineCandidates(source, record, payload, method) {
         continue;
       }
       if (data) articleCache.putPage(candidate.url, data);
-      const page = entry?.page ? { data: entry.page } : { data };
+      let page = entry?.page ? { data: entry.page } : { data };
       try {
         let article = entry?.article;
         if (!article) {
-          const check = reviewedArticleCheck(page, source, candidate.url, end, end - start);
+          let check = reviewedArticleCheck(page, source, candidate.url, end, end - start);
+          if (check.reason === 'translationUnavailable' && entry?.page && entry.extractionVersion !== 2) {
+            const refreshed = (await batchArticlePages([candidate.url]))[0];
+            if (refreshed) {
+              articleCache.putPage(candidate.url, refreshed);
+              page = { data: refreshed };
+              attempt.fetched++;
+              check = reviewedArticleCheck(page, source, candidate.url, end, end - start);
+            }
+          }
           if (!check.article) { attempt.rejected[check.reason] = (attempt.rejected[check.reason] || 0) + 1; save(); continue; }
           const extracted = typeof page.data?.json === 'string' ? JSON.parse(page.data.json) : page.data?.json || {};
           const placement = articlePlacement(extracted, check.article.title, check.article.summary);

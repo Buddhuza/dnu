@@ -1,5 +1,6 @@
-import { editorialScore, isEnglishArticle, passesSourcePolicy } from './editorialPolicy.js';
+import { editorialScore, isEnglishArticle, isEnglishListingText, passesSourcePolicy } from './editorialPolicy.js';
 import { IMPORT_PROMPT } from '../src/importPrompt.js';
+import { markTranslatedHeadline } from '../src/articleTranslation.js';
 import { publicationTimestamp } from './importArticle.js';
 import { wallTimeToIso } from '../src/viennaTime.js';
 
@@ -80,8 +81,8 @@ export function normalizeArticles(payload, source, now = Date.now(), include = D
   const result = [];
   for (const raw of articleArray(payload)) {
     if (!raw || typeof raw !== 'object') continue;
-    const title = String(raw.title ?? raw.headline ?? '').trim();
-    const summary = String(raw.summary ?? raw.description ?? '').trim();
+    const title = String(raw.translatedTitle ?? raw.title ?? raw.headline ?? '').trim();
+    const summary = String(raw.translatedDescription ?? raw.summary ?? raw.description ?? '').trim();
     const publishedAt = String(raw.publishedAt ?? raw.published_at ?? raw.date ?? '').trim();
     // A date without a time and timezone cannot prove membership in a rolling 48-hour window.
     if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})$/i.test(publishedAt)) continue;
@@ -100,7 +101,7 @@ export function normalizeArticles(payload, source, now = Date.now(), include = D
     if (exclude.some(w => haystack.includes(w.toLocaleLowerCase()))) continue;
     if (!passesSourcePolicy(source, title, summary)) continue;
     seen.add(key);
-    result.push({ id: key, title, summary, url: key, publishedAt: new Date(timestamp).toISOString(), sourceId: source.id, sourceName: source.agencyName || source.name, group: source.group });
+    result.push({ id: key, title, summary, url: key, publishedAt: new Date(timestamp).toISOString(), sourceId: source.id, sourceName: source.agencyName || source.name, group: source.group, ...(raw.translated ? { translated: true, originalHeadline: raw.originalHeadline } : {}) });
   }
   return result.sort((a, b) => editorialScore(b.title, b.summary) - editorialScore(a.title, a.summary) || b.publishedAt.localeCompare(a.publishedAt)).slice(0, 40);
 }
@@ -112,8 +113,8 @@ export function undatedCandidates(payload, source, include = DEFAULT_INCLUDE, ex
     if (!raw || typeof raw !== 'object') continue;
     const listedTime = String(raw.publishedAt ?? raw.published_at ?? raw.date ?? '');
     if (!verifyAll && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})$/i.test(listedTime) && !/T00:00:00(?:\.0+)?Z$/i.test(listedTime)) continue;
-    const title = String(raw.title ?? raw.headline ?? '').trim();
-    const summary = String(raw.summary ?? raw.description ?? '').trim();
+    const title = String(raw.translatedTitle ?? raw.title ?? raw.headline ?? '').trim();
+    const summary = String(raw.translatedDescription ?? raw.summary ?? raw.description ?? '').trim();
     if (!title) continue;
     const haystack = `${title} ${summary}`.toLocaleLowerCase();
     if (include.length && !include.some(w => haystack.includes(w.toLocaleLowerCase()))) continue;
@@ -165,12 +166,14 @@ export function reviewedArticleCheck(payload, source, url, now = Date.now(), max
   const time = Date.parse(publishedAt);
   if (!Number.isFinite(time)) return { article: null, reason: 'missingHeadlineOrTime' };
   if (time < now - maxAgeMs || time > now + 300000) return { article: null, reason: 'outsideWindow' };
-  const title = String(data.metadata?.ogTitle ?? extracted.exactHeadline ?? data.metadata?.title ?? '').trim();
-  if (!title) return { article: null, reason: 'missingHeadlineOrTime' };
-  const summary = String(extracted.summary ?? '').trim();
-  if (!isEnglishArticle(payload, title, summary)) return { article: null, reason: 'nonEnglish' };
+  const originalHeadline = String(data.metadata?.ogTitle ?? extracted.exactHeadline ?? data.metadata?.title ?? '').trim();
+  if (!originalHeadline) return { article: null, reason: 'missingHeadlineOrTime' };
+  const englishOriginal = isEnglishArticle(payload, originalHeadline, extracted.summary);
+  const title = englishOriginal ? originalHeadline : markTranslatedHeadline(extracted.translatedHeadline);
+  const summary = String(englishOriginal ? extracted.summary ?? '' : extracted.translatedSummary ?? extracted.summary ?? '').trim();
+  if (!englishOriginal && (!String(extracted.translatedHeadline ?? '').trim() || !summary || !isEnglishListingText(extracted.translatedHeadline, summary))) return { article: null, reason: 'translationUnavailable' };
   if (!passesSourcePolicy(source, title, summary)) return { article: null, reason: 'outsideScope' };
-  return { article: { id: url, url, sourceId: source.id, sourceName: source.agencyName || source.name, group: source.group, title, summary, publishedAt: new Date(time).toISOString() }, reason: null };
+  return { article: { id: url, url, sourceId: source.id, sourceName: source.agencyName || source.name, group: source.group, title, summary, publishedAt: new Date(time).toISOString(), ...(!englishOriginal ? { translated: true, originalHeadline } : {}) }, reason: null };
 }
 
 export function reviewedArticle(payload, source, url, now = Date.now()) {
@@ -179,12 +182,12 @@ export function reviewedArticle(payload, source, url, now = Date.now()) {
 
 export async function scrapeHeadlines(source, include, apiKey, fetchImpl = fetch) {
   const targetUrl = source.listingUrl || source.url;
-  const prompt = 'Extract English-language news article headlines linked from this page. Return an object with an articles array. For each article return title, url (absolute article URL), description only if visible on this listing page, and publishedAt as an ISO 8601 timestamp with timezone only when the exact time and timezone are visible. Also assign priority from 0 to 5 using only the visible headline and description: 5 for important OSCE, war, cross-border security or diplomacy, 4 for other external cooperation or international politics, 3 for relevant national security or politics, 0 to 2 for weakly relevant items. Include plausible article links even when the time is not visible; omit publishedAt for those. Do not turn a date-only label into a midnight timestamp. Do not invent dates, titles, descriptions, or URLs. Do not include navigation links.';
+  const prompt = 'Extract news article headlines linked from this page in any language. Return an object with an articles array. For each article return title as shown in the original language, url (absolute article URL), description only if visible on this listing page, and publishedAt as an ISO 8601 timestamp with timezone only when the exact time and timezone are visible. If title or description is not English, also return translatedTitle or translatedDescription as a faithful English translation for ranking; keep the original fields. Assign priority from 0 to 5 using the meaning of the visible headline and description: 5 for important OSCE, war, cross-border security or diplomacy, 4 for other external cooperation or international politics, 3 for relevant national security or politics, 0 to 2 for weakly relevant items. Include plausible article links even when the time is not visible; omit publishedAt for those. Do not turn a date-only label into a midnight timestamp. Do not invent dates, titles, descriptions, translations or URLs. Do not include navigation links.';
   return firecrawlPost({ url: targetUrl, formats: [{ type: 'json', prompt }], onlyMainContent: true, timeout: 30000 }, apiKey, fetchImpl);
 }
 
 export async function scrapeArticle(url, apiKey, fetchImpl = fetch) {
-  const prompt = 'Read the original English-language news article. Return an object with exactHeadline copied verbatim, publishedAt as an ISO 8601 timestamp with timezone only if explicitly available, and summary as exactly one factual sentence of 10 to 25 words. Use the most important concrete detail from the first two substantive paragraphs that is absent from the headline. Omit repeated headline facts, scene-setting, commentary and background. If no additional concrete detail is available there, leave summary empty. Do not translate a non-English article. Do not invent dates or facts, and do not add opinion or analysis.';
+  const prompt = IMPORT_PROMPT;
   return firecrawlPost({ url, formats: ['markdown', 'html', { type: 'json', prompt }], onlyMainContent: true, timeout: 30000 }, apiKey, fetchImpl);
 }
 

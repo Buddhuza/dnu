@@ -3,7 +3,8 @@ import { excludedHeadlineReason } from '../src/headlinePolicy.js';
 import { preferredRegionalPlacement, ukraineAttackPlacement } from '../src/storyPlacement.js';
 import { isUkrainianOutlet } from '../src/sourcePolicy.js';
 import { viennaWallTimeToIso, wallTimeToIso } from '../src/viennaTime.js';
-import { isEnglishArticle, isRussianSource, isRussiaFocused } from './editorialPolicy.js';
+import { isEnglishArticle, isEnglishListingText, isRussianSource, isRussiaFocused } from './editorialPolicy.js';
+import { markTranslatedHeadline } from '../src/articleTranslation.js';
 
 const sections = new Map(NEWS_SECTIONS.map(section => [section.id, new Set(section.subsections)]));
 const western = ['Austria', 'Belgium', 'Bulgaria', 'Croatia', 'Cyprus', 'Czechia', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Greece', 'Hungary', 'Iceland', 'Ireland', 'Italy', 'Latvia', 'Lithuania', 'Luxembourg', 'Malta', 'Netherlands', 'Norway', 'Poland', 'Portugal', 'Romania', 'Slovakia', 'Slovenia', 'Spain', 'Sweden', 'Switzerland', 'United Kingdom', 'UK', 'Britain', 'England', 'Scotland', 'Wales'];
@@ -151,11 +152,13 @@ export function resolveArticleTime(payload, url, now = Date.now()) {
 export function importedArticle(payload, url, source, { allowUnplaced = false } = {}) {
   const data = payload?.data ?? {};
   const extracted = typeof data.json === 'string' ? JSON.parse(data.json) : data.json ?? {};
-  const title = String(data.metadata?.ogTitle ?? extracted.exactHeadline ?? data.metadata?.title ?? '').trim();
-  const summary = String(extracted.summary ?? '').trim();
-  if (!title || !summary) throw new Error('The original page did not yield a headline and a one-sentence summary.');
+  const originalHeadline = String(data.metadata?.ogTitle ?? extracted.exactHeadline ?? data.metadata?.title ?? '').trim();
+  const englishOriginal = isEnglishArticle(payload, originalHeadline, extracted.summary);
+  const title = englishOriginal ? originalHeadline : markTranslatedHeadline(extracted.translatedHeadline);
+  const summary = String(englishOriginal ? extracted.summary ?? '' : extracted.translatedSummary ?? extracted.summary ?? '').trim();
+  if (!originalHeadline || !summary) throw new Error('The original page did not yield a headline and a one-sentence summary.');
+  if (!englishOriginal && (!String(extracted.translatedHeadline ?? '').trim() || !isEnglishListingText(extracted.translatedHeadline, summary))) throw new Error('The non-English article could not be translated into English.');
   if (excludedHeadlineReason(title)) throw new Error(excludedHeadlineReason(title));
-  if (!isEnglishArticle(payload, title, summary)) throw new Error('The original article is not in English.');
   const { publishedAt, timeSource } = resolveArticleTime(payload, url);
   if (isRussianSource(source) && !isRussiaFocused(title, summary)) throw new Error('Russian outlets are limited to Russia-focused stories.');
   const attackedUkraine = !isRussianSource(source) && !isUkrainianOutlet({ ...source, sourceId: source.id, url: url.href }) ? ukraineAttackPlacement(title, summary) : null;
@@ -167,5 +170,5 @@ export function importedArticle(payload, url, source, { allowUnplaced = false } 
     placement = { sectionId: 'Miscellaneous', subsection: 'RUSSIA / EURASIA', country: 'Russia' };
   }
   const agency = String(source.agencyName || source.name || data.metadata?.ogSiteName || data.metadata?.siteName || url.hostname).trim();
-  return { id: `manual-${url.href}`, url: url.href, sourceId: 'manual', sourceName: agency, title, summary, publishedAt, timeSource, reviewed: true, hidden: false, russianSource: isRussianSource(source), ...(placement || { sectionId: '', subsection: '', country: '' }) };
+  return { id: `manual-${url.href}`, url: url.href, sourceId: 'manual', sourceName: agency, title, summary, publishedAt, timeSource, reviewed: true, hidden: false, russianSource: isRussianSource(source), ...(!englishOriginal ? { translated: true, originalHeadline } : {}), ...(placement || { sectionId: '', subsection: '', country: '' }) };
 }

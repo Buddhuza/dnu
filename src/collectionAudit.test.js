@@ -17,6 +17,7 @@ test('source audit distinguishes failed pages, missing dates, and old articles',
   assert.equal(sourceAudit(source, [attempt({ rejectionCounts: { pageError: 2 } })]).status, 'article-errors');
   assert.equal(sourceAudit(source, [attempt({ rejectionCounts: { missingHeadlineOrTime: 4 } })]).status, 'unverified-articles');
   assert.equal(sourceAudit(source, [attempt({ rejectionCounts: { outsideWindow: 4 } })]).status, 'outside-window');
+  assert.equal(sourceAudit(source, [attempt({ rejectionCounts: { translationUnavailable: 4 } })]).status, 'translation-unavailable');
 });
 
 test('source audit reports missing listing links and keyword mismatches', () => {

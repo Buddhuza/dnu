@@ -1,3 +1,5 @@
+import { articleJson } from './articleTranslation.js';
+
 const tidy = value => String(value || '').replace(/\u00a0/g, ' ').replace(/[ \t]+/g, ' ').trim();
 
 export function extractReutersBody(markdown) {
@@ -35,6 +37,8 @@ export function extractMarkdownBody(markdown, headline = '') {
 }
 
 export function extractBrowserArticleBody(page, headline = '') {
+  const extracted = articleJson(page);
+  if (extracted.translatedHeadline) return String(extracted.translatedBody || '').trim();
   if (/reuters\.com/i.test(page?.metadata?.sourceURL || page?.metadata?.url || '')) {
     const body = extractReutersBody(page.markdown);
     if (body) return body;

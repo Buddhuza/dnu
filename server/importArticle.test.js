@@ -56,11 +56,15 @@ test('manual import uses the participating outlet country for a bilateral story'
   assert.deepEqual([story.sectionId, story.subsection], ['South Caucasus', 'Armenia']);
 });
 
-test('non-English pages are refused, while an undated page uses the import time', () => {
+test('non-English pages need a translation, while an undated page uses the import time', () => {
   const url = publicArticleUrl('https://example.org/article');
   const source = sourceForArticle(url, []);
   const data = { metadata: { ogTitle: 'OSCE chair to visit Armenia', publishedTime: '2026-10-14T10:00:00Z', language: 'ru' }, json: { summary: 'The chair will discuss the peace process in Yerevan.' } };
-  assert.throws(() => importedArticle({ data }, url, source), /not in English/);
+  assert.throws(() => importedArticle({ data }, url, source), /could not be translated/);
+  const translated = importedArticle({ data: { ...data, markdown: 'Правительство обсудило вопросы безопасности. '.repeat(15), json: { ...data.json, translatedHeadline: 'OSCE chair to visit Armenia', translatedSummary: 'The chair will discuss the peace process in Yerevan.', translatedBody: 'The chair will discuss the peace process in Yerevan. '.repeat(12) } } }, url, source);
+  assert.equal(translated.title, '(文A) OSCE chair to visit Armenia');
+  assert.equal(translated.originalHeadline, data.metadata.ogTitle);
+  assert.equal(translated.translated, true);
   const before = Date.now();
   const story = importedArticle({ data: { ...data, metadata: { ...data.metadata, language: 'en', publishedTime: undefined } } }, url, source);
   assert.equal(story.timeSource, 'current');

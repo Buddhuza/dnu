@@ -6,6 +6,7 @@ test('English-language checks reject Cyrillic listings and non-English article m
   assert.equal(isEnglishListingText('В ФРГ задержали третьего подозреваемого', 'Задержанная в Берлине женщина подозревается в поджоге'), false);
   assert.equal(isEnglishListingText('OSCE chair to visit Armenia', 'The foreign minister will discuss the peace process.'), true);
   assert.equal(isEnglishArticle({ data: { metadata: { language: 'fr-FR' } } }, 'OSCE chair to visit Armenia', 'The minister will discuss the peace process.'), false);
+  assert.equal(isEnglishArticle({ data: { metadata: {} } }, 'Правительство обсудило безопасность', 'The government discussed international security cooperation.'), false);
   assert.equal(isEnglishArticle({ data: { metadata: { ogLocale: 'sq_AL' }, markdown: 'The government and parliament held talks on security cooperation with neighboring countries. '.repeat(12) } }, 'Kosovo asks US to restart talks', 'Officials discussed their commitments to the Serb minority.'), true);
 });
 

@@ -1,5 +1,6 @@
 import { franc } from 'franc-min';
 import { excludedHeadlineReason } from '../src/headlinePolicy.js';
+import { withoutTranslationMarker } from '../src/articleTranslation.js';
 
 const russianSourceIds = new Set(['source-97', 'source-98', 'source-99', 'source-115', 'source-116']);
 const englishWords = new Set('the and for with from that this which will have has was were are about into over under after before between during government minister president security defence defense politics political election parliament country countries talks agreement cooperation military foreign international new said says'.split(' '));
@@ -12,7 +13,7 @@ function nonLatinShare(value) {
 }
 
 export function isEnglishListingText(title, summary = '') {
-  const text = `${title} ${summary}`.trim();
+  const text = `${withoutTranslationMarker(title)} ${summary}`.trim();
   if (!text || nonLatinShare(text) > 0.12) return false;
   if (englishWordCount(text) >= 2) return true;
   if (text.length >= 60) return franc(text, { minLength: 40 }) === 'eng';
@@ -20,6 +21,7 @@ export function isEnglishListingText(title, summary = '') {
 }
 
 export function isEnglishArticle(payload, title, summary = '') {
+  if (nonLatinShare(title) > 0.12) return false;
   if (!isEnglishListingText(title, summary)) return false;
   const data = payload?.data || {};
   const metadata = data.metadata || {};

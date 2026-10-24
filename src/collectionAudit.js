@@ -2,7 +2,7 @@ export function sourceAudit(source, attempts = [], errors = []) {
   const grouped = new Map();
   for (const attempt of attempts) {
     const key = `${attempt.collectionMethod}:${attempt.listingUrl}`;
-    const row = grouped.get(key) || { listingUrl: attempt.listingUrl, collectionMethod: attempt.collectionMethod, listedCount: 0, previouslyCovered: 0, previouslyScraped: 0, candidatesFound: 0, candidatesSelected: 0, candidatesChecked: 0, headlines: 0, rejectionCounts: { pageError: 0, missingHeadlineOrTime: 0, outsideWindow: 0, outsideScope: 0, nonEnglish: 0 }, pageErrors: [] };
+    const row = grouped.get(key) || { listingUrl: attempt.listingUrl, collectionMethod: attempt.collectionMethod, listedCount: 0, previouslyCovered: 0, previouslyScraped: 0, candidatesFound: 0, candidatesSelected: 0, candidatesChecked: 0, headlines: 0, rejectionCounts: { pageError: 0, missingHeadlineOrTime: 0, outsideWindow: 0, outsideScope: 0, translationUnavailable: 0, nonEnglish: 0 }, pageErrors: [] };
     row.listedCount = Math.max(row.listedCount, attempt.listedCount || 0);
     row.previouslyCovered = Math.max(row.previouslyCovered, attempt.previouslyCovered || 0);
     row.previouslyScraped = Math.max(row.previouslyScraped, attempt.previouslyScraped || 0);
@@ -25,7 +25,7 @@ export function sourceAudit(source, attempts = [], errors = []) {
   const unverifiedPages = checkedAttempts.reduce((sum, attempt) => sum + attempt.rejectionCounts.missingHeadlineOrTime, 0);
   const outOfWindowPages = checkedAttempts.reduce((sum, attempt) => sum + attempt.rejectionCounts.outsideWindow, 0);
   const filteredPages = checkedAttempts.reduce((sum, attempt) => sum + attempt.rejectionCounts.outsideScope, 0);
-  const nonEnglishPages = checkedAttempts.reduce((sum, attempt) => sum + (attempt.rejectionCounts.nonEnglish || 0), 0);
+  const untranslatedPages = checkedAttempts.reduce((sum, attempt) => sum + (attempt.rejectionCounts.translationUnavailable || 0) + (attempt.rejectionCounts.nonEnglish || 0), 0);
   const skipped = checkedAttempts.reduce((sum, attempt) => sum + Math.max(0, attempt.candidatesFound - attempt.previouslyScraped - attempt.candidatesSelected), 0);
   const methods = [...new Set(checkedAttempts.map(attempt => attempt.collectionMethod).filter(Boolean))];
   let status, reason, remedy;
@@ -65,15 +65,19 @@ export function sourceAudit(source, attempts = [], errors = []) {
     status = 'unverified-articles';
     reason = `${unverifiedPages} article page${unverifiedPages === 1 ? '' : 's'} lacked a verifiable headline or publication time.`;
     remedy = 'Use a dated publisher feed or review the original article page for its publication time.';
-  } else if (outOfWindowPages && !filteredPages) {
+  } else if (outOfWindowPages && !filteredPages && !untranslatedPages) {
     status = 'outside-window';
     reason = `${outOfWindowPages} article page${outOfWindowPages === 1 ? '' : 's'} had publication times outside the last 48 hours.`;
     remedy = 'Check another news section or widen the coverage window if an older report is intended.';
+  } else if (untranslatedPages && untranslatedPages === checked) {
+    status = 'translation-unavailable';
+    reason = `${untranslatedPages} non-English article page${untranslatedPages === 1 ? '' : 's'} could not be translated into English.`;
+    remedy = 'Review the original page and try a manual Add if a readable translation is available.';
   } else {
     status = 'no-eligible-articles';
     reason = methods.includes('feed') && !checked
       ? `${listed} dated feed entries were found, but none passed the time and keyword checks.`
-      : `${checked} article pages were checked; ${nonEnglishPages} were not in English, and none passed the time and scope checks.`;
+      : `${checked} article pages were checked; ${untranslatedPages} could not be translated into English, and none passed the time and scope checks.`;
     remedy = filteredPages ? 'Check the article dates and widen the keyword scope if appropriate.' : 'Check another news section or widen the coverage window.';
   }
   if (status !== 'extracted' && /do not support|all scraping engines|blocked|forbidden|403/i.test(errors.join(' '))) {

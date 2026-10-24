@@ -113,6 +113,8 @@ export function normalizeSiteConfig(input, articles = []) {
       id: clean(item.id, `manual-${url}`, 500), url,
       sourceId: 'manual', sourceName: clean(item.sourceName, 'Manual entry', 100),
       title, summary: clean(item.summary, '', 1200),
+      translated: item.translated === true,
+      originalHeadline: clean(item.originalHeadline, '', 400),
       publishedAt: Number.isFinite(Date.parse(item.publishedAt)) ? new Date(item.publishedAt).toISOString() : new Date().toISOString(),
       timeSource: ['page', 'inferred', 'current'].includes(item.timeSource) ? item.timeSource : 'page',
       sectionId: legacyOrganisations ? 'Miscellaneous' : sectionIds.has(item.sectionId) ? item.sectionId : sections[0]?.id || 'Miscellaneous',

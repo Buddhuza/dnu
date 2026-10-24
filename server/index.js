@@ -11,6 +11,7 @@ import { reportFilename } from '../src/reportFilename.js';
 import { createAutoScrapeHistory } from './autoScrapeHistory.js';
 import { createArticleCache } from './articleCache.js';
 import { extractArticleBody } from './articleBody.js';
+import { articleJson } from '../src/articleTranslation.js';
 import { load as loadHtml } from 'cheerio';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -106,7 +107,7 @@ app.post('/api/headlines', async (req, res) => {
     const page = candidatePage(selectedCandidates, req.body?.cursor, fullScan, req.body?.deepScan === true, selective);
     let checked = 0;
     let skippedSinceSelection = 0;
-    const rejectionCounts = { pageError: 0, missingHeadlineOrTime: 0, outsideWindow: 0, outsideScope: 0, nonEnglish: 0 };
+    const rejectionCounts = { pageError: 0, missingHeadlineOrTime: 0, outsideWindow: 0, outsideScope: 0, translationUnavailable: 0 };
     const pageErrors = [];
     for (const candidate of page.items) {
         try {
@@ -125,7 +126,12 @@ app.post('/api/headlines', async (req, res) => {
             articleCache.putPage(candidate.url, payload.data);
             cached = articleCache.get(candidate.url);
           }
-          const check = reviewedArticleCheck({ data: cached.page }, source, candidate.url);
+          let check = reviewedArticleCheck({ data: cached.page }, source, candidate.url);
+          if (check.reason === 'translationUnavailable' && cached.extractionVersion !== 2 && process.env.FIRECRAWL_API_KEY) {
+            articleCache.putPage(candidate.url, (await scrapeArticle(candidate.url, process.env.FIRECRAWL_API_KEY)).data);
+            cached = articleCache.get(candidate.url);
+            check = reviewedArticleCheck({ data: cached.page }, source, candidate.url);
+          }
           const reviewed = check.article;
           if (!reviewed) { rejectionCounts[check.reason]++; continue; }
           const matched = normalizeArticles({ data: { json: { articles: [reviewed] } } }, source, Date.now(), include, exclude, true);
@@ -157,9 +163,14 @@ app.post('/api/article', async (req, res) => {
       articleCache.putPage(articleUrl.href, (await scrapeArticle(articleUrl.href, process.env.FIRECRAWL_API_KEY)).data);
       entry = articleCache.get(articleUrl.href);
     }
-    const check = reviewedArticleCheck({ data: entry.page }, source, articleUrl.href);
+    let check = reviewedArticleCheck({ data: entry.page }, source, articleUrl.href);
+    if (check.reason === 'translationUnavailable' && entry.extractionVersion !== 2) {
+      articleCache.putPage(articleUrl.href, (await scrapeArticle(articleUrl.href, process.env.FIRECRAWL_API_KEY)).data);
+      entry = articleCache.get(articleUrl.href);
+      check = reviewedArticleCheck({ data: entry.page }, source, articleUrl.href);
+    }
     if (!check.article) {
-      const reasons = { nonEnglish: 'The article is not in English.', outsideScope: 'This Russian outlet can only be used for Russia-focused reporting.', outsideWindow: 'The article is outside the last 48 hours.', missingHeadlineOrTime: 'The article has no verifiable headline or publication time.' };
+      const reasons = { translationUnavailable: 'The non-English article could not be translated into English.', outsideScope: 'This Russian outlet can only be used for Russia-focused reporting.', outsideWindow: 'The article is outside the last 48 hours.', missingHeadlineOrTime: 'The article has no verifiable headline or publication time.' };
       return res.status(422).json({ error: reasons[check.reason] || 'The article could not be reviewed.' });
     }
     res.json(check.article);
@@ -177,7 +188,15 @@ app.post('/api/import-article', async (req, res) => {
       articleCache.putPage(articleUrl.href, (await scrapeImportedArticle(articleUrl.href, process.env.FIRECRAWL_API_KEY)).data);
       entry = articleCache.get(articleUrl.href);
     }
-    res.json(importedArticle({ data: entry.page }, articleUrl, sourceForArticle(articleUrl, sources), { allowUnplaced: req.body?.allowUnplaced === true }));
+    let article;
+    try { article = importedArticle({ data: entry.page }, articleUrl, sourceForArticle(articleUrl, sources), { allowUnplaced: req.body?.allowUnplaced === true }); }
+    catch (error) {
+      if (!/could not be translated/.test(error.message) || entry.extractionVersion === 2) throw error;
+      articleCache.putPage(articleUrl.href, (await scrapeImportedArticle(articleUrl.href, process.env.FIRECRAWL_API_KEY)).data);
+      entry = articleCache.get(articleUrl.href);
+      article = importedArticle({ data: entry.page }, articleUrl, sourceForArticle(articleUrl, sources), { allowUnplaced: req.body?.allowUnplaced === true });
+    }
+    res.json(article);
   } catch (error) { res.status(422).json({ error: error.message || 'The article could not be imported.' }); }
 });
 
@@ -186,19 +205,19 @@ app.post('/api/article-body', async (req, res) => {
   if (!articleUrl) return res.status(400).json({ error: 'Enter a public HTTPS article URL.' });
   try {
     let entry = articleCache.get(articleUrl.href);
-    if (!entry?.page) {
+    if (!entry?.page || req.body?.translated === true && !articleJson(entry.page).translatedHeadline) {
       if (!process.env.FIRECRAWL_API_KEY) return res.status(503).json({ error: 'Firecrawl is not configured and this page is not cached.' });
       articleCache.putPage(articleUrl.href, (await scrapeImportedArticle(articleUrl.href, process.env.FIRECRAWL_API_KEY)).data);
       entry = articleCache.get(articleUrl.href);
     }
-    const body = extractArticleBody(entry.page, String(entry.page?.json?.exactHeadline || entry.article?.title || ''));
-    if (body.split(/\s+/).length < 25) return res.status(422).json({ error: 'The publisher page did not provide a full readable article body.' });
+    const body = extractArticleBody(entry.page, String(articleJson(entry.page).exactHeadline || entry.article?.title || ''));
+    if (body.split(/\s+/).length < 25) return res.status(422).json({ error: req.body?.translated === true ? 'The publisher page did not provide a complete English translation of the article body.' : 'The publisher page did not provide a full readable article body.' });
     const $ = loadHtml(entry.page?.html || '');
     const headingCandidates = $('h1').map((_index, node) => $(node).text().replace(/\s+/g, ' ').trim()).get();
     const expected = String(entry.article?.title || '').toLowerCase().match(/[a-z]{5,}/g) || [];
     const heading = headingCandidates.find(value => value.length > 15 && expected.filter(word => value.toLowerCase().includes(word)).length >= Math.min(2, expected.length))
-      || entry.page?.metadata?.title || entry.page?.json?.exactHeadline || entry.article?.title || '';
-    res.json({ heading: String(heading).trim(), body });
+      || entry.page?.metadata?.title || articleJson(entry.page).exactHeadline || entry.article?.title || '';
+    res.json({ heading: String(heading).trim(), body, translated: Boolean(articleJson(entry.page).translatedHeadline) });
   } catch (error) { res.status(502).json({ error: `Could not collect full article: ${error.message}` }); }
 });
 

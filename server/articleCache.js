@@ -55,7 +55,7 @@ export function createArticleCache(path) {
   return {
     get,
     putArticle(url, article) { put(url, { article, failedAt: null }); },
-    putPage(url, page) { put(url, { pageGzip: gzipSync(JSON.stringify(page)).toString('base64'), fetchedAt: new Date().toISOString(), failedAt: null }); },
+    putPage(url, page) { put(url, { pageGzip: gzipSync(JSON.stringify(page)).toString('base64'), fetchedAt: new Date().toISOString(), extractionVersion: 2, failedAt: null }); },
     putFailure(url) { put(url, { failedAt: new Date().toISOString() }); }
   };
 }

@@ -7,6 +7,10 @@ test('title case becomes sentence case while geopolitical names and abbreviation
   assert.equal(sentenceCaseHeadline('EU Ambassador Announces EUR 38 Mln in New Projects for Georgia'), 'EU ambassador announces EUR 38 mln in new projects for Georgia');
 });
 
+test('translated headlines keep their marker in report text', () => {
+  assert.equal(sentenceCaseHeadline('(文A) Government Discusses Security Cooperation'), '(文A) Government discusses security cooperation');
+});
+
 test('all caps introduction is normalised without turning pronouns into US', () => {
   assert.equal(sentenceCaseHeadline('IN BRIEF: FSB foils drone attack in Voronezh Region'), 'In brief: FSB foils drone attack in Voronezh region');
   assert.equal(sentenceCaseHeadline('VIDEO // European Commissioner: "Let us prepare"'), 'Video // European commissioner: "Let us prepare"');

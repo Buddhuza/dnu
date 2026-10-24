@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createArticleCache } from '../server/articleCache.js';
 import { extractArticleBody } from '../server/articleBody.js';
+import { articleJson } from '../src/articleTranslation.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const output = process.argv[2];
@@ -15,8 +16,9 @@ for (const article of update.articles) {
   const body = extractArticleBody(page, article.title);
   if (body.split(/\s+/).length < 25) continue;
   articles[article.url] = {
-    heading: String(page?.metadata?.title || page?.json?.exactHeadline || article.title).trim(),
-    body
+    heading: String(page?.metadata?.title || articleJson(page).exactHeadline || article.title).trim(),
+    body,
+    translated: article.translated === true
   };
 }
 writeFileSync(output, `${JSON.stringify({ editionCheckedAt: update.checkedAt, articles })}\n`);

@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import JSZip from 'jszip';
 import { SPREADSHEET_COLUMNS, spreadsheetRow, createSpreadsheet } from './spreadsheetExport.js';
-import { extractReutersBody } from './articleBodyText.js';
+import { extractBrowserArticleBody, extractReutersBody } from './articleBodyText.js';
+import { extractArticleBody } from '../server/articleBody.js';
 
 test('spreadsheet rows use article dates, regional labels and multi-country subjects', () => {
   const article = { id: 'one', sourceName: 'Reuters', section: 'Lead stories', subsection: 'Ukraine', publishedAt: '2026-10-19T23:30:00Z', url: 'https://example.com/story', title: 'Russia and Ukraine hold talks' };
@@ -107,4 +108,13 @@ test('Reuters body extraction leaves out newsletter copy and keeps article parag
   assert.match(body, /Britain will fly jets/);
   assert.match(body, /missions will begin/);
   assert.doesNotMatch(body, /Misinformation Monitor|Reporting by/);
+});
+
+test('translated article bodies are exported in English or left unavailable', () => {
+  const page = { json: { translatedHeadline: 'Ministers discuss security', translatedBody: 'Ministers discussed cross-border security. '.repeat(30) }, markdown: 'Министры обсудили безопасность. '.repeat(30) };
+  assert.match(extractBrowserArticleBody(page), /cross-border security/);
+  assert.match(extractArticleBody(page), /cross-border security/);
+  delete page.json.translatedBody;
+  assert.equal(extractBrowserArticleBody(page), '');
+  assert.equal(extractArticleBody(page), '');
 });

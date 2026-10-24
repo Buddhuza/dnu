@@ -4,15 +4,16 @@ for (const acronym of ['OSCE', 'EU', 'NATO', 'UN', 'US', 'UK', 'USA', 'ICC', 'CI
 const sentenceWords = new Set('a an and are as at be by for from has have in is of on or over the to with after amid under without into its says said new more today tomorrow this that those their which while who why how'.split(' '));
 
 export function sentenceCaseHeadline(value, summary = '') {
-  const title = String(value ?? '').trim();
+  const marked = /^\(文A\)\s*/.test(String(value ?? '').trim());
+  const title = String(value ?? '').trim().replace(/^\(文A\)\s*/, '');
   const words = title.match(/[\p{L}][\p{L}’'-]*/gu) || [];
   const upperStarts = words.filter(word => /^\p{Lu}/u.test(word)).length;
   const titleCase = words.length >= 4 && upperStarts / words.length > 0.55;
   const leadingCaps = /^\p{Lu}{2,}(?:\s+\p{Lu}{2,})*\s*[:/]/u.test(title);
-  if (!titleCase && !leadingCaps) return title;
+  if (!titleCase && !leadingCaps) return marked ? `(文A) ${title}` : title;
   let first = true;
   let previousEnd = 0;
-  return title.replace(/\p{L}+/gu, (word, offset) => {
+  const converted = title.replace(/\p{L}+/gu, (word, offset) => {
     const before = title.slice(previousEnd, offset);
     const start = first || /[.!?:]\s*["'“‘(]*$/.test(before) || /\/\/\s*$/.test(before);
     first = false;
@@ -24,6 +25,7 @@ export function sentenceCaseHeadline(value, summary = '') {
     if (!leadingCaps && word.length <= 6 && /^\p{Lu}{2,}$/u.test(word) && !sentenceWords.has(lower)) return word;
     return start ? lower.charAt(0).toLocaleUpperCase() + lower.slice(1) : lower;
   });
+  return marked ? `(文A) ${converted}` : converted;
 }
 
 export function withPeriod(value) {

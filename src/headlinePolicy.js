@@ -1,5 +1,5 @@
 export function excludedHeadlineReason(value) {
-  const headline = String(value || '').trim();
+  const headline = String(value || '').trim().replace(/^\(文A\)\s*/, '');
   if (headline.includes('?')) return 'Question headlines are excluded';
   if (/^(?:analysis|opinion|commentary|editorial|feature|in depth|explainer)\b/i.test(headline)) return 'Analysis, opinion and feature headlines are excluded';
   if (/(?:^|:\s*)(?:experts?|analysts?)\s*$/i.test(headline)) return 'Expert commentary is excluded';

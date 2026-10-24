@@ -73,6 +73,29 @@ test('undated matching links can be checked on their original article pages', ()
   assert.equal(reviewedArticle(aaPage, { ...source, url: 'https://www.aa.com.tr/en/', id: 'source-149' }, 'https://www.aa.com.tr/en/europe/story/4088419', now).publishedAt, '2026-10-09T11:15:01.000Z');
 });
 
+test('a translated listing can suggest a non-English article for page review', () => {
+  const payload = { data: { json: { articles: [{ title: 'Правительство обсудило безопасность', translatedTitle: 'Government discusses security', url: '/story' }] } } };
+  assert.deepEqual(undatedCandidates(payload, source, ['security']).map(item => item.url), ['https://example.com/story']);
+});
+
+test('a verified non-English article uses English text and carries the translation marker', () => {
+  const url = 'https://example.com/story';
+  const page = { data: { metadata: { ogTitle: 'Правительство обсудило безопасность', language: 'ru', publishedTime: '2026-10-09T10:00:00Z' }, markdown: 'Правительство обсудило вопросы безопасности и международного сотрудничества. '.repeat(12), json: {
+    exactHeadline: 'Правительство обсудило безопасность',
+    translatedHeadline: 'Government discusses security',
+    translatedSummary: 'Ministers agreed to hold a follow-up meeting with neighbouring states next month.',
+    translatedBody: 'Ministers discussed security cooperation with neighbouring states. '.repeat(12)
+  } } };
+  const checked = reviewedArticleCheck(page, source, url, now);
+  assert.equal(checked.reason, null);
+  assert.equal(checked.article.title, '(文A) Government discusses security');
+  assert.equal(checked.article.originalHeadline, 'Правительство обсудило безопасность');
+  assert.equal(checked.article.translated, true);
+  assert.equal(normalizeArticles({ data: { json: { articles: [checked.article] } } }, source, now, ['security'])[0].translated, true);
+  delete page.data.json.translatedHeadline;
+  assert.equal(reviewedArticleCheck(page, source, url, now).reason, 'translationUnavailable');
+});
+
 test('a retrospective collection can verify an article older than the usual 48 hours', () => {
   const end = Date.parse('2026-10-18T19:44:31Z');
   const page = { data: { metadata: { publishedTime: '2026-10-16T10:00:00Z', ogTitle: 'OSCE convenes security talks' }, json: { summary: 'Delegates agreed to meet again.' } } };
@@ -86,7 +109,7 @@ test('alternate collection checks the source homepage after a section fails', ()
   assert.equal(fallbackListingUrl({ ...source, listingUrl: 'https://example.com/section' }), source.url);
 });
 
-test('publisher article timestamps are taken from TASS and non-English pages are rejected', () => {
+test('publisher article timestamps are taken from TASS and untranslated pages are rejected', () => {
   const tass = { id: 'tass', name: 'TASS', url: 'https://tass.com/politics', group: 'Miscl' };
   const tassUrl = 'https://tass.com/politics/2201383';
   const tassPage = { data: { html: '<dateformat time="1791890077" mode="abs"></dateformat>', metadata: { ogTitle: 'Russia to cooperate with ASEAN on marine security — Lavrov' } } };
@@ -96,7 +119,7 @@ test('publisher article timestamps are taken from TASS and non-English pages are
   const izvestia = { id: 'izvestia', name: 'Izvestia', url: 'https://iz.ru/rubric/mir', group: 'Miscl' };
   const izvestiaUrl = 'https://iz.ru/2183304/v-frg-zaderzhali-tretego-podozrevaemogo-v-podzhoge-shliuza-starlink-v-polshe-izi';
   const izvestiaPage = { data: { html: '<div itemprop="datePublished">2026-10-13T12:59:04+03:00</div>', metadata: { ogTitle: 'В ФРГ задержали третьего подозреваемого в поджоге шлюза Starlink в Польше' } } };
-  assert.equal(reviewedArticleCheck(izvestiaPage, izvestia, izvestiaUrl, Date.parse('2026-10-13T12:00:00Z')).reason, 'nonEnglish');
+  assert.equal(reviewedArticleCheck(izvestiaPage, izvestia, izvestiaUrl, Date.parse('2026-10-13T12:00:00Z')).reason, 'translationUnavailable');
   assert.deepEqual(undatedCandidates({ data: { json: { articles: [{ title: 'В ФРГ задержали третьего подозреваемого', url: izvestiaUrl }] } } }, izvestia, DEFAULT_INCLUDE).map(item => item.url), []);
 });
 
