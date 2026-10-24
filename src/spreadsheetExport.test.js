@@ -15,7 +15,7 @@ test('spreadsheet rows use article dates, regional labels and multi-country subj
   assert.equal(row[10], 'Officials from Russia and Ukraine held talks with the OSCE.');
 });
 
-test('spreadsheet uses database region names, including original placements of lead stories', () => {
+test('spreadsheet uses database region names and the visible placement of lead stories', () => {
   const page = { heading: 'Talks continue', body: 'Officials held talks.' };
   const article = { id: 'story', sourceName: 'AP', section: 'Miscellaneous', url: 'https://example.com/story', title: 'Talks continue' };
   for (const [subsection, expected] of [
@@ -31,7 +31,37 @@ test('spreadsheet uses database region names, including original placements of l
   }
   const lead = { ...article, section: 'Lead stories', subsection: 'Middle East' };
   assert.equal(spreadsheetRow(lead, page)[2], 'Middle East');
-  assert.equal(spreadsheetRow(lead, page, { story: { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE' } })[2], 'Europe');
+  assert.equal(spreadsheetRow(lead, page, { story: { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE' } })[2], 'Middle East');
+});
+
+test('spreadsheet uses the visible lead heading when a story has moved from another country', () => {
+  const article = { id: 'moved', sourceName: 'AP', sectionId: 'Lead stories', subsection: 'Ukraine', title: 'Talks continue', url: 'https://example.com/story' };
+  const row = spreadsheetRow(article, { heading: 'Talks continue', body: 'Delegates met for a second day.' }, {
+    moved: { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'France' }
+  });
+  assert.equal(row[2], 'Eastern Europe');
+  assert.equal(row[3], 'Ukraine');
+  assert.equal(row[5], '');
+});
+
+test('spreadsheet puts the displayed organisation heading in Organizations, including custom organisations', () => {
+  const page = { heading: 'Delegates meet', body: 'Delegates met for a second day.' };
+  const article = { id: 'body', sourceName: 'AP', sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'Council of Europe', title: 'Delegates meet', url: 'https://example.com/story' };
+  const row = spreadsheetRow(article, page);
+  assert.equal(row[2], '');
+  assert.equal(row[3], '');
+  assert.equal(row[5], 'Council of Europe');
+  const lead = spreadsheetRow({ ...article, sectionId: 'Lead stories', subsection: 'Council of Europe' }, page, {
+    body: { sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'Council of Europe' }
+  });
+  assert.equal(lead[3], '');
+  assert.equal(lead[5], 'Council of Europe');
+});
+
+test('spreadsheet keeps the placed country first when the text mentions a neighbouring territory', () => {
+  const article = { id: 'serbia', sourceName: 'AP', sectionId: 'South Eastern Europe', subsection: 'Serbia', title: 'Delegates meet', url: 'https://example.com/story' };
+  const row = spreadsheetRow(article, { heading: 'Delegates meet', body: 'The Kosovo delegation travelled to Belgrade.' });
+  assert.equal(row[3], 'Serbia, Serbia / Kosovo');
 });
 
 test('spreadsheet distinguishes Georgian InterPressNews from Moldovan IPN', () => {

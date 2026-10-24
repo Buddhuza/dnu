@@ -55,25 +55,32 @@ export function spreadsheetRow(article, page, leadOrigins = {}) {
   const original = leadOrigins[article.id];
   const section = article.sectionId || article.section;
   const subsection = article.subsection;
+  const leadRegion = subsection === 'Middle East' ? 'MIDDLE EAST / NORTH AFRICA'
+    : NEWS_SECTIONS.slice(1, 5).find(item => item.subsections.includes(subsection))?.id;
   const region = section === 'Miscellaneous' ? subsection : section === 'Lead stories'
-    ? original?.sectionId === 'Miscellaneous' ? original.subsection : original?.sectionId && original.sectionId !== 'Lead stories' ? original.sectionId
-      : subsection === 'Middle East' ? 'MIDDLE EAST / NORTH AFRICA' : NEWS_SECTIONS.slice(1, 5).find(item => item.subsections.includes(subsection))?.id || subsection
+    ? leadRegion || (original?.sectionId === 'Miscellaneous' ? original.subsection : original?.sectionId && original.sectionId !== 'Lead stories' ? original.sectionId : subsection)
     : section;
-  const initial = reportHeadingLabel(section === 'Miscellaneous' ? article.country : section === 'Lead stories' ? original?.country || original?.subsection || subsection : subsection);
+  const initial = reportHeadingLabel(section === 'Miscellaneous' ? article.country : subsection);
+  const placedUnderOrganisation = section === 'Miscellaneous' && subsection === 'INTERNATIONAL ORGANISATIONS'
+    || section === 'Lead stories' && (organisations.some(([name]) => name === initial)
+      || original?.subsection === 'INTERNATIONAL ORGANISATIONS' && initial === reportHeadingLabel(original.country));
   const leadContext = `${page.heading || article.title} ${article.summary || ''}`;
   const context = `${leadContext} ${String(page.body || '').slice(0, 1300)}`;
   const localRegionContext = georgianRegions.some(([, pattern]) => pattern.test(leadContext)) ? leadContext : String(page.body || '');
   const localRegions = georgianRegions.filter(([, pattern]) => pattern.test(localRegionContext)).map(([name]) => name);
   const found = new Set();
-  if (initial && !organisations.some(([name]) => name === initial) && initial !== 'Middle East') found.add(initial === 'Georgia / Abkhazia / South Ossetia' ? 'Georgia' : initial);
+  if (initial && !placedUnderOrganisation && !organisations.some(([name]) => name === initial) && initial !== 'Middle East') found.add(initial === 'Georgia / Abkhazia / South Ossetia' ? 'Georgia' : initial);
   if (/\b(?:Kosovo|Kosovar|Pristina|Prishtina)\b/i.test(context)) found.add('Serbia / Kosovo');
   if (/\b(?:Transdniestria|Transnistria|Tiraspol)\b/i.test(context)) found.add('Moldova / Transdniestria');
   if (localRegions.length) found.add('Georgia');
   for (const name of countryNames) if ((name === 'United States' && /\bUS\b/.test(context)) || (aliases[name] || new RegExp(`\\b${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i')).test(context)) found.add(name);
-  if (found.has('Serbia / Kosovo')) { found.delete('Serbia'); found.delete('Kosovo'); }
-  if (found.has('Moldova / Transdniestria')) found.delete('Moldova');
+  if (found.has('Serbia / Kosovo')) {
+    if (initial !== 'Serbia') found.delete('Serbia');
+    found.delete('Kosovo');
+  }
+  if (found.has('Moldova / Transdniestria') && initial !== 'Moldova') found.delete('Moldova');
   found.delete('Georgia / Abkhazia / South Ossetia');
-  const organisationsFound = new Set(initial && organisations.some(([name]) => name === initial) ? [initial] : []);
+  const organisationsFound = new Set(initial && (placedUnderOrganisation || organisations.some(([name]) => name === initial)) ? [initial] : []);
   for (const [name, pattern] of organisations) if (pattern.test(context)) organisationsFound.add(name);
   const source = article.sourceName === 'IPN' && (article.sourceId === 'source-63' || /^https?:\/\/(?:www\.)?interpressnews\.ge\//i.test(article.url || ''))
     ? 'InterPressNews' : displaySourceName(article.sourceName);
