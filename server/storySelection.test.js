@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { limitStoriesPerHeading, storyHeadingKey } from './storySelection.js';
+import { balanceAgencyShare, limitStoriesPerHeading, selectDiverseLeadStories, storyHeadingKey } from './storySelection.js';
 
 const story = (id, section, subsection, country = '') => ({ id, section, subsection, country, sourceName: 'Agency', title: `Security talks ${id}`, summary: 'Officials discussed security cooperation.', publishedAt: '2026-10-18T12:00:00Z' });
 
@@ -24,4 +24,40 @@ test('miscellaneous countries and organisations use their own ten-story groups',
   assert.equal(result.kept.filter(item => item.country === 'Russia').length, 10);
   assert.equal(result.kept.filter(item => item.country === 'EU').length, 10);
   assert.equal(storyHeadingKey(story('me', 'Lead stories', 'Middle East')), '');
+});
+
+test('equivalent verified reports can bring an agency down to half a country group', () => {
+  const selected = [1, 2, 3, 4].map(id => ({ ...story(`${id}`, 'South Eastern Europe', 'Albania'), sourceName: id === 4 ? 'Agency B' : 'Agency A', eventId: id, url: `https://example.com/${id}` }));
+  const alternative = { ...selected[0], id: 'alternative', url: 'https://other.example/1', sourceName: 'Agency B' };
+  const result = balanceAgencyShare(selected, [alternative], { sameEvent: (a, b) => a.eventId === b.eventId });
+  assert.equal(result.replacements.length, 1);
+  assert.equal(result.articles.filter(article => article.sourceName === 'Agency A').length, 2);
+  assert.equal(result.articles.filter(article => article.sourceName === 'Agency B').length, 2);
+});
+
+test('agency balance keeps distinct news when no comparable alternative exists', () => {
+  const selected = [1, 2].map(id => ({ ...story(`${id}`, 'South Eastern Europe', 'Albania'), sourceName: 'Agency A', eventId: id, url: `https://example.com/${id}` }));
+  const unrelated = { ...selected[0], id: 'unrelated', eventId: 3, url: 'https://other.example/3', sourceName: 'Agency B' };
+  const weak = { ...selected[0], id: 'weak', url: 'https://other.example/1', sourceName: 'Agency B', title: 'Possible plan could emerge' };
+  const result = balanceAgencyShare(selected, [unrelated, weak], { sameEvent: (a, b) => a.eventId === b.eventId, qualityTolerance: 0 });
+  assert.deepEqual(result.articles, selected);
+  assert.equal(result.replacements.length, 0);
+});
+
+test('ten-story country limit uses roughly half from each agency when comparable reports exist', () => {
+  const stories = [...Array.from({ length: 6 }, (_, index) => ({ ...story(`reuters-${index}`, 'Eastern Europe', 'Ukraine'), sourceName: 'Reuters' })),
+    ...Array.from({ length: 6 }, (_, index) => ({ ...story(`ap-${index}`, 'Eastern Europe', 'Ukraine'), sourceName: 'AP' }))];
+  const result = limitStoriesPerHeading(stories, { limit: 10 });
+  assert.equal(result.kept.filter(item => item.sourceName === 'Reuters').length, 5);
+  assert.equal(result.kept.filter(item => item.sourceName === 'AP').length, 5);
+});
+
+test('lead selection uses another agency when its story is comparably important', () => {
+  const candidates = [
+    { id: 'first', sourceName: 'Reuters', score: 100 },
+    { id: 'second', sourceName: 'Reuters', score: 95 },
+    { id: 'alternative', sourceName: 'AP', score: 90 }
+  ];
+  assert.deepEqual(selectDiverseLeadStories(candidates, 2, item => item.score).map(item => item.id), ['first', 'alternative']);
+  assert.deepEqual(selectDiverseLeadStories(candidates, 2, item => item.score, 3).map(item => item.id), ['first', 'second']);
 });

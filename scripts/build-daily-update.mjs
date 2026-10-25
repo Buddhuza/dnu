@@ -9,7 +9,7 @@ import { preferredRegionalPlacement, ukraineAttackPlacement, russianTerritoryAtt
 import { deduplicateArticles } from '../src/siteConfig.js';
 import { excludedHeadlineReason } from '../src/headlinePolicy.js';
 import { carryForwardArticles } from '../server/updateCarryForward.js';
-import { limitStoriesPerHeading } from '../server/storySelection.js';
+import { balanceAgencyShare, limitStoriesPerHeading, selectDiverseLeadStories } from '../server/storySelection.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const day = process.env.COLLECTION_DAY || new Date().toISOString().slice(0, 10);
@@ -272,6 +272,23 @@ const eventKept = accepted.filter(article => !eventKey(article) || eventWinners.
 for (const article of accepted) if (!eventKept.includes(article)) excluded.push({ ...article, reason: 'same development covered by a preferred source' });
 accepted.splice(0, accepted.length, ...eventKept);
 
+const duplicateAlternatives = excluded.filter(article => /^same (?:event|development) covered by/.test(article.reason));
+const balanced = balanceAgencyShare(accepted, duplicateAlternatives, {
+  windowStart: state.windowStart, windowEnd: state.windowEnd, priorities: editorialPriorities,
+  sameEvent: (original, candidate) => {
+    const first = eventKey(original), second = eventKey(candidate);
+    return Boolean(first && first === second) || deduplicateArticles([
+      { ...original, sectionId: original.section }, { ...candidate, sectionId: candidate.section }
+    ]).length === 1;
+  }
+});
+for (const { original, replacement } of balanced.replacements) {
+  const index = excluded.findIndex(article => article.url === replacement.url);
+  if (index >= 0) excluded.splice(index, 1);
+  excluded.push({ ...original, reason: 'equivalent report selected from another agency to balance coverage' });
+}
+accepted.splice(0, accepted.length, ...balanced.articles);
+
 function leadScore(article, middleEast = false) {
   const impact = middleEast
     ? /\b(?:Hormuz|Iranian attack|Iran war|Israeli strike|ceasefire|shipping|missile)\b/i.test(`${article.title} ${article.summary}`) ? 200 : 0
@@ -282,19 +299,12 @@ function leadScore(article, middleEast = false) {
   return editorialScore(article.title, article.summary) + impact + (Number(editorialPriorities[article.url]) || 0)
     + (agencyPriority.test(article.sourceName) ? (middleEast ? 75 : 1000) : 0) + articleDate(article) / 1e13;
 }
-const ukrainian = [];
-const ukrainianAgencyCounts = new Map();
-for (const article of accepted.filter(article => article.section === 'Eastern Europe' && article.subsection === 'Ukraine' && agencyPriority.test(article.sourceName)).sort((a, b) => leadScore(b) - leadScore(a))) {
-  if ((ukrainianAgencyCounts.get(article.sourceName) || 0) >= 2) continue;
-  ukrainian.push(article);
-  ukrainianAgencyCounts.set(article.sourceName, (ukrainianAgencyCounts.get(article.sourceName) || 0) + 1);
-  if (ukrainian.length === 4) break;
-}
-const middleEast = accepted.filter(article => article.section === 'Miscellaneous' && article.subsection === 'MIDDLE EAST / NORTH AFRICA'
+const ukrainian = selectDiverseLeadStories(accepted.filter(article => article.section === 'Eastern Europe' && article.subsection === 'Ukraine' && agencyPriority.test(article.sourceName)), 4, article => leadScore(article));
+const middleEastCandidates = accepted.filter(article => article.section === 'Miscellaneous' && article.subsection === 'MIDDLE EAST / NORTH AFRICA'
   && /\b(?:Iran|Iranian|Israel|Israeli|Gaza|Lebanon|Lebanese|Syria|Syrian|Hormuz|Palestinian|Tehran|Beirut)\b/i.test(article.title)
   && /\b(?:war|strike\w*|attack\w*|ceasefire|missile\w*|sanction\w*|peace|talks|negotiat\w*|shipping|vessel\w*|nuclear|hostage\w*|truce|offensive)\b/i.test(article.title)
-  && !/\b(?:Saudi Arabia|Saudi|Aramco|Riyadh|analyst|opinion|may be|could become)\b/i.test(article.title))
-  .sort((a, b) => Number(/\bSaudi Arabia|Saudi|Riyadh|Aramco\b/i.test(a.title)) - Number(/\bSaudi Arabia|Saudi|Riyadh|Aramco\b/i.test(b.title)) || leadScore(b, true) - leadScore(a, true)).slice(0, 2);
+  && !/\b(?:Saudi Arabia|Saudi|Aramco|Riyadh|analyst|opinion|may be|could become)\b/i.test(article.title));
+const middleEast = selectDiverseLeadStories(middleEastCandidates, 2, article => leadScore(article, true));
 for (const article of ukrainian) { article.section = 'Lead stories'; article.subsection = 'Ukraine'; article.country = ''; }
 for (const article of middleEast) { article.section = 'Lead stories'; article.subsection = 'Middle East'; article.country = ''; }
 const limited = limitStoriesPerHeading(accepted, { windowStart: state.windowStart, windowEnd: state.windowEnd, priorities: editorialPriorities });
