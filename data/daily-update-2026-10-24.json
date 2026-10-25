@@ -12,7 +12,7 @@
       "sourceName": "Reuters",
       "group": "Miscl",
       "title": "Russia steps up attacks on Ukraine’s digital infrastructure, Kyiv says",
-      "summary": "Russia has struck 10 data centres in the capital Kyiv last month alone, according to Ukraine's prime minister.",
+      "summary": "Ukraine’s prime minister urged government agencies to form specialised cybersecurity teams as the attacks intensified.",
       "publishedAt": "2026-10-23T14:22:36.000Z",
       "section": "Lead stories",
       "subsection": "Ukraine",
@@ -48,6 +48,20 @@
       "reviewed": true
     },
     {
+      "id": "https://www.theguardian.com/world/2026/oct/23/european-middle-eastern-ministers-summit-iran-us-israel",
+      "url": "https://www.theguardian.com/world/2026/oct/23/european-middle-eastern-ministers-summit-iran-us-israel",
+      "sourceId": "source-106",
+      "sourceName": "Guardian",
+      "group": "Miscl",
+      "title": "US and Israel are warned against launching fresh strikes on Iran",
+      "summary": "Foreign ministers from eight European and Middle Eastern countries warned that renewed fighting would widen the conflict and drive oil prices higher.",
+      "publishedAt": "2026-10-23T17:18:34.000Z",
+      "section": "Lead stories",
+      "subsection": "Middle East",
+      "country": "",
+      "reviewed": true
+    },
+    {
       "id": "https://www.reuters.com/world/middle-east/iran-has-detailed-plans-hit-gulf-undersea-cables-if-war-resumes-officials-say-2026-10-23/",
       "url": "https://www.reuters.com/world/middle-east/iran-has-detailed-plans-hit-gulf-undersea-cables-if-war-resumes-officials-say-2026-10-23/",
       "sourceId": "source-153",
@@ -62,28 +76,28 @@
       "reviewed": true
     },
     {
-      "id": "https://www.internazionale.it/ultime-notizie-reuters/2026/10/23/ship-attacks-in-strait-of-hormuz-hit-record-high-in-october",
-      "url": "https://www.internazionale.it/ultime-notizie-reuters/2026/10/23/ship-attacks-in-strait-of-hormuz-hit-record-high-in-october",
-      "sourceId": "source-173",
-      "sourceName": "Reuters",
-      "group": "Miscl",
-      "title": "Ship attacks in Strait of Hormuz hit record high in October",
-      "summary": "October recorded 28 confirmed attacks on ships in the Strait of Hormuz, significantly more than previous months.",
-      "publishedAt": "2026-10-23T14:58:03.000Z",
-      "section": "Lead stories",
-      "subsection": "Middle East",
+      "id": "https://n1info.ba/english/news/sinirlioglu-osce-reaffirms-commitment-to-peace-and-stability-in-the-region/",
+      "url": "https://n1info.ba/english/news/sinirlioglu-osce-reaffirms-commitment-to-peace-and-stability-in-the-region/",
+      "sourceId": "source-8",
+      "sourceName": "N1",
+      "group": "South Eastern Europe",
+      "title": "Sinirlioğlu: OSCE reaffirms commitment to peace and stability in the region",
+      "summary": "OSCE Secretary General Feridun H. Sinirlioğlu participated in the Berlin Process Leaders' Summit in Budva, Montenegro.",
+      "publishedAt": "2026-10-23T14:06:00.000Z",
+      "section": "South Eastern Europe",
+      "subsection": "",
       "country": "",
       "reviewed": true
     },
     {
-      "id": "https://english.gazetatema.net/politics/eu-conservatives-call-for-calm-in-albania-i347799",
-      "url": "https://english.gazetatema.net/politics/eu-conservatives-call-for-calm-in-albania-i347799",
-      "sourceId": "source-6",
-      "sourceName": "TemA",
+      "id": "https://euronews.al/en/defence-minister-nufi-welcomes-turkeys-new-military-attache-reaffirms-commitment-to-defence-and-security-cooperation/",
+      "url": "https://euronews.al/en/defence-minister-nufi-welcomes-turkeys-new-military-attache-reaffirms-commitment-to-defence-and-security-cooperation/",
+      "sourceId": "source-4",
+      "sourceName": "Euronews.al",
       "group": "South Eastern Europe",
-      "title": "EU conservatives call for calm in Albania",
-      "summary": "The European People's Party condemned violence during anti-government protests in Albania, urging for peaceful dialogue.",
-      "publishedAt": "2026-10-23T07:29:12.000Z",
+      "title": "Defence Minister Nufi welcomes Turkey’s new Military Attaché, reaffirms commitment to defence and security cooperation",
+      "summary": "Colonel Murat İlhan met Defence Minister Ermal Nufi in Tirana to discuss the strategic partnership.",
+      "publishedAt": "2026-10-23T11:23:52.000Z",
       "section": "South Eastern Europe",
       "subsection": "Albania",
       "country": "",
@@ -272,16 +286,16 @@
       "reviewed": true
     },
     {
-      "id": "https://www.azernews.az/region/266110.html",
-      "url": "https://www.azernews.az/region/266110.html",
-      "sourceId": "source-58",
-      "sourceName": "Azernews",
-      "group": "South Caucasus",
-      "title": "Zelensky says Ukraine ready to freeze war along current front line",
-      "summary": "Russia currently controls more than 19% of Ukraine’s territory, according to President Zelensky.",
-      "publishedAt": "2026-10-24T07:50:00.000Z",
+      "id": "https://ipn.md/en/an-employee-of-the-russian-embassy-will-be-declared-persona-non-grata-following-the-drone-incident-at-telenesti/",
+      "url": "https://ipn.md/en/an-employee-of-the-russian-embassy-will-be-declared-persona-non-grata-following-the-drone-incident-at-telenesti/",
+      "sourceId": "source-32",
+      "sourceName": "IPN",
+      "group": "East Europe",
+      "title": "An employee of the Russian Embassy will be declared persona non grata following the drone incident at Telenesti",
+      "summary": "The explosive-laden drone fell in Chistelnita village, and Moldova’s foreign ministry condemned the airspace violation.",
+      "publishedAt": "2026-10-23T15:45:03.000Z",
       "section": "Eastern Europe",
-      "subsection": "Ukraine",
+      "subsection": "Moldova",
       "country": "",
       "reviewed": true
     },
@@ -308,62 +322,6 @@
       "title": "Ukraine says Starlink limits still disrupting military operations",
       "summary": "Ukrainian defense officials reported continued issues with Starlink connections affecting military drone operations.",
       "publishedAt": "2026-10-23T15:03:03.000Z",
-      "section": "Eastern Europe",
-      "subsection": "Ukraine",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.azernews.az/region/266104.html",
-      "url": "https://www.azernews.az/region/266104.html",
-      "sourceId": "source-58",
-      "sourceName": "Azernews",
-      "group": "South Caucasus",
-      "title": "Zelensky says 70% of Russian ballistic missile components come from abroad",
-      "summary": "Ukrainian President Volodymyr Zelensky stated that Russia produces approximately 140 ballistic missiles every month.",
-      "publishedAt": "2026-10-24T06:16:00.000Z",
-      "section": "Eastern Europe",
-      "subsection": "Ukraine",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.azernews.az/region/266102.html",
-      "url": "https://www.azernews.az/region/266102.html",
-      "sourceId": "source-58",
-      "sourceName": "Azernews",
-      "group": "South Caucasus",
-      "title": "Zelensky renews call for Patriots, Starlink support",
-      "summary": "Zelensky stated that missile interceptors previously agreed upon are still delayed in delivery.",
-      "publishedAt": "2026-10-24T05:00:00.000Z",
-      "section": "Eastern Europe",
-      "subsection": "Ukraine",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://en.apa.az/europe/zelenskyy-russia-produces-140-ballistic-missiles-a-month-531953",
-      "url": "https://en.apa.az/europe/zelenskyy-russia-produces-140-ballistic-missiles-a-month-531953",
-      "sourceId": "source-55",
-      "sourceName": "APA",
-      "group": "South Caucasus",
-      "title": "Zelenskyy: Russia produces 140 ballistic missiles a month",
-      "summary": "Ukrainian President Zelenskyy stated that Russia currently has 700 ballistic missiles in its arsenal.",
-      "publishedAt": "2026-10-24T01:55:00.000Z",
-      "section": "Eastern Europe",
-      "subsection": "Ukraine",
-      "country": "",
-      "reviewed": true
-    },
-    {
-      "id": "https://timesca.com/ukraine-says-more-than-20400-central-asians-signed-russian-army-contracts/",
-      "url": "https://timesca.com/ukraine-says-more-than-20400-central-asians-signed-russian-army-contracts/",
-      "sourceId": "source-68",
-      "sourceName": "TCA",
-      "group": "Central Asia",
-      "title": "Ukraine Says More Than 20,400 Central Asians Signed Russian Army Contracts",
-      "summary": "Kazakhstan has 3,819 citizens who signed contracts with Russia’s military, according to Ukrainian government figures.",
-      "publishedAt": "2026-10-23T11:22:45.000Z",
       "section": "Eastern Europe",
       "subsection": "Ukraine",
       "country": "",
@@ -406,6 +364,20 @@
       "title": "Armenian, US officials discuss plans for construction of new nuclear power unit in Armenia",
       "summary": "The officials also reviewed bilateral energy projects and the appointment of an acting director for the new nuclear unit company.",
       "publishedAt": "2026-10-23T10:55:00.000Z",
+      "section": "South Caucasus",
+      "subsection": "Armenia",
+      "country": "",
+      "reviewed": true
+    },
+    {
+      "id": "https://arminfo.info/full_news.php?id=105166&lang=3",
+      "url": "https://arminfo.info/full_news.php?id=105166&lang=3",
+      "sourceId": "source-51",
+      "sourceName": "Arminfo",
+      "group": "South Caucasus",
+      "title": "CSTO Secretary General: Armenia has de facto withdrawn from the military alliance",
+      "summary": "The CSTO still sends Armenia documents, but Yerevan does not join its discussions or exercises.",
+      "publishedAt": "2026-10-23T09:45:00.000Z",
       "section": "South Caucasus",
       "subsection": "Armenia",
       "country": "",
@@ -734,20 +706,6 @@
       "reviewed": true
     },
     {
-      "id": "https://hromadske.ua/en/world/273049-german-foreign-minister-warns-shipping-disruptions-could-trigger-famine-in-poorer-countries",
-      "url": "https://hromadske.ua/en/world/273049-german-foreign-minister-warns-shipping-disruptions-could-trigger-famine-in-poorer-countries",
-      "sourceId": "source-38",
-      "sourceName": "Hromadske",
-      "group": "East Europe",
-      "title": "German foreign minister warns shipping disruptions could trigger famine in poorer countries",
-      "summary": "He cited threats near Hormuz and Bab el-Mandeb and Russian attacks on Black Sea shipping.",
-      "publishedAt": "2026-10-23T15:08:00.000Z",
-      "section": "Miscellaneous",
-      "subsection": "WESTERN / CENTRAL EUROPE",
-      "country": "Germany",
-      "reviewed": true
-    },
-    {
       "id": "https://www.tovima.com/politics/kikilias-says-greece-will-not-yield-on-sovereign-rights/",
       "url": "https://www.tovima.com/politics/kikilias-says-greece-will-not-yield-on-sovereign-rights/",
       "sourceId": "source-143",
@@ -986,6 +944,20 @@
       "reviewed": true
     },
     {
+      "id": "https://www.internazionale.it/ultime-notizie-reuters/2026/10/23/ship-attacks-in-strait-of-hormuz-hit-record-high-in-october",
+      "url": "https://www.internazionale.it/ultime-notizie-reuters/2026/10/23/ship-attacks-in-strait-of-hormuz-hit-record-high-in-october",
+      "sourceId": "source-173",
+      "sourceName": "Reuters",
+      "group": "Miscl",
+      "title": "Ship attacks in Strait of Hormuz hit record high in October",
+      "summary": "A Washington-based institute that has tracked maritime security incidents since 2017 compiled the figures.",
+      "publishedAt": "2026-10-23T14:58:03.000Z",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "country": "Iran",
+      "reviewed": true
+    },
+    {
       "id": "https://www.dpa-international.com/politics/urn:newsml:dpa.com:20090101:261024-930-886089",
       "url": "https://www.dpa-international.com/politics/urn:newsml:dpa.com:20090101:261024-930-886089",
       "sourceId": "source-87",
@@ -994,20 +966,6 @@
       "title": "Report: Iran stepping up threats against US officials in Middle East",
       "summary": "Iran has advanced plans for deadly attacks against US diplomats, according to Axios and US intelligence assessments.",
       "publishedAt": "2026-10-24T05:16:00.000Z",
-      "section": "Miscellaneous",
-      "subsection": "MIDDLE EAST / NORTH AFRICA",
-      "country": "Iran",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.theguardian.com/world/2026/oct/23/european-middle-eastern-ministers-summit-iran-us-israel",
-      "url": "https://www.theguardian.com/world/2026/oct/23/european-middle-eastern-ministers-summit-iran-us-israel",
-      "sourceId": "source-106",
-      "sourceName": "Guardian",
-      "group": "Miscl",
-      "title": "US and Israel are warned against launching fresh strikes on Iran",
-      "summary": "Foreign ministers from eight countries urged the US and Israel not to renew attacks on Iran amidst rising oil prices.",
-      "publishedAt": "2026-10-23T17:18:34.000Z",
       "section": "Miscellaneous",
       "subsection": "MIDDLE EAST / NORTH AFRICA",
       "country": "Iran",
@@ -1126,20 +1084,6 @@
       "reviewed": true
     },
     {
-      "id": "https://www.pravda.com.ua/eng/news/2026/10/23/8059379/index.amp",
-      "url": "https://www.pravda.com.ua/eng/news/2026/10/23/8059379/index.amp",
-      "sourceId": "source-36",
-      "sourceName": "Pravda.ua",
-      "group": "East Europe",
-      "title": "European Council president says communication channel with Kremlin remains open, but Russia not ready for dialogue",
-      "summary": "Costa said Europe could join future peace talks through a special envoy or existing diplomatic channels.",
-      "publishedAt": "2026-10-23T12:15:00.000Z",
-      "section": "Miscellaneous",
-      "subsection": "RUSSIA / EURASIA",
-      "country": "Russia",
-      "reviewed": true
-    },
-    {
       "id": "https://www.themoscowtimes.com/2026/10/23/russia-vows-retaliation-after-austria-expels-its-diplomats-a94064",
       "url": "https://www.themoscowtimes.com/2026/10/23/russia-vows-retaliation-after-austria-expels-its-diplomats-a94064",
       "sourceId": "source-115",
@@ -1154,14 +1098,14 @@
       "reviewed": true
     },
     {
-      "id": "https://news.am/en/news/1069903",
-      "url": "https://news.am/en/news/1069903",
-      "sourceId": "source-50",
-      "sourceName": "News.am",
-      "group": "South Caucasus",
-      "title": "MFA: South Caucasus is arena of confrontation with Russia for EU",
-      "summary": "Russian Deputy Foreign Minister Alexander Grushko stated the South Caucasus is an arena of confrontation with Russia for the EU.",
-      "publishedAt": "2026-10-23T18:01:00.000Z",
+      "id": "https://tass.com/politics/2207013",
+      "url": "https://tass.com/politics/2207013",
+      "sourceId": "source-97",
+      "sourceName": "TASS",
+      "group": "Miscl",
+      "title": "Discussing grain initiatives without Russia is pointless, Global South nations agree — MFA",
+      "summary": "Global South nations recognize that Black Sea grain initiatives are ineffective without Russia's involvement and addressing the root causes of the Ukraine conflict.",
+      "publishedAt": "2026-10-23T14:39:52.000Z",
       "section": "Miscellaneous",
       "subsection": "RUSSIA / EURASIA",
       "country": "Russia",
@@ -1182,42 +1126,28 @@
       "reviewed": true
     },
     {
-      "id": "https://kyivindependent.com/kremlin-seized-german-company-metro-ag-transfers-1-billion-rubles-to-russian-military-without-approval/",
-      "url": "https://kyivindependent.com/kremlin-seized-german-company-metro-ag-transfers-1-billion-rubles-to-russian-military-without-approval/",
-      "sourceId": "source-39",
-      "sourceName": "Kyiv Independent",
-      "group": "East Europe",
-      "title": "Kremlin-seized German company Metro AG transfers 1 billion rubles to Russian military without approval",
-      "summary": "Metro AG stated its Russian subsidiary donated 1 billion rubles without the company's authorization.",
-      "publishedAt": "2026-10-23T21:39:53.000Z",
+      "id": "https://sputnikglobe.com/20261024/russia-ready-to-export-500000-tonnes-of-diesel-in-october---novak-1124930181.html",
+      "url": "https://sputnikglobe.com/20261024/russia-ready-to-export-500000-tonnes-of-diesel-in-october---novak-1124930181.html",
+      "sourceId": "source-99",
+      "sourceName": "Sputnik",
+      "group": "Miscl",
+      "title": "Russia Ready to Export 500,000 Tonnes of Diesel in October - Novak",
+      "summary": "Russian companies can export up to 500,000 tonnes of diesel to the US and global markets in October.",
+      "publishedAt": "2026-10-24T04:23:00.000Z",
       "section": "Miscellaneous",
       "subsection": "RUSSIA / EURASIA",
       "country": "Russia",
       "reviewed": true
     },
     {
-      "id": "https://ukranews.com/en/news/1183086-in-orel-authorities-reported-a-missile-strike-on-the-proton-plant-which-manufactures-components-for",
-      "url": "https://ukranews.com/en/news/1183086-in-orel-authorities-reported-a-missile-strike-on-the-proton-plant-which-manufactures-components-for",
-      "sourceId": "source-42",
-      "sourceName": "Ukranews",
-      "group": "East Europe",
-      "title": "Authorities report missile strike on \"Proton\" plant in Oryol, which manufactures components for russian weapons",
-      "summary": "Explosions were reported in Oryol after a missile alert was issued and smoke plumes were seen.",
-      "publishedAt": "2026-10-23T17:37:25.000Z",
-      "section": "Miscellaneous",
-      "subsection": "RUSSIA / EURASIA",
-      "country": "Russia",
-      "reviewed": true
-    },
-    {
-      "id": "https://ipn.md/en/an-employee-of-the-russian-embassy-will-be-declared-persona-non-grata-following-the-drone-incident-at-telenesti/",
-      "url": "https://ipn.md/en/an-employee-of-the-russian-embassy-will-be-declared-persona-non-grata-following-the-drone-incident-at-telenesti/",
-      "sourceId": "source-32",
-      "sourceName": "IPN",
-      "group": "East Europe",
-      "title": "An employee of the Russian Embassy will be declared persona non grata following the drone incident at Telenesti",
-      "summary": "The Ministry of Foreign Affairs will declare a Russian diplomat persona non grata due to a drone incident in Telenesti.",
-      "publishedAt": "2026-10-23T15:45:03.000Z",
+      "id": "https://www.interpressnews.ge/en/article/150419-meps-banning-established-political-parties-would-mark-a-decisive-step-backwards-towards-a-one-party-system-following-the-examples-of-russia-and-belarus-it-would-move-georgia-further-away-from-the-european-union/",
+      "url": "https://www.interpressnews.ge/en/article/150419-meps-banning-established-political-parties-would-mark-a-decisive-step-backwards-towards-a-one-party-system-following-the-examples-of-russia-and-belarus-it-would-move-georgia-further-away-from-the-european-union/",
+      "sourceId": "source-63",
+      "sourceName": "InterPressNews",
+      "group": "South Caucasus",
+      "title": "MEPs: Banning established political parties would mark a decisive step backwards towards a one-party system, following the examples of Russia and Belarus; It would move Georgia further away from the European Union",
+      "summary": "The Constitutional Court opens hearings on banning five opposition parties in Georgia.",
+      "publishedAt": "2026-10-23T15:40:00.000Z",
       "section": "Miscellaneous",
       "subsection": "RUSSIA / EURASIA",
       "country": "Russia",
@@ -1232,6 +1162,34 @@
       "title": "Exclusive-First Russian diesel from Putin-Trump deal heading for US, data shows",
       "summary": "The Agioi Fanendes, a Maltese tanker, was loaded with 40,000 metric tons of diesel in Russia’s Primorsk port for the US.",
       "publishedAt": "2026-10-23T14:28:49.000Z",
+      "section": "Miscellaneous",
+      "subsection": "RUSSIA / EURASIA",
+      "country": "Russia",
+      "reviewed": true
+    },
+    {
+      "id": "https://news.err.ee/1610174791/edf-intel-chief-russia-greatly-exaggerating-its-military-success-in-ukraine",
+      "url": "https://news.err.ee/1610174791/edf-intel-chief-russia-greatly-exaggerating-its-military-success-in-ukraine",
+      "sourceId": "source-90",
+      "sourceName": "ERR",
+      "group": "Miscl",
+      "title": "EDF intel chief: Russia greatly exaggerating its military success in Ukraine",
+      "summary": "Ants Kiviselg stated that Russia's claims of territorial gains in Ukraine are unsubstantiated and exaggerated.",
+      "publishedAt": "2026-10-23T10:41:00.000Z",
+      "section": "Miscellaneous",
+      "subsection": "RUSSIA / EURASIA",
+      "country": "Russia",
+      "reviewed": true
+    },
+    {
+      "id": "https://meduza.io/en/feature/2026/10/23/the-u-s-proposes-a-demilitarized-zone-in-donbas-kyiv-refuses-to-surrender-territory-putin-insists-it-was-russia-s-all-along",
+      "url": "https://meduza.io/en/feature/2026/10/23/the-u-s-proposes-a-demilitarized-zone-in-donbas-kyiv-refuses-to-surrender-territory-putin-insists-it-was-russia-s-all-along",
+      "sourceId": "source-116",
+      "sourceName": "Meduza",
+      "group": "Miscl",
+      "title": "The U.S. proposes a demilitarized zone in Donbas. Kyiv refuses to surrender territory. Putin insists it was Russia’s all along. — Meduza",
+      "summary": "The new U.S. peace plan calls for creating a demilitarized zone in Donbas.",
+      "publishedAt": "2026-10-23T09:27:00.000Z",
       "section": "Miscellaneous",
       "subsection": "RUSSIA / EURASIA",
       "country": "Russia",
@@ -1350,34 +1308,6 @@
       "reviewed": true
     },
     {
-      "id": "https://en.yna.co.kr/view/AEN20261024000500315?section=national/diplomacy",
-      "url": "https://en.yna.co.kr/view/AEN20261024000500315?section=national/diplomacy",
-      "sourceId": "source-103",
-      "sourceName": "Yonhap",
-      "group": "Miscl",
-      "title": "U.S. Army activates air defense battalion in Guam amid N. Korean, Chinese missile threats: report",
-      "summary": "The U.S. Army has activated the 3rd Battalion, 43rd Air Defense Artillery Regiment in Guam to enhance regional defenses.",
-      "publishedAt": "2026-10-23T18:54:15.000Z",
-      "section": "Miscellaneous",
-      "subsection": "NORTH AMERICA",
-      "country": "United States",
-      "reviewed": true
-    },
-    {
-      "id": "https://www.azernews.az/region/266041.html",
-      "url": "https://www.azernews.az/region/266041.html",
-      "sourceId": "source-58",
-      "sourceName": "Azernews",
-      "group": "South Caucasus",
-      "title": "US drafts new proposals to settle Ukraine war",
-      "summary": "The US has drafted peace proposals, including a demilitarized buffer zone in the Donbas region.",
-      "publishedAt": "2026-10-23T06:16:00.000Z",
-      "section": "Miscellaneous",
-      "subsection": "NORTH AMERICA",
-      "country": "United States",
-      "reviewed": true
-    },
-    {
       "id": "https://www.rfi.fr/en/international-news/20261023-rubio-urges-cubans-to-work-with-cia-but-warns-be-discreet",
       "url": "https://www.rfi.fr/en/international-news/20261023-rubio-urges-cubans-to-work-with-cia-but-warns-be-discreet",
       "sourceId": "source-92",
@@ -1403,20 +1333,6 @@
       "section": "Miscellaneous",
       "subsection": "NORTH AMERICA",
       "country": "United States",
-      "reviewed": true
-    },
-    {
-      "id": "https://n1info.ba/english/news/sinirlioglu-osce-reaffirms-commitment-to-peace-and-stability-in-the-region/",
-      "url": "https://n1info.ba/english/news/sinirlioglu-osce-reaffirms-commitment-to-peace-and-stability-in-the-region/",
-      "sourceId": "source-8",
-      "sourceName": "N1",
-      "group": "South Eastern Europe",
-      "title": "Sinirlioğlu: OSCE reaffirms commitment to peace and stability in the region",
-      "summary": "OSCE Secretary General Feridun H. Sinirlioğlu participated in the Berlin Process Leaders' Summit in Budva, Montenegro.",
-      "publishedAt": "2026-10-23T14:06:00.000Z",
-      "section": "Miscellaneous",
-      "subsection": "INTERNATIONAL ORGANISATIONS",
-      "country": "OSCE",
       "reviewed": true
     },
     {
@@ -1488,20 +1404,6 @@
       "subsection": "INTERNATIONAL ORGANISATIONS",
       "country": "UN",
       "reviewed": true
-    },
-    {
-      "id": "https://arminfo.info/full_news.php?id=105166&lang=3",
-      "url": "https://arminfo.info/full_news.php?id=105166&lang=3",
-      "sourceId": "source-51",
-      "sourceName": "Arminfo",
-      "group": "South Caucasus",
-      "title": "CSTO Secretary General: Armenia has de facto withdrawn from the military alliance",
-      "summary": "The CSTO still sends Armenia documents, but Yerevan does not join its discussions or exercises.",
-      "publishedAt": "2026-10-23T09:45:00.000Z",
-      "section": "Miscellaneous",
-      "subsection": "INTERNATIONAL ORGANISATIONS",
-      "country": "CSTO",
-      "reviewed": true
     }
   ],
   "sourceOutcomes": [
@@ -1534,8 +1436,8 @@
       "name": "Euronews.al",
       "group": "South Eastern Europe",
       "url": "https://euronews.al/en/just-in/",
-      "status": "checked",
-      "reason": "10 links listed and 5 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-23. Article checks: 2 outside window, 1 outside scope. Editorial selection: 2 outside security or political scope or too low in editorial priority."
+      "status": "collected",
+      "reason": "1 verified article included; 5 original article pages checked."
     },
     {
       "id": "source-5",
@@ -1551,7 +1453,7 @@
       "group": "South Eastern Europe",
       "url": "https://english.gazetatema.net/category/politics/",
       "status": "collected",
-      "reason": "2 verified articles included; 8 original article pages checked."
+      "reason": "1 verified article included; 8 original article pages checked."
     },
     {
       "id": "source-7",
@@ -1790,8 +1692,8 @@
       "name": "Pravda.ua",
       "group": "East Europe",
       "url": "https://www.pravda.com.ua/eng/news/",
-      "status": "collected",
-      "reason": "1 verified article included; 4 original article pages checked."
+      "status": "checked",
+      "reason": "89 links listed and 4 original article pages checked across 5 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-23. Article checks: 3 outside window. Errors: publisher feed: fetch failed Editorial selection: 1 Ukrainian, Moldovan or Armenian outlet excluded from Russia coverage."
     },
     {
       "id": "source-37",
@@ -1806,16 +1708,16 @@
       "name": "Hromadske",
       "group": "East Europe",
       "url": "https://hromadske.ua/en/news",
-      "status": "collected",
-      "reason": "1 verified article included; 3 original article pages checked. 1 Ukraine-placed article was excluded under the outlet policy."
+      "status": "checked",
+      "reason": "12 links listed and 3 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. Editorial selection: 1 same event covered by a preferred or more complete source; 1 Hromadske excluded from Germany coverage. 1 Ukraine-placed article was excluded under the outlet policy."
     },
     {
       "id": "source-39",
       "name": "Kyiv Independent",
       "group": "East Europe",
       "url": "https://kyivindependent.com/news-archive/",
-      "status": "collected",
-      "reason": "1 verified article included; 2 original article pages checked. 1 Ukraine-placed article was excluded under the outlet policy."
+      "status": "checked",
+      "reason": "10 links listed and 2 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-24. Editorial selection: 1 Ukrainian, Moldovan or Armenian outlet excluded from Russia coverage. 1 Ukraine-placed article was excluded under the outlet policy."
     },
     {
       "id": "source-40",
@@ -1838,8 +1740,8 @@
       "name": "Ukranews",
       "group": "East Europe",
       "url": "https://ukranews.com/en/news",
-      "status": "collected",
-      "reason": "1 verified article included; 3 original article pages checked. 2 Ukraine-placed articles were excluded under the outlet policy."
+      "status": "checked",
+      "reason": "9 links listed and 3 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. Editorial selection: 1 Ukrainian, Moldovan or Armenian outlet excluded from Russia coverage. 2 Ukraine-placed articles were excluded under the outlet policy."
     },
     {
       "id": "source-43",
@@ -1903,7 +1805,7 @@
       "group": "South Caucasus",
       "url": "https://news.am/eng/news/",
       "status": "collected",
-      "reason": "4 verified articles included; 9 original article pages checked."
+      "reason": "3 verified articles included; 9 original article pages checked."
     },
     {
       "id": "source-51",
@@ -1942,8 +1844,8 @@
       "name": "APA",
       "group": "South Caucasus",
       "url": "https://en.apa.az/all-news",
-      "status": "collected",
-      "reason": "1 verified article included; 2 original article pages checked."
+      "status": "checked",
+      "reason": "8 links listed and 2 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-24. Editorial selection: 1 outside security or political scope or too low in editorial priority; 1 Azerbaijani or TCA outlet excluded from Ukraine coverage."
     },
     {
       "id": "source-56",
@@ -1967,7 +1869,7 @@
       "group": "South Caucasus",
       "url": "https://www.azernews.az/latest/",
       "status": "collected",
-      "reason": "5 verified articles included; 9 original article pages checked."
+      "reason": "1 verified article included; 9 original article pages checked."
     },
     {
       "id": "source-59",
@@ -2007,7 +1909,7 @@
       "group": "South Caucasus",
       "url": "https://www.interpressnews.ge/en/latestnews",
       "status": "collected",
-      "reason": "1 verified article included; 8 original article pages checked."
+      "reason": "2 verified articles included; 8 original article pages checked."
     },
     {
       "id": "source-64",
@@ -2046,8 +1948,8 @@
       "name": "TCA",
       "group": "Central Asia",
       "url": "https://timesca.com/category/local-politics/",
-      "status": "collected",
-      "reason": "1 verified article included; 4 original article pages checked."
+      "status": "checked",
+      "reason": "12 links listed and 4 original article pages checked across 4 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-21. Article checks: 2 outside window. Editorial selection: 1 Azerbaijani or TCA outlet excluded from Ukraine coverage; 1 outside security or political scope or too low in editorial priority."
     },
     {
       "id": "source-69",
@@ -2223,7 +2125,7 @@
       "group": "Miscl",
       "url": "https://news.err.ee/k/news",
       "status": "collected",
-      "reason": "1 verified article included; 4 original article pages checked."
+      "reason": "2 verified articles included; 4 original article pages checked."
     },
     {
       "id": "source-91",
@@ -2279,7 +2181,7 @@
       "group": "Miscl",
       "url": "https://tass.com/politics",
       "status": "collected",
-      "reason": "1 verified article included; 5 original article pages checked."
+      "reason": "2 verified articles included; 5 original article pages checked."
     },
     {
       "id": "source-98",
@@ -2295,7 +2197,7 @@
       "group": "Miscl",
       "url": "https://sputnikglobe.com/russia/",
       "status": "collected",
-      "reason": "1 verified article included; 6 original article pages checked."
+      "reason": "2 verified articles included; 6 original article pages checked."
     },
     {
       "id": "source-100",
@@ -2326,8 +2228,8 @@
       "name": "Yonhap",
       "group": "Miscl",
       "url": "https://en.yna.co.kr/news",
-      "status": "collected",
-      "reason": "1 verified article included; 1 original article pages checked."
+      "status": "checked",
+      "reason": "15 links listed and 1 original article pages checked across 4 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2023-10-24. Editorial selection: 1 Yonhap or Azerbaijani outlet excluded from US coverage."
     },
     {
       "id": "source-104",
@@ -2430,8 +2332,8 @@
       "name": "Meduza",
       "group": "Miscl",
       "url": "https://meduza.io/en",
-      "status": "checked",
-      "reason": "19 links listed and 1 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-23. Editorial selection: 1 lower editorial priority within 10-story country limit."
+      "status": "collected",
+      "reason": "1 verified article included; 1 original article pages checked."
     },
     {
       "id": "source-117",

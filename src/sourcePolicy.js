@@ -47,6 +47,10 @@ export function blockedPlacementReason(article, place = article) {
   if (disallowedUkraineSource(article, place)) return 'Ukrainian outlet excluded from Ukraine coverage';
   const section = place.sectionId || place.section;
   if (isRussianOutlet(article) && (section !== 'Miscellaneous' || place.subsection !== 'RUSSIA / EURASIA' || place.country !== 'Russia')) return 'Russian outlet restricted to Russia';
+  if (isUkrainePlacement(place) && (isAzerbaijaniOutlet(article) || article.sourceId === 'source-68')) return 'Azerbaijani or TCA outlet excluded from Ukraine coverage';
+  if (section === 'Miscellaneous' && place.subsection === 'RUSSIA / EURASIA' && place.country === 'Russia' && (isUkrainianOutlet(article) || article.sourceId === 'source-32' || isArmenianOutlet(article))) return 'Ukrainian, Moldovan or Armenian outlet excluded from Russia coverage';
+  if (section === 'Miscellaneous' && place.subsection === 'WESTERN / CENTRAL EUROPE' && place.country === 'Germany' && article.sourceId === 'source-38') return 'Hromadske excluded from Germany coverage';
+  if (section === 'Miscellaneous' && place.subsection === 'NORTH AMERICA' && place.country === 'United States' && (article.sourceId === 'source-103' || isAzerbaijaniOutlet(article))) return 'Yonhap or Azerbaijani outlet excluded from US coverage';
   if (section !== 'South Caucasus' && section !== 'Lead stories') return '';
   if (place.subsection === 'Armenia' && isAzerbaijaniOutlet(article)) return 'Azerbaijani outlet excluded from Armenia coverage';
   if (place.subsection === 'Azerbaijan' && isArmenianOutlet(article)) return 'Armenian outlet excluded from Azerbaijan coverage';

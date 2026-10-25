@@ -7,7 +7,7 @@ This document preserves standing instructions about the website interface, visua
 - Show article dates as, for example, “14 Oct 26”, and use Vienna time (CET/CEST as applicable) for other displayed times.
 - Duplicate groups remaining visible for editorial review receive distinct colours and group numbers. Remove the warning when only one checked/visible story in a group remains.
 - Hide empty country and section headings when their last story moves away. In Edit mode, permit moving any story to another section, country or organisation and creating a missing heading; retain drag and drop and the move control.
-- Both summary and compressed modes have compact, comfortable line spacing. Keep the spacing within wrapped lines in compressed mode, but use a slightly smaller gap between adjacent stories. Compressed mode shows the headline without a trailing period, followed by the agency.
+- Both summary and compressed modes have compact, comfortable line and paragraph spacing. Keep the spacing within wrapped lines in compressed mode, but use a slightly smaller gap between adjacent stories. Compressed mode shows the headline without a trailing period, followed by the agency.
 
 ## Editing, adding and navigation
 
@@ -17,7 +17,7 @@ This document preserves standing instructions about the website interface, visua
 - Search finds text within the update. The top header and source area stay fixed on desktop while update text scrolls. On narrow screens hide the Sources area; allow the page header to scroll away while the compact update header stays sticky. Section shortcuts remain one line and shorten to LEAD, SEE, EE, SC, CA and MISCL on narrow screens.
 - The public GitHub Pages site has Manage site disabled because it cannot securely verify a password. Browser-local changes are private to that browser and are not a shared policy or a replacement for the versioned project files.
 - Keep the editorial policy available at its direct `/dnu/editorial-policy.md` URL, but do not show an Editorial policy link or button on the main public site.
-- The top-right clock uses “dd.mm.yyyy HH:MM” in Vienna time and matches the Manage site text colour and size. The project and website are named DNU / SITUATION ROOM, rather than scrapeandreport.
+- Do not show a date or time in the top-right page header. The project and website are named DNU / SITUATION ROOM, rather than scrapeandreport.
 
 ## Word, email and spreadsheet outputs
 

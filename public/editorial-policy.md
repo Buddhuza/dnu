@@ -21,7 +21,8 @@ When a user gives a new standing editorial rule, update this document and the re
 - Cache fetched listing pages and original article content when possible. Reuse cached article pages across collections to avoid spending Firecrawl credits twice for the same content. A new scrape rebuilds the update using all eligible stories from the current and prior cached batches that fall within the requested window; it drops expired stories and clears browser-added stories from the prepared edition. Manual rescraping and adding an older URL remain possible.
 - Do not use Google News as a source. Internazionale is included for its free Reuters articles only; label those stories “Reuters”. Keep source failures and collection methods available for audit.
 - International agencies may supply any section. For a country, organisation or lead heading with multiple stories, aim for no agency to supply more than roughly half when comparable verified coverage from other agencies exists. Prefer reputable international reporting when several outlets carry the same event; select an equivalent account from another credible agency when it improves the balance. Do not add weak or duplicate stories, or discard a distinct major story, just to meet a quota. For Ukraine, especially lead stories, rely predominantly on Reuters, AP, AFP, DW, Politico, Euronews, BBC, dpa and comparable international outlets; do not use Ukrainian outlets under Ukraine.
-- Use Russian outlets only under Russia, including when the reported event concerns another country. Do not place Azerbaijani outlets under Armenia or Armenian outlets under Azerbaijan. There are two IPN outlets: label the Georgian one “InterPressNews”. Display Local editions by domain, such as Local.fr and Local.at.
+- Prefer independent or less government-aligned outlets over government-friendly outlets covering the same event, when both reports are sound: Euronews.al over TemA, N1 over Tanjug, and Civil.ge over 1TV. Source diversity applies to leads and to two-story groups as well as larger groups; use no more than half from one agency when equally sound, distinct alternatives exist.
+- Use Russian outlets only under Russia, including when the reported event concerns another country. Do not use Azerbaijani outlets or the Times of Central Asia under Ukraine, Ukrainian/Moldovan/Armenian outlets under Russia, Hromadske under Germany, or Yonhap/Azernews under the US. Do not place Azerbaijani outlets under Armenia or Armenian outlets under Azerbaijan. There are two IPN outlets: label the Georgian one “InterPressNews”. Display Local editions by domain, such as Local.fr and Local.at.
 
 ## 3. Selection, ranking and duplicate control
 
@@ -35,7 +36,7 @@ When a user gives a new standing editorial rule, update this document and the re
 
 - Place a story by the location of the event or its main actor, not by the source-list category. If Russia attacks a location in Ukraine, place an international-source story under Ukraine. Russian-source stories remain under Russia; Ukrainian-source stories do not populate Ukraine.
 - For a story involving several countries within South Eastern Europe, Eastern Europe, South Caucasus or Central Asia, file it under the reporting outlet’s country if that country is a subject. Otherwise use the principal actor or main event location. Do not infer a country solely from a publisher name appended to a headline.
-- South Eastern Europe: Albania; Bosnia and Herzegovina; Montenegro; North Macedonia; Serbia; Serbia / Kosovo. Put Kosovo coverage under Serbia / Kosovo.
+- South Eastern Europe may contain a section-level OSCE story before the country headings when its subject spans the region, as with an OSCE Secretary General visit. South Eastern Europe: Albania; Bosnia and Herzegovina; Montenegro; North Macedonia; Serbia; Serbia / Kosovo. Put Kosovo coverage under Serbia / Kosovo.
 - Eastern Europe: Belarus; Moldova; Moldova / Transdniestria; Ukraine. Put Transdniestria coverage under Moldova / Transdniestria.
 - South Caucasus: Armenia; Azerbaijan; Georgia. Georgia’s breakaway-republic stories belong under Georgia. The older Georgia / Abkhazia / South Ossetia heading should not be used for new output.
 - Central Asia: Kazakhstan; Kyrgyzstan; Tajikistan; Turkmenistan; Uzbekistan.
@@ -48,8 +49,8 @@ When a user gives a new standing editorial rule, update this document and the re
 
 ## 5. Story text
 
-- Preserve the article’s exact factual headline in content while rendering all-caps or title-case headlines in sentence case. Keep abbreviations, proper names and official acronyms capitalised. Do not append a second agency name accidentally embedded in a headline.
-- In summary mode, follow the headline with a period, then one short factual sentence that adds a concrete important detail from the article, usually its first two paragraphs, without repeating the headline. Finish with a period, then the agency name in parentheses linked to the original article. Avoid long, general summaries.
+- Preserve the article’s exact factual headline in content while rendering only all-caps headlines in sentence case; preserve mixed-case and title-case headlines as published. Keep abbreviations, proper names and official acronyms capitalised. Do not append a second agency name accidentally embedded in a headline.
+- In summary mode, follow the headline with a period, then one short factual sentence that adds a concrete important detail from the article, from the first substantive paragraph, especially its opening sentences, without repeating the headline. Finish with a period, then the agency name in parentheses linked to the original article. Avoid long, general summaries.
 - In compressed view (headline-only mode), omit the summary and put the linked agency immediately after the headline. Remove a trailing period from the headline.
 
 ## 6. Editorial review before publication

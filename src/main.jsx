@@ -15,7 +15,7 @@ import { reportStoryText } from './reportText.js';
 import { duplicateGroups, duplicateGroupHue } from './storyDuplicates.js';
 import { disclaimerFirst, disclaimerSecond } from './disclaimer.js';
 import { sourceAudit } from './collectionAudit.js';
-import { formatViennaDateTime, formatViennaCompactDateTime } from './viennaTime.js';
+import { formatViennaDateTime } from './viennaTime.js';
 import { emailSubject, emailUpdateHtml, emailUpdateText } from './emailUpdate.js';
 import { loadFullArticle } from './articleBodyClient.js';
 import { createSpreadsheet, spreadsheetRow } from './spreadsheetExport.js';
@@ -50,7 +50,6 @@ function scrollReportTo(target, gap) {
 }
 
 function App() {
-  const [currentTime, setCurrentTime] = useState(() => new Date());
   const [compiledAt, setCompiledAt] = useState(() => preparedUpdate.checkedAt || new Date().toISOString());
   const [config, setConfig] = useState(null);
   const [daily, setDaily] = useState(null);
@@ -94,15 +93,7 @@ function App() {
   });
 
   useEffect(() => { fetch('/api/config').then(r => { if (!r.ok) throw new Error('API unavailable'); return r.json(); }).then(setConfig).catch(() => setConfig({ sources: preparedSources, firecrawlConfigured: false })); }, []);
-  useEffect(() => {
-    let timer;
-    const refreshClock = () => {
-      setCurrentTime(new Date());
-      timer = setTimeout(refreshClock, 60_000 - Date.now() % 60_000 + 50);
-    };
-    timer = setTimeout(refreshClock, 60_000 - Date.now() % 60_000 + 50);
-    return () => clearTimeout(timer);
-  }, []);
+
   useEffect(() => {
     const refresh = () => fetch('/api/daily-update').then(r => { if (!r.ok) throw new Error('API unavailable'); return r.json(); }).then(data => { setDaily(data); setCompiledAt(data.checkedAt || new Date().toISOString()); setStaticPreview(false); }).catch(() => { setDaily(preparedUpdate); setCompiledAt(preparedUpdate.checkedAt || new Date().toISOString()); setStaticPreview(true); });
     refresh();
@@ -525,7 +516,7 @@ function App() {
   );
 
   return <div className="app-shell" data-mode={siteConfig.darkMode ? 'dark' : 'light'} style={themeStyle}>
-    <header className="topbar"><div className="brand-text"><strong>{siteConfig.brandName}</strong><small>{siteConfig.brandTagline}</small></div><span className="topbar-spacer"/><button className="mode-button" aria-pressed={siteConfig.darkMode} onClick={() => setSiteConfig(current => ({ ...current, darkMode: !current.darkMode }))}>{siteConfig.darkMode ? '☀ Light mode' : '☾ Dark mode'}</button>{managementEnabled && <button className="manage-button" onClick={() => { setManagerTab('Content'); setManaging(true); }}>⚙ Manage site</button>}<time className="topbar-date" dateTime={currentTime.toISOString()} title="Vienna time">{formatViennaCompactDateTime(currentTime)}</time></header>
+    <header className="topbar"><div className="brand-text"><strong>{siteConfig.brandName}</strong><small>{siteConfig.brandTagline}</small></div><span className="topbar-spacer"/><button className="mode-button" aria-pressed={siteConfig.darkMode} onClick={() => setSiteConfig(current => ({ ...current, darkMode: !current.darkMode }))}>{siteConfig.darkMode ? '☀ Light mode' : '☾ Dark mode'}</button>{managementEnabled && <button className="manage-button" onClick={() => { setManagerTab('Content'); setManaging(true); }}>⚙ Manage site</button>}</header>
     <div className={`workspace ${siteConfig.showSources ? '' : 'no-sidebar'}`}>
       {siteConfig.showSources && <aside className="sidebar">
         <div className="sidebar-heading"><h2>Sources <em>{sources.length}</em></h2></div>

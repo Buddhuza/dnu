@@ -17,7 +17,7 @@ function overlap(title, summary) {
   return [...headline].filter(word => body.has(word)).length / Math.max(1, headline.size);
 }
 const candidates = update.articles.filter(article => overlap(article.title, article.summary) >= 0.63 && !state[article.url]);
-const prompt = 'Read the original English news article. Return a JSON object with a summary field containing exactly one short factual sentence. Use a concrete detail from the first two substantive paragraphs that is absent from the headline: a figure, named actor, specific action, place, agreement, reason, or consequence. Do not restate or paraphrase the headline; omit any clause whose only purpose is to repeat it. Do not add opinion, prediction, or information not present on the page. If there is no new detail, return an empty summary.';
+const prompt = 'Read the original English news article. Return a JSON object with a summary field containing exactly one short factual sentence. Use a concrete detail from the first substantive paragraph, especially its first few sentences that is absent from the headline: a figure, named actor, specific action, place, agreement, reason, or consequence. Do not restate or paraphrase the headline; omit any clause whose only purpose is to repeat it. Do not add opinion, prediction, or information not present on the page. If there is no new detail, return an empty summary.';
 
 async function request(url, options) {
   for (let attempt = 0; attempt < 3; attempt++) {

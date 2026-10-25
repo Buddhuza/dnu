@@ -31,3 +31,9 @@ test('international organisations follow editorial priority rather than the alph
   assert.deepEqual(['SCO', 'OECD', 'BRICS', 'World Bank'].sort((a, b) => compareCountryLabels('INTERNATIONAL ORGANISATIONS', a, b)), ['OECD', 'World Bank', 'BRICS', 'SCO']);
   assert.deepEqual(['United Kingdom', 'Italy'].sort((a, b) => compareCountryLabels('WESTERN / CENTRAL EUROPE', a, b)), ['Italy', 'United Kingdom']);
 });
+
+
+test('regional section-level stories appear before its country headings', () => {
+  const section = NEWS_SECTIONS.find(item => item.id === 'South Eastern Europe');
+  assert.deepEqual(orderedSubsections(section, ['Albania', '', 'Serbia']), ['', 'Albania', 'Serbia']);
+});

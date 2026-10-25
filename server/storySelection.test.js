@@ -59,5 +59,5 @@ test('lead selection uses another agency when its story is comparably important'
     { id: 'alternative', sourceName: 'AP', score: 90 }
   ];
   assert.deepEqual(selectDiverseLeadStories(candidates, 2, item => item.score).map(item => item.id), ['first', 'alternative']);
-  assert.deepEqual(selectDiverseLeadStories(candidates, 2, item => item.score, 3).map(item => item.id), ['first', 'second']);
+  assert.deepEqual(selectDiverseLeadStories(candidates, 2, item => item.score, 3).map(item => item.id), ['first', 'alternative']);
 });

@@ -88,5 +88,25 @@
     "sectionId": "Miscellaneous",
     "subsection": "WESTERN / CENTRAL EUROPE",
     "country": "Lithuania"
+  },
+  "https://n1info.ba/english/news/sinirlioglu-osce-reaffirms-commitment-to-peace-and-stability-in-the-region/": {
+    "sectionId": "South Eastern Europe",
+    "subsection": "",
+    "country": ""
+  },
+  "https://arminfo.info/full_news.php?id=105166&lang=3": {
+    "sectionId": "South Caucasus",
+    "subsection": "Armenia",
+    "country": ""
+  },
+  "https://ipn.md/en/an-employee-of-the-russian-embassy-will-be-declared-persona-non-grata-following-the-drone-incident-at-telenesti/": {
+    "sectionId": "Eastern Europe",
+    "subsection": "Moldova",
+    "country": ""
+  },
+  "https://euronews.al/en/defence-minister-nufi-welcomes-turkeys-new-military-attache-reaffirms-commitment-to-defence-and-security-cooperation/": {
+    "sectionId": "South Eastern Europe",
+    "subsection": "Albania",
+    "country": ""
   }
 }

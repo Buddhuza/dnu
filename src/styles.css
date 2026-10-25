@@ -302,8 +302,8 @@
 @container (max-width:280px){.daily-title-row .report-date .date-full{display:none}.daily-title-row .report-date .date-short{display:inline}}
 .daily-story-date{color:#647178;font-size:inherit;line-height:inherit;white-space:nowrap}
 .app-shell[data-mode="dark"] .daily-story-date{color:#b7c2c7}
-.daily-story{border-bottom:0;padding:3px 0 7px}
-.daily-story p{line-height:1.45}
+.daily-story{border-bottom:0;padding:2px 0 5px}
+.daily-story p{line-height:1.35}
 .daily-section{margin-top:12px;padding-top:8px}
 .daily-section:first-child{margin-top:8px;padding-top:8px;border-top:0}
 .daily-section:not(.lead-section){margin-top:20px;padding-top:12px}

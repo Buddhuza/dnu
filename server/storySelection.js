@@ -51,11 +51,11 @@ export function selectDiverseLeadStories(candidates, limit, score, qualityTolera
   const remaining = [...candidates].sort((a, b) => score(b) - score(a));
   const selected = [];
   const sourceCounts = new Map();
-  const targetPerAgency = Math.ceil(limit / 2);
+  const targetPerAgency = Math.floor(limit / 2);
   while (remaining.length && selected.length < limit) {
     const best = remaining[0];
     const choice = (sourceCounts.get(best.sourceName) || 0) >= targetPerAgency
-      ? remaining.find(article => (sourceCounts.get(article.sourceName) || 0) < targetPerAgency && score(article) >= score(best) - qualityTolerance) || best
+      ? remaining.find(article => (sourceCounts.get(article.sourceName) || 0) < targetPerAgency && score(article) >= score(best) - qualityTolerance) || remaining.find(article => (sourceCounts.get(article.sourceName) || 0) < targetPerAgency) || best
       : best;
     remaining.splice(remaining.indexOf(choice), 1);
     selected.push(choice);
@@ -65,6 +65,8 @@ export function selectDiverseLeadStories(candidates, limit, score, qualityTolera
 }
 
 function sourceWeight(name) {
+  if (/^(?:Euronews\.al|N1|Civil\.ge)$/i.test(name)) return 4;
+  if (/^(?:TemA|Tanjug|1TV)$/i.test(name)) return 0;
   if (/^Reuters$/i.test(name)) return 6;
   if (/^(?:AP|AFP)$/i.test(name)) return 5;
   if (/^(?:BBC|DW|dpa|Euronews|Politico\.eu|Guardian)$/i.test(name)) return 4;

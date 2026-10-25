@@ -215,7 +215,7 @@ for (const article of raw) {
   const inferred = explicitPlacement || attackedRussia || attackedUkraine || (ukrainianFocus ? { sectionId: 'Eastern Europe', subsection: 'Ukraine', country: '' } : null) || subjectPlacement || placementFromTitle(article.title) || contextPlaces.get(article.sourceId) || articlePlacement({}, article.title, '');
   let placement = inferred || (article.section ? { sectionId: article.section, subsection: article.subsection, country: article.country } : null);
   if (source && isRussianSource(source)) placement = { sectionId: 'Miscellaneous', subsection: 'RUSSIA / EURASIA', country: 'Russia' };
-  if (!placement?.sectionId || !placement.subsection) { excluded.push({ ...article, reason: 'country or organisation needs editorial placement' }); continue; }
+  if (!placement?.sectionId || (!placement.subsection && placement.sectionId !== 'South Eastern Europe')) { excluded.push({ ...article, reason: 'country or organisation needs editorial placement' }); continue; }
   if (!(source && isRussianSource(source))) placement = explicitPlacement || attackedUkraine || preferredRegionalPlacement(article, placement);
   const blockedSource = blockedPlacementReason(article, placement);
   if (blockedSource) { excluded.push({ ...article, reason: blockedSource }); continue; }
@@ -252,6 +252,8 @@ function eventKey(article) {
   return '';
 }
 function sourceRank(article) {
+  if (article.sourceName === 'Euronews.al' || article.sourceName === 'N1' || article.sourceName === 'Civil.ge') return 4;
+  if (article.sourceName === 'TemA' || article.sourceName === 'Tanjug' || article.sourceName === '1TV') return 0;
   if (/^Reuters$/i.test(article.sourceName)) return 6;
   if (/^(?:AP|AFP)$/i.test(article.sourceName)) return 5;
   if (/^BBC$/i.test(article.sourceName)) return 4;
@@ -304,14 +306,14 @@ const middleEastCandidates = accepted.filter(article => article.section === 'Mis
   && /\b(?:Iran|Iranian|Israel|Israeli|Gaza|Lebanon|Lebanese|Syria|Syrian|Hormuz|Palestinian|Tehran|Beirut)\b/i.test(article.title)
   && /\b(?:war|strike\w*|attack\w*|ceasefire|missile\w*|sanction\w*|peace|talks|negotiat\w*|shipping|vessel\w*|nuclear|hostage\w*|truce|offensive)\b/i.test(article.title)
   && !/\b(?:Saudi Arabia|Saudi|Aramco|Riyadh|analyst|opinion|may be|could become)\b/i.test(article.title));
-const middleEast = selectDiverseLeadStories(middleEastCandidates, 2, article => leadScore(article, true));
+const middleEast = selectDiverseLeadStories(middleEastCandidates, 2, article => leadScore(article, true), 150);
 for (const article of ukrainian) { article.section = 'Lead stories'; article.subsection = 'Ukraine'; article.country = ''; }
 for (const article of middleEast) { article.section = 'Lead stories'; article.subsection = 'Middle East'; article.country = ''; }
 const limited = limitStoriesPerHeading(accepted, { windowStart: state.windowStart, windowEnd: state.windowEnd, priorities: editorialPriorities });
 for (const article of limited.removed) excluded.push({ ...article, reason: 'lower editorial priority within 10-story country limit' });
 accepted.splice(0, accepted.length, ...limited.kept);
 accepted.sort((a, b) => (sectionOrder.get(a.section) ?? 999) - (sectionOrder.get(b.section) ?? 999)
-  || (subsectionOrder.get(`${a.section}|${a.subsection}`) ?? 999) - (subsectionOrder.get(`${b.section}|${b.subsection}`) ?? 999)
+  || (a.section === 'South Eastern Europe' && a.subsection === '' ? -1 : subsectionOrder.get(`${a.section}|${a.subsection}`) ?? 999) - (b.section === 'South Eastern Europe' && b.subsection === '' ? -1 : subsectionOrder.get(`${b.section}|${b.subsection}`) ?? 999)
   || compareCountryLabels(a.subsection, a.country, b.country)
   || (a.section === 'Lead stories' ? leadScore(b, a.subsection === 'Middle East') - leadScore(a, a.subsection === 'Middle East') : 0)
   || editorialScore(b.title, b.summary) - editorialScore(a.title, a.summary) || articleDate(b) - articleDate(a));

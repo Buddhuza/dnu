@@ -37,7 +37,7 @@ async function batchScrape(urls) {
   if (!urls.length) return [];
   const response = await fetch('https://api.firecrawl.dev/v2/batch/scrape', {
     method: 'POST', headers: { ...headers, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ urls, formats: ['markdown', 'html', { type: 'json', prompt: 'Extract the exact English headline, the explicit publication time with timezone if present, and one short factual summary sentence from the first two paragraphs. Do not invent dates or facts.' }], onlyMainContent: true, timeout: 30000 }),
+    body: JSON.stringify({ urls, formats: ['markdown', 'html', { type: 'json', prompt: 'Extract the exact English headline, the explicit publication time with timezone if present, and one short factual summary sentence from the first substantive paragraph, especially its first few sentences. Do not invent dates or facts.' }], onlyMainContent: true, timeout: 30000 }),
     signal: AbortSignal.timeout(45000)
   });
   const created = await response.json();

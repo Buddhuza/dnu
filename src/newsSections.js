@@ -44,5 +44,5 @@ export function orderedSubsections(section, labels, extraRegionalHeadings = []) 
     return visibleLabels.sort((a, b) => Number(!regional.has(a)) - Number(!regional.has(b)) || compareCountryLabels('', a, b));
   }
   const order = new Map((section?.subsections ?? []).map((label, index) => [label, index]));
-  return visibleLabels.sort((a, b) => (order.get(a) ?? 999) - (order.get(b) ?? 999));
+  return visibleLabels.sort((a, b) => Number(a !== '') - Number(b !== '') || (order.get(a) ?? 999) - (order.get(b) ?? 999));
 }

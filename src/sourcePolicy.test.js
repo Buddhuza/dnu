@@ -46,11 +46,24 @@ test('Russian outlets stay under Russia in display and manual moves', () => {
   assert.deepEqual(displaySiteContent([russian], config).map(item => item.id), ['tass']);
 });
 
-test('published edition uses international outlets for all Ukraine stories', () => {
-  const update = JSON.parse(readFileSync(new URL('../data/daily-update-2026-10-14-15.json', import.meta.url), 'utf8'));
+test('current prepared edition follows outlet placement restrictions', () => {
+  const update = JSON.parse(readFileSync(new URL('../data/prepared-update.json', import.meta.url), 'utf8'));
   assert.ok(update.articles.some(article => article.section === 'Lead stories' && article.subsection === 'Ukraine'));
   assert.ok(update.articles.some(article => article.section === 'Eastern Europe' && article.subsection === 'Ukraine'));
   assert.ok(update.articles.every(article => !blockedPlacementReason(article)));
   assert.ok(update.articles.every(article => String(article.summary || '').trim().split(/\s+/).length <= 30));
   assert.ok(!update.articles.some(article => article.url.includes('tirana-erupts-in-chaos')));
+});
+
+
+test('non-local outlets cannot be filed under Ukraine, Russia, Germany or the US against policy', () => {
+  const ukraine = { sectionId: 'Eastern Europe', subsection: 'Ukraine' };
+  const russia = { sectionId: 'Miscellaneous', subsection: 'RUSSIA / EURASIA', country: 'Russia' };
+  const germany = { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Germany' };
+  const us = { sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' };
+  for (const sourceId of ['source-55', 'source-58', 'source-68']) assert.ok(blockedPlacementReason({ sourceId, url: 'https://example.com/article' }, ukraine));
+  for (const sourceId of ['source-32', 'source-36', 'source-50']) assert.ok(blockedPlacementReason({ sourceId, url: 'https://example.com/article' }, russia));
+  assert.ok(blockedPlacementReason({ sourceId: 'source-38', url: 'https://hromadske.ua/en/article' }, germany));
+  for (const sourceId of ['source-58', 'source-103']) assert.ok(blockedPlacementReason({ sourceId, url: 'https://example.com/article' }, us));
+  assert.equal(blockedPlacementReason({ sourceId: 'source-106', url: 'https://theguardian.com/article' }, us), '');
 });
