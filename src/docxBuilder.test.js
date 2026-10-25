@@ -77,7 +77,7 @@ test('headline-only Word download omits summaries but keeps agencies and links',
   assert.doesNotMatch(document, /OSCE chair visits Armenia\./);
   assert.match(document, /15 October 2026/);
   assert.doesNotMatch(document, /A meeting took place in Yerevan/);
-  assert.match(document, /<w:spacing w:after="60" w:line="260" w:lineRule="auto"\/>/);
+  assert.match(document, /<w:spacing w:after="40" w:line="260" w:lineRule="auto"\/>/);
   assert.match(document, /<w:spacing w:before="360" w:after="40"\/>/);
   assert.match(document, /<w:spacing w:before="80" w:after="40"\/>/);
   assert.match(document, /Agency/);
