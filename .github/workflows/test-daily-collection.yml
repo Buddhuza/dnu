@@ -1,0 +1,44 @@
+name: Test daily collection
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+      COLLECTION_RUN_ID: github-test-${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Check Firecrawl secret
+        run: |
+          if [ -z "$FIRECRAWL_API_KEY" ]; then
+            echo '::error::Add FIRECRAWL_API_KEY under Settings > Secrets and variables > Actions before running this workflow.'
+            exit 1
+          fi
+      - name: Collect all configured sources and build a draft update
+        id: collection
+        run: npm run collect:daily
+      - name: Summarise source coverage
+        run: node scripts/report-collection-run.mjs
+      - name: Save draft and source audit
+        if: steps.collection.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-collection-test-${{ github.run_id }}
+          path: |
+            data/collection-test-summary.md
+            data/prepared-update.json
+            data/collection-${{ env.COLLECTION_RUN_ID }}-review.json
+          if-no-files-found: warn
+          retention-days: 7
