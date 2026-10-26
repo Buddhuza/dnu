@@ -329,14 +329,13 @@
 /* Narrow screens use the page scroll so the report heading can stay in view. */
 @media(max-width:800px){
   .app-shell{display:block;height:auto;min-height:100dvh;overflow:visible}
-  .topbar{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;gap:2px 8px;height:auto;min-height:0;padding:8px 12px}
+  .topbar{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto;align-items:center;gap:2px 8px;height:auto;min-height:0;padding:8px 12px}
   .topbar-spacer{display:none}
-  .topbar .brand-text{grid-column:1/-1;grid-row:1;min-width:0}
-  .topbar .brand-text strong{font-size:clamp(22px,6vw,28px);line-height:1.1}
+  .topbar .brand-text{grid-column:1;grid-row:1;min-width:0}
+  .topbar .brand-text strong{font-size:clamp(17px,5.2vw,24px);line-height:1.1}
   .topbar .brand-text small{display:none}
-  .topbar-date{display:block;grid-column:1;grid-row:2;justify-self:start;padding:0;border:0;font-size:14px}
-  .topbar .mode-button{grid-column:2;grid-row:2;justify-self:end;padding:5px 8px;font-size:12px}
-  .topbar .manage-button{grid-column:1/-1;grid-row:3;justify-self:end;margin:0}
+  .topbar .mode-button{grid-column:2;grid-row:1;justify-self:end;padding:5px 8px;font-size:12px}
+  .topbar .manage-button{grid-column:1/-1;grid-row:2;justify-self:end;margin:0}
   .workspace,.workspace.no-sidebar{display:block;min-height:0;overflow:visible}
   .sidebar{display:none}
   .main-panel{display:block;min-height:0;overflow:visible;max-width:none;padding:4px 8px 20px}
