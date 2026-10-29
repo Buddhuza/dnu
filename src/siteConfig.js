@@ -181,13 +181,13 @@ export function displaySources(baseSources, config) {
   }), ...config.customSources.map(source => ({ ...source, name: displaySourceName(source.name) }))].filter(source => !hidden.has(source.id));
 }
 
-export function displaySiteContent(articles, config, excludedIds = new Set()) {
+export function displaySiteContent(articles, config, excludedIds = new Set(), keepImportedStories = false) {
   const sectionById = new Map(config.sections.map(section => [section.id, section]));
   const items = [];
   for (const article of articles) {
     const edit = config.articleEdits[article.id];
     const legacyOrganisations = article.section === 'International organisations' || (article.section === 'Lead stories' && article.subsection === 'International organisations');
-    const sectionId = edit?.sectionId || (legacyOrganisations ? 'Miscellaneous' : article.section);
+    const sectionId = edit?.sectionId || (legacyOrganisations ? 'Miscellaneous' : article.sectionId || article.section);
     if (edit?.hidden || sectionById.get(sectionId)?.visible === false) continue;
     const displayed = {
       ...article,
@@ -205,7 +205,7 @@ export function displaySiteContent(articles, config, excludedIds = new Set()) {
     if (article.hidden || sectionById.get(article.sectionId)?.visible === false) continue;
     if (!blockedPlacementReason(article) && !excludedHeadlineReason(article.title)) items.push({ ...article, sourceName: displaySourceName(article.sourceName), section: sectionById.get(article.sectionId)?.name || article.sectionId });
   }
-  const uniqueItems = deduplicateArticles(items, excludedIds);
+  const uniqueItems = keepImportedStories || articles.some(article => article.fromSpreadsheet) ? items : deduplicateArticles(items, excludedIds);
   const order = new Map(config.sections.map((section, index) => [section.id, index]));
   const articleOrder = new Map((config.articleOrder ?? []).map((id, index) => [id, index]));
   const activeLeadHeadings = new Set(uniqueItems.filter(item => item.sectionId === 'Lead stories').map(item => item.subsection));

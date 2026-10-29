@@ -4,6 +4,7 @@ import JSZip from 'jszip';
 import { createSpreadsheet } from './spreadsheetExport.js';
 import { convertSpreadsheetRows, readSpreadsheet } from './spreadsheetImport.js';
 import { reportStoryText } from './reportText.js';
+import { displaySiteContent, normalizeSiteConfig } from './siteConfig.js';
 
 const columns = ['2026-10-23', 'Guardian', 'Europe', 'UK, US', '', '', '', '', 'https://www.theguardian.com/example', 'UK and US ministers meet in London | Guardian', 'UK and US ministers met in London on Friday to discuss European security. They agreed to establish a working group on protection of critical undersea cables and to share intelligence across the Atlantic.'];
 
@@ -48,4 +49,21 @@ test('Excel files with shared strings and numeric dates use their column heading
   assert.equal(rows[0].heading, 'News headline');
   assert.equal(rows[0].url, 'https://example.com/news');
   assert.equal(rows[0].date, '46318');
+});
+
+test('the empty DNU keeps its configured structure and shows imported stories under their headings', () => {
+  const config = normalizeSiteConfig({}, []);
+  assert.equal(config.sections.length, 6);
+  assert.deepEqual(displaySiteContent([], config), []);
+  const rows = [
+    { rowNumber: 2, date: '2026-10-23', source: 'AP', region: 'Eastern Europe', countries: 'Ukraine, Russia', organisations: '', url: 'https://apnews.com/article/a', heading: 'Ukraine and Russia agree to talks', summary: 'Negotiators plan to meet in Geneva.', body: '' },
+    { rowNumber: 3, date: '2026-10-23', source: 'Reuters', region: 'Middle East', countries: 'Iran, US', organisations: '', url: 'https://www.reuters.com/article/b', heading: 'Iran and US agree to talks', summary: 'Negotiators plan to meet in Geneva.', body: '' }
+  ];
+  const imported = convertSpreadsheetRows(rows).articles;
+  const visible = displaySiteContent(imported, config);
+  assert.equal(visible.length, 2);
+  assert.deepEqual(visible.map(item => [item.sectionId, item.subsection, item.country]), [
+    ['Eastern Europe', 'Ukraine', ''],
+    ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Iran']
+  ]);
 });

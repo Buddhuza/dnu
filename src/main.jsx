@@ -161,7 +161,7 @@ function App() {
   const groups = ['All sources', ...new Set(sources.map(x => x.group))];
   const visibleSources = useMemo(() => sources.filter(x => (group === 'All sources' || x.group === group) && `${x.name} ${x.group} ${x.url}`.toLowerCase().includes(search.toLowerCase())), [sources, group, search]);
   const collectionSources = useMemo(() => [...visibleSources].sort((a, b) => Number(config?.feedSourceIds?.includes(b.id)) - Number(config?.feedSourceIds?.includes(a.id))), [visibleSources, config]);
-  const displayedArticles = useMemo(() => displaySiteContent(daily?.articles ?? [], siteConfig, excludedStoryIds), [daily, siteConfig, excludedStoryIds]);
+  const displayedArticles = useMemo(() => displaySiteContent(daily?.articles ?? [], siteConfig, excludedStoryIds, daily?.importedFromSpreadsheet === true), [daily, siteConfig, excludedStoryIds]);
   const storyToMove = displayedArticles.find(item => item.id === moveStoryId);
   const selectedArticles = useMemo(() => displayedArticles.filter(item => !excludedStoryIds.has(item.id)), [displayedArticles, excludedStoryIds]);
   const readingArticles = editingStories ? displayedArticles : selectedArticles;

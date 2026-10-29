@@ -220,7 +220,7 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
       id: existing?.id || `spreadsheet-${key}`, url: parsed.href, sourceId: existing?.sourceId || source?.id || 'spreadsheet', sourceName,
       title, summary, originalHeadline: existing?.originalHeadline || text(row.heading), translated: existing?.translated === true,
       publishedAt: existing?.publishedAt || spreadsheetDate(row.date, importedAt),
-      reviewed: true, ...placement
+      reviewed: true, ...placement, section: placement.sectionId, fromSpreadsheet: true
     };
     const restriction = blockedPlacementReason(article);
     if (restriction) { skipped.push({ row: row.rowNumber, reason: restriction }); continue; }
