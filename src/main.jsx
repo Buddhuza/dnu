@@ -34,7 +34,7 @@ const dateLabel = formatViennaDateTime;
 const managementEnabled = import.meta.env.DEV;
 const importedUpdateKey = 'dnu-imported-update-v1';
 const importBackupKey = 'dnu-before-import-v1';
-const blankEditionResetKey = 'dnu-blank-edition-2026-10-29-v1';
+const blankEditionResetKey = `dnu-empty-edition-reset-${preparedUpdate.checkedAt}`;
 if (preparedUpdate.emptyPrepared && !localStorage.getItem(blankEditionResetKey)) {
   localStorage.removeItem(importedUpdateKey);
   localStorage.removeItem(importBackupKey);
@@ -302,6 +302,22 @@ function App() {
     setStaticPreview(!fromServer);
     setImportingSpreadsheet(false);
     setToast('Published update restored.');
+  }
+
+  function clearCurrentUpdate() {
+    restoringImportRef.current = true;
+    importedModeRef.current = false;
+    localStorage.removeItem(importedUpdateKey);
+    localStorage.removeItem(importBackupKey);
+    setSiteConfig(current => ({ ...current, showUpdate: true, customArticles: [], articleEdits: {}, articleOrder: [], leadOrigins: {} }));
+    setExcludedStoryIds(new Set());
+    setImportedMode(false);
+    setEditingStories(false);
+    setDaily(preparedUpdate);
+    setCompiledAt(preparedUpdate.checkedAt);
+    setStaticPreview(true);
+    setImportingSpreadsheet(false);
+    setToast('Update cleared. Its structure and article cache remain available.');
   }
 
   function rememberWorkingListing(source, audit) {
@@ -643,7 +659,7 @@ function App() {
     {spreadsheetResults && <div className="add-backdrop" onClick={() => setSpreadsheetResults(null)}><section className="add-dialog spreadsheet-results" role="dialog" aria-modal="true" aria-labelledby="spreadsheet-results-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="spreadsheet-results-title">Spreadsheet export results</h2><button type="button" aria-label="Close export results" onClick={() => setSpreadsheetResults(null)}>×</button></div><p>{spreadsheetResults.downloaded ? `Downloaded ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} visible full articles.` : `No spreadsheet downloaded. ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} articles available.`}</p>{spreadsheetResults.error && <p role="alert">{spreadsheetResults.error}</p>}{spreadsheetResults.failures.length > 0 && <><h3>{spreadsheetResults.failures.length} unavailable</h3><ul>{spreadsheetResults.failures.map((failure, index) => <li key={index}>{failure}</li>)}</ul></>}<div className="add-dialog-actions"><button type="button" onClick={() => setSpreadsheetResults(null)}>Close</button></div></section></div>}
     {managementEnabled && managing && <SiteManager initialTab={managerTab} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} includeText={includeText} setIncludeText={setIncludeText} excludeText={setExcludeText} setExcludeText={setExcludeText} applyScope={applyScope} onClose={() => setManaging(false)} onReset={() => setSiteConfig(defaultSiteConfig(daily?.articles ?? preparedUpdate.articles))}/>}
     {addingArticles && config && daily && <AddArticlesDialog serverAvailable={!staticPreview && Boolean(config.firecrawlConfigured)} sources={configuredSources} sections={siteConfig.sections} customCountries={siteConfig.customCountries} existingArticles={selectedArticles} existingUrls={[...daily.articles.map(item => item.url), ...siteConfig.customArticles.map(item => item.url)]} remainingSlots={100 - siteConfig.customArticles.length} onAdd={(article, placement) => { setSiteConfig(current => addCustomArticleInConfig(current, article, placement)); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}
-    {importingSpreadsheet && <ImportSpreadsheetDialog existingArticles={[...archivedImportReference.articles, ...preparedUpdate.articles, ...(daily?.articles ?? [])]} sources={configuredSources} importedMode={importedMode} onImport={importSpreadsheet} onRestore={restorePublishedUpdate} onClose={() => setImportingSpreadsheet(false)}/>}
+    {importingSpreadsheet && <ImportSpreadsheetDialog existingArticles={[...archivedImportReference.articles, ...preparedUpdate.articles, ...(daily?.articles ?? [])]} sources={configuredSources} importedMode={importedMode} publishedEmpty={preparedUpdate.emptyPrepared === true} hasStories={displayedArticles.length > 0} onImport={importSpreadsheet} onRestore={restorePublishedUpdate} onClear={clearCurrentUpdate} onClose={() => setImportingSpreadsheet(false)}/>}
     {editingStories && storyToMove && <MoveStoryDialog story={storyToMove} sections={siteConfig.sections} articles={displayedArticles} customCountries={siteConfig.customCountries} onMove={moveStory} onClose={() => setMoveStoryId('')}/>}
   </div>;
 }

@@ -8,6 +8,8 @@ A local news review app for the 173 outlets in `sources.json` (transcribed from 
 
 The homepage opens with the active edition in `data/prepared-update.json`. It is currently an empty canvas for spreadsheet import. The previous English-language edition remains in `data/daily-update-2026-10-24.json`, and its scraped article pages remain in the cache. A prepared snapshot does not refresh automatically. Dated editions remain in `data/`.
 
+For a complete published update, tell Codex `NEWSRUN`. That shortcut runs the last 24 hours in Vienna time unless you specify another window, checks every configured source under the editorial policy, audits omissions and publishes the new edition. Defining or discussing the shortcut does not start a scrape.
+
 For a quick preview that does not clone or install the project, open the [static GitHub Pages preview](https://buddhuza.github.io/dnu/). It displays the prepared update, lets you edit the story selection or add article URLs, and exports the Word update. **Manage site** is available only in local development. Source-list collection requires the full project below.
 
 ## Test an unattended collection
