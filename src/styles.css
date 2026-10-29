@@ -359,3 +359,15 @@
   .daily-downloads .daily-action,.daily-downloads .daily-action.daily-download{width:25px;height:25px;min-width:25px;padding:4px}
   .daily-title-row .report-date{font-size:13px}
 }
+.import-spreadsheet-dialog{width:min(100%,680px)}
+.import-file-label{display:block;font-weight:800;margin:16px 0 7px}
+.import-spreadsheet-dialog input[type="file"]{width:100%;padding:10px;font-size:14px}
+.import-spreadsheet-preview{margin-top:15px;border:1px solid #a7bbba;border-radius:8px;padding:12px}
+.import-spreadsheet-preview p{margin:0 0 9px}
+.import-spreadsheet-preview ul{max-height:210px;overflow:auto;margin:0;padding-left:20px}
+.import-spreadsheet-preview li{margin:7px 0;line-height:1.35}
+.import-spreadsheet-preview li span{display:block;opacity:.75;font-size:.85em}
+.import-spreadsheet-preview details{margin-top:12px}
+.import-spreadsheet-preview summary{cursor:pointer;font-weight:700}
+.import-spreadsheet-note{opacity:.8}
+.add-dialog-actions .import-spreadsheet-confirm{background:var(--site-primary,#123e47);color:#fff}
