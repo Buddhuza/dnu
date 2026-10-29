@@ -1,10 +1,11 @@
 import { load } from 'cheerio';
 import { extractMarkdownBody, extractReutersBody } from '../src/articleBodyText.js';
 import { articleJson } from '../src/articleTranslation.js';
+import { verifiedTranslatedBody } from '../src/translatedBody.js';
 
 export function extractArticleBody(page, headline = '') {
   const extracted = articleJson(page);
-  if (extracted.translatedHeadline) return String(extracted.translatedBody || '').trim();
+  if (extracted.translatedHeadline) return verifiedTranslatedBody(extracted.translatedBody);
   const html = String(page?.html || '');
   if (/reuters\.com/i.test(page?.metadata?.sourceURL || page?.metadata?.url || '')) {
     const body = extractReutersBody(page?.markdown);

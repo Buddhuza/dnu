@@ -111,10 +111,13 @@ test('Reuters body extraction leaves out newsletter copy and keeps article parag
 });
 
 test('translated article bodies are exported in English or left unavailable', () => {
-  const page = { json: { translatedHeadline: 'Ministers discuss security', translatedBody: 'Ministers discussed cross-border security. '.repeat(30) }, markdown: 'Министры обсудили безопасность. '.repeat(30) };
+  const page = { json: { translatedHeadline: 'Ministers discuss security', translatedBody: 'The ministers discussed cross-border security and agreed to establish a joint working group with neighbouring states. '.repeat(12) }, markdown: 'Министры обсудили безопасность. '.repeat(30) };
   assert.match(extractBrowserArticleBody(page), /cross-border security/);
   assert.match(extractArticleBody(page), /cross-border security/);
   delete page.json.translatedBody;
+  assert.equal(extractBrowserArticleBody(page), '');
+  assert.equal(extractArticleBody(page), '');
+  page.json.translatedBody = 'Министры обсудили безопасность и сотрудничество с соседними государствами. '.repeat(30);
   assert.equal(extractBrowserArticleBody(page), '');
   assert.equal(extractArticleBody(page), '');
 });

@@ -10,6 +10,10 @@ import { deduplicateArticles } from '../src/siteConfig.js';
 import { excludedHeadlineReason } from '../src/headlinePolicy.js';
 import { carryForwardArticles } from '../server/updateCarryForward.js';
 import { balanceAgencyShare, limitStoriesPerHeading, selectDiverseLeadStories } from '../server/storySelection.js';
+import { createArticleCache } from '../server/articleCache.js';
+import { extractArticleBody } from '../server/articleBody.js';
+import { articleJson, markTranslatedHeadline } from '../src/articleTranslation.js';
+import { franc } from 'franc-min';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const day = process.env.COLLECTION_DAY || new Date().toISOString().slice(0, 10);
@@ -51,7 +55,7 @@ const titleKey = title => String(title).replace(/^video\.\s*/i, '').replace(/\s*
 const articleDate = article => Date.parse(article.publishedAt);
 const sectionOrder = new Map(NEWS_SECTIONS.map((section, index) => [section.id, index]));
 const subsectionOrder = new Map(NEWS_SECTIONS.flatMap(section => section.subsections.map((name, index) => [`${section.id}|${name}`, index])));
-const agencyPriority = /^(Reuters|AP|AFP|DW|Politico\.eu|Euronews|BBC|dpa|Guardian)$/i;
+const agencyPriority = /^(Reuters|AP|AFP|DW|Politico\.eu|Euronews|BBC|CNN|dpa|Guardian)$/i;
 const titlePlaces = [
   ['South Eastern Europe', 'Serbia / Kosovo', '', /\bKosovo|Kosovar|Pristina|Prishtina\b/i],
   ['South Eastern Europe', 'Albania', '', /\bAlbania|Albanian|Tirana\b/i],
@@ -152,6 +156,7 @@ for (const article of raw) {
   else if (editorialExclusions[article.url]) reason = editorialExclusions[article.url];
   else if (/T00:00:00(?:\.000)?Z$/.test(article.publishedAt)) reason = 'date-only or midnight time needs review';
   else if (!article.title?.trim() || !article.summary?.trim()) reason = 'headline or summary missing';
+  else if (/^(?:page not found|404\b|access denied\b|author\s*[-|])/i.test(article.title.trim())) reason = 'not an article headline';
   else if (isUkrainianOutlet(article) && (article.section === 'Eastern Europe' && article.subsection === 'Ukraine'
     || ukraineAttackPlacement(article.title, article.summary)
     || /\b(?:Ukraine|Ukrainian|Kyiv|Zelensk\w*|Oleshky|Volyn|Sloviansk|Ternopil|Chernihiv|Rivne|Dnipropetrovsk|Zaporizhzhia|Uman|Kharkiv|Odesa|Sumy|Defen[cs]e Forces)\b/i.test(`${article.title} ${article.summary}`))) reason = 'Ukrainian outlet excluded from Ukraine coverage';
@@ -317,6 +322,19 @@ accepted.sort((a, b) => (sectionOrder.get(a.section) ?? 999) - (sectionOrder.get
   || compareCountryLabels(a.subsection, a.country, b.country)
   || (a.section === 'Lead stories' ? leadScore(b, a.subsection === 'Middle East') - leadScore(a, a.subsection === 'Middle East') : 0)
   || editorialScore(b.title, b.summary) - editorialScore(a.title, a.summary) || articleDate(b) - articleDate(a));
+
+const bodyCache = createArticleCache(join(root, 'data/article-cache.jsonl'));
+for (const article of accepted) {
+  const page = bodyCache.get(article.url)?.page;
+  if (!page) continue;
+  const extracted = articleJson(page);
+  const translatedBody = Array.isArray(extracted.translatedBody) ? extracted.translatedBody.join(' ') : String(extracted.translatedBody || '');
+  const body = translatedBody || extractArticleBody(page, article.title);
+  if (body.length < 200 || franc(body.slice(0, 2000)) === 'eng') continue;
+  article.originalHeadline ||= extracted.exactHeadline || article.title;
+  article.title = markTranslatedHeadline(article.title);
+  article.translated = true;
+}
 
 const sourceOutcomes = sources.map(source => {
   const result = state.sources[source.id];

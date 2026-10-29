@@ -167,6 +167,9 @@ async function scan(source) {
   if (phase === 'supplement' && (!FEED_URLS[source.id] || record.attempts.some(attempt => attempt.method === 'primary Firecrawl listing' && attempt.finished))) return;
   console.log(`SOURCE ${source.id} ${source.name} ${source.url}`);
   const cachedListing = async (filename = `listings-${runId}.json`) => {
+    // Feed outlets need a Firecrawl listing only if their feed yielded no accepted article.
+    // They are omitted from the prepaid listing batch to avoid spending credits up front.
+    if (filename === `listings-${runId}.json` && FEED_URLS[source.id]) return scrapeHeadlines(source, DEFAULT_INCLUDE, key);
     for (let retry = 0; retry < 150; retry++) {
       const file = join(root, 'data', filename);
       let listings = {};
@@ -192,7 +195,7 @@ async function scan(source) {
   const activeStrategies = (phase === 'primary' ? strategies.slice(0, 2) : phase === 'fallback' ? [...retryPrimary, ...strategies.slice(2)] : phase === 'supplement' ? strategies.slice(1, 2) : strategies)
     .filter(([method]) => !(process.env.COLLECTION_SKIP_DIRECT_FEEDS === '1' && method === 'alternate feed'));
   for (const [method, collect] of activeStrategies) {
-    if (method === 'primary Firecrawl listing' && record.articles.length && phase !== 'primary' && phase !== 'supplement') break;
+    if (method === 'primary Firecrawl listing' && record.articles.length && phase !== 'supplement') break;
     if (method !== 'publisher feed' && method !== 'primary Firecrawl listing' && record.articles.length) break;
     if (record.attempts.some(attempt => attempt.method === method && attempt.finished)) continue;
     try {
@@ -218,5 +221,9 @@ async function scan(source) {
 
 const selected = process.env.COLLECTION_SOURCE_IDS ? new Set(process.env.COLLECTION_SOURCE_IDS.split(',').map(value => value.trim())) : null;
 const ordered = (process.env.COLLECTION_BATCH_LISTINGS === '1' ? sources : [sources.find(source => source.id === 'source-32'), ...sources.filter(source => source.id !== 'source-32' && FEED_URLS[source.id]), ...sources.filter(source => source.id !== 'source-32' && !FEED_URLS[source.id])]).filter(source => source && (!selected || selected.has(source.id)));
-for (const source of ordered) await scan(source);
+const pending = [...ordered];
+const workers = Math.min(3, pending.length);
+await Promise.all(Array.from({ length: workers }, async () => {
+  while (pending.length) await scan(pending.shift());
+}));
 console.log(`COMPLETE ${Object.keys(state.sources).length}/${sources.length} sources, ${Object.values(state.sources).reduce((sum, record) => sum + record.articles.length, 0)} relevant articles`);

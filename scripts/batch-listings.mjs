@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from '
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { fallbackListingUrl } from '../server/news.js';
+import { FEED_URLS } from '../server/feeds.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const allSources = JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'));
@@ -9,7 +10,7 @@ const alternate = process.env.COLLECTION_LISTING_MODE === 'alternate';
 const day = process.env.COLLECTION_DAY || new Date().toISOString().slice(0, 10);
 const runId = process.env.COLLECTION_RUN_ID || day;
 const checkpoint = alternate ? JSON.parse(readFileSync(join(root, `data/collection-${runId}-working.json`), 'utf8')) : null;
-const sources = alternate ? allSources.filter(source => checkpoint.sources[source.id]?.status === 'primaryComplete' && fallbackListingUrl(source)) : allSources;
+const sources = alternate ? allSources.filter(source => checkpoint.sources[source.id]?.status === 'primaryComplete' && fallbackListingUrl(source)) : allSources.filter(source => !FEED_URLS[source.id]);
 const path = join(root, `data/${alternate ? 'alternate-listings' : 'listings'}-${runId}.json`);
 const state = existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) : {};
 // Reuse a very recent listing; older ones must refresh to discover new stories.
