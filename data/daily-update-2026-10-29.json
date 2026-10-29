@@ -202,6 +202,20 @@
       "reviewed": true
     },
     {
+      "id": "https://www.rtklive.com/en/news-single.php?ID=33435",
+      "url": "https://www.rtklive.com/en/news-single.php?ID=33435",
+      "sourceId": "source-21",
+      "sourceName": "RTK",
+      "group": "South Eastern Europe",
+      "title": "Two arrested on Suspicion of war crimes in Padalishte Massacre",
+      "summary": "Police said the case concerns killings by Serbian forces in Istog on 26 March 1999.",
+      "publishedAt": "2026-10-29T13:44:00.000Z",
+      "section": "South Eastern Europe",
+      "subsection": "Serbia / Kosovo",
+      "country": "",
+      "reviewed": true
+    },
+    {
       "id": "https://www.gazetaexpress.com/en/President-Shiroka-Pula-received-the-Supreme-NATO-Commander-in-Europe-and-discussed-the-security-situation-in-Kosovo./",
       "url": "https://www.gazetaexpress.com/en/President-Shiroka-Pula-received-the-Supreme-NATO-Commander-in-Europe-and-discussed-the-security-situation-in-Kosovo./",
       "sourceId": "source-22",
@@ -1652,6 +1666,20 @@
       "reviewed": true
     },
     {
+      "id": "https://news.err.ee/1610180446/european-commission-rejects-baltics-500-million-anti-drone-request",
+      "url": "https://news.err.ee/1610180446/european-commission-rejects-baltics-500-million-anti-drone-request",
+      "sourceId": "source-90",
+      "sourceName": "ERR",
+      "group": "Miscl",
+      "title": "European Commission rejects Baltics' €500 million anti-drone request",
+      "summary": "The Commission suggested borrowing the money; Baltic ministers sought a joint drone-detection and interception system.",
+      "publishedAt": "2026-10-29T14:28:00.000Z",
+      "section": "Miscellaneous",
+      "subsection": "INTERNATIONAL ORGANISATIONS",
+      "country": "EU",
+      "reviewed": true
+    },
+    {
       "id": "https://www.internazionale.it/ultime-notizie-reuters/2026/10/29/ecb-president-lagarde-resigns-after-months-of-speculation",
       "url": "https://www.internazionale.it/ultime-notizie-reuters/2026/10/29/ecb-president-lagarde-resigns-after-months-of-speculation",
       "sourceId": "source-173",
@@ -1934,8 +1962,8 @@
       "name": "RTK",
       "group": "South Eastern Europe",
       "url": "https://www.rtklive.com/en/news-category.php?CatID=5",
-      "status": "checked",
-      "reason": "23 links listed and 7 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-29. Article checks: 4 outside scope. Editorial selection: 2 country or organisation needs editorial placement; 1 duplicate or less informative account of the same event."
+      "status": "collected",
+      "reason": "1 verified article included; 7 original article pages checked."
     },
     {
       "id": "source-22",
@@ -2486,8 +2514,8 @@
       "name": "ERR",
       "group": "Miscl",
       "url": "https://news.err.ee/k/news",
-      "status": "checked",
-      "reason": "11 links listed and 6 original article pages checked across 2 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-29. Article checks: 2 outside window. Editorial selection: 1 country or organisation needs editorial placement; 1 duplicate, weakly relevant, opinion or unsuitable source; 1 duplicate, feature, irrelevant or too low in editorial priority."
+      "status": "collected",
+      "reason": "1 verified article included; 6 original article pages checked."
     },
     {
       "id": "source-91",

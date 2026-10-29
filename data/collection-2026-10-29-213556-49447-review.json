@@ -391,21 +391,6 @@
       "reason": "opinion, analysis or feature"
     },
     {
-      "id": "https://news.err.ee/1610180446/european-commission-rejects-baltics-500-million-anti-drone-request",
-      "url": "https://news.err.ee/1610180446/european-commission-rejects-baltics-500-million-anti-drone-request",
-      "sourceId": "source-90",
-      "sourceName": "ERR",
-      "group": "Miscl",
-      "title": "European Commission rejects Baltics' €500 million anti-drone request",
-      "summary": "The European Commission rejected an appeal from the Baltic defense ministers for €500 million in additional support for drone defense for the eastern flank.",
-      "publishedAt": "2026-10-29T14:28:00.000Z",
-      "section": "",
-      "subsection": "",
-      "country": "",
-      "reviewed": true,
-      "reason": "country or organisation needs editorial placement"
-    },
-    {
       "id": "https://24.kg/en/article/kyrgyzstans-cec-plans-to-engage-school-students-in-public-and-political-life",
       "url": "https://24.kg/en/article/kyrgyzstans-cec-plans-to-engage-school-students-in-public-and-political-life",
       "sourceId": "source-74",
@@ -3451,21 +3436,6 @@
       "country": "Iran",
       "reviewed": true,
       "reason": "outside security or political scope or too low in editorial priority"
-    },
-    {
-      "id": "https://www.rtklive.com/en/news-single.php?ID=33435",
-      "url": "https://www.rtklive.com/en/news-single.php?ID=33435",
-      "sourceId": "source-21",
-      "sourceName": "RTK",
-      "group": "South Eastern Europe",
-      "title": "Two arrested on Suspicion of war crimes in Padalishte Massacre",
-      "summary": "Two suspects were arrested in connection with the Padalishte massacre committed by Serbian forces in 1999.",
-      "publishedAt": "2026-10-29T13:44:00.000Z",
-      "section": "",
-      "subsection": "",
-      "country": "",
-      "reviewed": true,
-      "reason": "country or organisation needs editorial placement"
     },
     {
       "id": "https://www.pan.am/en/626953",

@@ -11,6 +11,7 @@ test('custom article URLs must be public HTTPS pages', () => {
 test('placement uses the report taxonomy and rejects invented classifications', () => {
   assert.deepEqual(articlePlacement({}, 'Kosovo and Serbia hold security talks', ''), { sectionId: 'South Eastern Europe', subsection: 'Serbia / Kosovo', country: '' });
   assert.deepEqual(articlePlacement({}, 'EU launches new sanctions', ''), { sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'EU' });
+  assert.deepEqual(articlePlacement({}, 'European Commission rejects Baltic anti-drone funding request', ''), { sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'EU' });
   assert.deepEqual(articlePlacement({ section: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'Mars' }, 'OSCE chair to visit Armenia', ''), { sectionId: 'South Caucasus', subsection: 'Armenia', country: '' });
   assert.deepEqual(articlePlacement({}, 'Germany signs defence deal with France', ''), { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Germany' });
 });
