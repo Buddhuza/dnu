@@ -75,6 +75,16 @@ function permittedArticleUrl(url, source) {
     && url.pathname.startsWith(source.articlePathPrefix);
 }
 
+function sourceArticleHost(url, source) {
+  const host = url.hostname.replace(/^www\./, '');
+  const primary = new URL(source.url).hostname.replace(/^www\./, '');
+  const aliases = {
+    'source-77': ['asiaplus.news'],
+    'source-86': ['app.ekkow.com']
+  };
+  return host === primary || aliases[source.id]?.includes(host) === true;
+}
+
 export function normalizeArticles(payload, source, now = Date.now(), include = DEFAULT_INCLUDE, exclude = DEFAULT_EXCLUDE, allowMidnight = false) {
   const cutoff = now - 48 * 60 * 60 * 1000;
   const seen = new Set();
@@ -123,7 +133,7 @@ export function undatedCandidates(payload, source, include = DEFAULT_INCLUDE, ex
     let url;
     try {
       url = new URL(String(raw.url ?? raw.absoluteUrl ?? raw.link ?? ''), source.url);
-      if (url.protocol !== 'https:' || url.hostname.replace(/^www\./, '') !== new URL(source.url).hostname.replace(/^www\./, '') || !permittedArticleUrl(url, source)) continue;
+      if (url.protocol !== 'https:' || !sourceArticleHost(url, source) || !permittedArticleUrl(url, source)) continue;
     } catch { continue; }
     if (seen.has(url.href)) continue;
     seen.add(url.href);

@@ -1424,14 +1424,14 @@
       "reviewed": true
     },
     {
-      "id": "https://sputnikglobe.com/20261029/russian-forces-press-forward-across-multiple-fronts-in-ukraine-1124974969.html",
-      "url": "https://sputnikglobe.com/20261029/russian-forces-press-forward-across-multiple-fronts-in-ukraine-1124974969.html",
-      "sourceId": "source-99",
-      "sourceName": "Sputnik",
+      "id": "https://app.ekkow.com/1488644942213235607",
+      "url": "https://app.ekkow.com/1488644942213235607",
+      "sourceId": "source-86",
+      "sourceName": "dpa",
       "group": "Miscl",
-      "title": "Russian Forces Press Forward Across Multiple Fronts in Ukraine",
-      "summary": "Ukraine lost over 340 soldiers in combat against Russia's Battlegroup Tsentr over the past day.",
-      "publishedAt": "2026-10-29T10:21:00.000Z",
+      "title": "Ukrainian attack destroys Russian planes on the ground, Zelensky says",
+      "summary": "The Ukrainian navy said Neptune missiles hit Marinovka airfield in Volgograd region, more than 450 km from Ukrainian-held territory.",
+      "publishedAt": "2026-10-29T21:03:32.000Z",
       "section": "Miscellaneous",
       "subsection": "RUSSIA / EURASIA",
       "country": "Russia",
@@ -2381,7 +2381,7 @@
       "group": "Central Asia",
       "url": "https://asiaplustj.info/en/news/all",
       "status": "checked",
-      "reason": "16 links listed and 0 original article pages checked across 5 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-29."
+      "reason": "25 links listed and 2 original article pages checked across 7 collection methods; no article from this outlet was verified and included for the requested window. Newest dated listing: 2026-10-29. Article checks: 1 outside scope. Editorial selection: 1 underlying UN statement was issued six days before the coverage window."
     },
     {
       "id": "source-78",
@@ -2452,8 +2452,8 @@
       "name": "dpa",
       "group": "Miscl",
       "url": "https://nordot.app/-/units/601684660556563553",
-      "status": "checked",
-      "reason": "10 links listed and 0 original article pages checked across 5 collection methods; no article from this outlet was verified and included for the requested window."
+      "status": "collected",
+      "reason": "1 verified article included; 6 original article pages checked."
     },
     {
       "id": "source-87",
@@ -2557,7 +2557,7 @@
       "group": "Miscl",
       "url": "https://sputnikglobe.com/russia/",
       "status": "collected",
-      "reason": "2 verified articles included; 4 original article pages checked."
+      "reason": "1 verified article included; 4 original article pages checked."
     },
     {
       "id": "source-100",

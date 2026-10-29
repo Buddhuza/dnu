@@ -41,7 +41,7 @@ function cleanHeadline(article) {
   if (!source) return title;
   const brand = source.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const host = new URL(source.url).hostname.replace(/^www\./, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  title = title.replace(new RegExp(`\\s[-–|]\\s(?:${brand}|${host})$`, 'i'), '').trim();
+  title = title.replace(new RegExp(`\\s[-–|｜]\\s(?:${brand}|${host})$`, 'i'), '').trim();
   title = title.replace(/\s[-–|]\s(?:Euronews Albania|Republika English|Civil Georgia|Khaama Press|The Copenhagen Post|Novinite\.com - Sofia News Agency|The Malta Independent|Yonhap News Agency|ITV News|The Moscow Times|CNN Politics)$/i, '').trim();
   title = title.replace(/\s[-–|]\s(?:SkopjeDiem|The Astana Times|The Times Of Central Asia)$/i, '').trim();
   if (source.id === 'source-93') title = title.replace(/\s-\s(?:TopNews|News from Embassies)(?:\s-\sAnsa\.it)?$/i, '').trim();

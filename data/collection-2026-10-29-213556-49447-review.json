@@ -46,6 +46,21 @@
       "reason": "mismatched article page or invalid headline"
     },
     {
+      "id": "https://app.ekkow.com/1488644939477713006",
+      "url": "https://app.ekkow.com/1488644939477713006",
+      "sourceId": "source-86",
+      "sourceName": "dpa",
+      "group": "Miscl",
+      "title": "Defeated Bolsonaro criticized by own camp for leaving Brazil",
+      "summary": "Following his secret departure to the US, Flávio Bolsonaro faces criticism from his own political camp over election fraud claims.",
+      "publishedAt": "2026-10-29T21:03:31.000Z",
+      "section": "South Eastern Europe",
+      "subsection": "Serbia",
+      "country": "",
+      "reviewed": true,
+      "reason": "duplicate, superseded by later figures or outside report scope"
+    },
+    {
       "id": "https://www.euronews.com/2026/10/29/kazakhstans-tokayev-calls-for-faster-construction-of-nuclear-power-plants",
       "url": "https://www.euronews.com/2026/10/29/kazakhstans-tokayev-calls-for-faster-construction-of-nuclear-power-plants",
       "sourceId": "source-82",
@@ -69,7 +84,7 @@
       "title": "Russian drone attack on train station kills 13 in Ukraine’s Dnipro",
       "summary": "A jet-powered drone struck a platform where a commuter train was preparing to leave for Zaporizhzhia, the state railway said.",
       "publishedAt": "2026-10-29T10:06:22.000Z",
-      "section": "Lead stories",
+      "section": "Eastern Europe",
       "subsection": "Ukraine",
       "country": "",
       "reviewed": true,
@@ -104,6 +119,21 @@
       "country": "",
       "reviewed": true,
       "reason": "duplicate or less informative account of the same event"
+    },
+    {
+      "id": "https://app.ekkow.com/1488629831608910022",
+      "url": "https://app.ekkow.com/1488629831608910022",
+      "sourceId": "source-86",
+      "sourceName": "dpa",
+      "group": "Miscl",
+      "title": "UK maritime agency reports new tanker hit in Strait of Hormuz",
+      "summary": "Another tanker was hit by a projectile in the Strait of Hormuz, according to UK's UKMTO maritime security organization.",
+      "publishedAt": "2026-10-29T20:03:29.000Z",
+      "section": "Miscellaneous",
+      "subsection": "MIDDLE EAST / NORTH AFRICA",
+      "country": "Iran",
+      "reviewed": true,
+      "reason": "duplicate, superseded by later figures or outside report scope"
     },
     {
       "id": "https://www.politico.eu/article/ukraine-peace-talks-5-things-to-know-about-the-chances-of-a-deal/",
@@ -239,6 +269,21 @@
       "country": "",
       "reviewed": true,
       "reason": "country or organisation needs editorial placement"
+    },
+    {
+      "id": "https://app.ekkow.com/1488618473764012285",
+      "url": "https://app.ekkow.com/1488618473764012285",
+      "sourceId": "source-86",
+      "sourceName": "dpa",
+      "group": "Miscl",
+      "title": "Casualties feared in EU helicopter crash in Bosnia and Herzegovina",
+      "summary": "An Italian helicopter from the EU peacekeeping force has crashed, resulting in casualties.",
+      "publishedAt": "2026-10-29T19:18:21.000Z",
+      "section": "South Eastern Europe",
+      "subsection": "Bosnia and Herzegovina",
+      "country": "",
+      "reviewed": true,
+      "reason": "duplicate, superseded by later figures or outside report scope"
     },
     {
       "id": "https://www.politico.eu/article/eu-and-canada-eye-golden-window-to-trump-proof-their-ties/",
@@ -2641,6 +2686,21 @@
       "country": "",
       "reviewed": true,
       "reason": "duplicate, weakly relevant, opinion or unsuitable source"
+    },
+    {
+      "id": "https://asiaplus.news/en/2026/10/29/tajikistan-joins-iran-10-other-countries-in-condemning-attacks-on-safeguarded-nuclear-facilities/",
+      "url": "https://asiaplus.news/en/2026/10/29/tajikistan-joins-iran-10-other-countries-in-condemning-attacks-on-safeguarded-nuclear-facilities/",
+      "sourceId": "source-77",
+      "sourceName": "Asia-Plus",
+      "group": "Central Asia",
+      "title": "Tajikistan joins Iran, 10 other countries in condemning attacks on safeguarded nuclear facilities",
+      "summary": "Tajikistan joined Iran and 10 other countries in condemning attacks on safeguarded nuclear facilities under IAEA.",
+      "publishedAt": "2026-10-29T06:03:46.000Z",
+      "section": "Central Asia",
+      "subsection": "Tajikistan",
+      "country": "",
+      "reviewed": true,
+      "reason": "underlying UN statement was issued six days before the coverage window"
     },
     {
       "id": "https://en.yna.co.kr/view/AEN20261029010200320?section=k-biz/stocks",
@@ -5100,6 +5160,21 @@
       "title": "Current level of Russia-Africa trade turnover is not limit — Putin",
       "summary": "President Putin stated that the current trade turnover between Russia and Africa totals $27 billion.",
       "publishedAt": "2026-10-29T18:01:55.000Z",
+      "section": "Miscellaneous",
+      "subsection": "RUSSIA / EURASIA",
+      "country": "Russia",
+      "reviewed": true,
+      "reason": "lower editorial priority within 10-story country limit"
+    },
+    {
+      "id": "https://sputnikglobe.com/20261029/russian-forces-press-forward-across-multiple-fronts-in-ukraine-1124974969.html",
+      "url": "https://sputnikglobe.com/20261029/russian-forces-press-forward-across-multiple-fronts-in-ukraine-1124974969.html",
+      "sourceId": "source-99",
+      "sourceName": "Sputnik",
+      "group": "Miscl",
+      "title": "Russian Forces Press Forward Across Multiple Fronts in Ukraine",
+      "summary": "Ukraine lost over 340 soldiers in combat against Russia's Battlegroup Tsentr over the past day.",
+      "publishedAt": "2026-10-29T10:21:00.000Z",
       "section": "Miscellaneous",
       "subsection": "RUSSIA / EURASIA",
       "country": "Russia",

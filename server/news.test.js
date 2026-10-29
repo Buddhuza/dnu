@@ -6,6 +6,14 @@ import { normalizeArticles, scrapeHeadlines, searchSourceArticles, undatedCandid
 const source = { id: 'source-1', name: 'Test News', group: 'Test', url: 'https://example.com/news/' };
 const now = Date.parse('2026-10-09T12:00:00Z');
 
+test('accepts article hosts linked by Asia-Plus and the dpa syndication listing only for those sources', () => {
+  const articles = [{ title: 'Security talks begin', url: 'https://asiaplus.news/en/security-talks' }, { title: 'Military talks begin', url: 'https://app.ekkow.com/123' }];
+  const payload = { data: { json: { articles } } };
+  assert.deepEqual(undatedCandidates(payload, { id: 'source-77', url: 'https://asiaplustj.info/en/news/all' }, [], [], true).map(item => item.url), [articles[0].url]);
+  assert.deepEqual(undatedCandidates(payload, { id: 'source-86', url: 'https://nordot.app/units/1' }, [], [], true).map(item => item.url), [articles[1].url]);
+  assert.deepEqual(undatedCandidates(payload, source, [], [], true), []);
+});
+
 test('keeps only dated, matching headlines from the last 48 hours', () => {
   const payload = { data: { json: { articles: [
     { title: 'Security meeting held today', url: '/story-1', publishedAt: '2026-10-09T10:00:00Z' },
