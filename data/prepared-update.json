@@ -1401,13 +1401,15 @@
       "sourceId": "source-76",
       "sourceName": "AKIpress",
       "group": "Central Asia",
-      "title": "Russian air defenses target over 600 drones heading toward Moscow as industrial sites hit",
+      "title": "(文A) Russian air defenses target over 600 drones heading toward Moscow as industrial sites hit",
       "summary": "Russian air defense systems neutralized over 600 drones directed toward the Moscow region overnight.",
       "publishedAt": "2026-10-29T14:30:00.000Z",
       "section": "Miscellaneous",
       "subsection": "RUSSIA / EURASIA",
       "country": "Russia",
-      "reviewed": true
+      "reviewed": true,
+      "originalHeadline": "Российские системы ПВО нейтрализовали более 600 дронов, направлявшихся в Москву, в то время как пострадали промышленные объекты",
+      "translated": true
     },
     {
       "id": "https://meduza.io/en/news/2026/10/29/estonia-plans-to-build-150-bunkers-on-border-with-russia",

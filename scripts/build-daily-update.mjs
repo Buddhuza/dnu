@@ -330,7 +330,7 @@ for (const article of accepted) {
   const extracted = articleJson(page);
   const translatedBody = Array.isArray(extracted.translatedBody) ? extracted.translatedBody.join(' ') : String(extracted.translatedBody || '');
   const body = translatedBody || extractArticleBody(page, article.title);
-  if (body.length < 200 || franc(body.slice(0, 2000)) === 'eng') continue;
+  if ((body.length < 200 && !/[А-Яа-яЁё]/.test(body)) || franc(body.slice(0, 2000)) === 'eng') continue;
   article.originalHeadline ||= extracted.exactHeadline || article.title;
   article.title = markTranslatedHeadline(article.title);
   article.translated = true;
