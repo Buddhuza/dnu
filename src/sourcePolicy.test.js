@@ -46,8 +46,8 @@ test('Russian outlets stay under Russia in display and manual moves', () => {
   assert.deepEqual(displaySiteContent([russian], config).map(item => item.id), ['tass']);
 });
 
-test('current prepared edition follows outlet placement restrictions', () => {
-  const update = JSON.parse(readFileSync(new URL('../data/prepared-update.json', import.meta.url), 'utf8'));
+test('archived edition follows outlet placement restrictions', () => {
+  const update = JSON.parse(readFileSync(new URL('../data/daily-update-2026-10-24.json', import.meta.url), 'utf8'));
   assert.ok(update.articles.some(article => article.section === 'Lead stories' && article.subsection === 'Ukraine'));
   assert.ok(update.articles.some(article => article.section === 'Eastern Europe' && article.subsection === 'Ukraine'));
   assert.ok(update.articles.every(article => !blockedPlacementReason(article)));

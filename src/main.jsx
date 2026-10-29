@@ -1,6 +1,7 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import preparedUpdate from '../data/prepared-update.json';
+import archivedImportReference from '../data/daily-update-2026-10-24.json';
 import preparedSources from '../sources.json';
 import publishedSiteConfig from '../data/site-config.json';
 import SiteManager from './SiteManager.jsx';
@@ -33,6 +34,18 @@ const dateLabel = formatViennaDateTime;
 const managementEnabled = import.meta.env.DEV;
 const importedUpdateKey = 'dnu-imported-update-v1';
 const importBackupKey = 'dnu-before-import-v1';
+const blankEditionResetKey = 'dnu-blank-edition-2026-10-29-v1';
+if (preparedUpdate.emptyPrepared && !localStorage.getItem(blankEditionResetKey)) {
+  localStorage.removeItem(importedUpdateKey);
+  localStorage.removeItem(importBackupKey);
+  localStorage.removeItem('dnu-excluded-story-ids-v1');
+  localStorage.removeItem('dnu-current-edition-v1');
+  const savedSettings = readStored('dnu-site-settings-v1', null);
+  if (savedSettings) localStorage.setItem('dnu-site-settings-v1', JSON.stringify({
+    ...savedSettings, showUpdate: true, customArticles: [], articleEdits: {}, articleOrder: [], leadOrigins: {}
+  }));
+  localStorage.setItem(blankEditionResetKey, '1');
+}
 const compactSectionLabels = {
   'Lead stories': 'LEAD',
   'South Eastern Europe': 'SEE',
@@ -173,7 +186,9 @@ function App() {
     const times = selectedArticles.map(item => Date.parse(item.publishedAt)).filter(Number.isFinite);
     return { ...daily, windowStart: new Date(Math.min(Date.parse(daily.windowStart), ...times)).toISOString(), windowEnd: new Date(Math.max(Date.parse(daily.windowEnd), ...times)).toISOString() };
   }, [daily, selectedArticles]);
-  const coverageNote = !daily ? '' : daily.importedFromSpreadsheet
+  const coverageNote = !daily ? '' : daily.emptyPrepared
+    ? selectedArticles.length ? 'This update contains stories added in this browser; the published edition is empty.' : ''
+    : daily.importedFromSpreadsheet
     ? `Imported from ${daily.importedFileName || 'a spreadsheet'} in this browser. The public edition has not changed.`
     : siteConfig.coverageText || (reportWindow?.windowStart
     ? `Coverage: ${dateLabel(reportWindow.windowStart)} to ${dateLabel(reportWindow.windowEnd)}. Original snapshot prepared ${dateLabel(daily.checkedAt)} from selected article pages.${selectedArticles.some(item => item.id.startsWith('manual-')) ? ' Includes articles added in this browser.' : ''}${selectedArticles.some(item => item.timeSource === 'inferred' || item.timeSource === 'current') ? ' Some added articles have inferred dates or were stamped when added.' : ''} The original snapshot does not refresh automatically.`
@@ -494,10 +509,10 @@ function App() {
     setCompiledAt(new Date().toISOString());
   };
   const keepStoryTextInline = event => { if (event.key === 'Enter') event.preventDefault(); };
-  const updateControls = () => daily?.articles?.length > 0 && <div className="daily-downloads">
+  const updateControls = () => daily && <div className="daily-downloads">
     <button className="daily-action daily-edit" type="button" aria-label="Add articles" title="Add article URLs" onClick={() => setAddingArticles(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M4 12h16"/></svg></button>
     <button className="daily-action daily-edit" type="button" aria-label="Import spreadsheet" title={editingStories ? 'Save edits before importing a spreadsheet' : 'Import stories from an Excel or CSV file'} disabled={editingStories} onClick={() => setImportingSpreadsheet(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v16H3zM3 9h18M3 14h11M10 9v11M16 9v5m2 2v5m-3-3 3 3 3-3"/></svg></button>
-    <button className="daily-action daily-edit" type="button" aria-label={editingStories ? 'Save edits' : 'Edit update'} title={editingStories ? 'Save text and story choices' : 'Edit text and story choices'} aria-pressed={editingStories} onClick={toggleStoryEditing}><svg viewBox="0 0 24 24" aria-hidden="true">{editingStories ? <path d="m4 12 5 5L20 6"/> : <><path d="m4 20 4.2-.9L19 8.3 15.7 5 4.9 15.8 4 20Z"/><path d="m13.9 6.8 3.3 3.3"/></>}</svg></button>
+    <button className="daily-action daily-edit" type="button" aria-label={editingStories ? 'Save edits' : 'Edit update'} title={editingStories ? 'Save text and story choices' : 'Edit text and story choices'} aria-pressed={editingStories} disabled={!displayedArticles.length} onClick={toggleStoryEditing}><svg viewBox="0 0 24 24" aria-hidden="true">{editingStories ? <path d="m4 12 5 5L20 6"/> : <><path d="m4 20 4.2-.9L19 8.3 15.7 5 4.9 15.8 4 20Z"/><path d="m13.9 6.8 3.3 3.3"/></>}</svg></button>
     <button className={`daily-action daily-edit ${headlineOnly ? 'is-active' : ''}`} type="button" aria-label={headlineOnly ? 'Show full view' : 'Show compressed view'} title={editingStories ? 'Save edits before switching views' : headlineOnly ? 'Show full view with summaries' : 'Show compressed view without summaries'} aria-pressed={headlineOnly} disabled={editingStories} onClick={() => { rememberReadingPosition(); setHeadlineOnly(current => !current); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16"/>{!headlineOnly && <path d="M4 15h16"/>}</svg></button>
     <button className="daily-action daily-download" type="button" aria-label="Download update" title={editingStories ? 'Save edits before downloading' : headlineOnly ? 'Download compressed Word update' : 'Download Word update with summaries'} disabled={!selectedArticles.length || editingStories} onClick={downloadManagedDocx}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 17v3h16v-3"/></svg></button>
     <button className="daily-action daily-edit" type="button" aria-label="Email update" title={editingStories ? 'Save edits before emailing' : 'Copy formatted update and open your email app; paste into the message body'} disabled={!selectedArticles.length || editingStories} onClick={emailManagedUpdate}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5h18v13H3z"/><path d="m3 6 9 7 9-7"/></svg></button>
@@ -615,9 +630,9 @@ function App() {
                 </React.Fragment>)}
               </div>)}
             </div>)}
-            {!readingArticles.length && <p className="daily-empty">{displayedArticles.length ? 'No stories are selected. Press Edit to choose stories for this update.' : 'There are no visible stories in this update.'}</p>}
-            <div className="daily-disclaimer"><p><strong>Disclaimer:</strong> {disclaimerFirst}</p><p>{disclaimerSecond}</p></div>
-            {siteConfig.showCoverage && <p className="daily-coverage">{coverageNote}</p>}
+            {!readingArticles.length && <p className="daily-empty">{displayedArticles.length ? 'No stories are selected. Press Edit to choose stories for this update.' : 'No stories yet. Press Import spreadsheet to populate the update.'}</p>}
+            {selectedArticles.length > 0 && <div className="daily-disclaimer"><p><strong>Disclaimer:</strong> {disclaimerFirst}</p><p>{disclaimerSecond}</p></div>}
+            {siteConfig.showCoverage && coverageNote && selectedArticles.length > 0 && <p className="daily-coverage">{coverageNote}</p>}
           </div>}
         </section>}
         {websiteSource && <section className="website-panel" aria-label={`${websiteSource.name} website`}><div className="website-panel-heading"><div><span className="eyebrow">SOURCE WEBSITE</span><h2>{websiteSource.name}</h2></div><button onClick={() => setWebsiteSourceId('')} aria-label="Close source website">×</button></div><div className="website-panel-actions"><a href={websiteSource.url} target="_blank" rel="noopener noreferrer">Open website in new tab ↗</a></div><p>To add an article, right-click its headline, copy the link address, then paste it into Add. Some publishers block display here; use the link above if this panel stays blank.</p><iframe key={websiteSource.id} src={websiteSource.url} title={`${websiteSource.name} website`} referrerPolicy="no-referrer" loading="lazy"/></section>}
@@ -628,7 +643,7 @@ function App() {
     {spreadsheetResults && <div className="add-backdrop" onClick={() => setSpreadsheetResults(null)}><section className="add-dialog spreadsheet-results" role="dialog" aria-modal="true" aria-labelledby="spreadsheet-results-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="spreadsheet-results-title">Spreadsheet export results</h2><button type="button" aria-label="Close export results" onClick={() => setSpreadsheetResults(null)}>×</button></div><p>{spreadsheetResults.downloaded ? `Downloaded ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} visible full articles.` : `No spreadsheet downloaded. ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} articles available.`}</p>{spreadsheetResults.error && <p role="alert">{spreadsheetResults.error}</p>}{spreadsheetResults.failures.length > 0 && <><h3>{spreadsheetResults.failures.length} unavailable</h3><ul>{spreadsheetResults.failures.map((failure, index) => <li key={index}>{failure}</li>)}</ul></>}<div className="add-dialog-actions"><button type="button" onClick={() => setSpreadsheetResults(null)}>Close</button></div></section></div>}
     {managementEnabled && managing && <SiteManager initialTab={managerTab} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} includeText={includeText} setIncludeText={setIncludeText} excludeText={setExcludeText} setExcludeText={setExcludeText} applyScope={applyScope} onClose={() => setManaging(false)} onReset={() => setSiteConfig(defaultSiteConfig(daily?.articles ?? preparedUpdate.articles))}/>}
     {addingArticles && config && daily && <AddArticlesDialog serverAvailable={!staticPreview && Boolean(config.firecrawlConfigured)} sources={configuredSources} sections={siteConfig.sections} customCountries={siteConfig.customCountries} existingArticles={selectedArticles} existingUrls={[...daily.articles.map(item => item.url), ...siteConfig.customArticles.map(item => item.url)]} remainingSlots={100 - siteConfig.customArticles.length} onAdd={(article, placement) => { setSiteConfig(current => addCustomArticleInConfig(current, article, placement)); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}
-    {importingSpreadsheet && <ImportSpreadsheetDialog existingArticles={preparedUpdate.articles} sources={configuredSources} importedMode={importedMode} onImport={importSpreadsheet} onRestore={restorePublishedUpdate} onClose={() => setImportingSpreadsheet(false)}/>}
+    {importingSpreadsheet && <ImportSpreadsheetDialog existingArticles={[...archivedImportReference.articles, ...preparedUpdate.articles, ...(daily?.articles ?? [])]} sources={configuredSources} importedMode={importedMode} onImport={importSpreadsheet} onRestore={restorePublishedUpdate} onClose={() => setImportingSpreadsheet(false)}/>}
     {editingStories && storyToMove && <MoveStoryDialog story={storyToMove} sections={siteConfig.sections} articles={displayedArticles} customCountries={siteConfig.customCountries} onMove={moveStory} onClose={() => setMoveStoryId('')}/>}
   </div>;
 }

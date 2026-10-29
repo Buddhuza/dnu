@@ -6,7 +6,7 @@ The versioned [editorial policy](public/editorial-policy.md) covers collection, 
 
 A local news review app for the 173 outlets in `sources.json` (transcribed from the supplied `agencies_updated.txt`). Choose a source, collect its headlines from a publisher feed where available or Firecrawl otherwise, and refine the results with included and excluded phrases. The prepared news stream can be edited and exported as a Word update.
 
-The homepage opens with the selected English-language edition in `data/prepared-update.json`. Its source audit records the result for every listed outlet. This is a prepared snapshot; it does not refresh automatically. Dated editions remain in `data/`.
+The homepage opens with the active edition in `data/prepared-update.json`. It is currently an empty canvas for spreadsheet import. The previous English-language edition remains in `data/daily-update-2026-10-24.json`, and its scraped article pages remain in the cache. A prepared snapshot does not refresh automatically. Dated editions remain in `data/`.
 
 For a quick preview that does not clone or install the project, open the [static GitHub Pages preview](https://buddhuza.github.io/dnu/). It displays the prepared update, lets you edit the story selection or add article URLs, and exports the Word update. **Manage site** is available only in local development. Source-list collection requires the full project below.
 
