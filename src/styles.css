@@ -371,3 +371,13 @@
 .import-spreadsheet-preview summary{cursor:pointer;font-weight:700}
 .import-spreadsheet-note{opacity:.8}
 .add-dialog-actions .import-spreadsheet-confirm{background:var(--site-primary,#123e47);color:#fff}
+
+/* Size the desktop source column to its agency labels, including the icon and arrow. */
+@media (min-width:721px){
+  .workspace:not(.no-sidebar){grid-template-columns:max-content minmax(0,1fr)}
+  .workspace:not(.no-sidebar) .sidebar,.workspace:not(.no-sidebar) .source-list{width:max-content}
+  .workspace:not(.no-sidebar) .source-list{overflow-x:hidden;overflow-y:auto}
+  .workspace:not(.no-sidebar) .source-row{width:100%;min-width:max-content}
+  .workspace:not(.no-sidebar) .source-copy{flex:0 0 auto;min-width:max-content}
+  .workspace:not(.no-sidebar) .source-copy strong{overflow:visible;text-overflow:clip}
+}
