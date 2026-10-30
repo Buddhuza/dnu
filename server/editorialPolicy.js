@@ -25,8 +25,14 @@ export function isEnglishArticle(payload, title, summary = '') {
   if (!isEnglishListingText(title, summary)) return false;
   const data = payload?.data || {};
   const metadata = data.metadata || {};
+  const articleUrl = String(metadata.sourceURL ?? metadata.url ?? '');
+  if (/\/en(?:glish)?\//i.test(articleUrl) && isEnglishListingText(data.json?.exactHeadline ?? title, summary)) return true;
   const hint = String(metadata.language ?? metadata.lang ?? metadata.ogLocale ?? metadata['og:locale'] ?? data.html?.match(/<html[^>]*\blang=["']([^"']+)/i)?.[1] ?? '').trim().toLowerCase();
-  const markdown = String(data.markdown ?? '').replace(/!?\[([^\]]+)\]\([^)]*\)/g, '$1').slice(0, 8000);
+  const rawMarkdown = String(data.markdown ?? '');
+  const markdown = rawMarkdown.replace(/!?\[([^\]]+)\]\([^)]*\)/g, '$1').slice(0, 8000);
+  // The first screen contains the article; later related-story lists can be in
+  // another language and should not determine whether this page was translated.
+  if (rawMarkdown.length >= 2500) return franc(rawMarkdown.slice(0, 2500), { minLength: 200 }) === 'eng';
   if (markdown.length >= 350) return franc(markdown, { minLength: 200 }) === 'eng' || englishWordCount(markdown) >= 15;
   if (hint && !/^en(?:[-_]|$)/.test(hint)) return false;
   if (/^en(?:[-_]|$)/.test(hint)) return true;

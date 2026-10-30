@@ -8,6 +8,9 @@ test('English-language checks reject Cyrillic listings and non-English article m
   assert.equal(isEnglishArticle({ data: { metadata: { language: 'fr-FR' } } }, 'OSCE chair to visit Armenia', 'The minister will discuss the peace process.'), false);
   assert.equal(isEnglishArticle({ data: { metadata: {} } }, 'Правительство обсудило безопасность', 'The government discussed international security cooperation.'), false);
   assert.equal(isEnglishArticle({ data: { metadata: { ogLocale: 'sq_AL' }, markdown: 'The government and parliament held talks on security cooperation with neighboring countries. '.repeat(12) } }, 'Kosovo asks US to restart talks', 'Officials discussed their commitments to the Serb minority.'), true);
+  assert.equal(isEnglishArticle({ data: { metadata: { language: 'bs-BA' }, markdown: 'The ministers discussed security cooperation with neighbouring states. '.repeat(50), json: { translatedBody: 'Ministri su razgovarali o saradnji.' } } }, 'OSCE highlights security cooperation', 'Officials met in Sarajevo.'), true);
+  assert.equal(isEnglishArticle({ data: { metadata: { language: 'en' }, markdown: 'La presidente della banca centrale europea ha annunciato le dimissioni. '.repeat(50) } }, 'ECB president resigns', 'She will leave office next month.'), false);
+  assert.equal(isEnglishArticle({ data: { metadata: { language: 'it', sourceURL: 'https://www.ansa.it/nuova_europa/en/news/story.html' }, json: { exactHeadline: 'German president urges China to help end war' }, markdown: 'Sei già abbonato e puoi leggere le ultime notizie italiane. '.repeat(50) } }, 'German president urges China to help end war', 'He spoke during his visit to Beijing.'), true);
 });
 
 test('Russian outlets are limited to Russia-focused English articles', () => {

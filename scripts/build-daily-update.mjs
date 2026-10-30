@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { articlePlacement } from '../server/importArticle.js';
-import { editorialScore, isRussianSource } from '../server/editorialPolicy.js';
+import { editorialScore, isEnglishArticle, isRussianSource } from '../server/editorialPolicy.js';
 import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, compareCountryLabels } from '../src/newsSections.js';
 import { blockedPlacementReason, isUkrainianOutlet } from '../src/sourcePolicy.js';
 import { preferredRegionalPlacement, ukraineAttackPlacement, russianTerritoryAttackPlacement } from '../src/storyPlacement.js';
@@ -11,9 +11,7 @@ import { excludedHeadlineReason } from '../src/headlinePolicy.js';
 import { carryForwardArticles } from '../server/updateCarryForward.js';
 import { balanceAgencyShare, limitStoriesPerHeading, selectDiverseLeadStories } from '../server/storySelection.js';
 import { createArticleCache } from '../server/articleCache.js';
-import { extractArticleBody } from '../server/articleBody.js';
-import { articleJson, markTranslatedHeadline } from '../src/articleTranslation.js';
-import { franc } from 'franc-min';
+import { articleJson, markTranslatedHeadline, withoutTranslationMarker } from '../src/articleTranslation.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const day = process.env.COLLECTION_DAY || new Date().toISOString().slice(0, 10);
@@ -327,10 +325,13 @@ const bodyCache = createArticleCache(join(root, 'data/article-cache.jsonl'));
 for (const article of accepted) {
   const page = bodyCache.get(article.url)?.page;
   if (!page) continue;
+  if (isEnglishArticle({ data: page }, withoutTranslationMarker(article.title), article.summary)) {
+    article.title = withoutTranslationMarker(article.title);
+    delete article.translated;
+    delete article.originalHeadline;
+    continue;
+  }
   const extracted = articleJson(page);
-  const translatedBody = Array.isArray(extracted.translatedBody) ? extracted.translatedBody.join(' ') : String(extracted.translatedBody || '');
-  const body = translatedBody || extractArticleBody(page, article.title);
-  if ((body.length < 200 && !/[А-Яа-яЁё]/.test(body)) || franc(body.slice(0, 2000)) === 'eng') continue;
   article.originalHeadline ||= extracted.exactHeadline || article.title;
   article.title = markTranslatedHeadline(article.title);
   article.translated = true;

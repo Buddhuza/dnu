@@ -221,15 +221,13 @@
       "sourceId": "source-22",
       "sourceName": "Gazeta Express",
       "group": "South Eastern Europe",
-      "title": "(文A) President Shiroka Pula received the NATO Supreme Commander in Europe, discussed the security situation in Kosovo",
+      "title": "President Shiroka Pula received the NATO Supreme Commander in Europe, discussed the security situation in Kosovo",
       "summary": "The president said KFOR’s presence remains important for the safety of all communities in Kosovo.",
       "publishedAt": "2026-10-29T12:52:17.000Z",
       "section": "South Eastern Europe",
       "subsection": "Serbia / Kosovo",
       "country": "",
-      "reviewed": true,
-      "originalHeadline": "President Shiroka Pula received the NATO Supreme Commander in Europe, discussed the security situation in Kosovo",
-      "translated": true
+      "reviewed": true
     },
     {
       "id": "https://en.vijesti.me/world-a/balkan/833886/Protests-in-Kosovo-over-murder-of-woman-in-Peja-who-repeatedly-reported-violence-and-sought-protection",
@@ -335,15 +333,13 @@
       "sourceId": "source-91",
       "sourceName": "Yle",
       "group": "Miscl",
-      "title": "(文A) Finnish FM Valtonen meets Marco Rubio amid high-stakes Ukraine peace push",
+      "title": "Finnish FM Valtonen meets Marco Rubio amid high-stakes Ukraine peace push",
       "summary": "Finnish Foreign Minister Elina Valtonen will meet US Secretary of State Marco Rubio to discuss the war in Ukraine.",
       "publishedAt": "2026-10-29T08:30:49.000Z",
       "section": "Eastern Europe",
       "subsection": "Ukraine",
       "country": "",
-      "reviewed": true,
-      "originalHeadline": "Suomen ulkoministeri Elina Valtonen tapaa Yhdysvaltojen ulkoministerin Marco Rubion torstaina Washington DC:ssä",
-      "translated": true
+      "reviewed": true
     },
     {
       "id": "https://armenpress.am/en/article/1264213",
@@ -393,15 +389,13 @@
       "sourceId": "source-52",
       "sourceName": "ARKA",
       "group": "South Caucasus",
-      "title": "(文A) Armenia is considering purchasing gas from Azerbaijan, along with supplies from Russia and Iran – Security Council Secretary",
+      "title": "Armenia is considering purchasing gas from Azerbaijan, along with supplies from Russia and Iran – Security Council Secretary",
       "summary": "Armenian Security Council Secretary Alen Simonyan stated that Armenia is considering gas purchases from Azerbaijan, Iran, and Russia.",
       "publishedAt": "2026-10-29T18:56:00.000Z",
       "section": "South Caucasus",
       "subsection": "Armenia",
       "country": "",
-      "reviewed": true,
-      "originalHeadline": "Армения рассматривает возможность закупки газа у Азербайджана, наряду с поставками из России и Ирана – секретарь Совета безопасности",
-      "translated": true
+      "reviewed": true
     },
     {
       "id": "https://arminfo.info/full_news.php?id=105372&lang=3",
@@ -605,15 +599,13 @@
       "sourceId": "source-70",
       "sourceName": "KazTAG",
       "group": "Central Asia",
-      "title": "(文A) Kurultai approved amendments to EAEU treaty",
+      "title": "Kurultai approved amendments to EAEU treaty",
       "summary": "The Kurultai ratified the protocol amending the Treaty on the Eurasian Economic Union, aimed at improving legal frameworks and eliminating regulatory gaps.",
       "publishedAt": "2026-10-29T04:09:00.000Z",
       "section": "Central Asia",
       "subsection": "Kazakhstan",
       "country": "",
-      "reviewed": true,
-      "originalHeadline": "Курултай одобрил поправки к договору ЕАЭС",
-      "translated": true
+      "reviewed": true
     },
     {
       "id": "https://kaztag.kz/en/news/nsc-detained-a-resident-of-pavlodar-region-suspected-of-separatism",
@@ -747,15 +739,13 @@
       "sourceId": "source-107",
       "sourceName": "Novinite",
       "group": "Miscl",
-      "title": "(文A) Bulgaria Failed to Prevent Starlink Arson Despite Advance Intelligence Warning",
+      "title": "Bulgaria Failed to Prevent Starlink Arson Despite Advance Intelligence Warning",
       "summary": "Two German citizens are charged with terrorism for setting fire to Starlink equipment in Bulgaria.",
       "publishedAt": "2026-10-29T15:00:00.000Z",
       "section": "Miscellaneous",
       "subsection": "WESTERN / CENTRAL EUROPE",
       "country": "Bulgaria",
-      "reviewed": true,
-      "originalHeadline": "България не успя да предотврати арсон с Starlink въпреки ранно предупреждение от разузнаването",
-      "translated": true
+      "reviewed": true
     },
     {
       "id": "https://www.novinite.com/articles/241350/PM+Radev+Says+Bulgaria+Was+Ready+to+Deploy+Jets+Against+the+Black+Sea+Drones",
@@ -1057,15 +1047,13 @@
       "sourceId": "source-114",
       "sourceName": "Local.se",
       "group": "Miscl",
-      "title": "(文A) Swedish parliamentary speaker to announce next steps in government deadlock",
+      "title": "Swedish parliamentary speaker to announce next steps in government deadlock",
       "summary": "Sweden's parliamentary speaker Andreas Norlén is holding a press conference to discuss government formation steps.",
       "publishedAt": "2026-10-29T13:08:16.000Z",
       "section": "Miscellaneous",
       "subsection": "WESTERN / CENTRAL EUROPE",
       "country": "Sweden",
-      "reviewed": true,
-      "originalHeadline": "Svenska talmannen ska tillkännage nästa steg i regeringsblocket",
-      "translated": true
+      "reviewed": true
     },
     {
       "id": "https://www.defensenews.com/global/europe/2026/10/29/switzerland-shortlists-samp-t-barak-mx-for-long-range-air-defense/",
@@ -1283,15 +1271,13 @@
       "sourceId": "source-76",
       "sourceName": "AKIpress",
       "group": "Central Asia",
-      "title": "(文A) Meeting of OTS Council of Foreign Ministers held in Ankara",
+      "title": "Meeting of OTS Council of Foreign Ministers held in Ankara",
       "summary": "The Council of Foreign Ministers of the Organization of Turkic States convened in Ankara to discuss draft documents for the upcoming summit.",
       "publishedAt": "2026-10-29T17:18:00.000Z",
       "section": "Miscellaneous",
       "subsection": "MIDDLE EAST / NORTH AFRICA",
       "country": "Türkiye",
-      "reviewed": true,
-      "originalHeadline": "Meeting of OTS Council of Foreign Ministers held in Ankara",
-      "translated": true
+      "reviewed": true
     },
     {
       "id": "https://turkishminute.com/2026/10/29/aliyev-to-skip-ankara-summit-despite-erdogans-invitation-amid-turkey-azerbaijan-tensions/",
@@ -1358,12 +1344,12 @@
       "title": "(文A) President Putin with his Egyptian counterpart al-Sisi at the Russia-Africa Summit in Moscow",
       "summary": "The 3rd Russia-Africa Summit in Moscow is taking place from October 28 to 29, alongside an Economic and Humanitarian Forum.",
       "publishedAt": "2026-10-29T13:17:00.000Z",
-      "translated": true,
-      "originalHeadline": "Il presidente Putin col suo omologo egiziano al-Sisi al Summit Russia-Africa di Mosca - Primopiano - Ansa.it",
       "section": "Miscellaneous",
       "subsection": "RUSSIA / EURASIA",
       "country": "Russia",
-      "reviewed": true
+      "reviewed": true,
+      "originalHeadline": "Il presidente Putin col suo omologo egiziano al-Sisi al Summit Russia-Africa di Mosca",
+      "translated": true
     },
     {
       "id": "https://sputnikglobe.com/20261029/kremlin-says-trilateral-talks-on-ukraine-to-resume-after-november-4-1124971137.html",
@@ -1399,15 +1385,13 @@
       "sourceId": "source-97",
       "sourceName": "TASS",
       "group": "Miscl",
-      "title": "(文A) Russia, NATO moving closer to direct military clash — envoy",
+      "title": "Russia, NATO moving closer to direct military clash — envoy",
       "summary": "Russian envoy Dmitry Polyansky stated that Russia and NATO are moving closer to a direct military clash.",
       "publishedAt": "2026-10-29T15:18:38.000Z",
       "section": "Miscellaneous",
       "subsection": "RUSSIA / EURASIA",
       "country": "Russia",
-      "reviewed": true,
-      "originalHeadline": "Россия и НАТО приближается к прямому военному столкновению — представитель",
-      "translated": true
+      "reviewed": true
     },
     {
       "id": "https://akipress.com/news:928155:Russian_air_defenses_target_over_600_drones_heading_toward_Moscow_as_industrial_sites_hit/",
@@ -1415,15 +1399,13 @@
       "sourceId": "source-76",
       "sourceName": "AKIpress",
       "group": "Central Asia",
-      "title": "(文A) Russian air defenses target over 600 drones heading toward Moscow as industrial sites hit",
+      "title": "Russian air defenses target over 600 drones heading toward Moscow as industrial sites hit",
       "summary": "Russian air defense systems neutralized over 600 drones directed toward the Moscow region overnight.",
       "publishedAt": "2026-10-29T14:30:00.000Z",
       "section": "Miscellaneous",
       "subsection": "RUSSIA / EURASIA",
       "country": "Russia",
-      "reviewed": true,
-      "originalHeadline": "Российские системы ПВО нейтрализовали более 600 дронов, направлявшихся в Москву, в то время как пострадали промышленные объекты",
-      "translated": true
+      "reviewed": true
     },
     {
       "id": "https://meduza.io/en/news/2026/10/29/estonia-plans-to-build-150-bunkers-on-border-with-russia",
@@ -1641,15 +1623,13 @@
       "sourceId": "source-8",
       "sourceName": "N1",
       "group": "South Eastern Europe",
-      "title": "(文A) OSCE highlights need for stronger institutional response to gender-based hate crime",
+      "title": "OSCE highlights need for stronger institutional response to gender-based hate crime",
       "summary": "The 2026 Annual Conference on Hate Crimes emphasized the need for improved legal definitions and institutional cooperation.",
       "publishedAt": "2026-10-29T13:40:00.000Z",
       "section": "Miscellaneous",
       "subsection": "INTERNATIONAL ORGANISATIONS",
       "country": "OSCE",
-      "reviewed": true,
-      "originalHeadline": "OSCE highlights need for stronger institutional response to gender-based hate crime",
-      "translated": true
+      "reviewed": true
     },
     {
       "id": "https://www.thelocal.se/20261029/eu-and-canada-to-bring-ties-to-highest-possible-level-at-summit",
@@ -1743,15 +1723,13 @@
       "sourceId": "source-143",
       "sourceName": "Tovima",
       "group": "Miscl",
-      "title": "(文A) Mitsotakis to Chair UN Security Council Meeting in New York",
+      "title": "Mitsotakis to Chair UN Security Council Meeting in New York",
       "summary": "Prime Minister Kyriakos Mitsotakis is traveling to New York to chair a high-level open debate of the UN Security Council on maritime security.",
       "publishedAt": "2026-10-29T05:30:10.000Z",
       "section": "Miscellaneous",
       "subsection": "INTERNATIONAL ORGANISATIONS",
       "country": "UN",
-      "reviewed": true,
-      "originalHeadline": "Μητσοτάκης: Τι θα συμβεί αν ο κόσμος δεν είναι αλληλέγγυος;",
-      "translated": true
+      "reviewed": true
     },
     {
       "id": "https://www.pbs.org/newshour/world/un-condemns-u-s-economic-embargo-of-cuba-though-more-nations-sit-out-amid-trump-push",
