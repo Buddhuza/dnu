@@ -1,0 +1,1070 @@
+{
+  "method": "Direct publisher RSS/Atom feeds; no Firecrawl or crawler service",
+  "startedAt": "2026-10-30T21:48:08.786Z",
+  "endedAt": "2026-10-31T21:48:08.786Z",
+  "audit": [
+    {
+      "source": "BIRN",
+      "sourceId": "source-2",
+      "feedUrl": "https://balkaninsight.com/feed/",
+      "status": "ok",
+      "listed": 90,
+      "newestItemAt": "2026-10-30T15:35:14.000Z",
+      "inWindow": 0,
+      "attempts": [],
+      "articles": []
+    },
+    {
+      "source": "Pravda.ua",
+      "sourceId": "source-36",
+      "feedUrl": "https://www.pravda.com.ua/eng/rss/",
+      "status": "ok",
+      "listed": 20,
+      "newestItemAt": "2026-10-31T19:00:00.000Z",
+      "inWindow": 20,
+      "attempts": [],
+      "articles": [
+        {
+          "title": "Court orders Russia to pay door factory US$3.6m for destroying business in Chernihiv Oblast",
+          "url": "https://www.pravda.com.ua/eng/news/2026/10/31/8060673/",
+          "publishedAt": "2026-10-31T19:00:00.000Z"
+        },
+        {
+          "title": "Rubio defends decision to invite Russia to G20 meetings",
+          "url": "https://www.pravda.com.ua/eng/news/2026/10/31/8060672/",
+          "publishedAt": "2026-10-31T18:48:00.000Z"
+        },
+        {
+          "title": "Ukrainian air defence has downed 122 out of 168 Russian attack drones during day, 30 still airborne",
+          "url": "https://www.pravda.com.ua/eng/news/2026/10/31/8060671/",
+          "publishedAt": "2026-10-31T18:40:00.000Z"
+        },
+        {
+          "title": "Debris from Russian drone falls at shopping centre in Kyiv, injuring child",
+          "url": "https://www.pravda.com.ua/eng/news/2026/10/31/8060664/",
+          "publishedAt": "2026-10-31T17:43:00.000Z"
+        },
+        {
+          "title": "Rubio says Zelenskyy may be invited to G20 summit",
+          "url": "https://www.pravda.com.ua/eng/news/2026/10/31/8060666/",
+          "publishedAt": "2026-10-31T17:34:00.000Z"
+        },
+        {
+          "title": "Türkiye's Erdoğan calls on Russia and Ukraine to act responsibly in Black Sea",
+          "url": "https://www.pravda.com.ua/eng/news/2026/10/31/8060665/",
+          "publishedAt": "2026-10-31T17:13:00.000Z"
+        },
+        {
+          "title": "Drone violates Moldovan airspace amid Russian attacks on Ukraine",
+          "url": "https://www.pravda.com.ua/eng/news/2026/10/31/8060663/",
+          "publishedAt": "2026-10-31T16:39:00.000Z"
+        },
+        {
+          "title": "Zelenskyy says Ukraine and Türkiye have agreed to work on Black Sea grain corridor",
+          "url": "https://www.pravda.com.ua/eng/news/2026/10/31/8060661/",
+          "publishedAt": "2026-10-31T16:21:00.000Z"
+        },
+        {
+          "title": "Zelenskyy and Erdoğan discuss involving Türkiye in negotiations to end war",
+          "url": "https://www.pravda.com.ua/eng/news/2026/10/31/8060659/",
+          "publishedAt": "2026-10-31T16:11:00.000Z"
+        },
+        {
+          "title": "Three injured in Russian attack on Ukrainian coal facilities",
+          "url": "https://www.pravda.com.ua/eng/news/2026/10/31/8060658/",
+          "publishedAt": "2026-10-31T16:00:00.000Z"
+        },
+        {
+          "title": "Finnish president says he conveyed two messages from Zelenskyy to Putin",
+          "url": "https://www.pravda.com.ua/eng/news/2026/10/31/8060656/",
+          "publishedAt": "2026-10-31T15:53:00.000Z"
+        },
+        {
+          "title": "Eight injured, including three children, in Russian strike on Pavlohrad",
+          "url": "https://www.pravda.com.ua/eng/news/2026/10/31/8060655/",
+          "publishedAt": "2026-10-31T15:37:00.000Z"
+        },
+        {
+          "title": "Finnish president says Putin gave no history lectures during phone call",
+          "url": "https://www.pravda.com.ua/eng/news/2026/10/31/8060654/",
+          "publishedAt": "2026-10-31T15:22:00.000Z"
+        },
+        {
+          "title": "Turkish president receives Zelenskyy in Istanbul",
+          "url": "https://www.pravda.com.ua/eng/news/2026/10/31/8060651/",
+          "publishedAt": "2026-10-31T15:07:00.000Z"
+        },
+        {
+          "title": "US Embassy warns of threat of mass casualty event in Moscow",
+          "url": "https://www.pravda.com.ua/eng/news/2026/10/31/8060650/",
+          "publishedAt": "2026-10-31T14:55:00.000Z"
+        },
+        {
+          "title": "Ukraine's human rights chief provides details about people evacuated from Oleshky: oldest is 94 – photos",
+          "url": "https://www.pravda.com.ua/eng/news/2026/10/31/8060646/",
+          "publishedAt": "2026-10-31T14:13:00.000Z"
+        },
+        {
+          "title": "UK tells Putin via his foreign minister that he will not win war",
+          "url": "https://www.pravda.com.ua/eng/news/2026/10/31/8060644/",
+          "publishedAt": "2026-10-31T13:57:00.000Z"
+        },
+        {
+          "title": "Russia's Lavrov showed no willingness to make peace at G20 meeting, EU's chief diplomat says",
+          "url": "https://www.pravda.com.ua/eng/news/2026/10/31/8060639/",
+          "publishedAt": "2026-10-31T13:39:00.000Z"
+        },
+        {
+          "title": "Ukrainian soldiers use drone-mounted net launcher to trap Russian soldier – video",
+          "url": "https://www.pravda.com.ua/eng/news/2026/10/31/8060635/",
+          "publishedAt": "2026-10-31T13:22:00.000Z"
+        },
+        {
+          "title": "Ceasefire in Kherson Oblast: Russia attempting to discredit Ukrainian defence forces",
+          "url": "https://www.pravda.com.ua/eng/news/2026/10/31/8060634/",
+          "publishedAt": "2026-10-31T13:11:00.000Z"
+        }
+      ]
+    },
+    {
+      "source": "Civil.ge",
+      "sourceId": "source-61",
+      "feedUrl": "https://civil.ge/feed/",
+      "status": "ok",
+      "listed": 10,
+      "newestItemAt": "2026-10-31T19:32:24.000Z",
+      "inWindow": 2,
+      "attempts": [],
+      "articles": [
+        {
+          "title": "Dispatch – October 30: Rehabilitation",
+          "url": "https://civil.ge/archives/755958",
+          "publishedAt": "2026-10-31T19:32:24.000Z"
+        },
+        {
+          "title": "Sokhumi, Tskhinvali, Moscow Digest – October 24-29, 2026",
+          "url": "https://civil.ge/archives/756143",
+          "publishedAt": "2026-10-31T10:27:24.000Z"
+        }
+      ]
+    },
+    {
+      "source": "OC Media",
+      "sourceId": "source-65",
+      "feedUrl": "https://oc-media.org/feed/",
+      "status": "ok",
+      "listed": 16,
+      "newestItemAt": "2026-10-30T15:27:33.000Z",
+      "inWindow": 0,
+      "attempts": [],
+      "articles": []
+    },
+    {
+      "source": "RFE/RL",
+      "sourceId": "source-79",
+      "feedUrl": "https://www.rferl.org/rss/",
+      "status": "ok",
+      "listed": 20,
+      "newestItemAt": "2026-10-31T15:11:50.000Z",
+      "inWindow": 4,
+      "attempts": [
+        {
+          "url": "https://www.rferl.org/api/zy-pqye",
+          "error": "Feed did not return RSS or Atom XML"
+        }
+      ],
+      "articles": [
+        {
+          "title": "Tears Of Joy As Ukrainians Evacuated From Russian-Occupied Oleshky Reunite With Family",
+          "url": "https://www.rferl.org/a/tears-of-joy-as-ukrainians-evacuated-from-russian-occupied-oleshky-reunite-with-family/33888013.html",
+          "publishedAt": "2026-10-31T15:11:50.000Z"
+        },
+        {
+          "title": "Food Lines, War Dead: The Way They Live Now In A Frigid Siberian Town",
+          "url": "https://www.rferl.org/a/russia-food-shortages-war-remote-siberia/33887359.html",
+          "publishedAt": "2026-10-31T12:45:45.000Z"
+        },
+        {
+          "title": "Evacuation From Russian-Occupied Oleshky Completed, Kyiv And Moscow Say",
+          "url": "https://www.rferl.org/a/zelenskyy-warns-of-long-delay-as-us-approves-patriot-interceptors-sale/33887884.html",
+          "publishedAt": "2026-10-31T08:18:32.000Z"
+        },
+        {
+          "title": "Trump Says Vance Sent Letter To Iran To 'Help' With Medicine",
+          "url": "https://www.rferl.org/a/iran-live-blog-trump-middle-east/33803414.html",
+          "publishedAt": "2026-10-31T05:20:56.000Z"
+        }
+      ]
+    },
+    {
+      "source": "DW",
+      "sourceId": "source-80",
+      "feedUrl": "https://rss.dw.com/rdf/rss-en-all",
+      "status": "ok",
+      "listed": 126,
+      "newestItemAt": "2026-10-31T19:49:00.000Z",
+      "inWindow": 11,
+      "attempts": [],
+      "articles": [
+        {
+          "title": "Serbia after Vucic: The winners are losing patience",
+          "url": "https://www.dw.com/en/serbia-after-vucic-the-winners-are-losing-patience/a-79817586?maca=en-rss-en-all-1573-rdf",
+          "publishedAt": "2026-10-31T19:49:00.000Z"
+        },
+        {
+          "title": "More than 290 arrested in France as some weekend protests turn violent",
+          "url": "https://www.dw.com/en/more-than-290-arrested-in-france-as-some-weekend-protests-turn-violent/a-79818138?maca=en-rss-en-all-1573-rdf",
+          "publishedAt": "2026-10-31T18:49:00.000Z"
+        },
+        {
+          "title": "Gen Z protests sweep cities across Germany",
+          "url": "https://www.dw.com/en/gen-z-protests-sweep-cities-across-germany/live-79814694?maca=en-rss-en-all-1573-rdf",
+          "publishedAt": "2026-10-31T16:00:00.000Z"
+        },
+        {
+          "title": "Ukraine news: Evacuees from Russian-occupied Oleshky reach Kyiv-controlled territory",
+          "url": "https://www.dw.com/en/ukraine-news-evacuees-from-russian-occupied-oleshky-reach-kyiv-controlled-territory/live-79815409?maca=en-rss-en-all-1573-rdf",
+          "publishedAt": "2026-10-31T15:47:00.000Z"
+        },
+        {
+          "title": "Germany news: Merkel calls for first female president",
+          "url": "https://www.dw.com/en/germany-news-merkel-calls-for-first-female-president/live-79814961?maca=en-rss-en-all-1573-rdf",
+          "publishedAt": "2026-10-31T11:18:00.000Z"
+        },
+        {
+          "title": "Bollywood and the underworld — together in the spotlight?",
+          "url": "https://www.dw.com/en/bollywood-and-the-underworld-together-in-the-spotlight/a-79806129?maca=en-rss-en-all-1573-rdf",
+          "publishedAt": "2026-10-31T07:26:00.000Z"
+        },
+        {
+          "title": "Embarrassing name? How we live with names we don't like",
+          "url": "https://www.dw.com/en/embarrassing-name-how-we-live-with-names-we-don-t-like/a-79724068?maca=en-rss-en-all-1573-rdf",
+          "publishedAt": "2026-10-31T05:27:00.000Z"
+        },
+        {
+          "title": "India news: Amit Shah challenges Rahul Gandhi to debate vote theft in parliament",
+          "url": "https://www.dw.com/en/india-news-amit-shah-challenges-rahul-gandhi-to-debate-vote-theft-in-parliament/live-79814329?maca=en-rss-en-all-1573-rdf",
+          "publishedAt": "2026-10-31T05:06:00.000Z"
+        },
+        {
+          "title": "UN peacekeeping mission in Western Sahara to expire amid US, Russia vetoes",
+          "url": "https://www.dw.com/en/un-peacekeeping-mission-in-western-sahara-to-expire-amid-us-russia-vetoes/a-79814338?maca=en-rss-en-all-1573-rdf",
+          "publishedAt": "2026-10-31T04:24:00.000Z"
+        },
+        {
+          "title": "European diplomats shun Russia at G20 gathering in the US",
+          "url": "https://www.dw.com/en/european-diplomats-shun-russia-at-g20-gathering-in-the-us/a-79813925?maca=en-rss-en-all-1573-rdf",
+          "publishedAt": "2026-10-31T01:56:00.000Z"
+        },
+        {
+          "title": "Poland: Protesters, police clash amid top court standoff",
+          "url": "https://www.dw.com/en/poland-protesters-police-clash-amid-top-court-standoff/a-79813882?maca=en-rss-en-all-1573-rdf",
+          "publishedAt": "2026-10-30T23:22:00.000Z"
+        }
+      ]
+    },
+    {
+      "source": "Politico.eu",
+      "sourceId": "source-81",
+      "feedUrl": "https://www.politico.eu/feed/",
+      "status": "ok",
+      "listed": 10,
+      "newestItemAt": "2026-10-31T17:33:31.000Z",
+      "inWindow": 9,
+      "attempts": [],
+      "articles": [
+        {
+          "title": "Hundreds of thousands of protesters march across France for third week in a row",
+          "url": "https://www.politico.eu/article/france-youth-protests-cost-of-living-spread-europe/?utm_source=RSS_Feed&utm_medium=RSS&utm_campaign=RSS_Syndication",
+          "publishedAt": "2026-10-31T17:33:31.000Z"
+        },
+        {
+          "title": "Putin’s potential G20 comeback risks normalizing Russian war crimes, says Kallas",
+          "url": "https://www.politico.eu/article/kaja-kallas-vladimir-putin-g20-return-risks-normalizing-russian-war-crimes/?utm_source=RSS_Feed&utm_medium=RSS&utm_campaign=RSS_Syndication",
+          "publishedAt": "2026-10-31T16:41:12.000Z"
+        },
+        {
+          "title": "Merz ‘surprised’ by Asian pushback to ‘Made in Europe’ plan for car industry",
+          "url": "https://www.politico.eu/article/friedrich-merz-surprised-by-asian-pushback-over-made-in-europe-car-industry/?utm_source=RSS_Feed&utm_medium=RSS&utm_campaign=RSS_Syndication",
+          "publishedAt": "2026-10-31T14:19:53.000Z"
+        },
+        {
+          "title": "Burnham ‘open’ to formal apology for Britain’s slave trade",
+          "url": "https://www.politico.eu/article/andy-burnham-open-to-formal-apology-for-britain-slave-trade/?utm_source=RSS_Feed&utm_medium=RSS&utm_campaign=RSS_Syndication",
+          "publishedAt": "2026-10-31T12:55:45.000Z"
+        },
+        {
+          "title": "Zelenskyy urges US to speed up Patriot deliveries",
+          "url": "https://www.politico.eu/article/volodymyr-zelenskyy-urges-us-speed-up-patriot-deliveries/?utm_source=RSS_Feed&utm_medium=RSS&utm_campaign=RSS_Syndication",
+          "publishedAt": "2026-10-31T10:41:36.000Z"
+        },
+        {
+          "title": "Polish president Nawrocki pushes his way into top court amid rule-of-law tussle",
+          "url": "https://www.politico.eu/article/poland-president-karol-nawrocki-rule-of-law-crisis/?utm_source=RSS_Feed&utm_medium=RSS&utm_campaign=RSS_Syndication",
+          "publishedAt": "2026-10-31T10:03:04.000Z"
+        },
+        {
+          "title": "Funding deadlock derails global effort to save nature",
+          "url": "https://www.politico.eu/article/funding-deadlock-derails-global-effort-to-save-nature/?utm_source=RSS_Feed&utm_medium=RSS&utm_campaign=RSS_Syndication",
+          "publishedAt": "2026-10-31T07:35:24.000Z"
+        },
+        {
+          "title": "Eralps Tag der Entscheidung und die Suche nach dem Staatsoberhaupt mit Rasmus Buchsteiner",
+          "url": "https://www.politico.eu/podcast/berlin-playbook-podcast/eralps-tag-der-entscheidung-und-die-suche-nach-dem-staatsoberhaupt-mit-rasmus-buchsteiner/?utm_source=RSS_Feed&utm_medium=RSS&utm_campaign=RSS_Syndication",
+          "publishedAt": "2026-10-31T05:00:00.000Z"
+        },
+        {
+          "title": "Special episode: An exclusive interview with Canadian PM Mark Carney",
+          "url": "https://www.politico.eu/podcast/brussels-playbook-podcast/special-episode-an-exclusive-interview-with-canadian-pm-mark-carney/?utm_source=RSS_Feed&utm_medium=RSS&utm_campaign=RSS_Syndication",
+          "publishedAt": "2026-10-31T04:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "source": "Euronews",
+      "sourceId": "source-82",
+      "feedUrl": "https://www.euronews.com/rss?level=theme&name=news",
+      "status": "failed",
+      "attempts": [
+        {
+          "url": "https://www.euronews.com/rss?level=theme&name=news",
+          "error": "fetch failed"
+        }
+      ],
+      "listed": 0,
+      "inWindow": 0,
+      "articles": []
+    },
+    {
+      "source": "BBC",
+      "sourceId": "source-83",
+      "feedUrl": "https://feeds.bbci.co.uk/news/world/rss.xml",
+      "status": "ok",
+      "listed": 28,
+      "newestItemAt": "2026-10-31T21:29:01.000Z",
+      "inWindow": 21,
+      "attempts": [],
+      "articles": [
+        {
+          "title": "'We came back from hell', say Ukrainians after years in Russia-occupied front-line city",
+          "url": "https://www.bbc.co.uk/news/articles/cqglw3k7djp1o?at_medium=RSS&at_campaign=rss",
+          "publishedAt": "2026-10-31T19:22:26.000Z"
+        },
+        {
+          "title": "Ukrainian evacuees reunite with family after years trapped in Russia-occupied city",
+          "url": "https://www.bbc.co.uk/news/articles/cqx2818elrnzo?at_medium=RSS&at_campaign=rss",
+          "publishedAt": "2026-10-31T17:53:35.000Z"
+        },
+        {
+          "title": "Thousands demonstrate in Paris as protests spread across Europe",
+          "url": "https://www.bbc.co.uk/news/videos/ck0j0y87j303o?at_medium=RSS&at_campaign=rss",
+          "publishedAt": "2026-10-31T21:29:01.000Z"
+        },
+        {
+          "title": "Crypto firm Binance covers 90% of losses after $6.3bn hack",
+          "url": "https://www.bbc.co.uk/news/articles/ckpdg3ql4169o?at_medium=RSS&at_campaign=rss",
+          "publishedAt": "2026-10-31T16:32:08.000Z"
+        },
+        {
+          "title": "More than 5,000 die from Ebola in DR Congo's deadliest outbreak",
+          "url": "https://www.bbc.co.uk/news/articles/cj5ynryyep2yo?at_medium=RSS&at_campaign=rss",
+          "publishedAt": "2026-10-31T15:16:20.000Z"
+        },
+        {
+          "title": "Ethiopian PM puts ministers through military training",
+          "url": "https://www.bbc.co.uk/news/articles/cmwyv2y7g9l8o?at_medium=RSS&at_campaign=rss",
+          "publishedAt": "2026-10-31T14:28:15.000Z"
+        },
+        {
+          "title": "Spain train disaster clouds Sánchez chances of re-election",
+          "url": "https://www.bbc.co.uk/news/articles/cmeweppr990qo?at_medium=RSS&at_campaign=rss",
+          "publishedAt": "2026-10-31T05:44:21.000Z"
+        },
+        {
+          "title": "Global nature talks reach deal but money remains an issue",
+          "url": "https://www.bbc.co.uk/news/articles/cw1l32qyj8pqo?at_medium=RSS&at_campaign=rss",
+          "publishedAt": "2026-10-31T01:27:05.000Z"
+        },
+        {
+          "title": "Police deployed during stand-off over control of top Poland court",
+          "url": "https://www.bbc.co.uk/news/articles/crz9824d5e88o?at_medium=RSS&at_campaign=rss",
+          "publishedAt": "2026-10-31T01:11:43.000Z"
+        },
+        {
+          "title": "G20 'family photo' cancelled after protests over presence of Russian minister",
+          "url": "https://www.bbc.co.uk/news/articles/cmd6dp2y576do?at_medium=RSS&at_campaign=rss",
+          "publishedAt": "2026-10-30T22:11:52.000Z"
+        },
+        {
+          "title": "The fight to save Canadian town threatened by Trump's tariffs",
+          "url": "https://www.bbc.co.uk/news/articles/cmly016ep243o?at_medium=RSS&at_campaign=rss",
+          "publishedAt": "2026-10-31T02:39:25.000Z"
+        },
+        {
+          "title": "Emotional reunions with loved ones for Oleshky evacuees",
+          "url": "https://www.bbc.co.uk/news/videos/cmy83w0jwznpo?at_medium=RSS&at_campaign=rss",
+          "publishedAt": "2026-10-31T16:55:47.000Z"
+        },
+        {
+          "title": "Watch: Blood donors get a Halloween fright in Thailand",
+          "url": "https://www.bbc.co.uk/news/videos/cmze42el49d9o?at_medium=RSS&at_campaign=rss",
+          "publishedAt": "2026-10-31T12:50:45.000Z"
+        },
+        {
+          "title": "CCTV and zip ties: How US mail-in votes are secured and counted",
+          "url": "https://www.bbc.co.uk/news/videos/cw4g1vlj4v2jo?at_medium=RSS&at_campaign=rss",
+          "publishedAt": "2026-10-31T09:16:14.000Z"
+        },
+        {
+          "title": "How has the ceasefire in Russian-occupied Oleshky been unfolding?",
+          "url": "https://www.bbc.co.uk/news/videos/cmp3gp2vg078o?at_medium=RSS&at_campaign=rss",
+          "publishedAt": "2026-10-30T23:19:17.000Z"
+        },
+        {
+          "title": "Why North Korea's 'elite' hackers are the prime suspect in major Binance hack",
+          "url": "https://www.bbc.co.uk/news/articles/ck9dz3v7z7v3o?at_medium=RSS&at_campaign=rss",
+          "publishedAt": "2026-10-31T02:12:19.000Z"
+        },
+        {
+          "title": "He questioned Thailand's monarchy dressed as Harry Potter. Now he's in jail for 34 years",
+          "url": "https://www.bbc.co.uk/news/articles/cmjwepvd0qq9o?at_medium=RSS&at_campaign=rss",
+          "publishedAt": "2026-10-30T23:26:16.000Z"
+        },
+        {
+          "title": "Responsible or panicked? Meet the people around the world already preparing for crisis",
+          "url": "https://www.bbc.co.uk/news/articles/ckreypn92w49o?at_medium=RSS&at_campaign=rss",
+          "publishedAt": "2026-10-31T01:32:33.000Z"
+        },
+        {
+          "title": "The Indian chef who brought curry to America - then vanished",
+          "url": "https://www.bbc.co.uk/news/articles/crm941n0413o?at_medium=RSS&at_campaign=rss",
+          "publishedAt": "2026-10-31T02:02:16.000Z"
+        },
+        {
+          "title": "'The necktie is dead': How US midterm candidates are dressing for votes",
+          "url": "https://www.bbc.co.uk/news/articles/ckq6nz4286r4o?at_medium=RSS&at_campaign=rss",
+          "publishedAt": "2026-10-31T00:16:03.000Z"
+        },
+        {
+          "title": "Suited and booted: How Joseph Kabila went from president to rebel leader",
+          "url": "https://www.bbc.co.uk/news/articles/cr3wv311dwnlo?at_medium=RSS&at_campaign=rss",
+          "publishedAt": "2026-10-31T04:32:07.000Z"
+        }
+      ]
+    },
+    {
+      "source": "Radio Prague",
+      "sourceId": "source-89",
+      "feedUrl": "https://english.radio.cz/rss.xml",
+      "status": "ok",
+      "listed": 10,
+      "newestItemAt": "2024-05-23T09:55:45.000Z",
+      "inWindow": 0,
+      "attempts": [
+        {
+          "url": "https://english.radio.cz/rss",
+          "error": "Feed returned HTTP 404"
+        }
+      ],
+      "articles": []
+    },
+    {
+      "source": "CNN",
+      "sourceId": "source-101",
+      "feedUrl": "http://rss.cnn.com/rss/edition_world.rss",
+      "status": "ok",
+      "listed": 23,
+      "newestItemAt": "2023-09-18T02:57:08.000Z",
+      "inWindow": 0,
+      "attempts": [
+        {
+          "url": "https://rss.cnn.com/rss/edition_world.rss",
+          "error": "fetch failed"
+        },
+        {
+          "url": "https://feeds.cnn.com/rss/edition_world.rss",
+          "error": "Feed returned HTTP 404"
+        }
+      ],
+      "articles": []
+    },
+    {
+      "source": "Guardian",
+      "sourceId": "source-106",
+      "feedUrl": "https://www.theguardian.com/world/rss",
+      "status": "ok",
+      "listed": 45,
+      "newestItemAt": "2026-10-31T20:21:08.000Z",
+      "inWindow": 20,
+      "attempts": [],
+      "articles": [
+        {
+          "title": "Disquiet grows in Albanese’s back yard as Grayndler artists unite against ‘insane’ AI proposal",
+          "url": "https://www.theguardian.com/australia-news/2026/nov/01/artists-against-ai-proposal-anthony-albanese-grayndler-sydney-inner-west",
+          "publishedAt": "2026-10-31T19:00:52.000Z"
+        },
+        {
+          "title": "Storm warnings for Melbourne, Canberra, Sydney and Brisbane as cold front ‘packs a punch’",
+          "url": "https://www.theguardian.com/australia-news/2026/oct/31/weather-bom-storm-warnings-melbourne-canberra-sydney-brisbane",
+          "publishedAt": "2026-10-31T06:05:20.000Z"
+        },
+        {
+          "title": "Albanese looks for reset on world stage as ‘spot fires burn’ domestically and likely interest rate hike looms",
+          "url": "https://www.theguardian.com/australia-news/2026/oct/31/albanese-reset-world-stage-economic-spot-fires-rba-interest-rate-decision",
+          "publishedAt": "2026-10-31T02:24:10.000Z"
+        },
+        {
+          "title": "US cancels G20 ‘family photo’ after Australia, UK and others refuse to appear with Russia",
+          "url": "https://www.theguardian.com/world/2026/oct/31/us-cancels-g20-family-photo-after-australia-uk-and-others-refuse-to-appear-with-russia",
+          "publishedAt": "2026-10-31T00:29:28.000Z"
+        },
+        {
+          "title": "A top-secret spy mission, a decades-old scandal – and the Austin Powers-esque saga to lift the lid",
+          "url": "https://www.theguardian.com/australia-news/2026/oct/31/timor-leste-australia-bugging-rex-patrick-ntwnfb",
+          "publishedAt": "2026-10-31T00:04:51.000Z"
+        },
+        {
+          "title": "Oleshky evacuees reunite with families after truce allows crossing back into Ukraine",
+          "url": "https://www.theguardian.com/world/2026/oct/31/oleshky-evacuees-reunite-with-families-after-truce-allows-crossing-into-ukraine",
+          "publishedAt": "2026-10-31T19:17:22.000Z"
+        },
+        {
+          "title": "Protests under way in Germany and France as minister warns against use of Halloween masks – as it happened",
+          "url": "https://www.theguardian.com/world/live/2026/oct/31/france-germany-protests-paris-europe-latest-news-updates",
+          "publishedAt": "2026-10-31T18:31:38.000Z"
+        },
+        {
+          "title": "Police clash with masked rioters after largely peaceful protests across France",
+          "url": "https://www.theguardian.com/world/2026/oct/31/police-clash-rioters-after-largely-peaceful-protests-across-france",
+          "publishedAt": "2026-10-31T18:23:56.000Z"
+        },
+        {
+          "title": "Starmer says UK must get closer to Europe as US relationship changes",
+          "url": "https://www.theguardian.com/politics/2026/oct/31/keir-starmer-uk-europe-us-relationship-trump",
+          "publishedAt": "2026-10-31T13:32:25.000Z"
+        },
+        {
+          "title": "Cost of living protests  to spread to Germany and reignite in France on Halloween",
+          "url": "https://www.theguardian.com/world/2026/oct/30/cost-of-living-protests-to-spread-to-germany-and-reignite-in-france-on-halloween",
+          "publishedAt": "2026-10-31T09:13:22.000Z"
+        },
+        {
+          "title": "Man in Belfast charged with possessing explosives and firearms",
+          "url": "https://www.theguardian.com/uk-news/2026/oct/31/man-belfast-charged-possessing-explosives-firearms",
+          "publishedAt": "2026-10-31T20:21:08.000Z"
+        },
+        {
+          "title": "Almost 140 arrested at protest against Palestine Action ban outside US embassy in London",
+          "url": "https://www.theguardian.com/uk-news/2026/oct/31/protest-against-palestine-action-ban-outside-us-embassy-in-london",
+          "publishedAt": "2026-10-31T18:28:30.000Z"
+        },
+        {
+          "title": "UK charity shop profits plummet amid shift in secondhand clothes market",
+          "url": "https://www.theguardian.com/society/2026/oct/31/profits-uk-charity-shops-oxfam-shift-secondhand-clothes-market",
+          "publishedAt": "2026-10-31T15:10:52.000Z"
+        },
+        {
+          "title": "A world-first focus on long-term outcomes could transform UK government – or create new spending fights",
+          "url": "https://www.theguardian.com/politics/2026/oct/31/spending-plan-long-term-focus-uk-government",
+          "publishedAt": "2026-10-31T15:00:46.000Z"
+        },
+        {
+          "title": "UK police should not have let US force take over airbase trial, MoD documents show",
+          "url": "https://www.theguardian.com/uk-news/2026/oct/31/uk-police-should-not-have-let-us-force-take-over-airbase-trial-mod-documents-show",
+          "publishedAt": "2026-10-31T13:30:43.000Z"
+        },
+        {
+          "title": "Virginia and DC sue to stop Trump’s arch as government looks to start construction",
+          "url": "https://www.theguardian.com/us-news/2026/oct/31/trump-arch-lawsuits-dc-virginia",
+          "publishedAt": "2026-10-31T17:57:45.000Z"
+        },
+        {
+          "title": "More than 50m Americans cast ballots in early voting with three days to go before midterms",
+          "url": "https://www.theguardian.com/us-news/2026/oct/31/early-voting-midterms",
+          "publishedAt": "2026-10-31T16:13:17.000Z"
+        },
+        {
+          "title": "Ads accusing Republican candidates of protecting Epstein fill airwaves in final midterm push",
+          "url": "https://www.theguardian.com/us-news/2026/oct/31/political-ads-midterms-epstein-republican-candidate",
+          "publishedAt": "2026-10-31T15:00:45.000Z"
+        },
+        {
+          "title": "Maurene Comey ruling offers hope of check on Trump’s assault on rule of law",
+          "url": "https://www.theguardian.com/us-news/2026/oct/31/maurene-comey-firing-ruling-legal-implications",
+          "publishedAt": "2026-10-31T15:00:45.000Z"
+        },
+        {
+          "title": "Trump beware: US voters are concerned about government corruption",
+          "url": "https://www.theguardian.com/us-news/2026/oct/31/trump-government-corruption-midterms-voters",
+          "publishedAt": "2026-10-31T10:00:41.000Z"
+        }
+      ]
+    },
+    {
+      "source": "Moscow Times",
+      "sourceId": "source-115",
+      "feedUrl": "https://www.themoscowtimes.com/rss/news",
+      "status": "ok",
+      "listed": 50,
+      "newestItemAt": "2026-10-31T17:25:00.000Z",
+      "inWindow": 3,
+      "attempts": [],
+      "articles": [
+        {
+          "title": "U.S. Embassy Warns of Potential 'Mass Casualty Event' in Moscow",
+          "url": "https://www.themoscowtimes.com/2026/10/31/us-embassy-warns-of-potential-mass-casualty-event-in-moscow-2-a94144",
+          "publishedAt": "2026-10-31T17:25:00.000Z"
+        },
+        {
+          "title": "Oleshky Evacuees Arrive in Ukraine",
+          "url": "https://www.themoscowtimes.com/2026/10/31/oleshky-evacuees-arrive-in-belarus-before-heading-to-ukraine-a94142",
+          "publishedAt": "2026-10-31T13:05:00.000Z"
+        },
+        {
+          "title": "Japan Demands Release of Detained Journalist at G20 Meeting",
+          "url": "https://www.themoscowtimes.com/2026/10/31/japan-demands-release-of-detained-journalist-at-g20-meeting-a94140",
+          "publishedAt": "2026-10-31T09:19:00.000Z"
+        }
+      ]
+    },
+    {
+      "source": "Al Jazeera",
+      "sourceId": "source-122",
+      "feedUrl": "https://www.aljazeera.com/xml/rss/all.xml",
+      "status": "ok",
+      "listed": 25,
+      "newestItemAt": "2026-10-31T21:12:46.000Z",
+      "inWindow": 25,
+      "attempts": [],
+      "articles": [
+        {
+          "title": "Fiery confrontations between protestors and police in Albania",
+          "url": "https://www.aljazeera.com/video/newsfeed/2026/10/31/fiery-confrontations-between-protestors-and-police-in-albania?traffic_source=rss",
+          "publishedAt": "2026-10-31T21:12:46.000Z"
+        },
+        {
+          "title": "Health authorities probe two suspected Ebola cases in northeast Nigeria",
+          "url": "https://www.aljazeera.com/news/2026/10/31/health-authorities-probe-two-suspected-ebola-cases-in-northeast-nigeria?traffic_source=rss",
+          "publishedAt": "2026-10-31T21:01:19.000Z"
+        },
+        {
+          "title": "District of Columbia and Virginia sue to block Trump’s triumphal arch plans",
+          "url": "https://www.aljazeera.com/news/2026/10/31/district-of-columbia-and-virginia-sue-to-block-trumps-triumphal-arch-plans?traffic_source=rss",
+          "publishedAt": "2026-10-31T20:30:35.000Z"
+        },
+        {
+          "title": "Israel’s allegations of Qatari election interference rejected",
+          "url": "https://www.aljazeera.com/video/newsfeed/2026/10/31/israels-allegations-of-qatari-election-interference-rejected?traffic_source=rss",
+          "publishedAt": "2026-10-31T20:24:58.000Z"
+        },
+        {
+          "title": "What is ranked-choice voting and how does it work in US elections?",
+          "url": "https://www.aljazeera.com/news/2026/10/31/what-is-ranked-choice-voting-and-how-does-it-work-in-us-elections?traffic_source=rss",
+          "publishedAt": "2026-10-31T20:11:37.000Z"
+        },
+        {
+          "title": "Turkiye’s Erdogan urges Russia and Ukraine to stop Black Sea attacks",
+          "url": "https://www.aljazeera.com/news/2026/10/31/turkiyes-erdogan-urges-russia-and-ukraine-to-stop-black-sea-attacks?traffic_source=rss",
+          "publishedAt": "2026-10-31T20:09:18.000Z"
+        },
+        {
+          "title": "How vulnerable are cryptocurrency platforms?",
+          "url": "https://www.aljazeera.com/video/inside-story/2026/10/31/how-vulnerable-are-cryptocurrency-platforms?traffic_source=rss",
+          "publishedAt": "2026-10-31T19:19:29.000Z"
+        },
+        {
+          "title": "Palestinians ‘Stealing their own olives’",
+          "url": "https://www.aljazeera.com/video/newsfeed/2026/10/31/palestinians-stealing-their-own?traffic_source=rss",
+          "publishedAt": "2026-10-31T19:18:32.000Z"
+        },
+        {
+          "title": "Who is Arafat Minhas, Pakistan cricket’s rising star all-rounder?",
+          "url": "https://www.aljazeera.com/sports/2026/10/31/who-is-arafat-minhas-pakistan-crickets-rising-star-all-rounder?traffic_source=rss",
+          "publishedAt": "2026-10-31T18:50:25.000Z"
+        },
+        {
+          "title": "London police arrest 139 as hundreds protest Palestine Action ban",
+          "url": "https://www.aljazeera.com/news/2026/10/31/london-police-arrest-48-as-hundreds-protest-palestine-action-ban?traffic_source=rss",
+          "publishedAt": "2026-10-31T18:48:29.000Z"
+        },
+        {
+          "title": "Evacuees of Russian-occupied Oleshky reunited with families",
+          "url": "https://www.aljazeera.com/video/newsfeed/2026/10/31/aje-onl-nf_evacuees-from-oleshky-reunite-w-families-in-ukraine-311026?traffic_source=rss",
+          "publishedAt": "2026-10-31T18:32:20.000Z"
+        },
+        {
+          "title": "Tension and clashes as hundreds of thousands protest again in France",
+          "url": "https://www.aljazeera.com/news/2026/10/31/tension-and-clashes-as-hundreds-of-thousands-protest-again-in-france?traffic_source=rss",
+          "publishedAt": "2026-10-31T18:28:14.000Z"
+        },
+        {
+          "title": "Coventry win leaves Man United on brink of Premier League relegation zone",
+          "url": "https://www.aljazeera.com/sports/2026/10/31/coventry-beat-sunderland-man-united-on-verge-of-premier-league-drop-zone?traffic_source=rss",
+          "publishedAt": "2026-10-31T17:51:15.000Z"
+        },
+        {
+          "title": "At least four Palestinians killed in Gaza as Israeli attacks continue",
+          "url": "https://www.aljazeera.com/news/2026/10/31/at-least-four-palestinians-killed-in-gaza-as-israeli-attacks-continue?traffic_source=rss",
+          "publishedAt": "2026-10-31T17:49:23.000Z"
+        },
+        {
+          "title": "Michigan Muslims helped elect Trump. Now their faith is under fire",
+          "url": "https://www.aljazeera.com/video/newsfeed/2026/10/31/michigan-muslims-helped-elect-trump-now-their-faith-is-under-fire?traffic_source=rss",
+          "publishedAt": "2026-10-31T17:38:18.000Z"
+        },
+        {
+          "title": "Brighton shock Man City, closing gap on Premier League leader to two points",
+          "url": "https://www.aljazeera.com/sports/2026/10/31/brighton-shock-man-city-closing-gap-on-premier-league-leader-to-two-points?traffic_source=rss",
+          "publishedAt": "2026-10-31T17:32:42.000Z"
+        },
+        {
+          "title": "Jerusalem Daily: Who will form Israel’s next government?",
+          "url": "https://www.aljazeera.com/video/newsfeed/2026/10/31/jerusalem-daily-who-will-form-israels-next-government?traffic_source=rss",
+          "publishedAt": "2026-10-31T17:29:00.000Z"
+        },
+        {
+          "title": "Pakistan beat Sri Lanka as Zaman’s century turns thrilling tri-series final",
+          "url": "https://www.aljazeera.com/sports/2026/10/31/pakistan-beat-sri-lanka-as-zaman-century-turns-thrilling-tri-series-final?traffic_source=rss",
+          "publishedAt": "2026-10-31T17:21:05.000Z"
+        },
+        {
+          "title": "A cure for Trump? Why Democratic doctors are running in the 2026 midterms",
+          "url": "https://www.aljazeera.com/news/longform/2026/10/31/a-cure-for-trump-why-democratic-doctors-are-running-in-the-2026-midterms?traffic_source=rss",
+          "publishedAt": "2026-10-31T17:19:44.000Z"
+        },
+        {
+          "title": "Dakar Youth Olympics: Who gets to hold the flame?",
+          "url": "https://www.aljazeera.com/sports/2026/10/31/dakar-youth-olympics-who-gets-to-hold-the-flame?traffic_source=rss",
+          "publishedAt": "2026-10-31T17:17:21.000Z"
+        },
+        {
+          "title": "Flavio Bolsonaro says he may run again for Brazilian presidency",
+          "url": "https://www.aljazeera.com/video/newsfeed/2026/10/31/flavio-bolsonaro-says-he-may-run-again-for-brazilian-presidency?traffic_source=rss",
+          "publishedAt": "2026-10-31T17:12:11.000Z"
+        },
+        {
+          "title": "Thousands rally in Berlin as Gen Z protests in more than 30 German cities",
+          "url": "https://www.aljazeera.com/news/2026/10/31/thousands-rally-in-berlin-as-gen-z-plans-protests-in-30-german-cities?traffic_source=rss",
+          "publishedAt": "2026-10-31T16:28:04.000Z"
+        },
+        {
+          "title": "South Africa hammer Australia as Harmer takes career best bowling of 6-16",
+          "url": "https://www.aljazeera.com/sports/2026/10/31/south-africa-hammer-australia-as-harmer-takes-career-best-bowling-of-6-16?traffic_source=rss",
+          "publishedAt": "2026-10-31T15:43:46.000Z"
+        },
+        {
+          "title": "Chelsea beat Man United as Martinez sent off to pile pressure on Carrick",
+          "url": "https://www.aljazeera.com/sports/2026/10/31/chelsea-beat-man-united-as-martinez-sees-red-for-crazy-moment-in-thriller?traffic_source=rss",
+          "publishedAt": "2026-10-31T15:09:59.000Z"
+        },
+        {
+          "title": "Iran FM says US outreach a ‘positive step’ as delegation in Qatar for talks",
+          "url": "https://www.aljazeera.com/news/2026/10/31/iran-fm-says-us-outreach-a-positive-step-as-delegation-in-qatar-for-talks?traffic_source=rss",
+          "publishedAt": "2026-10-31T14:31:37.000Z"
+        }
+      ]
+    },
+    {
+      "source": "NPR",
+      "sourceId": "source-154",
+      "feedUrl": "https://feeds.npr.org/1004/rss.xml",
+      "status": "ok",
+      "listed": 10,
+      "newestItemAt": "2026-10-31T21:14:34.000Z",
+      "inWindow": 5,
+      "attempts": [],
+      "articles": [
+        {
+          "title": "Secretary Rubio has a tough time getting officials at G20 on the same page",
+          "url": "https://www.npr.org/2026/10/31/nx-s1-6022223/secretary-rubio-has-a-tough-time-getting-officials-at-g20-on-the-same-page",
+          "publishedAt": "2026-10-31T21:14:34.000Z"
+        },
+        {
+          "title": "A new political era in the Southern Philippines",
+          "url": "https://www.npr.org/2026/10/31/nx-s1-6020639/a-new-political-era-in-the-southern-philippines",
+          "publishedAt": "2026-10-31T21:14:32.000Z"
+        },
+        {
+          "title": "France seethes again as youth-led protests sweep Europe",
+          "url": "https://www.npr.org/2026/10/31/g-s1-151121/france-seethes-again-as-youth-led-protests-sweep-europe",
+          "publishedAt": "2026-10-31T19:30:19.000Z"
+        },
+        {
+          "title": "Key takeaways from this week's political meeting in Beijing",
+          "url": "https://www.npr.org/2026/10/31/nx-s1-6024695/political-meeting-beijing-takeaways",
+          "publishedAt": "2026-10-31T18:42:33.000Z"
+        },
+        {
+          "title": "Drone photo award winners: Far-out landscapes. Ship recycling. Rugs, rugs rugs!",
+          "url": "https://www.npr.org/2026/10/31/g-s1-150698/drone-photo-award-winners",
+          "publishedAt": "2026-10-31T11:56:10.000Z"
+        }
+      ]
+    },
+    {
+      "source": "PBS",
+      "sourceId": "source-155",
+      "feedUrl": "https://www.pbs.org/newshour/feeds/rss/world",
+      "status": "ok",
+      "listed": 20,
+      "newestItemAt": "2026-10-31T17:14:30.000Z",
+      "inWindow": 8,
+      "attempts": [],
+      "articles": [
+        {
+          "title": "A third weekend of protests in France as youth-led rallies sweep Europe",
+          "url": "https://www.pbs.org/newshour/world/a-third-weekend-of-protests-in-france-as-youth-led-rallies-sweep-europe",
+          "publishedAt": "2026-10-31T17:14:30.000Z"
+        },
+        {
+          "title": "Congo's Ebola deaths top 5,000 as fear of continent-wide spread mounts",
+          "url": "https://www.pbs.org/newshour/world/congos-ebola-deaths-top-5000-as-fear-of-continent-wide-spread-mounts",
+          "publishedAt": "2026-10-31T15:25:17.000Z"
+        },
+        {
+          "title": "What to know about the $6.3B hack on Binance, likely the biggest-ever crypto theft",
+          "url": "https://www.pbs.org/newshour/world/what-to-know-about-the-6-3b-hack-on-binance-likely-the-biggest-ever-crypto-theft",
+          "publishedAt": "2026-10-31T15:14:44.000Z"
+        },
+        {
+          "title": "G20 foreign ministers end Atlanta meeting without consensus on key issues",
+          "url": "https://www.pbs.org/newshour/politics/g20-foreign-ministers-in-atlanta-meeting-head-to-an-ending-without-consensus-on-key-issues",
+          "publishedAt": "2026-10-31T15:00:17.000Z"
+        },
+        {
+          "title": "Evacuees fleeing Oleshky reunite with family at the Ukrainian-Belarusian border",
+          "url": "https://www.pbs.org/newshour/world/residents-evacuated-from-russian-occupied-oleshky-reach-ukraine-after-localized-ceasefire",
+          "publishedAt": "2026-10-31T14:47:05.000Z"
+        },
+        {
+          "title": "What Israel's election deadlock means for Netanyahu and the region",
+          "url": "https://www.pbs.org/newshour/podcasts/compass-points-with-pbs-news/what-israels-election-deadlock-means-for-netanyahu-and-the-region",
+          "publishedAt": "2026-10-30T23:30:29.000Z"
+        },
+        {
+          "title": "What Israel's election deadlock means for Netanyahu and the region",
+          "url": "https://www.pbs.org/newshour/video/compass-points/2026/10/575057",
+          "publishedAt": "2026-10-30T23:30:28.000Z"
+        },
+        {
+          "title": "Inside a Ukrainian city hit by Russian drones during the Starlink disruption",
+          "url": "https://www.pbs.org/newshour/show/inside-a-ukrainian-city-hit-by-russian-drones-during-the-starlink-disruption",
+          "publishedAt": "2026-10-30T22:40:28.000Z"
+        }
+      ]
+    },
+    {
+      "source": "The Hill",
+      "sourceId": "source-158",
+      "feedUrl": "https://thehill.com/feed/",
+      "status": "ok",
+      "listed": 100,
+      "newestItemAt": "2026-10-31T21:00:00.000Z",
+      "inWindow": 37,
+      "attempts": [],
+      "articles": [
+        {
+          "title": "5 state Supreme Court races to watch on Tuesday",
+          "url": "https://thehill.com/homenews/campaign/6185332-state-supreme-court-races/",
+          "publishedAt": "2026-10-31T21:00:00.000Z"
+        },
+        {
+          "title": "Sunday shows preview: Candidates make last-minute pitches ahead of Tuesday’s midterms; Economy weighs heavily on voters’ minds",
+          "url": "https://thehill.com/homenews/sunday-talk-shows/6186417-sunday-shows-preview-candidates-make-last-minute-pitches-ahead-of-tuesdays-midterms-economy-weighs-heavily-on-voters-minds/",
+          "publishedAt": "2026-10-31T20:54:41.000Z"
+        },
+        {
+          "title": "Peltola repeats denial of ballot-stacking reports, stays silent on federal probe",
+          "url": "https://thehill.com/homenews/campaign/6186389-peltola-repeats-denial-of-ballot-stacking-reports-stays-silent-on-federal-probe/",
+          "publishedAt": "2026-10-31T20:26:45.000Z"
+        },
+        {
+          "title": "Binance recovers 90 percent of stolen assets from hack",
+          "url": "https://thehill.com/policy/technology/6186304-binance-replenishes-ninety-percent-hack/",
+          "publishedAt": "2026-10-31T19:08:38.000Z"
+        },
+        {
+          "title": "Ramaswamy among nearly $700K in donations for harassed Red Baron worker",
+          "url": "https://thehill.com/blogs/in-the-know/6186292-ramaswamy-donates-red-baron/",
+          "publishedAt": "2026-10-31T19:02:02.000Z"
+        },
+        {
+          "title": "Lula and Milei both owe their victories to Trump",
+          "url": "https://thehill.com/opinion/international/6185055-brazil-lula-victory-us-tariffs/",
+          "publishedAt": "2026-10-31T19:00:00.000Z"
+        },
+        {
+          "title": "Why are so many young Americans dying?",
+          "url": "https://thehill.com/opinion/healthcare/6184685-youth-health-crisis-usa/",
+          "publishedAt": "2026-10-31T18:00:00.000Z"
+        },
+        {
+          "title": "Michigan man charged with allegedly threatening to kill Kash Patel, ‘his associate’",
+          "url": "https://thehill.com/homenews/state-watch/6186231-michigan-man-threatened-patel/",
+          "publishedAt": "2026-10-31T17:58:24.000Z"
+        },
+        {
+          "title": "El-Sayed drops Stevens from campaign event",
+          "url": "https://thehill.com/homenews/campaign/6186206-el-sayed-disinvites-stevens/",
+          "publishedAt": "2026-10-31T17:30:42.000Z"
+        },
+        {
+          "title": "Evacuees from Russia-controlled Oleshky arrive back in Ukraine amid U.S.-brokered ceasefire",
+          "url": "https://thehill.com/policy/international/6186192-oleshky-residents-return-ukraine/",
+          "publishedAt": "2026-10-31T17:22:03.000Z"
+        },
+        {
+          "title": "There’s home in these hills: West Virginia isn’t AI’s dumping ground",
+          "url": "https://thehill.com/opinion/technology/6184468-west-virginia-data-center-bill/",
+          "publishedAt": "2026-10-31T17:00:00.000Z"
+        },
+        {
+          "title": "Olivia Rodrigo gives Amy Acton flowers at Columbus concert",
+          "url": "https://thehill.com/homenews/campaign/6186144-olivia-rodrigo-amy-acton-ohio/",
+          "publishedAt": "2026-10-31T16:09:58.000Z"
+        },
+        {
+          "title": "The 6 races that could decide Senate control",
+          "url": "https://thehill.com/homenews/campaign/6185470-senate-control-midterm-six-tossups/",
+          "publishedAt": "2026-10-31T16:00:00.000Z"
+        },
+        {
+          "title": "Will Tuesday be a a blue wave or just an anti-Trump surge?",
+          "url": "https://thehill.com/opinion/campaign/6184763-democrats-house-senate-polls/",
+          "publishedAt": "2026-10-31T16:00:00.000Z"
+        },
+        {
+          "title": "Iran’s Supreme Leader threatens US with response if strikes are launched after midterms",
+          "url": "https://thehill.com/policy/international/6186134-khamenei-warns-iran-strikes/",
+          "publishedAt": "2026-10-31T15:51:26.000Z"
+        },
+        {
+          "title": "DC, Virginia sue to block Trump’s triumphal arch",
+          "url": "https://thehill.com/homenews/administration/6186090-trump-triumphal-arch-lawsuit/",
+          "publishedAt": "2026-10-31T14:43:19.000Z"
+        },
+        {
+          "title": "Federal appeals court lifts Idaho ruling permitting abortions for women’s health",
+          "url": "https://thehill.com/regulation/court-battles/6186080-federal-appeals-court-lifts-idaho-abortion-ruling/",
+          "publishedAt": "2026-10-31T14:28:58.000Z"
+        },
+        {
+          "title": "Ricketts leads independent candidate Osborn by 6 points in latest Nebraska Senate poll",
+          "url": "https://thehill.com/homenews/campaign/6186054-ricketts-osborn-nebraska-senate/",
+          "publishedAt": "2026-10-31T14:03:52.000Z"
+        },
+        {
+          "title": "Alaska’s decoy scandal brings back the usual suspects for shady election tactics",
+          "url": "https://thehill.com/opinion/campaign/6184158-democratic-lawyer-voter-confusion/",
+          "publishedAt": "2026-10-31T14:00:00.000Z"
+        },
+        {
+          "title": "Trump administration attempts to bypass restrictions on sending Afghan refugees to Afghanistan: Reports",
+          "url": "https://thehill.com/homenews/administration/6186030-trump-afghan-refugees-afghanistan/",
+          "publishedAt": "2026-10-31T13:26:26.000Z"
+        },
+        {
+          "title": "What a diploma measures when A’s are the new normal",
+          "url": "https://thehill.com/opinion/education/6183718-university-degree-signaling-crisis/",
+          "publishedAt": "2026-10-31T13:00:00.000Z"
+        },
+        {
+          "title": "Live updates: Trump telerallies planned in 19 states; Atlanta G20 meeting continues after early tensions",
+          "url": "https://thehill.com/homenews/administration/6185643-trump-tele-rally-midterm-elections-g20/",
+          "publishedAt": "2026-10-31T13:00:00.000Z"
+        },
+        {
+          "title": "DOJ pushes to isolate Alaska ballots in Peltola probe",
+          "url": "https://thehill.com/homenews/campaign/6186007-peltola-sullivan-vote-confusion-lawsuit/",
+          "publishedAt": "2026-10-31T12:47:30.000Z"
+        },
+        {
+          "title": "El-Sayed accuses Stevens of ‘relitigating’ primary after calls for apology on Israel",
+          "url": "https://thehill.com/homenews/campaign/6185985-el-sayed-stevens-michigan-senate/",
+          "publishedAt": "2026-10-31T12:05:59.000Z"
+        },
+        {
+          "title": "Anna Eskamani is bringing the ‘Mamdani Model’ to Central Florida",
+          "url": "https://thehill.com/opinion/campaign/6185000-anna-eskmanni-orlando-mayor-campaign/",
+          "publishedAt": "2026-10-31T12:00:00.000Z"
+        },
+        {
+          "title": "Blackburn’s move to governor leaves Hegseth with potential parachute",
+          "url": "https://thehill.com/policy/defense/6185793-pete-hegseth-blackburn-tennessee-senate-seat/",
+          "publishedAt": "2026-10-31T10:00:00.000Z"
+        },
+        {
+          "title": "New autism study complicates Trump administration’s search for cause",
+          "url": "https://thehill.com/policy/healthcare/6184086-maternal-health-autism-study/",
+          "publishedAt": "2026-10-31T10:00:00.000Z"
+        },
+        {
+          "title": "Judge blocks DOJ from threatening election officials over noncitizen voting claims",
+          "url": "https://thehill.com/regulation/court-battles/6185891-judge-stops-trump-election-threats/",
+          "publishedAt": "2026-10-31T03:01:46.000Z"
+        },
+        {
+          "title": "Health insurance plan costs on Healthcare.gov to rise by double digits in 2027",
+          "url": "https://thehill.com/policy/healthcare/6185863-obamacare-premiums-set-double-2027-analysis/",
+          "publishedAt": "2026-10-31T02:06:29.000Z"
+        },
+        {
+          "title": "Ukraine gets approval for Patriot missile sale",
+          "url": "https://thehill.com/newsletters/defense-national-security/6185817-us-approves-ukraine-patriot-missiles/",
+          "publishedAt": "2026-10-31T00:36:42.000Z"
+        },
+        {
+          "title": "Trump says Iran war will end ‘soon’",
+          "url": "https://thehill.com/newsletters/defense-national-security/6185808-trump-iran-war-ending-soon/",
+          "publishedAt": "2026-10-31T00:21:53.000Z"
+        },
+        {
+          "title": "RNC chair predicts GOP Senate wins in Alaska, Texas, 3 other battlegrounds",
+          "url": "https://thehill.com/homenews/campaign/6185743-rnc-chair-predicts-midterm-wins/",
+          "publishedAt": "2026-10-30T23:42:47.000Z"
+        },
+        {
+          "title": "Democrats weigh Israel election results amid lingering uncertainty",
+          "url": "https://thehill.com/homenews/house/6185584-democrats-react-israel-elections/",
+          "publishedAt": "2026-10-30T23:03:02.000Z"
+        },
+        {
+          "title": "Feds ‘intensely’ probing alleged Alaska ballot scheme, US attorney confirms",
+          "url": "https://thehill.com/homenews/campaign/6185640-alaska-senate-spoiler-probe/",
+          "publishedAt": "2026-10-30T22:43:55.000Z"
+        },
+        {
+          "title": "Time to set back the clocks, much to Trump’s chagrin",
+          "url": "https://thehill.com/homenews/administration/6184682-trump-daylight-saving-clocks-fallback/",
+          "publishedAt": "2026-10-30T22:43:31.000Z"
+        },
+        {
+          "title": "Cruz warns GOP could lose 8 Senate seats, get swept in Texas",
+          "url": "https://thehill.com/homenews/senate/6185545-ted-cruz-warns-gop-losses/",
+          "publishedAt": "2026-10-30T22:02:32.000Z"
+        },
+        {
+          "title": "Treasury Department says Iran’s economy cratering, inflation at 90 percent",
+          "url": "https://thehill.com/policy/international/6185517-bessent-iran-operation-economic-outcast-impact/",
+          "publishedAt": "2026-10-30T21:53:20.000Z"
+        }
+      ]
+    },
+    {
+      "source": "VOA",
+      "sourceId": "source-165",
+      "feedUrl": "https://www.voanews.com/rss/",
+      "status": "ok",
+      "listed": 20,
+      "newestItemAt": "2026-10-30T20:53:57.000Z",
+      "inWindow": 0,
+      "attempts": [
+        {
+          "url": "https://www.voanews.com/api/zy-pqye",
+          "error": "Feed did not return RSS or Atom XML"
+        }
+      ],
+      "articles": []
+    }
+  ]
+}
