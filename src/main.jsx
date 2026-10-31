@@ -273,7 +273,7 @@ function App() {
   const storyToMove = displayedArticles.find(item => item.id === moveStoryId);
   const selectedArticles = useMemo(() => displayedArticles.filter(item => !excludedStoryIds.has(item.id)), [displayedArticles, excludedStoryIds]);
   const readingArticles = editingStories ? displayedArticles : selectedArticles;
-  const duplicateMatches = useMemo(() => duplicateGroups(selectedArticles), [selectedArticles]);
+  const duplicateMatches = useMemo(() => isEditor ? duplicateGroups(selectedArticles) : new Map(), [selectedArticles, isEditor]);
   const updateSearchQuery = updateSearchText.trim().toLocaleLowerCase();
   const updateSearchResults = useMemo(() => updateSearchQuery ? readingArticles.filter(item => {
     const story = reportStoryText(item);
