@@ -6,6 +6,7 @@ import { canonicalArticleUrl } from './siteConfig.js';
 import { viennaWallTimeToIso } from './viennaTime.js';
 import { blockedPlacementReason, directGovernmentPublicationReason } from './sourcePolicy.js';
 import { excludedHeadlineReason } from './headlinePolicy.js';
+import { conciseDnuSummary } from './conciseSummary.js';
 import { articlePlacement } from '../server/importArticle.js';
 
 const headerAliases = {
@@ -369,7 +370,7 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
       skipped.push({ row: row.rowNumber, reason: 'Article body is not English; translate it before import' }); continue;
     }
     const suggestedSummary = [row.shortSummary, row.summary].map(text).find(value => value && compact(value) !== compact(title)) || '';
-    const summary = summaryFromBody(row.body, title) || suggestedSummary || existing?.summary;
+    const summary = conciseDnuSummary(summaryFromBody(row.body, title) || suggestedSummary || existing?.summary, title);
     const leadPrefix = firstRegional > 0 && index < firstRegional && leadHeadline.test(title);
     const placement = placementFromRow(row, title, summary, existing, leadPrefix);
     if (!placement?.sectionId || !placement.subsection && placement.sectionId !== 'South Eastern Europe' || placement.sectionId === 'Miscellaneous' && !placement.country) {
