@@ -52,7 +52,7 @@ export default function AddArticlesDialog({ sections, customCountries = {}, exis
     const sourceName = manual.sourceName.trim(), url = publicArticleUrl(manual.url.trim());
     if (!title || !sourceName || !url) { setManualError('Headline, agency and a public HTTPS hyperlink are required.'); return; }
     if (directGovernmentPublicationReason({ sourceName, url: url.href })) { setManualError('Direct government publications are excluded from the update.'); return; }
-    if (excludedHeadlineReason(title)) { setManualError(excludedHeadlineReason(title)); return; }
+    if (excludedHeadlineReason(title, summary, url.href)) { setManualError(excludedHeadlineReason(title, summary, url.href)); return; }
     if ([...existingUrls, ...drafts.map(draft => draft.url)].some(value => canonicalArticleUrl(value) === canonicalArticleUrl(url.href))) { setManualError('This article link is already in the update or review list.'); return; }
     if (remainingSlots <= drafts.filter(draft => !draft.added).length) { setManualError('The update has reached its 100 added-story limit.'); return; }
     const placement = articlePlacement({}, title, summary) || { sectionId: '', subsection: '', country: '' };

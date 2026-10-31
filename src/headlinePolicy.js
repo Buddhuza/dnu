@@ -1,6 +1,7 @@
-export function excludedHeadlineReason(value, summary = '') {
+export function excludedHeadlineReason(value, summary = '', url = '') {
   const headline = String(value || '').trim().replace(/^\(文A\)\s*/, '');
   const detail = `${headline} ${summary}`;
+  if (/\blive\s*:/i.test(headline) || /^live(?:\s+updates?)?\s*[:|–-]/i.test(headline) || /\/(?:liveblog|live-blog|live-updates)(?:\/|$)/i.test(String(url))) return 'Live blogs are excluded';
   if (/^why\b/i.test(headline)) return 'Why headlines are excluded';
   if (headline.includes('?')) return 'Question headlines are excluded';
   if (/\bMehriban Aliyeva\b/i.test(detail)) return 'Mehriban Aliyeva stories are excluded';

@@ -352,3 +352,15 @@ test('official government rows are skipped even when Google News masks their ori
   assert.deepEqual(result.articles.map(article => article.sourceName), ['BBC']);
   assert.deepEqual(result.skipped.map(item => item.reason), ['Direct government publication', 'Direct government publication']);
 });
+
+test('live blogs are excluded even when their headline names a concrete event', () => {
+  const rows = [
+    { rowNumber: 2, date: '2026-10-30', source: 'Al Jazeera', region: 'Middle East', countries: 'Iran', url: 'https://www.aljazeera.com/news/liveblog/2026/10/30/iran-war', heading: 'Iran war live: IRGC says four tankers struck mines in Strait of Hormuz' },
+    { rowNumber: 3, date: '2026-10-30', source: 'Al Jazeera', region: 'Middle East', countries: 'Iran', url: 'https://www.aljazeera.com/news/liveblog/2026/10/30/another', heading: 'IRGC reports tanker strikes in Strait of Hormuz' }
+  ];
+  const result = convertSpreadsheetRows(rows);
+  assert.equal(result.articles.length, 0);
+  assert.deepEqual(result.skipped.map(item => item.reason), ['Live blogs are excluded', 'Live blogs are excluded']);
+  const olderStory = { id: 'liveblog', title: rows[0].heading, url: rows[0].url, sourceName: rows[0].source, sectionId: 'Miscellaneous', section: 'Miscellaneous', subsection: 'MIDDLE EAST / NORTH AFRICA', country: 'Iran', fromSpreadsheet: true };
+  assert.deepEqual(displaySiteContent([olderStory], normalizeSiteConfig({}, [])), []);
+});

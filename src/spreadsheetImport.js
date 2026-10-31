@@ -290,7 +290,7 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
     if (!sourceName || !title) { skipped.push({ row: row.rowNumber, reason: 'Missing source or headline' }); continue; }
     const governmentSource = directGovernmentPublicationReason({ sourceName, url: parsed.href });
     if (governmentSource) { skipped.push({ row: row.rowNumber, reason: governmentSource }); continue; }
-    const exclusion = excludedHeadlineReason(title, [row.shortSummary, row.summary, row.body].filter(Boolean).join(' '));
+    const exclusion = excludedHeadlineReason(title, [row.shortSummary, row.summary, row.body].filter(Boolean).join(' '), parsed.href);
     if (exclusion) { skipped.push({ row: row.rowNumber, reason: exclusion }); continue; }
     if (!existing && row.body && !['eng', 'und'].includes(franc(row.body.slice(0, 1500), { minLength: 100 }))) {
       skipped.push({ row: row.rowNumber, reason: 'Article body is not English; translate it before import' }); continue;
