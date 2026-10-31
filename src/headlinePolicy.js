@@ -6,6 +6,7 @@ export function excludedHeadlineReason(value, summary = '', url = '') {
   if (headline.includes('?')) return 'Question headlines are excluded';
   if (/\bMehriban Aliyeva\b/i.test(detail)) return 'Mehriban Aliyeva stories are excluded';
   if (/^(?:analysis|opinion|commentary|editorial|feature|in depth|explainer)\b/i.test(headline)) return 'Analysis, opinion and feature headlines are excluded';
+  if (/\bthe outsider who led\b/i.test(headline)) return 'Profile features are excluded';
   if (/^Critical developments ahead of\b/i.test(headline) && /\bshifting balances\b/i.test(headline)) return 'Broad analytical summit preview rather than a specific news development';
   if (/\b(?:experts?|analysts?)\s+(?:say|says|warn|warns|argue|argues|believe|believes)\b/i.test(headline)) return 'Expert commentary is excluded';
   if (/(?:^|:\s*)(?:experts?|analysts?)\s*$/i.test(headline)) return 'Expert commentary is excluded';

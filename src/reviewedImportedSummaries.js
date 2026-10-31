@@ -3,6 +3,7 @@
 const summaries = new Map([
   ['14 killed and 14 injured in a Russian drone attack on the railway station in Dnipro, Ukraine', 'The drone hit a platform beside a Dnipro–Zaporizhzhia train; six wounded people were in serious condition'],
   ['Israel election result shows no overall majority as vote count complete', 'Provisional results gave Netanyahu’s bloc 53 seats in the 120-member Knesset; opposition politicians discussed a coalition'],
+  ['European Central Bank (ECB) head Christine Lagarde to step down in February, before her term ends', 'European Council President Antonio Costa said the search for a successor is underway'],
   ['At least ‘three killed’ as EUFOR helicopter crashes in Bosnia and Herzegovina 21:12 29 October 2026', 'The Italian CH-47 aircraft crashed near Brčko while deployed to EUFOR’s Operation Althea'],
   ['Security Services Must Be Reformed to Dismantle Serbia’s Mafia State', 'Preliminary results gave the Student List about 140 of Serbia’s 250 parliamentary seats'],
   ['Change in Power in Serbia Brings Headaches for Central Europe’s Governments', 'The Student List’s election victory surprised Central European leaders who had expected a closer contest'],
