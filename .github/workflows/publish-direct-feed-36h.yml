@@ -1,0 +1,39 @@
+name: Publish reviewed direct-feed edition
+
+on:
+  push:
+    paths:
+      - .github/workflows/publish-direct-feed-36h.yml
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - name: Publish if the protected database key is configured
+        env:
+          SUPABASE_URL: https://epghsyajgspcywqqbfso.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            printf 'not-configured\nThe repository has no SUPABASE_SERVICE_ROLE_KEY secret.\n' > data/direct-feed-36h-publish-status.txt
+          elif npm run publish:shared > data/direct-feed-36h-publish-status.txt 2>&1; then
+            sed -i '1i published' data/direct-feed-36h-publish-status.txt
+          else
+            sed -i '1i failed' data/direct-feed-36h-publish-status.txt
+          fi
+      - name: Save publication status
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b feed-publish-2026-10-31
+          git add -f data/direct-feed-36h-publish-status.txt
+          git commit -m "Save reviewed edition publication status"
+          git push origin HEAD:feed-publish-2026-10-31
