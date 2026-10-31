@@ -204,7 +204,9 @@ export function displaySiteContent(articles, config, excludedIds = new Set(), ke
       country: edit?.sectionId ? edit.country : edit?.country || article.country || ''
     };
     if (article.fromSpreadsheet && !edit?.summaryEdited) displayed.summary = reviewedImportedSummary(displayed.title, displayed.publishedAt) || conciseDnuSummary(displayed.summary, displayed.title);
-    if (article.fromSpreadsheet && !edit?.sectionId && isGreekPrimeMinisterStory(displayed.title)) {
+    if (article.fromSpreadsheet && !edit?.sectionId && /\b(?:European Central Bank|ECB)\b/i.test(displayed.title) && displayed.sectionId === 'Miscellaneous' && displayed.subsection === 'INTERNATIONAL ORGANISATIONS') {
+      displayed.country = 'ECB';
+    } else if (article.fromSpreadsheet && !edit?.sectionId && isGreekPrimeMinisterStory(displayed.title)) {
       displayed.sectionId = 'Miscellaneous';
       displayed.section = sectionById.get(displayed.sectionId)?.name || displayed.sectionId;
       displayed.subsection = 'WESTERN / CENTRAL EUROPE';

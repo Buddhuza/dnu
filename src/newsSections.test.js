@@ -26,7 +26,7 @@ test('lead headings sort regional countries before Miscellaneous headings', () =
 });
 
 test('international organisations follow editorial priority rather than the alphabet', () => {
-  const shuffled = ['CSTO', 'WTO', 'BRICS', 'UN', 'G7', 'CIS', 'NATO', 'EU', 'IMF', 'OSCE', 'ICC', 'G20'];
+  const shuffled = ['CSTO', 'WTO', 'BRICS', 'UN', 'G7', 'CIS', 'NATO', 'EU', 'IMF', 'ECB', 'OSCE', 'ICC', 'G20'];
   assert.deepEqual(shuffled.sort((a, b) => compareCountryLabels('INTERNATIONAL ORGANISATIONS', a, b)), MISCELLANEOUS_COUNTRIES['INTERNATIONAL ORGANISATIONS']);
   assert.deepEqual(['SCO', 'OECD', 'BRICS', 'World Bank'].sort((a, b) => compareCountryLabels('INTERNATIONAL ORGANISATIONS', a, b)), ['OECD', 'World Bank', 'BRICS', 'SCO']);
   assert.deepEqual(['United Kingdom', 'Italy'].sort((a, b) => compareCountryLabels('WESTERN / CENTRAL EUROPE', a, b)), ['Italy', 'United Kingdom']);

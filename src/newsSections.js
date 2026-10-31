@@ -34,7 +34,7 @@ export const MISCELLANEOUS_COUNTRIES = {
   'AFGHANISTAN / PAKISTAN': ['Afghanistan'],
   'NORTH EAST ASIA': ['China', 'Japan', 'Mongolia', 'South Korea', 'North Korea'],
   'NORTH AMERICA': ['Canada', 'United States'],
-  'INTERNATIONAL ORGANISATIONS': ['OSCE', 'EU', 'UN', 'NATO', 'IMF', 'G7', 'G20', 'ICC', 'WTO', 'CIS', 'CSTO', 'BRICS']
+  'INTERNATIONAL ORGANISATIONS': ['OSCE', 'EU', 'UN', 'NATO', 'IMF', 'ECB', 'G7', 'G20', 'ICC', 'WTO', 'CIS', 'CSTO', 'BRICS']
 };
 
 const organisationOrder = MISCELLANEOUS_COUNTRIES['INTERNATIONAL ORGANISATIONS'];
@@ -47,7 +47,7 @@ export function compareCountryLabels(subsection, a, b) {
   if (subsection !== 'INTERNATIONAL ORGANISATIONS') return alphabetical;
   const rank = name => {
     const index = organisationOrder.indexOf(name);
-    if (index >= 0) return index < 9 ? index : 100 + index;
+    if (index >= 0) return index < organisationOrder.indexOf('CIS') ? index : 100 + index;
     return eurasianOrganisation.test(name) ? 200 : 50;
   };
   return rank(a) - rank(b) || alphabetical;

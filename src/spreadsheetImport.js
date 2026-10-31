@@ -293,6 +293,7 @@ function paywallReason(row) {
 }
 
 function placementFromRow(row, title, summary, existing, leadPrefix) {
+  if (/\b(?:European Central Bank|ECB)\b/i.test(title)) return { sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'ECB' };
   if (isGreekPrimeMinisterStory(title)) return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Greece' };
   if (isSouthEasternEuropeRegionalStory(title)) return { sectionId: 'South Eastern Europe', subsection: '', country: '' };
   if (isMontenegroCroatiaDialogueStory(title, row.source)) return { sectionId: 'South Eastern Europe', subsection: 'Montenegro', country: '' };

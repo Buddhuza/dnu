@@ -57,7 +57,10 @@ export function sourceForArticle(url, sources) {
 function inferredPlacement(text) {
   const leadingWestern = western.find(country => new RegExp(`^${country}\\b`, 'i').test(String(text).replace(/^\(文A\)\s*/, '').trim()));
   if (leadingWestern) return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: ['UK', 'Britain', 'England', 'Scotland', 'Wales'].includes(leadingWestern) ? 'United Kingdom' : leadingWestern };
-  if (/\b(?:European Commission|European Central Bank|ECB)\b/i.test(text) && !/\b(?:Albania|Armenia|Azerbaijan|Belarus|Bosnia|Georgia|Kazakhstan|Kosovo|Kyrgyzstan|Moldova|Montenegro|North Macedonia|Serbia|Tajikistan|Turkmenistan|Ukraine|Uzbekistan)\b/i.test(text)) {
+  if (/\b(?:European Central Bank|ECB)\b/i.test(text)) {
+    return { sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'ECB' };
+  }
+  if (/\bEuropean Commission\b/i.test(text) && !/\b(?:Albania|Armenia|Azerbaijan|Belarus|Bosnia|Georgia|Kazakhstan|Kosovo|Kyrgyzstan|Moldova|Montenegro|North Macedonia|Serbia|Tajikistan|Turkmenistan|Ukraine|Uzbekistan)\b/i.test(text)) {
     return { sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'EU' };
   }
   for (const [sectionId, subsection, pattern] of countryRules) if (pattern.test(text)) return { sectionId, subsection, country: '' };

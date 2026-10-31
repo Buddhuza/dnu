@@ -38,6 +38,7 @@ const aliases = {
 const organisations = [
   ['OSCE', /\bOSCE\b|Organization for Security and Co-operation in Europe|Organisation for Security and Co-operation in Europe/i],
   ['EU', /\bEU\b|European Union|European Commission|European Parliament/i],
+  ['ECB', /\bECB\b|European Central Bank/i],
   ['UN', /\bUN\b|United Nations/i], ['NATO', /\bNATO\b/i], ['IMF', /\bIMF\b|International Monetary Fund/i],
   ['G7', /\bG7\b/], ['G20', /\bG20\b/], ['ICC', /\bICC\b|International Criminal Court/i],
   ['WTO', /\bWTO\b|World Trade Organization|World Trade Organisation/i], ['CIS', /\bCIS\b|Commonwealth of Independent States/i],

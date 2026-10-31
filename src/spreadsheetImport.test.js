@@ -209,14 +209,17 @@ test('a concise reviewed summary does not lose the country named in the source s
   assert.ok(article.summary.split(/\s+/).length <= 20);
 });
 
-test('ECB leadership news belongs under EU while a Lagarde profile is excluded', () => {
+test('ECB leadership news uses its own organisation heading while a Lagarde profile is excluded', () => {
   const base = { publishedUtc: '2026-10-29T10:33:00Z', region: 'International', country: '', countries: '' };
   const result = convertSpreadsheetRows([
     { ...base, rowNumber: 85, source: 'DW', url: 'https://www.dw.com/en/lagarde-steps-down/a-1', heading: 'European Central Bank (ECB) head Christine Lagarde to step down in February, before her term ends', summary: 'European Council President Antonio Costa said the process to find a successor is underway.' },
     { ...base, rowNumber: 108, source: 'RTE', url: 'https://www.rte.ie/news/business/lagarde-profile/', heading: 'Christine Lagarde: The outsider who led the ECB her way', summary: 'A profile of her tenure at the bank.' }
   ]);
-  assert.deepEqual([result.articles[0].sectionId, result.articles[0].subsection, result.articles[0].country], ['Miscellaneous', 'INTERNATIONAL ORGANISATIONS', 'EU']);
-  assert.equal(result.articles[0].summary, 'European Council President Antonio Costa said the process to find a successor is underway');
+  assert.deepEqual([result.articles[0].sectionId, result.articles[0].subsection, result.articles[0].country], ['Miscellaneous', 'INTERNATIONAL ORGANISATIONS', 'ECB']);
+  assert.equal(result.articles[0].summary, 'European Council President Antonio Costa said the search for a successor is underway');
+  assert.equal(spreadsheetRow(result.articles[0], { heading: result.articles[0].title, body: 'The European Central Bank announced a leadership transition.' })[5], 'ECB');
+  const olderEUHeading = { ...result.articles[0], country: 'EU' };
+  assert.equal(displaySiteContent([olderEUHeading], normalizeSiteConfig({}, []))[0].country, 'ECB');
   assert.deepEqual(result.skipped.map(row => row.reason), ['Profile features are excluded']);
 });
 
