@@ -4,6 +4,7 @@ import { excludedHeadlineReason } from './headlinePolicy.js';
 import { displaySourceName } from './sourceNames.js';
 import { articlePlacement } from '../server/importArticle.js';
 import { conciseDnuSummary } from './conciseSummary.js';
+import { reviewedImportedSummary } from './reviewedImportedSummaries.js';
 
 export const THEME_PRESETS = {
   forest: { name: 'Forest', primary: '#123e47', accent: '#bce081', background: '#f4efe6', surface: '#fdfaf4', text: '#182a36', section: '#0070c0', font: 'DM Sans' },
@@ -202,7 +203,7 @@ export function displaySiteContent(articles, config, excludedIds = new Set(), ke
       subsection: edit?.sectionId ? edit.subsection : edit?.subsection || (legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : article.subsection),
       country: edit?.sectionId ? edit.country : edit?.country || article.country || ''
     };
-    if (article.fromSpreadsheet && !edit?.summaryEdited) displayed.summary = conciseDnuSummary(displayed.summary, displayed.title);
+    if (article.fromSpreadsheet && !edit?.summaryEdited) displayed.summary = reviewedImportedSummary(displayed.title, displayed.publishedAt) || conciseDnuSummary(displayed.summary, displayed.title);
     if (article.fromSpreadsheet && !edit?.sectionId && isGreekPrimeMinisterStory(displayed.title)) {
       displayed.sectionId = 'Miscellaneous';
       displayed.section = sectionById.get(displayed.sectionId)?.name || displayed.sectionId;

@@ -187,6 +187,16 @@ test('a ship attacked off Bulgaria is filed under Bulgaria, including in an olde
   assert.deepEqual([bulgarianCoast.sectionId, bulgarianCoast.subsection, bulgarianCoast.country], ['Miscellaneous', 'WESTERN / CENTRAL EUROPE', 'Bulgaria']);
 });
 
+test('a concise reviewed summary does not lose the country named in the source summary', () => {
+  const row = { rowNumber: 87, publishedUtc: '2026-10-29T09:17:20Z', source: 'RTE', region: 'International',
+    url: 'https://www.rte.ie/news/2026/1029/1597180-israeli-election/',
+    heading: "Eisenkot warns of campaign to 'delegitimise' election",
+    summary: "Israel's chief opposition candidate Gadi Eisenkot warned that the prime minister was delegitimising the election." };
+  const article = convertSpreadsheetRows([row]).articles[0];
+  assert.equal(article.country, 'Israel');
+  assert.ok(article.summary.split(/\s+/).length <= 20);
+});
+
 test('a region-wide OSCE conference appears before South Eastern Europe country headings', () => {
   const osceRow = {
     rowNumber: 2, date: '2026-10-30', source: 'OSCE', region: 'General',

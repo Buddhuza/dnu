@@ -7,6 +7,7 @@ import { viennaWallTimeToIso } from './viennaTime.js';
 import { blockedPlacementReason, directGovernmentPublicationReason } from './sourcePolicy.js';
 import { excludedHeadlineReason } from './headlinePolicy.js';
 import { conciseDnuSummary } from './conciseSummary.js';
+import { reviewedImportedSummary } from './reviewedImportedSummaries.js';
 import { articlePlacement } from '../server/importArticle.js';
 
 const headerAliases = {
@@ -370,9 +371,10 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
       skipped.push({ row: row.rowNumber, reason: 'Article body is not English; translate it before import' }); continue;
     }
     const suggestedSummary = [row.shortSummary, row.summary].map(text).find(value => value && compact(value) !== compact(title)) || '';
-    const summary = conciseDnuSummary(summaryFromBody(row.body, title) || suggestedSummary || existing?.summary, title);
+    const publishedAt = spreadsheetDate(row.publishedUtc || row.date, existing?.publishedAt || importedAt);
+    const summary = reviewedImportedSummary(title, publishedAt) || conciseDnuSummary(summaryFromBody(row.body, title) || suggestedSummary || existing?.summary, title);
     const leadPrefix = firstRegional > 0 && index < firstRegional && leadHeadline.test(title);
-    const placement = placementFromRow(row, title, summary, existing, leadPrefix);
+    const placement = placementFromRow(row, title, `${suggestedSummary} ${summary}`.trim(), existing, leadPrefix);
     if (!placement?.sectionId || !placement.subsection && placement.sectionId !== 'South Eastern Europe' || placement.sectionId === 'Miscellaneous' && !placement.country) {
       skipped.push({ row: row.rowNumber, reason: 'Could not identify a DNU section and country or organisation' }); continue;
     }
@@ -380,7 +382,7 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
     const article = {
       id: existing?.id || `spreadsheet-${key}`, url: parsed.href, sourceId: existing?.sourceId || source?.id || 'spreadsheet', sourceName,
       title, summary, originalHeadline: text(row.heading), translated: existing?.translated === true,
-      publishedAt: spreadsheetDate(row.publishedUtc || row.date, existing?.publishedAt || importedAt),
+      publishedAt,
       reviewed: true, ...placement, section: placement.sectionId, fromSpreadsheet: true
     };
     const restriction = blockedPlacementReason(article);
