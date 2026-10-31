@@ -19,3 +19,14 @@ test('spreadsheet articles without an imported full body never trigger a scrape'
   await assert.rejects(loadFullArticle({ url: 'https://example.com/missing', title: 'Example', fromSpreadsheet: true }, { fetchImpl: async () => { calls++; throw new Error('Unexpected request'); } }), /No full body was provided/);
   assert.equal(calls, 0);
 });
+
+test('public export uses shared article bodies and does not start a scrape', async () => {
+  const url = 'https://example.com/shared';
+  const result = await loadFullArticle({ url, title: 'Shared story', fromSpreadsheet: true }, {
+    cacheOnly: true, sharedLookup: async requested => {
+      assert.equal(requested, url);
+      return { heading: 'Shared story', body: 'The full shared article body.', translated: false };
+    }, fetchImpl: async () => { throw new Error('Unexpected network scrape'); }
+  });
+  assert.equal(result.body, 'The full shared article body.');
+});

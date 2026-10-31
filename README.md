@@ -2,15 +2,30 @@
 
 ## Project instructions
 
-The versioned [editorial policy](public/editorial-policy.md) covers collection, selection, placement and story text. The separate [site specification](public/site-specification.md) covers the interface, design and exports. On GitHub Pages, both are directly available under `/dnu/`, without links in the public site header. Read and update the relevant document alongside code changes; a written rule does not by itself enforce behavior. Public Manage site remains disabled on GitHub Pages.
+The versioned [editorial policy](public/editorial-policy.md) covers collection, selection, placement and story text. The separate [site specification](public/site-specification.md) covers the interface, design and exports. On GitHub Pages, both are directly available under `/dnu/`, without links in the public site header. Read and update the relevant document alongside code changes; a written rule does not by itself enforce behavior.
+
+## Shared public site and editor login
+
+The shared edition uses Supabase Auth and Postgres while GitHub Pages serves the website. Visitors can browse, switch views, search, download, email and export. Only the signed-in editor can add, import, edit or manage the site. The editor's changes are saved to the shared edition; public browsers load it immediately on opening and poll for changes every 20 seconds. Dark mode remains a personal browser setting. Batch source collection still requires the local server; an offline `NEWSRUN` can publish its completed edition to Supabase.
+
+To activate shared editing for a new Supabase project:
+
+1. Create a Supabase project. In **SQL Editor**, run [supabase/schema.sql](supabase/schema.sql). The SQL creates a public-read edition and body store, and a publishing function restricted to the DNU editor email.
+2. In **Authentication → Users**, create the editor account for the authorised email. Set a fresh password there. Do not put any password in `.env`, GitHub, SQL or chat transcripts used as setup files.
+3. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` from the project's API settings for the website build. Copy [.env.example](.env.example) to an ignored `.env.production.local` for a local build. The anon/publishable key is allowed in browser code; never use a service-role key in a `VITE_` variable.
+4. Build and publish GitHub Pages with those two variables. Open the public website in one browser and log in from another. Import a sheet or edit a story, wait for **Saved for everyone**, then confirm the public browser updates. A first login before any import shows the bundled prepared edition.
+
+For a future offline `NEWSRUN`, set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` only in the collection process, then run `npm run publish:shared` after reviewing `data/prepared-update.json`. This copies the prepared edition and available full bodies to the shared database. The service-role key must never be used in a website build.
+
+Until the Supabase project and build variables are configured, the live GitHub Pages deployment remains on the earlier browser-local version. Do not publish the new read-only frontend without its shared backend: that would hide editor tools without enabling login.
 
 A local news review app for the 173 outlets in `sources.json` (transcribed from the supplied `agencies_updated.txt`). Choose a source, collect its headlines from a publisher feed where available or Firecrawl otherwise, and refine the results with included and excluded phrases. The prepared news stream can be edited and exported as a Word update.
 
-The homepage opens with the active edition in `data/prepared-update.json`. It is currently an empty canvas for spreadsheet import. The previous English-language edition remains in `data/daily-update-2026-10-24.json`, and its scraped article pages remain in the cache. A prepared snapshot does not refresh automatically. Dated editions remain in `data/`.
+Before the first shared import, the homepage opens with the bundled edition in `data/prepared-update.json`. The previous English-language edition remains in `data/daily-update-2026-10-24.json`, and its scraped article pages remain in the cache. Dated editions remain in `data/`.
 
 For a complete published update, tell Codex `NEWSRUN`. That shortcut runs the last 24 hours in Vienna time unless you specify another window, checks every configured source under the editorial policy, audits omissions and publishes the new edition. Defining or discussing the shortcut does not start a scrape.
 
-For a quick preview that does not clone or install the project, open the [static GitHub Pages preview](https://buddhuza.github.io/dnu/). It displays the prepared update, lets you edit the story selection or add article URLs, and exports the Word update. **Manage site** is available only in local development. Source-list collection requires the full project below.
+For a quick preview that does not clone or install the project, open the [static GitHub Pages preview](https://buddhuza.github.io/dnu/). Once shared login is activated, visitors see the current edition and exports, while the editor can log in to change it. Source-list collection still requires the local server or an offline `NEWSRUN`; the logged-in Pages editor can add individual URLs with a browser Firecrawl key.
 
 ## Test an unattended collection
 
@@ -66,4 +81,4 @@ Montsame now uses its English politics listing at `https://montsame.mn/en/more/3
 
 Word exports use a blanked copy of the supplied example in `server/templates/daily-update-template.docx`. Its logo, Calibri styles, blue section headings, A4 margins, and page-number footer are preserved. Lead-story topic bands and Miscellaneous country and organisation labels are pale blue; the seven Miscellaneous topic headings are unshaded. The report includes the prepared title, article paragraphs, and the required disclaimer below a rule. The live source verification appears in **Manage site → Collect** and is omitted from the report.
 
-Keyword and site settings, including custom sources and dark mode, are stored in your browser's local storage. They are not shared between browsers. Export settings from Manage site to move them to another browser.
+After shared login is activated, site settings and editorial changes are stored in Supabase. Dark mode and keyword inputs remain local browser preferences.

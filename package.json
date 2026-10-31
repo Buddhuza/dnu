@@ -11,10 +11,12 @@
     "build:pages": "GITHUB_PAGES=1 vite build",
     "build:pages:with-cache": "npm run build:pages && node scripts/build-article-body-snapshot.mjs dist/article-bodies.json",
     "collect:daily": "bash scripts/collect-daily.sh",
+    "publish:shared": "node scripts/publish-shared-update.mjs",
     "start": "NODE_USE_ENV_PROXY=1 node server/index.js",
     "test": "node --test"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
     "cheerio": "^1.2.0",
     "docx": "^9.9.0",
     "express": "^4.21.2",

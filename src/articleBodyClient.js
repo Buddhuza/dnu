@@ -15,7 +15,12 @@ async function cachedOnlineBody(url, fetchImpl) {
   return snapshot?.articles?.[url]?.body ? snapshot.articles[url] : null;
 }
 
-export async function loadFullArticle(article, { serverAvailable = false, cacheOnly = false, fetchImpl = fetch } = {}) {
+export async function loadFullArticle(article, { serverAvailable = false, cacheOnly = false, sharedLookup = null, fetchImpl = fetch } = {}) {
+  if (sharedLookup) {
+    const shared = await sharedLookup(article.url);
+    if (shared?.body) return shared;
+    if (cacheOnly) throw new Error('No full article body is available in the shared update.');
+  }
   const cached = await getStoredArticleBody(article.url);
   if (cached?.body && (!article.translated || cached.translated)) return cached;
   if (cacheOnly || article.fromSpreadsheet) throw new Error('No full body was provided in the imported sheet.');

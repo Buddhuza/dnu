@@ -382,3 +382,16 @@
   .workspace:not(.no-sidebar) .source-copy{flex:0 0 auto;min-width:max-content}
   .workspace:not(.no-sidebar) .source-copy strong{overflow:visible;text-overflow:clip}
 }
+
+.editor-login-dialog{width:min(100%,390px)}
+.editor-login-dialog label{display:block;margin:13px 0;font-size:14px;font-weight:700}
+.editor-login-dialog input{display:block;width:100%;margin-top:6px;padding:10px;border:1px solid #a7bbba;border-radius:6px;background:var(--site-surface,#fff);color:var(--site-text,#182a36)}
+.shared-save-status{font-size:12px;color:var(--site-text,#182a36);max-width:220px}
+.shared-warning{padding:8px 18px;background:#fff0df;color:#783c1a;font-size:13px}
+@media(max-width:800px){
+  .topbar{grid-template-columns:minmax(0,1fr) auto auto}
+  .topbar .mode-button:not(.login-button){grid-column:2;grid-row:1}
+  .topbar .login-button{grid-column:3;grid-row:1}
+  .topbar .manage-button{grid-column:1/-1;grid-row:2}
+  .topbar .shared-save-status{grid-column:1/-1;grid-row:3;justify-self:end}
+}
