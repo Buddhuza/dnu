@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import JSZip from 'jszip';
 import { createSpreadsheet } from './spreadsheetExport.js';
-import { convertSpreadsheetRows, readSpreadsheet } from './spreadsheetImport.js';
+import { convertSpreadsheetRows, listSpreadsheetSheets, readSpreadsheet } from './spreadsheetImport.js';
 import { reportStoryText } from './reportText.js';
 import { displaySiteContent, normalizeSiteConfig } from './siteConfig.js';
 
@@ -61,6 +61,25 @@ test('Excel files with shared strings and numeric dates use their column heading
   assert.equal(rows[0].heading, 'News headline');
   assert.equal(rows[0].url, 'https://example.com/news');
   assert.equal(rows[0].date, '46318');
+});
+
+test('SITCEN workbook defaults to its dated selection and can open Audit separately', async () => {
+  const zip = new JSZip();
+  zip.file('xl/workbook.xml', '<workbook xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="2026-10-30_Rejected" r:id="rId1"/><sheet name="2026-10-30" r:id="rId2"/><sheet name="2026-10-30_Audit" r:id="rId3"/></sheets></workbook>');
+  zip.file('xl/_rels/workbook.xml.rels', '<Relationships><Relationship Id="rId1" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Target="worksheets/sheet3.xml"/></Relationships>');
+  const worksheet = (headline, published) => `<worksheet><sheetData><row r="1"><c r="A1" t="str"><v>Date</v></c><c r="B1" t="str"><v>Category</v></c><c r="C1" t="str"><v>Headline</v></c><c r="D1" t="str"><v>Source</v></c><c r="E1" t="str"><v>Link</v></c><c r="F1" t="str"><v>PublishedUTC</v></c><c r="G1" t="str"><v>Country</v></c></row><row r="2"><c r="A2" t="str"><v>2026-10-30</v></c><c r="B2" t="str"><v>Eastern Europe</v></c><c r="C2" t="str"><v>${headline}</v></c><c r="D2" t="str"><v>BBC</v></c><c r="E2" t="str"><v>https://www.bbc.com/news/example</v></c><c r="F2" t="str"><v>${published}</v></c><c r="G2" t="str"><v>Ukraine</v></c></row></sheetData></worksheet>`;
+  zip.file('xl/worksheets/sheet1.xml', '<worksheet><sheetData/></worksheet>');
+  zip.file('xl/worksheets/sheet2.xml', worksheet('Morning headline', '2026-10-29T12:00:00Z'));
+  zip.file('xl/worksheets/sheet3.xml', worksheet('Audit headline', '2026-10-28T11:00:00Z'));
+  const file = new File([await zip.generateAsync({ type: 'uint8array' })], 'SITCEN.xlsx');
+  assert.deepEqual((await listSpreadsheetSheets(file)).sort(), ['2026-10-30', '2026-10-30_Audit']);
+  const morning = convertSpreadsheetRows(await readSpreadsheet(file));
+  assert.equal(morning.articles[0].title, 'Morning headline');
+  assert.equal(morning.articles[0].publishedAt, '2026-10-29T12:00:00.000Z');
+  assert.equal(morning.articles[0].subsection, 'Ukraine');
+  assert.equal(morning.bodies.length, 0);
+  const audit = convertSpreadsheetRows(await readSpreadsheet(file, '2026-10-30_Audit'));
+  assert.equal(audit.articles[0].title, 'Audit headline');
 });
 
 test('the empty DNU keeps its configured structure and shows imported stories under their headings', () => {

@@ -362,6 +362,7 @@
 .import-spreadsheet-dialog{width:min(100%,680px)}
 .import-file-label{display:block;font-weight:800;margin:16px 0 7px}
 .import-spreadsheet-dialog input[type="file"]{width:100%;padding:10px;font-size:14px}
+.import-spreadsheet-dialog select{display:block;width:100%;margin-top:7px;padding:9px;border:1px solid #a7bbba;border-radius:6px;background:var(--site-surface,#fff);color:var(--site-text,#182a36);font-size:14px}
 .import-spreadsheet-preview{margin-top:15px;border:1px solid #a7bbba;border-radius:8px;padding:12px}
 .import-spreadsheet-preview p{margin:0 0 9px}
 .import-spreadsheet-preview ul{max-height:210px;overflow:auto;margin:0;padding-left:20px}

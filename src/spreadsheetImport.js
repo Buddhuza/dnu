@@ -10,13 +10,16 @@ import { articlePlacement } from '../server/importArticle.js';
 
 const headerAliases = {
   date: ['date', 'publicationdate', 'publishedat'],
+  publishedUtc: ['publishedutc'],
   source: ['source', 'agency', 'publisher'],
-  region: ['region', 'section'],
-  countries: ['countries', 'country'],
+  region: ['region', 'section', 'category'],
+  countries: ['countries'],
+  country: ['country'],
   organisations: ['organizations', 'organisations', 'organization', 'organisation'],
   url: ['sourceurl', 'url', 'articleurl', 'link', 'hyperlink'],
   heading: ['heading', 'headline', 'title'],
   summary: ['summary', 'description'],
+  shortSummary: ['shortsummary'],
   body: ['body', 'articlebody', 'articletext', 'fulltext', 'text'],
   paywall: ['paywall', 'accessstatus']
 };
@@ -32,6 +35,48 @@ const miscRegions = new Map([
   ['northamerica', 'NORTH AMERICA'], ['internationalorganisations', 'INTERNATIONAL ORGANISATIONS'],
   ['internationalorganizations', 'INTERNATIONAL ORGANISATIONS']
 ]);
+const workbookCache = new WeakMap();
+
+async function workbook(file) {
+  if (!workbookCache.has(file)) workbookCache.set(file, JSZip.loadAsync(await file.arrayBuffer()));
+  return workbookCache.get(file);
+}
+
+async function worksheetOptions(zip) {
+  const workbookFile = zip.file('xl/workbook.xml');
+  if (!workbookFile) return Object.keys(zip.files).filter(name => /^xl\/worksheets\/sheet\d+\.xml$/i.test(name))
+    .sort((a, b) => Number(a.match(/sheet(\d+)/i)[1]) - Number(b.match(/sheet(\d+)/i)[1]))
+    .map((path, index) => ({ name: `Sheet${index + 1}`, path }));
+  const workbookXml = await workbookFile.async('string');
+  const relationshipsXml = await zip.file('xl/_rels/workbook.xml.rels')?.async('string') || '';
+  const paths = new Map();
+  const relParser = sax.parser(true);
+  relParser.onopentag = node => {
+    if (node.name.split(':').at(-1) !== 'Relationship') return;
+    const path = String(node.attributes.Target || '');
+    paths.set(node.attributes.Id, path.startsWith('/') ? path.slice(1) : `xl/${path}`);
+  };
+  relParser.write(relationshipsXml).close();
+  const sheets = [];
+  const parser = sax.parser(true);
+  parser.onopentag = node => {
+    if (node.name.split(':').at(-1) !== 'sheet') return;
+    const name = String(node.attributes.name || '');
+    const path = paths.get(node.attributes['r:id']);
+    if (name && path && zip.file(path)) sheets.push({ name, path });
+  };
+  parser.write(workbookXml).close();
+  return sheets;
+}
+
+export async function listSpreadsheetSheets(file) {
+  if (/\.csv$/i.test(file.name)) return [];
+  if (!/\.xlsx$/i.test(file.name)) throw new Error('Choose an .xlsx or .csv spreadsheet.');
+  if (file.size > 40_000_000) throw new Error('Choose a spreadsheet smaller than 40 MB.');
+  const sheets = await worksheetOptions(await workbook(file));
+  return sheets.map(({ name }) => name).filter(name => /^\d{4}-\d{2}-\d{2}(?:_Audit)?$/i.test(name))
+    .sort((a, b) => b.localeCompare(a));
+}
 
 function readSharedStrings(xml = '') {
   const strings = [];
@@ -102,16 +147,18 @@ function readCsv(value) {
   return rows;
 }
 
-export async function readSpreadsheet(file) {
-  if (file.size > 15_000_000) throw new Error('Choose a spreadsheet smaller than 15 MB.');
+export async function readSpreadsheet(file, sheetName = '') {
+  if (file.size > 40_000_000) throw new Error('Choose a spreadsheet smaller than 40 MB.');
   let rows;
   if (/\.csv$/i.test(file.name)) rows = readCsv(await file.text());
   else if (/\.xlsx$/i.test(file.name)) {
-    const zip = await JSZip.loadAsync(await file.arrayBuffer());
-    const sheetName = Object.keys(zip.files).filter(name => /^xl\/worksheets\/sheet\d+\.xml$/i.test(name)).sort((a, b) => Number(a.match(/sheet(\d+)/i)[1]) - Number(b.match(/sheet(\d+)/i)[1]))[0];
-    if (!sheetName) throw new Error('No worksheet was found in this Excel file.');
+    const zip = await workbook(file);
+    const sheets = await worksheetOptions(zip);
+    const chosen = sheetName ? sheets.find(sheet => sheet.name === sheetName)
+      : sheets.filter(sheet => /^\d{4}-\d{2}-\d{2}$/.test(sheet.name)).sort((a, b) => b.name.localeCompare(a.name))[0] || sheets[0];
+    if (!chosen) throw new Error(sheetName ? `Worksheet ${sheetName} was not found.` : 'No worksheet was found in this Excel file.');
     const shared = zip.file('xl/sharedStrings.xml') ? readSharedStrings(await zip.file('xl/sharedStrings.xml').async('string')) : [];
-    rows = readWorksheet(await zip.file(sheetName).async('string'), shared);
+    rows = readWorksheet(await zip.file(chosen.path).async('string'), shared);
   } else throw new Error('Choose an .xlsx or .csv spreadsheet.');
   const headerIndex = rows.findIndex(row => Object.values(headerAliases).some(aliases => row.some(value => aliases.includes(compact(value)))));
   if (headerIndex < 0) throw new Error('No column headings were found.');
@@ -170,11 +217,16 @@ function paywallReason(row) {
 }
 
 function placementFromRow(row, title, summary, existing, leadPrefix) {
-  const region = text(row.region);
+  const region = text(row.region).replace(/\s+Region$/i, '');
   const regional = regionalSections.find(section => compact(section.id) === compact(region));
-  const countries = String(row.countries || '').split(/[,;]/).map(text).filter(Boolean);
+  const countries = String(row.countries || row.country || '').split(/[,;]/).map(text).filter(Boolean);
   const organisations = String(row.organisations || '').split(/[,;]/).map(text).filter(Boolean);
   const normalizeCountry = value => ({ US: 'United States', UK: 'United Kingdom', UN: 'UN' })[value] || value;
+  const regionalCountry = countries.map(normalizeCountry).map(name => name === 'Kosovo' ? 'Serbia / Kosovo' : name).find(name => regionalSections.some(section => section.subsections.includes(name)));
+  if (!regional && regionalCountry) {
+    const section = regionalSections.find(item => item.subsections.includes(regionalCountry));
+    return { sectionId: section.id, subsection: regionalCountry, country: '' };
+  }
   if (regional) {
     const subsection = countries.map(normalizeCountry).find(name => regional.subsections.includes(name)) || regional.subsections.find(name => new RegExp(`\\b${name}\\b`, 'i').test(title));
     if (subsection) return leadPrefix ? { sectionId: 'Lead stories', subsection, country: '' } : { sectionId: regional.id, subsection, country: '' };
@@ -187,6 +239,12 @@ function placementFromRow(row, title, summary, existing, leadPrefix) {
     if (country) return leadPrefix && misc === 'MIDDLE EAST / NORTH AFRICA'
       ? { sectionId: 'Lead stories', subsection: 'Middle East', country: '' }
       : { sectionId: 'Miscellaneous', subsection: misc, country };
+  }
+  if (!misc && !regional) {
+    for (const [subsection, names] of Object.entries(MISCELLANEOUS_COUNTRIES)) {
+      const country = countries.map(normalizeCountry).find(name => names.includes(name));
+      if (country) return { sectionId: 'Miscellaneous', subsection, country };
+    }
   }
   return existing
     ? { sectionId: existing.sectionId || existing.section, subsection: existing.subsection || '', country: existing.country || '' }
@@ -221,7 +279,8 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
     if (!existing && row.body && !['eng', 'und'].includes(franc(row.body.slice(0, 1500), { minLength: 100 }))) {
       skipped.push({ row: row.rowNumber, reason: 'Article body is not English; translate it before import' }); continue;
     }
-    const summary = text(row.summary) || summaryFromBody(row.body, title) || existing?.summary;
+    const suggestedSummary = [row.shortSummary, row.summary].map(text).find(value => value && compact(value) !== compact(title)) || '';
+    const summary = suggestedSummary || summaryFromBody(row.body, title) || existing?.summary;
     const leadPrefix = firstRegional > 0 && index < firstRegional;
     const placement = placementFromRow(row, title, summary, existing, leadPrefix);
     if (!placement?.sectionId || !placement.subsection && placement.sectionId !== 'South Eastern Europe' || placement.sectionId === 'Miscellaneous' && !placement.country) {
@@ -231,7 +290,7 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
     const article = {
       id: existing?.id || `spreadsheet-${key}`, url: parsed.href, sourceId: existing?.sourceId || source?.id || 'spreadsheet', sourceName,
       title, summary, originalHeadline: text(row.heading), translated: existing?.translated === true,
-      publishedAt: spreadsheetDate(row.date, existing?.publishedAt || importedAt),
+      publishedAt: spreadsheetDate(row.publishedUtc || row.date, existing?.publishedAt || importedAt),
       reviewed: true, ...placement, section: placement.sectionId, fromSpreadsheet: true
     };
     const restriction = blockedPlacementReason(article);
