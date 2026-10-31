@@ -6,7 +6,7 @@ export const FEED_URLS = {
   'source-36': 'https://www.pravda.com.ua/eng/rss/',
   'source-61': 'https://civil.ge/feed/',
   'source-65': 'https://oc-media.org/feed/',
-  'source-79': 'https://www.rferl.org/api/zy-pqye',
+  'source-79': 'https://www.rferl.org/rss/',
   'source-80': 'https://rss.dw.com/rdf/rss-en-all',
   'source-81': 'https://www.politico.eu/feed/',
   'source-82': 'https://www.euronews.com/rss?level=theme&name=news',
