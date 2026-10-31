@@ -1,4 +1,4 @@
-import { writeFile } from 'node:fs/promises';
+import { writeFile, readFile } from 'node:fs/promises';
 import { load } from 'cheerio';
 import { collectFeed, FEED_URLS } from '../server/feeds.js';
 import { extractArticleBody } from '../server/articleBody.js';
@@ -37,16 +37,39 @@ const candidates = feeds.flatMap(feed => feed.items.map(item => ({ ...item, sour
   .filter(item => relevant.test(item.title) && !excludedHeadlineReason(item.title, '', item.url))
   .filter(item => !/\/(?:video|videos|podcast|podcasts|live|liveblog|newsletters)(?:\/|$)/i.test(new URL(item.url).pathname));
 
+const cached = new Map();
+for (const path of ['data/feedrun-result.json', 'data/direct-feed-36h-result.json']) {
+  try {
+    const previous = JSON.parse(await readFile(path, 'utf8'));
+    for (const article of previous.articles || []) if (article.body && article.pageDate && article.status === 'verified') cached.set(article.url, article);
+  } catch { /* A first run may have no previous collection. */ }
+}
+
 let next = 0;
 const results = Array(candidates.length);
 async function worker() {
   while (next < candidates.length) {
     const index = next++;
     const item = candidates[index];
+    if (cached.has(item.url)) {
+      results[index] = { ...item, ...cached.get(item.url), title: item.title, publishedAt: item.publishedAt, fromCache: true };
+      continue;
+    }
     try {
-      const response = await fetch(item.url, { headers: { Accept: 'text/html', 'User-Agent': 'Mozilla/5.0 (compatible; DNUFeedReader/1.0)' }, signal: AbortSignal.timeout(18000) });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const html = await response.text();
+      const pageUrls = item.sourceId === 'source-158'
+        ? [item.url, item.url.replace(/\/?$/, '/amp/'), `${item.url}${item.url.includes('?') ? '&' : '?'}output=amp`]
+        : [item.url];
+      let html = '', fetchedUrl = '', lastError;
+      for (const pageUrl of pageUrls) {
+        try {
+          const response = await fetch(pageUrl, { headers: { Accept: 'text/html', 'User-Agent': 'Mozilla/5.0 (compatible; DNUFeedReader/1.0)' }, signal: AbortSignal.timeout(18000) });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          html = await response.text();
+          fetchedUrl = pageUrl;
+          break;
+        } catch (error) { lastError = error; }
+      }
+      if (!html) throw lastError || new Error('No publisher article page was accessible');
       if (html.length > 4_000_000) throw new Error('Page too large');
       const $ = load(html);
       const dates = [
@@ -60,7 +83,7 @@ async function worker() {
       const pageDate = publicationTimestamp(...dates);
       const body = extractArticleBody({ html, metadata: { sourceURL: item.url } }, item.title);
       const words = body.split(/\s+/).filter(Boolean).length;
-      results[index] = { ...item, pageDate, pageDateMatchesFeed: pageDate ? Math.abs(Date.parse(pageDate) - Date.parse(item.publishedAt)) < 24 * 60 * 60 * 1000 : false, body: words >= 60 ? body : '', bodyWords: words, status: pageDate && words >= 60 ? 'verified' : 'incomplete' };
+      results[index] = { ...item, fetchedUrl, pageDate, pageDateMatchesFeed: pageDate ? Math.abs(Date.parse(pageDate) - Date.parse(item.publishedAt)) < 24 * 60 * 60 * 1000 : false, body: words >= 60 ? body : '', bodyWords: words, status: pageDate && words >= 60 ? 'verified' : 'incomplete' };
     } catch (error) {
       results[index] = { ...item, status: 'failed', error: String(error.message || error) };
     }
