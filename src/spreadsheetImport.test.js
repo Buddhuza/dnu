@@ -182,6 +182,9 @@ test('a ship attacked off Bulgaria is filed under Bulgaria, including in an olde
   const olderImport = { ...article, sectionId: 'South Eastern Europe', section: 'South Eastern Europe', subsection: 'Albania', country: '' };
   const displayed = displaySiteContent([olderImport], normalizeSiteConfig({}, []));
   assert.deepEqual([displayed[0].sectionId, displayed[0].subsection, displayed[0].country], ['Miscellaneous', 'WESTERN / CENTRAL EUROPE', 'Bulgaria']);
+
+  const bulgarianCoast = convertSpreadsheetRows([{ ...row, countries: '', heading: 'Container ship sinks after drone attack off Bulgarian coast' }]).articles[0];
+  assert.deepEqual([bulgarianCoast.sectionId, bulgarianCoast.subsection, bulgarianCoast.country], ['Miscellaneous', 'WESTERN / CENTRAL EUROPE', 'Bulgaria']);
 });
 
 test('a region-wide OSCE conference appears before South Eastern Europe country headings', () => {

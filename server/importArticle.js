@@ -65,7 +65,7 @@ function inferredPlacement(text) {
     if (subsection === 'AFGHANISTAN / PAKISTAN' && !/\bRussia|Russian|Central Asia|Kazakh|Kyrgyz|Tajik|Turkmen|Uzbek\b/i.test(text)) continue;
     return { sectionId: 'Miscellaneous', subsection, country };
   }
-  const westernMatch = western.map(country => ({ country, index: text.search(new RegExp(`\\b${country}\\b`, 'i')) })).filter(item => item.index >= 0).sort((a, b) => a.index - b.index)[0];
+  const westernMatch = western.map(country => ({ country, index: text.search(country === 'Bulgaria' ? /\bBulgari(?:a|an)\b/i : new RegExp(`\\b${country}\\b`, 'i')) })).filter(item => item.index >= 0).sort((a, b) => a.index - b.index)[0];
   if (westernMatch) return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: ['UK', 'Britain', 'England', 'Scotland', 'Wales'].includes(westernMatch.country) ? 'United Kingdom' : westernMatch.country };
   for (const organisation of organisations) if (new RegExp(`\\b${organisation}\\b`, 'i').test(text)) return { sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: organisation };
   return null;
