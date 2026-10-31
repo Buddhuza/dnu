@@ -6,8 +6,11 @@ import { publicationTimestamp } from '../server/importArticle.js';
 import { excludedHeadlineReason } from '../src/headlinePolicy.js';
 import sources from '../sources.json' with { type: 'json' };
 
+const windowHours = Number(process.env.DIRECT_FEED_WINDOW_HOURS || 36);
+if (!Number.isInteger(windowHours) || windowHours < 1 || windowHours > 168) throw new Error('DIRECT_FEED_WINDOW_HOURS must be an integer from 1 to 168.');
+const resultPath = process.env.DIRECT_FEED_RESULT_PATH || 'data/direct-feed-36h-result.json';
 const end = new Date();
-const start = new Date(end.getTime() - 36 * 60 * 60 * 1000);
+const start = new Date(end.getTime() - windowHours * 60 * 60 * 1000);
 const sourceById = new Map(sources.map(source => [source.id, source]));
 const feedAlternates = {
   'source-79': ['https://www.rferl.org/rss/'],
@@ -64,6 +67,6 @@ async function worker() {
   }
 }
 await Promise.all(Array.from({ length: 8 }, () => worker()));
-const output = { method: 'Direct publisher feeds and article pages; no Firecrawl or crawler service', windowStart: start.toISOString(), windowEnd: end.toISOString(), feeds, candidateCount: candidates.length, articles: results };
-await writeFile('data/direct-feed-36h-result.json', `${JSON.stringify(output, null, 2)}\n`);
+const output = { method: 'Direct publisher feeds and article pages; no Firecrawl or crawler service', windowHours, windowStart: start.toISOString(), windowEnd: end.toISOString(), feeds, candidateCount: candidates.length, articles: results };
+await writeFile(resultPath, `${JSON.stringify(output, null, 2)}\n`);
 console.log(JSON.stringify({ windowStart: output.windowStart, windowEnd: output.windowEnd, feedItems: feeds.reduce((sum, feed) => sum + feed.inWindow, 0), candidates: candidates.length, verified: results.filter(item => item.status === 'verified' && item.pageDateMatchesFeed).length, failed: results.filter(item => item.status === 'failed').length }));
