@@ -1,7 +1,9 @@
 export function excludedHeadlineReason(value, summary = '') {
   const headline = String(value || '').trim().replace(/^\(文A\)\s*/, '');
   const detail = `${headline} ${summary}`;
+  if (/^why\b/i.test(headline)) return 'Why headlines are excluded';
   if (headline.includes('?')) return 'Question headlines are excluded';
+  if (/\bMehriban Aliyeva\b/i.test(detail)) return 'Mehriban Aliyeva stories are excluded';
   if (/^(?:analysis|opinion|commentary|editorial|feature|in depth|explainer)\b/i.test(headline)) return 'Analysis, opinion and feature headlines are excluded';
   if (/^Critical developments ahead of\b/i.test(headline) && /\bshifting balances\b/i.test(headline)) return 'Broad analytical summit preview rather than a specific news development';
   if (/(?:^|:\s*)(?:experts?|analysts?)\s*$/i.test(headline)) return 'Expert commentary is excluded';

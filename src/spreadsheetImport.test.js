@@ -314,3 +314,16 @@ test('a broad summit preview is omitted from imported and displayed editions', (
   const olderImport = { id: 'older-summit', title: row.heading, summary: row.summary, url: row.url, sourceName: row.source, sectionId: 'Central Asia', section: 'Central Asia', subsection: 'Uzbekistan', fromSpreadsheet: true };
   assert.deepEqual(displaySiteContent([olderImport], normalizeSiteConfig({}, [])), []);
 });
+
+test('Why headlines and Mehriban Aliyeva stories are omitted from import and display', () => {
+  const rows = [
+    { rowNumber: 2, date: '2026-10-30', source: 'Azernews', region: 'South Caucasus', countries: 'Azerbaijan', url: 'https://example.com/why-summit', heading: 'Why President Aliyev’s absence from Turkic Summit matters more than it seems' },
+    { rowNumber: 3, date: '2026-10-30', source: 'Trend', region: 'South Caucasus', countries: 'Azerbaijan', url: 'https://example.com/mehriban', heading: 'First Vice-President Mehriban Aliyeva attended performance of The Seagull' },
+    { rowNumber: 4, date: '2026-10-30', source: 'Trend', region: 'South Caucasus', countries: 'Azerbaijan', url: 'https://example.com/vice-president-event', heading: 'First vice-president attends cultural event', summary: 'Mehriban Aliyeva attended the performance.' }
+  ];
+  const result = convertSpreadsheetRows(rows);
+  assert.equal(result.articles.length, 0);
+  assert.deepEqual(result.skipped.map(item => item.reason), ['Why headlines are excluded', 'Mehriban Aliyeva stories are excluded', 'Mehriban Aliyeva stories are excluded']);
+  const old = rows.map(row => ({ id: row.url, url: row.url, title: row.heading, summary: row.summary || '', sourceName: row.source, sectionId: 'South Caucasus', section: 'South Caucasus', subsection: 'Azerbaijan', fromSpreadsheet: true }));
+  assert.deepEqual(displaySiteContent(old, normalizeSiteConfig({}, [])), []);
+});
