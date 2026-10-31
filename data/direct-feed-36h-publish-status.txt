@@ -1,0 +1,2 @@
+not-configured
+The repository has no SUPABASE_SERVICE_ROLE_KEY secret.
