@@ -43,6 +43,7 @@ When a user gives a new standing editorial rule, update this document and the re
 - For a story involving several countries within South Eastern Europe, Eastern Europe, South Caucasus or Central Asia, file it under the reporting outlet’s country if that country is a subject. Otherwise use the principal actor or main event location. Do not infer a country solely from a publisher name appended to a headline.
 - South Eastern Europe may contain a section-level OSCE story before the country headings when its subject spans the region, as with an OSCE Secretary General visit. South Eastern Europe: Albania; Bosnia and Herzegovina; Montenegro; North Macedonia; Serbia; Serbia / Kosovo. Put Kosovo coverage under Serbia / Kosovo.
 - Eastern Europe: Belarus; Moldova; Moldova / Transdniestria; Ukraine. Put Transdniestria coverage under Moldova / Transdniestria.
+- File reporting about conditions for prisoners in Belarus under Belarus, even when a foreign government's reaction leads the headline.
 - South Caucasus: Armenia; Azerbaijan; Georgia. Georgia’s breakaway-republic stories belong under Georgia. The older Georgia / Abkhazia / South Ossetia heading should not be used for new output.
 - Central Asia: Kazakhstan; Kyrgyzstan; Tajikistan; Turkmenistan; Uzbekistan.
 - Miscellaneous has these subsections, in order: WESTERN / CENTRAL EUROPE; MIDDLE EAST / NORTH AFRICA; RUSSIA / EURASIA; AFGHANISTAN / PAKISTAN; NORTH EAST ASIA; NORTH AMERICA; INTERNATIONAL ORGANISATIONS.
@@ -55,6 +56,7 @@ When a user gives a new standing editorial rule, update this document and the re
 ## 5. Story text
 
 - Preserve the article’s exact factual headline in content while rendering only all-caps headlines in sentence case; preserve mixed-case and title-case headlines as published. Keep abbreviations, proper names and official acronyms capitalised. Do not append a second agency name accidentally embedded in a headline.
+- Remove a leading publisher label “EXCLUSIVE:” from DNU headlines in web, Word and email versions. Keep the unaltered publisher headline for the database export.
 - In summary mode, follow the headline with a period, then one short factual sentence that adds a concrete important detail from the article, from the first substantive paragraph, especially its opening sentences, without repeating the headline. Finish with a period, then the agency name in parentheses linked to the original article. Avoid long, general summaries.
 - When importing a spreadsheet, leave the summary blank if the sheet supplies neither a full article body nor information beyond the headline. Do not invent an added detail or reuse an older cached summary for that row.
 - In compressed view (headline-only mode), omit the summary and put the linked agency immediately after the headline. Remove a trailing period from the headline.
