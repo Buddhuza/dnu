@@ -1,9 +1,11 @@
-name: Publish reviewed direct-feed edition
+name: Publish reviewed FEEDRUN edition
 
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     paths:
+      - data/publish-request.json
       - .github/workflows/publish-direct-feed-36h.yml
 
 permissions:
@@ -24,17 +26,17 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
-            printf 'not-configured\nThe repository has no SUPABASE_SERVICE_ROLE_KEY secret.\n' > data/direct-feed-36h-publish-status.txt
-          elif npm run publish:shared > data/direct-feed-36h-publish-status.txt 2>&1; then
-            sed -i '1i published' data/direct-feed-36h-publish-status.txt
+            printf 'not-configured\nThe repository has no SUPABASE_SERVICE_ROLE_KEY secret.\n' > data/feedrun-publish-status.txt
+          elif npm run publish:shared > data/feedrun-publish-status.txt 2>&1; then
+            sed -i '1i published' data/feedrun-publish-status.txt
           else
-            sed -i '1i failed' data/direct-feed-36h-publish-status.txt
+            sed -i '1i failed' data/feedrun-publish-status.txt
           fi
       - name: Save publication status
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b feed-publish-${{ github.run_id }}
-          git add -f data/direct-feed-36h-publish-status.txt
+          git add -f data/feedrun-publish-status.txt
           git commit -m "Save reviewed edition publication status"
           git push origin HEAD:feed-publish-${{ github.run_id }}
