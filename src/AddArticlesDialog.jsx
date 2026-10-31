@@ -1,17 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { formatViennaDateTime } from './viennaTime.js';
+import { formatViennaDateTime, viennaWallTimeToIso } from './viennaTime.js';
 import { MISCELLANEOUS_COUNTRIES, compareCountryLabels } from './newsSections.js';
 import { canonicalArticleUrl } from './siteConfig.js';
 import { blockedPlacementReason, directGovernmentPublicationReason } from './sourcePolicy.js';
 import { articlePlacement, publicArticleUrl } from '../server/importArticle.js';
 import { duplicateGroups, duplicateGroupHue } from './storyDuplicates.js';
 import { excludedHeadlineReason } from './headlinePolicy.js';
+import { articleHintsFromUrl, articleHintsFromPage } from './urlArticleHints.js';
 
 const NEW = '__new__';
 
-export default function AddArticlesDialog({ sections, customCountries = {}, existingArticles = [], existingUrls, remainingSlots, onAdd, onClose }) {
-  const [manual, setManual] = useState({ title: '', summary: '', sourceName: '', url: '' });
+export default function AddArticlesDialog({ sections, sources = [], customCountries = {}, existingArticles = [], existingUrls, remainingSlots, onAdd, onClose }) {
+  const [manual, setManual] = useState({ title: '', summary: '', sourceName: '', url: '', date: '' });
   const [manualError, setManualError] = useState('');
+  const [urlBusy, setUrlBusy] = useState(false);
+  const [urlNotice, setUrlNotice] = useState('');
   const [drafts, setDrafts] = useState([]);
   const [completedEntries, setCompletedEntries] = useState(0);
   const dialogRef = useRef(null);
@@ -46,6 +49,28 @@ export default function AddArticlesDialog({ sections, customCountries = {}, exis
     changeDraft(draft.id, { added: true });
   }
 
+  async function useArticleUrl() {
+    const url = publicArticleUrl(manual.url.trim());
+    if (!url) { setManualError('Enter a public HTTPS article URL first.'); return; }
+    setManualError('');
+    setUrlBusy(true);
+    const fromUrl = articleHintsFromUrl(url.href, sources);
+    let fromPage = {}, pageAvailable = false;
+    try { fromPage = await articleHintsFromPage(url.href); pageAvailable = true; }
+    catch { /* Most publishers block cross-origin browser requests; URL hints still work. */ }
+    const title = fromPage.title || fromUrl.title;
+    const sourceName = fromUrl.sourceName || fromPage.sourceName;
+    const summary = fromPage.summary || '';
+    const date = fromPage.date || fromUrl.date;
+    setManual(current => current.url.trim() === url.href || current.url.trim() === manual.url.trim()
+      ? { ...current, title: current.title || title, sourceName: current.sourceName || sourceName, summary: current.summary || summary, date: current.date || date }
+      : current);
+    setUrlNotice(pageAvailable ? 'Page metadata suggested. Verify the headline, summary, agency and date before adding.'
+      : title || sourceName || date ? 'Suggestions came from the URL; verify the exact headline and write a summary if needed.'
+        : 'This URL does not reveal article details. Enter the headline, agency and summary yourself.');
+    setUrlBusy(false);
+  }
+
   function addManual(event) {
     event.preventDefault();
     const title = manual.title.trim(), summary = manual.summary.trim();
@@ -56,9 +81,12 @@ export default function AddArticlesDialog({ sections, customCountries = {}, exis
     if ([...existingUrls, ...drafts.map(draft => draft.url)].some(value => canonicalArticleUrl(value) === canonicalArticleUrl(url.href))) { setManualError('This article link is already in the update or review list.'); return; }
     if (remainingSlots <= drafts.filter(draft => !draft.added).length) { setManualError('The update has reached its 100 added-story limit.'); return; }
     const placement = articlePlacement({}, title, summary) || { sectionId: '', subsection: '', country: '' };
-    setDrafts(current => [...current, { id: `manual-${url.href}`, url: url.href, sourceId: 'manual', sourceName, title, summary, publishedAt: new Date().toISOString(), timeSource: 'current', reviewed: true, hidden: false, russianSource: false, added: false, ...placement }]);
-    setManual({ title: '', summary: '', sourceName: '', url: '' });
+    const [year, month, day] = manual.date.split('-').map(Number);
+    const publishedAt = manual.date ? viennaWallTimeToIso(year, month, day, 12) : null;
+    setDrafts(current => [...current, { id: `manual-${url.href}`, url: url.href, sourceId: 'manual', sourceName, title, summary, publishedAt: publishedAt || new Date().toISOString(), timeSource: publishedAt ? 'inferred' : 'current', reviewed: true, hidden: false, russianSource: false, added: false, ...placement }]);
+    setManual({ title: '', summary: '', sourceName: '', url: '', date: '' });
     setManualError('');
+    setUrlNotice('');
     setCompletedEntries(count => count + 1);
   }
 
@@ -66,7 +94,17 @@ export default function AddArticlesDialog({ sections, customCountries = {}, exis
     <section className="add-dialog" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="add-dialog-title">
       <div className="add-dialog-heading"><h2 id="add-dialog-title">Add article</h2><button type="button" onClick={onClose} aria-label="Close Add article">×</button></div>
       {remainingSlots < 1 && <p className="add-unavailable" role="status">The update has reached its 100 added-story limit. Remove an added story in Manage site → Stories before adding another.</p>}
-      <form onSubmit={addManual}><label htmlFor="add-headline">Headline</label><input id="add-headline" value={manual.title} maxLength="400" onChange={event => setManual(current => ({ ...current, title: event.target.value }))} autoFocus/><label htmlFor="add-summary">Summary</label><textarea id="add-summary" rows="3" value={manual.summary} maxLength="1200" onChange={event => setManual(current => ({ ...current, summary: event.target.value }))}/><label htmlFor="add-agency">Agency</label><input id="add-agency" value={manual.sourceName} maxLength="100" onChange={event => setManual(current => ({ ...current, sourceName: event.target.value }))}/><label htmlFor="add-link">Hyperlink</label><input id="add-link" type="url" value={manual.url} onChange={event => setManual(current => ({ ...current, url: event.target.value }))} placeholder="https://example.com/article"/>{manualError && <p className="add-manual-error" role="alert">{manualError}</p>}<div className="add-dialog-actions"><button type="button" onClick={onClose}>Close</button><button type="submit" disabled={remainingSlots < 1}>Choose placement</button></div></form>
+      <form onSubmit={addManual}>
+        <label htmlFor="add-link">Article URL</label>
+        <div className="add-url-tools"><input id="add-link" type="url" value={manual.url} onChange={event => { setManual(current => ({ ...current, url: event.target.value })); setUrlNotice(''); }} placeholder="https://example.com/article" autoFocus/><button type="button" onClick={useArticleUrl} disabled={urlBusy || !manual.url.trim()}>{urlBusy ? 'Checking…' : 'Use URL'}</button></div>
+        {urlNotice && <p className="add-url-notice" role="status">{urlNotice}</p>}
+        <label htmlFor="add-headline">Headline</label><input id="add-headline" value={manual.title} maxLength="400" onChange={event => setManual(current => ({ ...current, title: event.target.value }))}/>
+        <label htmlFor="add-summary">Summary</label><textarea id="add-summary" rows="3" value={manual.summary} maxLength="1200" onChange={event => setManual(current => ({ ...current, summary: event.target.value }))}/>
+        <label htmlFor="add-agency">Agency</label><input id="add-agency" value={manual.sourceName} maxLength="100" onChange={event => setManual(current => ({ ...current, sourceName: event.target.value }))}/>
+        <label htmlFor="add-article-date">Article date in Vienna (optional)</label><input id="add-article-date" type="date" value={manual.date} onChange={event => setManual(current => ({ ...current, date: event.target.value }))}/><p className="add-url-notice">A date without a time is shown as 12:00 Vienna time.</p>
+        {manualError && <p className="add-manual-error" role="alert">{manualError}</p>}
+        <div className="add-dialog-actions"><button type="button" onClick={onClose}>Close</button><button type="submit" disabled={remainingSlots < 1 || urlBusy}>Choose placement</button></div>
+      </form>
       {drafts.length > 0 && <div className="add-drafts" ref={draftsRef} aria-live="polite"><h3>Review placement</h3>{drafts.map(draft => {
         const section = availableSections.find(item => item.id === draft.sectionId);
         const subsections = section?.subsections || [];
