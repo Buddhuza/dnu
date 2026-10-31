@@ -222,6 +222,11 @@ function placementFromRow(row, title, summary, existing, leadPrefix) {
   const regional = regionalSections.find(section => compact(section.id) === compact(region));
   const countries = String(row.countries || row.country || '').split(/[,;]/).map(text).filter(Boolean);
   const organisations = String(row.organisations || '').split(/[,;]/).map(text).filter(Boolean);
+  if (!regional && !miscRegions.has(compact(region))) {
+    const inferred = articlePlacement({}, title, summary);
+    if (inferred) return inferred;
+    if (countries.length > 3) return null;
+  }
   const normalizeCountry = value => ({ US: 'United States', UK: 'United Kingdom', UN: 'UN' })[value] || value;
   const regionalCountry = countries.map(normalizeCountry).map(name => name === 'Kosovo' ? 'Serbia / Kosovo' : name).find(name => regionalSections.some(section => section.subsections.includes(name)));
   if (!regional && regionalCountry) {

@@ -2,6 +2,7 @@ import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, orderedSubsections, leadRegiona
 import { blockedPlacementReason } from './sourcePolicy.js';
 import { excludedHeadlineReason } from './headlinePolicy.js';
 import { displaySourceName } from './sourceNames.js';
+import { articlePlacement } from '../server/importArticle.js';
 
 export const THEME_PRESETS = {
   forest: { name: 'Forest', primary: '#123e47', accent: '#bce081', background: '#f4efe6', surface: '#fdfaf4', text: '#182a36', section: '#0070c0', font: 'DM Sans' },
@@ -199,6 +200,15 @@ export function displaySiteContent(articles, config, excludedIds = new Set(), ke
       subsection: edit?.sectionId ? edit.subsection : edit?.subsection || (legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : article.subsection),
       country: edit?.sectionId ? edit.country : edit?.country || article.country || ''
     };
+    if (article.fromSpreadsheet && !edit?.sectionId && displayed.sectionId === 'South Eastern Europe' && displayed.subsection === 'Albania' && !/\b(?:Albania|Albanian|Tirana)\b/i.test(displayed.title)) {
+      const inferred = articlePlacement({}, displayed.title, displayed.summary);
+      if (inferred && (inferred.sectionId !== displayed.sectionId || inferred.subsection !== displayed.subsection)) {
+        displayed.sectionId = inferred.sectionId;
+        displayed.section = sectionById.get(inferred.sectionId)?.name || inferred.sectionId;
+        displayed.subsection = inferred.subsection;
+        displayed.country = inferred.country;
+      }
+    }
     if (!blockedPlacementReason(displayed) && !excludedHeadlineReason(displayed.title, displayed.summary)) items.push(displayed);
   }
   for (const article of config.customArticles) {

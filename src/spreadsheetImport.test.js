@@ -113,3 +113,19 @@ test('routine food poisoning is omitted and a top spreadsheet row alone does not
   const storedPoisoning = { ...converted.articles[0], id: 'older-import', title: rows[0].heading, summary: rows[0].summary, sectionId: 'Lead stories', section: 'Lead stories', subsection: 'Uzbekistan' };
   assert.deepEqual(displaySiteContent([storedPoisoning], normalizeSiteConfig({}, [])), []);
 });
+
+test('a generic country list does not file an Israel story under Albania', () => {
+  const row = {
+    rowNumber: 2, date: '2026-10-30', source: 'BBC', region: 'International',
+    countries: 'Albania; Bosnia and Herzegovina; Serbia; Ukraine; Armenia; Uzbekistan',
+    url: 'https://www.bbc.co.uk/news/articles/israel-election',
+    heading: 'Israeli opposition accuses Netanyahu of trying to delegitimise election',
+    summary: 'Opposition parties challenged the prime minister after the Israeli vote.'
+  };
+  const article = convertSpreadsheetRows([row]).articles[0];
+  assert.deepEqual([article.sectionId, article.subsection, article.country], ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Israel']);
+
+  const olderImport = { ...article, sectionId: 'South Eastern Europe', section: 'South Eastern Europe', subsection: 'Albania', country: '' };
+  const displayed = displaySiteContent([olderImport], normalizeSiteConfig({}, []));
+  assert.deepEqual([displayed[0].sectionId, displayed[0].subsection, displayed[0].country], ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Israel']);
+});
