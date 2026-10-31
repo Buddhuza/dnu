@@ -3,6 +3,7 @@ export function excludedHeadlineReason(value, summary = '') {
   const detail = `${headline} ${summary}`;
   if (headline.includes('?')) return 'Question headlines are excluded';
   if (/^(?:analysis|opinion|commentary|editorial|feature|in depth|explainer)\b/i.test(headline)) return 'Analysis, opinion and feature headlines are excluded';
+  if (/^Critical developments ahead of\b/i.test(headline) && /\bshifting balances\b/i.test(headline)) return 'Broad analytical summit preview rather than a specific news development';
   if (/(?:^|:\s*)(?:experts?|analysts?)\s*$/i.test(headline)) return 'Expert commentary is excluded';
   if (/\b(?:food poisoning|poisoning of \d+ children)\b/i.test(detail) &&
       !/\b(?:terror\w*|attack|deliberate|intentional|targeted|politic\w*|government|minister|resign\w*|security)\b/i.test(headline)) return 'Routine public-health incident outside the security and political scope';

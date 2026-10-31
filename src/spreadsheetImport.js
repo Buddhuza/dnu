@@ -1,7 +1,7 @@
 import JSZip from 'jszip';
 import sax from 'sax';
 import { franc } from 'franc-min';
-import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, isSouthEasternEuropeOsceStory } from './newsSections.js';
+import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, isSouthEasternEuropeRegionalStory, isMontenegroCroatiaDialogueStory, isLithuanianBalticStory, isGreekPrimeMinisterStory } from './newsSections.js';
 import { canonicalArticleUrl } from './siteConfig.js';
 import { viennaWallTimeToIso } from './viennaTime.js';
 import { blockedPlacementReason } from './sourcePolicy.js';
@@ -218,7 +218,10 @@ function paywallReason(row) {
 }
 
 function placementFromRow(row, title, summary, existing, leadPrefix) {
-  if (isSouthEasternEuropeOsceStory(title)) return { sectionId: 'South Eastern Europe', subsection: '', country: '' };
+  if (isGreekPrimeMinisterStory(title)) return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Greece' };
+  if (isSouthEasternEuropeRegionalStory(title)) return { sectionId: 'South Eastern Europe', subsection: '', country: '' };
+  if (isMontenegroCroatiaDialogueStory(title, row.source)) return { sectionId: 'South Eastern Europe', subsection: 'Montenegro', country: '' };
+  if (isLithuanianBalticStory(title, summary, row.source)) return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Lithuania' };
   const region = text(row.region).replace(/\s+Region$/i, '');
   const regional = regionalSections.find(section => compact(section.id) === compact(region));
   const countries = String(row.countries || row.country || '').split(/[,;]/).map(text).filter(Boolean);
@@ -235,6 +238,9 @@ function placementFromRow(row, title, summary, existing, leadPrefix) {
     return { sectionId: section.id, subsection: regionalCountry, country: '' };
   }
   if (regional) {
+    if (regional.id === 'South Eastern Europe' && /\b(?:Kosovo|Kosovar|Pristina|Prishtina)\b/i.test(`${title} ${summary}`)) {
+      return { sectionId: regional.id, subsection: 'Serbia / Kosovo', country: '' };
+    }
     const subsection = countries.map(normalizeCountry).find(name => regional.subsections.includes(name)) || regional.subsections.find(name => new RegExp(`\\b${name}\\b`, 'i').test(title));
     if (subsection) return leadPrefix ? { sectionId: 'Lead stories', subsection, country: '' } : { sectionId: regional.id, subsection, country: '' };
   }

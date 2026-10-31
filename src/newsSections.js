@@ -7,8 +7,24 @@ export const NEWS_SECTIONS = [
   { id: 'Miscellaneous', subsections: ['WESTERN / CENTRAL EUROPE', 'MIDDLE EAST / NORTH AFRICA', 'RUSSIA / EURASIA', 'AFGHANISTAN / PAKISTAN', 'NORTH EAST ASIA', 'NORTH AMERICA', 'INTERNATIONAL ORGANISATIONS'] }
 ];
 
-export function isSouthEasternEuropeOsceStory(title) {
-  return /\bOSCE\b/i.test(String(title || '')) && /\bSouth[\s-]*East(?:ern)?\s+Europe\b/i.test(String(title || ''));
+export function isSouthEasternEuropeRegionalStory(title) {
+  const headline = String(title || '');
+  return /\b(?:Western Balkans|South[\s-]*East(?:ern)?\s+Europe)\b/i.test(headline) &&
+    !/\b(?:Albania|Albanian|Bosnia|Bosnian|Montenegro|Montenegrin|North Macedonia|Macedonian|Serbia|Serbian|Kosovo|Kosovar)\b/i.test(headline);
+}
+
+export function isMontenegroCroatiaDialogueStory(title, sourceName) {
+  return /^MINA$/i.test(String(sourceName || '').trim()) && /\bCroatia\b/i.test(String(title || '')) &&
+    /\b(?:outstanding issues|dialogue|bilateral relations)\b/i.test(String(title || ''));
+}
+
+export function isLithuanianBalticStory(title, summary, sourceName) {
+  return /^LRT$/i.test(String(sourceName || '').trim()) && /\bBaltic states\b/i.test(String(title || '')) &&
+    /\bLithuania\b/i.test(String(summary || ''));
+}
+
+export function isGreekPrimeMinisterStory(title) {
+  return /^(?:EXCLUSIVE:\s*)?Greek\s+(?:PM|prime minister)\b/i.test(String(title || '').trim());
 }
 
 export const MISCELLANEOUS_COUNTRIES = {

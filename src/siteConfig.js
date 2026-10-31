@@ -1,4 +1,4 @@
-import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, orderedSubsections, leadRegionalHeadings, compareCountryLabels, isSouthEasternEuropeOsceStory } from './newsSections.js';
+import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, orderedSubsections, leadRegionalHeadings, compareCountryLabels, isSouthEasternEuropeRegionalStory, isMontenegroCroatiaDialogueStory, isLithuanianBalticStory, isGreekPrimeMinisterStory } from './newsSections.js';
 import { blockedPlacementReason } from './sourcePolicy.js';
 import { excludedHeadlineReason } from './headlinePolicy.js';
 import { displaySourceName } from './sourceNames.js';
@@ -201,11 +201,26 @@ export function displaySiteContent(articles, config, excludedIds = new Set(), ke
       subsection: edit?.sectionId ? edit.subsection : edit?.subsection || (legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : article.subsection),
       country: edit?.sectionId ? edit.country : edit?.country || article.country || ''
     };
-    if (article.fromSpreadsheet && !edit?.sectionId && isSouthEasternEuropeOsceStory(displayed.title)) {
+    if (article.fromSpreadsheet && !edit?.sectionId && isGreekPrimeMinisterStory(displayed.title)) {
+      displayed.sectionId = 'Miscellaneous';
+      displayed.section = sectionById.get(displayed.sectionId)?.name || displayed.sectionId;
+      displayed.subsection = 'WESTERN / CENTRAL EUROPE';
+      displayed.country = 'Greece';
+    } else if (article.fromSpreadsheet && !edit?.sectionId && isSouthEasternEuropeRegionalStory(displayed.title)) {
       displayed.sectionId = 'South Eastern Europe';
       displayed.section = sectionById.get(displayed.sectionId)?.name || displayed.sectionId;
       displayed.subsection = '';
       displayed.country = '';
+    } else if (article.fromSpreadsheet && !edit?.sectionId && isMontenegroCroatiaDialogueStory(displayed.title, displayed.sourceName)) {
+      displayed.sectionId = 'South Eastern Europe';
+      displayed.section = sectionById.get(displayed.sectionId)?.name || displayed.sectionId;
+      displayed.subsection = 'Montenegro';
+      displayed.country = '';
+    } else if (article.fromSpreadsheet && !edit?.sectionId && isLithuanianBalticStory(displayed.title, displayed.summary, displayed.sourceName)) {
+      displayed.sectionId = 'Miscellaneous';
+      displayed.section = sectionById.get(displayed.sectionId)?.name || displayed.sectionId;
+      displayed.subsection = 'WESTERN / CENTRAL EUROPE';
+      displayed.country = 'Lithuania';
     } else if (article.fromSpreadsheet && !edit?.sectionId && regionalSectionIds.has(displayed.sectionId)) {
       const inferred = articlePlacement({}, displayed.title, '');
       const namedLocation = inferred && (regionalSectionIds.has(inferred.sectionId) ||

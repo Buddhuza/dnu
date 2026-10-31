@@ -14,6 +14,7 @@ test('placement uses the report taxonomy and rejects invented classifications', 
   assert.deepEqual(articlePlacement({}, 'European Commission rejects Baltic anti-drone funding request', ''), { sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'EU' });
   assert.deepEqual(articlePlacement({ section: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'Mars' }, 'OSCE chair to visit Armenia', ''), { sectionId: 'South Caucasus', subsection: 'Armenia', country: '' });
   assert.deepEqual(articlePlacement({}, 'Germany signs defence deal with France', ''), { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Germany' });
+  assert.deepEqual(articlePlacement({}, 'Estonia to build 150 bunkers along Russian border', ''), { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Estonia' });
 });
 
 test('imported international coverage of an attack in Ukraine overrides a Russia classification', () => {

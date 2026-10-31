@@ -145,7 +145,7 @@ test('a generic country list does not file a North Korea story under North Maced
   const displayed = displaySiteContent([olderImport], normalizeSiteConfig({}, []));
   assert.deepEqual([displayed[0].sectionId, displayed[0].subsection, displayed[0].country], ['Miscellaneous', 'NORTH EAST ASIA', 'North Korea']);
 
-  const regionalStory = { ...olderImport, id: 'regional-story', title: 'The EU Growth Plan for the Western Balkans' };
+  const regionalStory = { ...olderImport, id: 'regional-story', title: 'North Macedonia seeks funds under EU Growth Plan for the Western Balkans' };
   const kept = displaySiteContent([regionalStory], normalizeSiteConfig({}, []));
   assert.deepEqual([kept[0].sectionId, kept[0].subsection], ['South Eastern Europe', 'North Macedonia']);
 });
@@ -195,4 +195,122 @@ test('a possible US strike on Iran is filed under Iran and lists both countries 
   const displayed = displaySiteContent([olderImport], normalizeSiteConfig({}, []))[0];
   assert.deepEqual([displayed.sectionId, displayed.subsection, displayed.country], ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Iran']);
   assert.deepEqual(spreadsheetRow(displayed, { heading: article.title, body: 'US and Iranian officials discussed possible strikes.' })[3], 'Iran, US');
+});
+
+test('a Western Balkans-wide growth plan appears before South Eastern Europe country headings', () => {
+  const row = {
+    rowNumber: 2, date: '2026-10-30', source: 'The Region', region: 'South Eastern Europe',
+    countries: 'North Macedonia', url: 'https://example.com/western-balkans-growth-plan',
+    heading: 'The €6 Billion Test: EU Growth Plan for the Western Balkans',
+    summary: 'The EU plan addresses growth across the Western Balkans.'
+  };
+  const article = convertSpreadsheetRows([row]).articles[0];
+  assert.deepEqual([article.sectionId, article.subsection], ['South Eastern Europe', '']);
+  const olderImport = { ...article, subsection: 'North Macedonia' };
+  const albania = { ...article, id: 'albania-growth', url: 'https://example.com/albania-growth', title: 'Albania adopts growth plan', subsection: 'Albania' };
+  const displayed = displaySiteContent([albania, olderImport], normalizeSiteConfig({}, []));
+  assert.deepEqual(displayed.map(item => item.subsection), ['', 'Albania']);
+});
+
+test('a MINA statement on issues with Croatia belongs under Montenegro', () => {
+  const row = {
+    rowNumber: 2, date: '2026-10-30', source: 'MINA', region: 'International',
+    countries: 'Bosnia and Herzegovina', url: 'https://example.com/vuksanovic-croatia',
+    heading: 'Vuksanovic: Outstanding issues with Croatia must be resolved through dialogue while protecting state interest',
+    summary: 'Vuksanovic called for dialogue on outstanding bilateral issues.'
+  };
+  const article = convertSpreadsheetRows([row]).articles[0];
+  assert.deepEqual([article.sectionId, article.subsection], ['South Eastern Europe', 'Montenegro']);
+  const olderImport = { ...article, sectionId: 'Miscellaneous', section: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Croatia' };
+  const displayed = displaySiteContent([olderImport], normalizeSiteConfig({}, []))[0];
+  assert.deepEqual([displayed.sectionId, displayed.subsection, displayed.country], ['South Eastern Europe', 'Montenegro', '']);
+  assert.deepEqual(spreadsheetRow(displayed, { heading: article.title, body: 'Montenegro and Croatia discussed bilateral issues.' })[3], 'Montenegro, Croatia');
+});
+
+test('a Kosovo arrest story uses the Serbia / Kosovo heading', () => {
+  const row = {
+    rowNumber: 2, date: '2026-10-30', source: 'Kosovo Online', region: 'South Eastern Europe',
+    countries: 'Kosovo; Serbia', url: 'https://example.com/kosovo-arrests',
+    heading: 'Serb List: Continued persecution of Serbs in Kosovo, war crimes arrests without a single piece of evidence',
+    summary: 'Serb List criticised arrests in Kosovo.'
+  };
+  const article = convertSpreadsheetRows([row]).articles[0];
+  assert.deepEqual([article.sectionId, article.subsection], ['South Eastern Europe', 'Serbia / Kosovo']);
+  const olderImport = { ...article, subsection: 'Serbia' };
+  assert.equal(displaySiteContent([olderImport], normalizeSiteConfig({}, []))[0].subsection, 'Serbia / Kosovo');
+});
+
+test('a Lithuania defence purchase is filed under Lithuania despite a generic country list', () => {
+  const row = {
+    rowNumber: 2, date: '2026-10-30', source: 'LRT', region: 'International',
+    countries: 'Belarus; Moldova; Ukraine; Armenia; Azerbaijan; Georgia; Kazakhstan',
+    url: 'https://www.lrt.lt/en/news-in-english/lithuania-palantir',
+    heading: 'Lithuania considers buying Palantir AI system for armed forces',
+    summary: 'Lithuania is considering a purchase for its armed forces.'
+  };
+  const article = convertSpreadsheetRows([row]).articles[0];
+  assert.deepEqual([article.sectionId, article.subsection, article.country], ['Miscellaneous', 'WESTERN / CENTRAL EUROPE', 'Lithuania']);
+  const olderImport = { ...article, sectionId: 'Eastern Europe', section: 'Eastern Europe', subsection: 'Belarus', country: '' };
+  const displayed = displaySiteContent([olderImport], normalizeSiteConfig({}, []))[0];
+  assert.deepEqual([displayed.sectionId, displayed.subsection, displayed.country], ['Miscellaneous', 'WESTERN / CENTRAL EUROPE', 'Lithuania']);
+});
+
+test('an LRT report on the Baltic states anti-drone request is filed under Lithuania', () => {
+  const row = {
+    rowNumber: 2, date: '2026-10-30', source: 'LRT', region: 'International',
+    countries: 'Belarus; Moldova; Ukraine; Armenia; Azerbaijan; Georgia; Kazakhstan',
+    url: 'https://www.lrt.lt/en/news-in-english/baltic-anti-drone-request',
+    heading: 'Brussels rejects Baltic states’ €500 million anti-drone request, suggests borrowing',
+    summary: 'The European Commission responded to a request by Lithuania, Latvia and Estonia for anti-drone defences.'
+  };
+  const article = convertSpreadsheetRows([row]).articles[0];
+  assert.deepEqual([article.sectionId, article.subsection, article.country], ['Miscellaneous', 'WESTERN / CENTRAL EUROPE', 'Lithuania']);
+  const olderImport = { ...article, sectionId: 'Eastern Europe', section: 'Eastern Europe', subsection: 'Belarus', country: '' };
+  const displayed = displaySiteContent([olderImport], normalizeSiteConfig({}, []))[0];
+  assert.deepEqual([displayed.sectionId, displayed.subsection, displayed.country], ['Miscellaneous', 'WESTERN / CENTRAL EUROPE', 'Lithuania']);
+  assert.deepEqual(spreadsheetRow(displayed, { heading: article.title, body: row.summary })[3], 'Lithuania, Estonia, Latvia');
+});
+
+test('a Greek PM statement on Turkey and Libya belongs under Greece', () => {
+  const row = {
+    rowNumber: 2, date: '2026-10-30', source: 'Reuters', region: 'International',
+    countries: 'Ukraine; Georgia; Armenia; Azerbaijan', url: 'https://example.com/greek-pm',
+    heading: "EXCLUSIVE: Greek PM calls Turkey-Libya maritime deal 'void;' calls for global truce after Black Sea attacks",
+    summary: "EXCLUSIVE: Greek PM calls Turkey-Libya maritime deal 'void;' calls for global truce after Black Sea attacks"
+  };
+  const article = convertSpreadsheetRows([row]).articles[0];
+  assert.deepEqual([article.sectionId, article.subsection, article.country], ['Miscellaneous', 'WESTERN / CENTRAL EUROPE', 'Greece']);
+  const olderImport = { ...article, subsection: 'MIDDLE EAST / NORTH AFRICA', country: 'Libya' };
+  const displayed = displaySiteContent([olderImport], normalizeSiteConfig({}, []))[0];
+  assert.deepEqual([displayed.subsection, displayed.country], ['WESTERN / CENTRAL EUROPE', 'Greece']);
+});
+
+test('Estonian bunkers along the Russian border belong under Estonia', () => {
+  const row = {
+    rowNumber: 2, date: '2026-10-30', source: 'Kyiv Independent', region: 'International',
+    countries: 'Armenia; Azerbaijan; Georgia; Kazakhstan; Kyrgyzstan; Tajikistan',
+    url: 'https://example.com/estonian-bunkers',
+    heading: 'Estonia to build 150 bunkers along Russian border',
+    summary: 'Estonia to build 150 bunkers along Russian border'
+  };
+  const article = convertSpreadsheetRows([row]).articles[0];
+  assert.deepEqual([article.sectionId, article.subsection, article.country], ['Miscellaneous', 'WESTERN / CENTRAL EUROPE', 'Estonia']);
+  const olderImport = { ...article, sectionId: 'South Caucasus', section: 'South Caucasus', subsection: 'Armenia', country: '' };
+  const displayed = displaySiteContent([olderImport], normalizeSiteConfig({}, []))[0];
+  assert.deepEqual([displayed.sectionId, displayed.subsection, displayed.country], ['Miscellaneous', 'WESTERN / CENTRAL EUROPE', 'Estonia']);
+});
+
+test('a broad summit preview is omitted from imported and displayed editions', () => {
+  const row = {
+    rowNumber: 2, date: '2026-10-30', source: 'UzDaily', region: 'International',
+    countries: 'Armenia; Azerbaijan; Kazakhstan; Kyrgyzstan; Uzbekistan',
+    url: 'https://www.uzdaily.uz/en/critical-developments-turkic-summit/',
+    heading: 'Critical developments ahead of the 13th Summit of the Organization of Turkic States: Strategic partnerships and shifting balances in Eurasia',
+    summary: 'Leaders gathered in Ankara for the summit.'
+  };
+  const result = convertSpreadsheetRows([row]);
+  assert.equal(result.articles.length, 0);
+  assert.match(result.skipped[0].reason, /Broad analytical summit preview/);
+  const olderImport = { id: 'older-summit', title: row.heading, summary: row.summary, url: row.url, sourceName: row.source, sectionId: 'Central Asia', section: 'Central Asia', subsection: 'Uzbekistan', fromSpreadsheet: true };
+  assert.deepEqual(displaySiteContent([olderImport], normalizeSiteConfig({}, [])), []);
 });
