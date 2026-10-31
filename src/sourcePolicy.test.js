@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { blockedPlacementReason, disallowedUkraineSource, isUkrainianOutlet } from './sourcePolicy.js';
+import { blockedPlacementReason, directGovernmentPublicationReason, disallowedUkraineSource, isUkrainianOutlet } from './sourcePolicy.js';
 import { defaultSiteConfig, displaySiteContent, moveArticleInConfig } from './siteConfig.js';
 
 test('Ukrainian outlets are excluded from Ukraine placement but retained for other countries', () => {
@@ -66,4 +66,16 @@ test('non-local outlets cannot be filed under Ukraine, Russia, Germany or the US
   assert.ok(blockedPlacementReason({ sourceId: 'source-38', url: 'https://hromadske.ua/en/article' }, germany));
   for (const sourceId of ['source-58', 'source-103']) assert.ok(blockedPlacementReason({ sourceId, url: 'https://example.com/article' }, us));
   assert.equal(blockedPlacementReason({ sourceId: 'source-106', url: 'https://theguardian.com/article' }, us), '');
+});
+
+test('direct government publications are excluded while independent and OSCE reporting remain eligible', () => {
+  assert.equal(directGovernmentPublicationReason({ sourceName: 'GOV.UK', url: 'https://news.google.com/rss/articles/example' }), 'Direct government publication');
+  assert.equal(directGovernmentPublicationReason({ sourceName: 'Turkmenistan government', url: 'https://news.google.com/rss/articles/example' }), 'Direct government publication');
+  assert.equal(directGovernmentPublicationReason({ sourceName: 'News', url: 'https://www.gov.uk/government/news/example' }), 'Direct government publication');
+  for (const sourceName of ['BBC', 'OSCE', 'TASS']) assert.equal(directGovernmentPublicationReason({ sourceName, url: 'https://example.com/story' }), '');
+  const stories = [
+    { id: 'official', url: 'https://news.google.com/rss/articles/official', sourceName: 'GOV.UK', title: 'UK government addresses OSCE', sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'United Kingdom', fromSpreadsheet: true },
+    { id: 'independent', url: 'https://bbc.com/news/story', sourceName: 'BBC', title: 'UK government addresses OSCE', sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'United Kingdom', fromSpreadsheet: true }
+  ];
+  assert.deepEqual(displaySiteContent(stories, defaultSiteConfig(stories)).map(item => item.id), ['independent']);
 });

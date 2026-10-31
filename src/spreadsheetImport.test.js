@@ -341,3 +341,14 @@ test('Expert Says commentary is omitted from import and the displayed update', (
   const olderStory = { id: 'tokayev-expert', title: row.heading, summary: row.summary, sourceName: row.source, url: row.url, sectionId: 'Central Asia', section: 'Central Asia', subsection: 'Kazakhstan', fromSpreadsheet: true };
   assert.deepEqual(displaySiteContent([olderStory], normalizeSiteConfig({}, [])), []);
 });
+
+test('official government rows are skipped even when Google News masks their original host', () => {
+  const rows = [
+    { rowNumber: 2, date: '2026-10-30', source: 'GOV.UK', region: 'Europe', countries: 'UK', url: 'https://news.google.com/rss/articles/uk-statement', heading: 'UK issues statement on OSCE meeting' },
+    { rowNumber: 3, date: '2026-10-30', source: 'Turkmenistan government', region: 'Central Asia', countries: 'Turkmenistan', url: 'https://news.google.com/rss/articles/tm-education', heading: 'Minister of Education of Turkmenistan Participates in Roundtable of Central Asian Education Ministers in Tashkent' },
+    { rowNumber: 4, date: '2026-10-30', source: 'BBC', region: 'Europe', countries: 'UK', url: 'https://bbc.com/news/independent-story', heading: 'UK government responds to OSCE meeting' }
+  ];
+  const result = convertSpreadsheetRows(rows);
+  assert.deepEqual(result.articles.map(article => article.sourceName), ['BBC']);
+  assert.deepEqual(result.skipped.map(item => item.reason), ['Direct government publication', 'Direct government publication']);
+});

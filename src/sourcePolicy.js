@@ -15,6 +15,16 @@ function sourceHost(article) {
   catch { return ''; }
 }
 
+export function directGovernmentPublicationReason(article) {
+  const name = String(article.sourceName || '').trim();
+  const host = sourceHost(article);
+  if (/^(?:GOV\.UK|government of\b|ministry of\b|office of the president\b|presidency\b|prime minister(?:'s|’s)? office\b|white house\b|president of\b)/i.test(name) ||
+      /\bgovernment$/i.test(name) ||
+      /(?:^|\.)(?:gov|gob|gouv|go)\.[a-z]{2,3}$/i.test(host) ||
+      /(?:^|\.)gov$/i.test(host)) return 'Direct government publication';
+  return '';
+}
+
 export function isUkrainianOutlet(article) {
   if (ukrainianSourceIds.has(article.sourceId)) return true;
   const hostname = sourceHost(article);

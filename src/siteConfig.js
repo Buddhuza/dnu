@@ -1,5 +1,5 @@
 import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, orderedSubsections, leadRegionalHeadings, compareCountryLabels, isSouthEasternEuropeRegionalStory, isMontenegroCroatiaDialogueStory, isLithuanianBalticStory, isGreekPrimeMinisterStory } from './newsSections.js';
-import { blockedPlacementReason } from './sourcePolicy.js';
+import { blockedPlacementReason, directGovernmentPublicationReason } from './sourcePolicy.js';
 import { excludedHeadlineReason } from './headlinePolicy.js';
 import { displaySourceName } from './sourceNames.js';
 import { articlePlacement } from '../server/importArticle.js';
@@ -232,11 +232,11 @@ export function displaySiteContent(articles, config, excludedIds = new Set(), ke
         displayed.country = inferred.country;
       }
     }
-    if (!blockedPlacementReason(displayed) && !excludedHeadlineReason(displayed.title, displayed.summary)) items.push(displayed);
+    if (!directGovernmentPublicationReason(displayed) && !blockedPlacementReason(displayed) && !excludedHeadlineReason(displayed.title, displayed.summary)) items.push(displayed);
   }
   for (const article of config.customArticles) {
     if (article.hidden || sectionById.get(article.sectionId)?.visible === false) continue;
-    if (!blockedPlacementReason(article) && !excludedHeadlineReason(article.title, article.summary)) items.push({ ...article, sourceName: displaySourceName(article.sourceName), section: sectionById.get(article.sectionId)?.name || article.sectionId });
+    if (!directGovernmentPublicationReason(article) && !blockedPlacementReason(article) && !excludedHeadlineReason(article.title, article.summary)) items.push({ ...article, sourceName: displaySourceName(article.sourceName), section: sectionById.get(article.sectionId)?.name || article.sectionId });
   }
   const uniqueItems = keepImportedStories || articles.some(article => article.fromSpreadsheet) ? items : deduplicateArticles(items, excludedIds);
   const order = new Map(config.sections.map((section, index) => [section.id, index]));
