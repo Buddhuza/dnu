@@ -1,0 +1,29 @@
+name: Direct publisher feed 24-hour audit
+
+on:
+  push:
+    paths:
+      - scripts/direct-feed-24h.mjs
+      - .github/workflows/direct-feed-24h.yml
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - run: node scripts/direct-feed-24h.mjs data/direct-feed-24h-result.json
+      - name: Publish audit to a separate branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b feed-run-2026-10-31
+          git add -f data/direct-feed-24h-result.json
+          git commit -m "Save direct publisher feed audit"
+          git push origin HEAD:feed-run-2026-10-31
