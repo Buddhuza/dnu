@@ -23,6 +23,7 @@ import { emailSubject, emailUpdateHtml, emailUpdateText } from './emailUpdate.js
 import { loadFullArticle } from './articleBodyClient.js';
 import { getStoredArticleBody, replaceArticleBodies } from './articleBodyStore.js';
 import { editorEmail, loadSharedBody, loadSharedEdition, publishSharedEdition, sharedClient, sharedPayload } from './sharedEdition.js';
+import { emptyEdition } from './emptyEdition.js';
 import { createSpreadsheet, spreadsheetRow } from './spreadsheetExport.js';
 import { reportHeadingLabel } from './reportLabels.js';
 import './styles.css';
@@ -81,6 +82,7 @@ function App() {
   const sharedRevisionRef = useRef(0);
   const savedPayloadRef = useRef('');
   const pendingBodiesRef = useRef(null);
+  const pendingPublishNoticeRef = useRef(null);
   const savingRef = useRef(false);
   const syncAgainRef = useRef(false);
   const [syncTick, setSyncTick] = useState(0);
@@ -216,6 +218,7 @@ function App() {
       savingRef.current = true;
       setSaveStatus('Saving…');
       const pending = pendingBodiesRef.current;
+      const notice = pendingPublishNoticeRef.current;
       try {
         const bodies = [...(pending?.bodies || [])];
         const bodyUrls = new Set(bodies.map(item => item.url));
@@ -230,7 +233,14 @@ function App() {
         savedPayloadRef.current = fingerprint;
         if (pendingBodiesRef.current === pending) pendingBodiesRef.current = null;
         setSaveStatus('Saved for everyone');
-      } catch (failure) { setSaveStatus(`Not published: ${failure.message}`); }
+        if (notice && pendingPublishNoticeRef.current === notice) {
+          setToast(notice);
+          pendingPublishNoticeRef.current = null;
+        }
+      } catch (failure) {
+        setSaveStatus(`Not published: ${failure.message}`);
+        if (notice && pendingPublishNoticeRef.current === notice) setToast(`Not published: ${failure.message}`);
+      }
       finally {
         savingRef.current = false;
         if (syncAgainRef.current) { syncAgainRef.current = false; setSyncTick(value => value + 1); }
@@ -379,7 +389,12 @@ function App() {
     setDaily(update);
     setCompiledAt(importedAt);
     setImportingSpreadsheet(false);
-    setToast(`Imported ${result.articles.length} stories from ${fileName}${result.skipped.length ? `; ${result.skipped.length} skipped` : ''}.`);
+    const importedMessage = `Imported ${result.articles.length} stories from ${fileName}${result.skipped.length ? `; ${result.skipped.length} skipped` : ''}.`;
+    if (sharedEnabled) {
+      pendingPublishNoticeRef.current = `${importedMessage} Saved for everyone.`;
+      setSaveStatus('Saving…');
+      setToast(`${importedMessage} Publishing for everyone…`);
+    } else setToast(importedMessage);
   }
 
   async function restorePublishedUpdate() {
@@ -404,6 +419,22 @@ function App() {
   }
 
   function clearCurrentUpdate() {
+    if (sharedEnabled) {
+      const clearedAt = new Date().toISOString();
+      pendingBodiesRef.current = null;
+      pendingPublishNoticeRef.current = 'All stories cleared. Saved for everyone.';
+      setSaveStatus('Saving…');
+      setToast('Clearing stories. Publishing for everyone…');
+      importedModeRef.current = false;
+      setImportedMode(false);
+      setSiteConfig(current => ({ ...current, showUpdate: true, customArticles: [], articleEdits: {}, articleOrder: [], leadOrigins: {} }));
+      setExcludedStoryIds(new Set());
+      setEditingStories(false);
+      setDaily(current => emptyEdition(current || preparedUpdate, clearedAt));
+      setCompiledAt(clearedAt);
+      setImportingSpreadsheet(false);
+      return;
+    }
     restoringImportRef.current = true;
     importedModeRef.current = false;
     localStorage.removeItem(importedUpdateKey);
@@ -760,7 +791,7 @@ function App() {
         </div>
 
       </main>
-    </div>{toast && <div className="toast" onClick={() => setToast('')}>{toast} ×</div>}
+    </div>{toast && <div className={`toast ${toast.startsWith('Not published:') ? 'toast-error' : toast.includes('Publishing for everyone…') ? 'toast-pending' : ''}`} role={toast.startsWith('Not published:') ? 'alert' : 'status'} onClick={() => setToast('')}>{toast} ×</div>}
     {spreadsheetResults && <div className="add-backdrop" onClick={() => setSpreadsheetResults(null)}><section className="add-dialog spreadsheet-results" role="dialog" aria-modal="true" aria-labelledby="spreadsheet-results-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="spreadsheet-results-title">Spreadsheet export results</h2><button type="button" aria-label="Close export results" onClick={() => setSpreadsheetResults(null)}>×</button></div><p>{spreadsheetResults.downloaded ? `Downloaded ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} visible full articles.` : `No spreadsheet downloaded. ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} articles available.`}</p>{spreadsheetResults.error && <p role="alert">{spreadsheetResults.error}</p>}{spreadsheetResults.failures.length > 0 && <><h3>{spreadsheetResults.failures.length} unavailable</h3><ul>{spreadsheetResults.failures.map((failure, index) => <li key={index}>{failure}</li>)}</ul></>}<div className="add-dialog-actions"><button type="button" onClick={() => setSpreadsheetResults(null)}>Close</button></div></section></div>}
     {managementEnabled && managing && <SiteManager initialTab={managerTab} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} includeText={includeText} setIncludeText={setIncludeText} excludeText={setExcludeText} setExcludeText={setExcludeText} applyScope={applyScope} onClose={() => setManaging(false)} onReset={() => setSiteConfig(defaultSiteConfig(daily?.articles ?? preparedUpdate.articles))}/>}
     {isEditor && addingArticles && config && daily && <AddArticlesDialog serverAvailable={!staticPreview && Boolean(config.firecrawlConfigured)} sources={configuredSources} sections={siteConfig.sections} customCountries={siteConfig.customCountries} existingArticles={selectedArticles} existingUrls={[...daily.articles.map(item => item.url), ...siteConfig.customArticles.map(item => item.url)]} remainingSlots={100 - siteConfig.customArticles.length} onAdd={(article, placement) => { setSiteConfig(current => addCustomArticleInConfig(current, article, placement)); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}

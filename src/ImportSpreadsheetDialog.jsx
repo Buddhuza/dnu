@@ -72,9 +72,9 @@ export default function ImportSpreadsheetDialog({ existingArticles, sources, imp
         <ul>{result.articles.slice(0, 5).map(article => <li key={article.id}><strong>{article.title}</strong><span>{article.sectionId} · {article.subsection === 'INTERNATIONAL ORGANISATIONS' ? article.country : article.subsection} · {article.sourceName}</span></li>)}</ul>
         {result.skipped.length > 0 && <details><summary>Skipped rows</summary><ul>{result.skipped.map(item => <li key={`${item.row}-${item.reason}`}>Row {item.row}: {item.reason}</li>)}</ul></details>}
       </div>}
-      <p className="import-spreadsheet-note">{sharedMode ? 'Import replaces the shared DNU update for all visitors.' : 'Import replaces the update displayed in this browser. It does not change the public edition; you can restore that edition here later.'}</p>
+      <p className="import-spreadsheet-note">{sharedMode ? 'Import replaces the shared DNU update for all visitors. Clear all stories hides them for everyone while preserving the section structure and article cache.' : 'Import replaces the update displayed in this browser. It does not change the public edition; you can restore that edition here later.'}</p>
       <div className="add-dialog-actions">
-        {!sharedMode && (publishedEmpty && hasStories ? <button type="button" onClick={onClear} disabled={busy}>Clear update</button> : importedMode && <button type="button" onClick={onRestore} disabled={busy}>Restore published update</button>)}
+        {sharedMode && hasStories ? <button type="button" onClick={onClear} disabled={busy}>Clear all stories</button> : !sharedMode && (publishedEmpty && hasStories ? <button type="button" onClick={onClear} disabled={busy}>Clear update</button> : importedMode && <button type="button" onClick={onRestore} disabled={busy}>Restore published update</button>)}
         <button type="button" onClick={onClose} disabled={busy}>Cancel</button>
         <button type="button" className="import-spreadsheet-confirm" onClick={importFile} disabled={!result?.articles.length || busy}>Import {result?.articles.length || ''} stories</button>
       </div>
