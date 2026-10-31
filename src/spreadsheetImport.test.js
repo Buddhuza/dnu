@@ -327,3 +327,17 @@ test('Why headlines and Mehriban Aliyeva stories are omitted from import and dis
   const old = rows.map(row => ({ id: row.url, url: row.url, title: row.heading, summary: row.summary || '', sourceName: row.source, sectionId: 'South Caucasus', section: 'South Caucasus', subsection: 'Azerbaijan', fromSpreadsheet: true }));
   assert.deepEqual(displaySiteContent(old, normalizeSiteConfig({}, [])), []);
 });
+
+test('Expert Says commentary is omitted from import and the displayed update', () => {
+  const row = {
+    rowNumber: 2, date: '2026-10-30', source: 'Astana Times', region: 'Central Asia',
+    countries: 'Kazakhstan', url: 'https://astanatimes.com/example/tokayev-wages',
+    heading: 'Tokayev’s Wage, Digital Economy Reforms Must Protect Workers’ Rights, Expert Says',
+    summary: 'An academic argued for stronger labour protections after the president announced reforms.'
+  };
+  const result = convertSpreadsheetRows([row]);
+  assert.equal(result.articles.length, 0);
+  assert.equal(result.skipped[0].reason, 'Expert commentary is excluded');
+  const olderStory = { id: 'tokayev-expert', title: row.heading, summary: row.summary, sourceName: row.source, url: row.url, sectionId: 'Central Asia', section: 'Central Asia', subsection: 'Kazakhstan', fromSpreadsheet: true };
+  assert.deepEqual(displaySiteContent([olderStory], normalizeSiteConfig({}, [])), []);
+});
