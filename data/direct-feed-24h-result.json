@@ -324,16 +324,48 @@
       "source": "Euronews",
       "sourceId": "source-82",
       "feedUrl": "https://www.euronews.com/rss?level=theme&name=news",
-      "status": "failed",
-      "attempts": [
+      "status": "ok",
+      "listed": 50,
+      "inWindow": 7,
+      "articles": [
         {
-          "url": "https://www.euronews.com/rss?level=theme&name=news",
-          "error": "fetch failed"
+          "title": "Latest news bulletin | October 31st, 2026 – Evening",
+          "url": "https://www.euronews.com/video/2026/10/31/latest-news-bulletin-october-31st-2026-evening",
+          "publishedAt": "2026-10-31T17:00:26.000Z"
+        },
+        {
+          "title": "Latest news bulletin | October 31st, 2026 – Midday",
+          "url": "https://www.euronews.com/video/2026/10/31/latest-news-bulletin-october-31st-2026-midday",
+          "publishedAt": "2026-10-31T11:00:15.000Z"
+        },
+        {
+          "title": "Kärcher boss: Less regulation, more action to get Europe and Germany fit again",
+          "url": "https://www.euronews.com/2026/10/31/karcher-boss-less-regulation-more-action-to-get-europe-and-germany-fit-again",
+          "publishedAt": "2026-10-31T08:30:30.000Z"
+        },
+        {
+          "title": "Zelenskyy thanks US over deal for 500 Patriot missiles but warns delivery could take years",
+          "url": "https://www.euronews.com/2026/10/31/zelenskyy-thanks-us-over-deal-for-500-patriot-missiles-but-warns-delivery-could-take-years",
+          "publishedAt": "2026-10-31T07:46:21.000Z"
+        },
+        {
+          "title": "Syrian curriculum changes spark debate over removal of images and historical figures",
+          "url": "https://www.euronews.com/2026/10/31/syrian-curriculum-changes-spark-debate-over-removal-of-images-and-historical-figures",
+          "publishedAt": "2026-10-31T07:00:17.000Z"
+        },
+        {
+          "title": "Travelling beyond the borders of Baku through fiction",
+          "url": "https://www.euronews.com/2026/10/31/travelling-beyond-the-borders-of-baku-through-fiction",
+          "publishedAt": "2026-10-31T06:45:07.000Z"
+        },
+        {
+          "title": "Latest news bulletin | October 31st, 2026 – Morning",
+          "url": "https://www.euronews.com/video/2026/10/31/latest-news-bulletin-october-31st-2026-morning",
+          "publishedAt": "2026-10-31T06:00:33.000Z"
         }
       ],
-      "listed": 0,
-      "inWindow": 0,
-      "articles": []
+      "checkedAt": "2026-10-31T21:46:33.738Z",
+      "note": "Initial run succeeded; retry returned a transient fetch failure."
     },
     {
       "source": "BBC",
@@ -1066,5 +1098,6 @@
       ],
       "articles": []
     }
-  ]
+  ],
+  "note": "Euronews feed result was obtained two minutes before the main retry window; all seven item timestamps fall inside both windows."
 }
