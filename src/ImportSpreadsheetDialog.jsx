@@ -34,7 +34,7 @@ export default function ImportSpreadsheetDialog({ existingArticles, sources, imp
   return <div className="add-backdrop" onMouseDown={event => { if (!busy && event.target === event.currentTarget) onClose(); }}>
     <section className="add-dialog import-spreadsheet-dialog" role="dialog" aria-modal="true" aria-labelledby="import-spreadsheet-title">
       <div className="add-dialog-heading"><h2 id="import-spreadsheet-title">Import spreadsheet</h2><button type="button" onClick={onClose} disabled={busy} aria-label="Close spreadsheet import">×</button></div>
-      <p>Choose a DNU database export or a similar Excel or CSV sheet. The update will show headlines, short summaries, linked agencies, and section headings. Full article bodies stay in your browser for spreadsheet export.</p>
+      <p>Choose a DNU database export or a similar Excel or CSV sheet. Import replaces the previous browser article cache with full bodies from this sheet. Paywalled rows are skipped. Database export uses only those imported bodies.</p>
       <label className="import-file-label" htmlFor="import-spreadsheet-file">Spreadsheet file</label>
       <input id="import-spreadsheet-file" type="file" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" onChange={chooseFile} disabled={busy}/>
       {busy && <p role="status">Preparing spreadsheet…</p>}

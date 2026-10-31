@@ -22,13 +22,25 @@ test('an exported Excel sheet imports a short DNU story and retains its full bod
   assert.match(reportStoryText(converted.articles[0]).headline, /^UK and US ministers meet in London\./);
 });
 
-test('matching URL reuses the prepared DNU summary and direct regional placement', () => {
+test('matching URL uses the new sheet content and placement', () => {
   const existing = { id: 'osce', url: 'https://n1info.ba/example', sourceId: 'source-8', sourceName: 'N1', title: 'OSCE chief visits regional summit', summary: 'Officials discussed election monitoring in Montenegro.', publishedAt: '2026-10-23T09:00:00Z', section: 'South Eastern Europe', subsection: '', country: '' };
-  const row = { rowNumber: 2, date: '2026-10-23', source: 'N1', region: 'South Eastern Europe', countries: 'Montenegro', organisations: 'OSCE', url: existing.url, heading: 'OSCE chief visits regional summit | N1', body: 'The chief joined a meeting in Montenegro.' };
+  const row = { rowNumber: 2, date: '2026-10-23', source: 'N1', region: 'South Eastern Europe', countries: 'Montenegro', organisations: 'OSCE', url: existing.url, heading: 'OSCE chief visits regional summit | N1', body: 'The chief joined a meeting in Montenegro with several senior officials.' };
   const result = convertSpreadsheetRows([row], { existingArticles: [existing] });
   assert.equal(result.articles.length, 1);
-  assert.equal(result.articles[0].summary, existing.summary);
-  assert.equal(result.articles[0].subsection, '');
+  assert.equal(result.articles[0].title, 'OSCE chief visits regional summit');
+  assert.equal(result.articles[0].summary, 'The chief joined a meeting in Montenegro with several senior officials');
+  assert.equal(result.articles[0].subsection, 'Montenegro');
+});
+
+test('paywalled rows are skipped without storing their teaser as a full article', () => {
+  const base = { rowNumber: 2, date: '2026-10-23', source: 'AP', region: 'Europe', countries: 'UK', url: 'https://example.com/story', heading: 'Ministers agree to talks' };
+  const result = convertSpreadsheetRows([
+    { ...base, body: 'Subscribe to continue reading this article.' },
+    { ...base, rowNumber: 3, url: 'https://example.com/other', body: 'A full story.', paywall: 'Yes' }
+  ]);
+  assert.equal(result.articles.length, 0);
+  assert.equal(result.bodies.length, 0);
+  assert.deepEqual(result.skipped.map(row => row.reason), ['Paywalled article', 'Paywalled article']);
 });
 
 test('CSV import handles quoted body text and skips a non-English article', async () => {

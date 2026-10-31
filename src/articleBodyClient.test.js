@@ -13,3 +13,9 @@ test('published body cache supplies an article without another Firecrawl request
   assert.deepEqual(result, { heading: 'Original headline', body: 'The complete article body.' });
   assert.equal(requests.length, 1);
 });
+
+test('spreadsheet articles without an imported full body never trigger a scrape', async () => {
+  let calls = 0;
+  await assert.rejects(loadFullArticle({ url: 'https://example.com/missing', title: 'Example', fromSpreadsheet: true }, { fetchImpl: async () => { calls++; throw new Error('Unexpected request'); } }), /No full body was provided/);
+  assert.equal(calls, 0);
+});

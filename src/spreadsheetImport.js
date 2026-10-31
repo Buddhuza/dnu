@@ -17,7 +17,8 @@ const headerAliases = {
   url: ['sourceurl', 'url', 'articleurl', 'link', 'hyperlink'],
   heading: ['heading', 'headline', 'title'],
   summary: ['summary', 'description'],
-  body: ['body', 'articlebody', 'articletext', 'fulltext', 'text']
+  body: ['body', 'articlebody', 'articletext', 'fulltext', 'text'],
+  paywall: ['paywall', 'accessstatus']
 };
 const compact = value => String(value ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
 const text = value => String(value ?? '').replace(/\s+/g, ' ').trim();
@@ -160,8 +161,15 @@ function summaryFromBody(body, headline) {
   return '';
 }
 
+function paywallReason(row) {
+  if (/^(?:yes|true|1|paywall(?:ed)?|subscriber(?:s)?[ -]only|premium|subscription[ -]required)$/i.test(text(row.paywall))) return 'Paywalled article';
+  const body = text(row.body);
+  if (body.split(/\s+/).length > 180) return '';
+  return /\b(?:subscribe|sign in|log in|register)\s+(?:now\s+)?to\s+(?:continue\s+)?read(?:ing)?\b|\b(?:article|content|story)\s+(?:is\s+)?(?:only\s+)?(?:available\s+)?(?:to|for)\s+subscribers\b|\b(?:this article is behind a paywall|subscription required to read|premium content only)\b/i.test(body)
+    ? 'Paywalled article' : '';
+}
+
 function placementFromRow(row, title, summary, existing, leadPrefix) {
-  if (existing) return { sectionId: existing.sectionId || existing.section, subsection: existing.subsection || '', country: existing.country || '' };
   const region = text(row.region);
   const regional = regionalSections.find(section => compact(section.id) === compact(region));
   const countries = String(row.countries || '').split(/[,;]/).map(text).filter(Boolean);
@@ -180,7 +188,9 @@ function placementFromRow(row, title, summary, existing, leadPrefix) {
       ? { sectionId: 'Lead stories', subsection: 'Middle East', country: '' }
       : { sectionId: 'Miscellaneous', subsection: misc, country };
   }
-  return articlePlacement({}, title, summary);
+  return existing
+    ? { sectionId: existing.sectionId || existing.section, subsection: existing.subsection || '', country: existing.country || '' }
+    : articlePlacement({}, title, summary);
 }
 
 export function convertSpreadsheetRows(rows, { existingArticles = [], sources = [], importedAt = new Date().toISOString() } = {}) {
@@ -194,6 +204,8 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
   const articles = [], bodies = [], skipped = [];
   const firstRegional = rows.findIndex(row => compact(row.region) === 'southeasterneurope');
   for (const [index, row] of rows.entries()) {
+    const paywall = paywallReason(row);
+    if (paywall) { skipped.push({ row: row.rowNumber, reason: paywall }); continue; }
     const url = text(row.url);
     let parsed;
     try { parsed = new URL(url); if (parsed.protocol !== 'https:') throw new Error(); }
@@ -203,13 +215,13 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
     seen.add(key);
     const existing = existingByUrl.get(key);
     const sourceName = text(row.source) || existing?.sourceName;
-    const title = existing?.title || cleanHeading(row.heading, sourceName, url);
+    const title = cleanHeading(row.heading, sourceName, url) || existing?.title;
     if (!sourceName || !title) { skipped.push({ row: row.rowNumber, reason: 'Missing source or headline' }); continue; }
     if (excludedHeadlineReason(title)) { skipped.push({ row: row.rowNumber, reason: excludedHeadlineReason(title) }); continue; }
     if (!existing && row.body && !['eng', 'und'].includes(franc(row.body.slice(0, 1500), { minLength: 100 }))) {
       skipped.push({ row: row.rowNumber, reason: 'Article body is not English; translate it before import' }); continue;
     }
-    const summary = text(row.summary) || existing?.summary || summaryFromBody(row.body, title);
+    const summary = text(row.summary) || summaryFromBody(row.body, title) || existing?.summary;
     const leadPrefix = firstRegional > 0 && index < firstRegional;
     const placement = placementFromRow(row, title, summary, existing, leadPrefix);
     if (!placement?.sectionId || !placement.subsection && placement.sectionId !== 'South Eastern Europe' || placement.sectionId === 'Miscellaneous' && !placement.country) {
@@ -218,8 +230,8 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
     const source = sourceByHost.get(parsed.hostname.replace(/^www\./, '').toLowerCase()) || sourceByName.get(compact(sourceName));
     const article = {
       id: existing?.id || `spreadsheet-${key}`, url: parsed.href, sourceId: existing?.sourceId || source?.id || 'spreadsheet', sourceName,
-      title, summary, originalHeadline: existing?.originalHeadline || text(row.heading), translated: existing?.translated === true,
-      publishedAt: existing?.publishedAt || spreadsheetDate(row.date, importedAt),
+      title, summary, originalHeadline: text(row.heading), translated: existing?.translated === true,
+      publishedAt: spreadsheetDate(row.date, existing?.publishedAt || importedAt),
       reviewed: true, ...placement, section: placement.sectionId, fromSpreadsheet: true
     };
     const restriction = blockedPlacementReason(article);

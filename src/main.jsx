@@ -20,7 +20,7 @@ import { sourceAudit } from './collectionAudit.js';
 import { formatViennaDateTime } from './viennaTime.js';
 import { emailSubject, emailUpdateHtml, emailUpdateText } from './emailUpdate.js';
 import { loadFullArticle } from './articleBodyClient.js';
-import { storeArticleBody } from './articleBodyStore.js';
+import { replaceArticleBodies } from './articleBodyStore.js';
 import { createSpreadsheet, spreadsheetRow } from './spreadsheetExport.js';
 import { reportHeadingLabel } from './reportLabels.js';
 import './styles.css';
@@ -267,11 +267,9 @@ function App() {
       windowHours: (Math.max(...dates) - Math.min(...dates)) / 3_600_000 + 24,
       articles: result.articles, sourceOutcomes: []
     };
+    await replaceArticleBodies(result.bodies);
     if (!importedModeRef.current) localStorage.setItem(importBackupKey, JSON.stringify({ siteConfig, excludedStoryIds: [...excludedStoryIds], compiledAt }));
     localStorage.setItem(importedUpdateKey, JSON.stringify(update));
-    for (let index = 0; index < result.bodies.length; index += 10) {
-      await Promise.all(result.bodies.slice(index, index + 10).map(({ url, heading, body, translated }) => storeArticleBody(url, { heading, body, translated })));
-    }
     importedModeRef.current = true;
     setImportedMode(true);
     setSiteConfig(current => ({ ...current, sections: current.sections.map(section => ({ ...section, visible: true })), articleEdits: {}, articleOrder: [], leadOrigins: {}, customArticles: [] }));
@@ -439,7 +437,7 @@ function App() {
         const index = cursor++;
         const article = selectedArticles[index];
         try {
-          const page = await loadFullArticle(article, { serverAvailable: !staticPreview });
+          const page = await loadFullArticle(article, { serverAvailable: !staticPreview, cacheOnly: importedMode || article.fromSpreadsheet });
           rows[index] = spreadsheetRow(article, page, siteConfig.leadOrigins);
         } catch (error) { failures.push(`${article.sourceName}: ${article.title} (${error.message})`); }
         completed++;

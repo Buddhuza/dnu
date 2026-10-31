@@ -15,9 +15,10 @@ async function cachedOnlineBody(url, fetchImpl) {
   return snapshot?.articles?.[url]?.body ? snapshot.articles[url] : null;
 }
 
-export async function loadFullArticle(article, { serverAvailable = false, fetchImpl = fetch } = {}) {
+export async function loadFullArticle(article, { serverAvailable = false, cacheOnly = false, fetchImpl = fetch } = {}) {
   const cached = await getStoredArticleBody(article.url);
   if (cached?.body && (!article.translated || cached.translated)) return cached;
+  if (cacheOnly || article.fromSpreadsheet) throw new Error('No full body was provided in the imported sheet.');
   if (serverAvailable) {
     try {
       const response = await fetchImpl('/api/article-body', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: article.url, translated: article.translated === true }) });
