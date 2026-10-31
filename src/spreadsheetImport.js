@@ -372,7 +372,8 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
     }
     const suggestedSummary = [row.shortSummary, row.summary].map(text).find(value => value && compact(value) !== compact(title)) || '';
     const publishedAt = spreadsheetDate(row.publishedUtc || row.date, existing?.publishedAt || importedAt);
-    const summary = reviewedImportedSummary(title, publishedAt) || conciseDnuSummary(summaryFromBody(row.body, title) || suggestedSummary || existing?.summary, title);
+    const bodySummary = summaryFromBody(row.body, title);
+    const summary = reviewedImportedSummary(title, publishedAt) || conciseDnuSummary(bodySummary || suggestedSummary || (row.body ? existing?.summary : ''), title);
     const leadPrefix = firstRegional > 0 && index < firstRegional && leadHeadline.test(title);
     const placement = placementFromRow(row, title, `${suggestedSummary} ${summary}`.trim(), existing, leadPrefix);
     if (!placement?.sectionId || !placement.subsection && placement.sectionId !== 'South Eastern Europe' || placement.sectionId === 'Miscellaneous' && !placement.country) {

@@ -33,6 +33,18 @@ test('matching URL uses the new sheet content and placement', () => {
   assert.equal(result.articles[0].subsection, 'Montenegro');
 });
 
+test('a headline-only sheet row does not inherit an older summary for the same URL', () => {
+  const url = 'https://www.lrt.lt/en/example';
+  const row = { rowNumber: 2, publishedUtc: '2026-10-30T09:00:00Z', source: 'LRT', region: 'Europe',
+    countries: 'Lithuania', url, heading: 'Lithuania plans new border defences',
+    shortSummary: 'Lithuania plans new border defences', body: '' };
+  const existing = { id: 'old', url, sourceName: 'LRT', summary: 'A previous article described bunkers near the Belarusian border.' };
+  const result = convertSpreadsheetRows([row], { existingArticles: [existing] });
+  assert.equal(result.articles.length, 1);
+  assert.equal(result.articles[0].summary, '');
+  assert.equal(result.bodies.length, 0);
+});
+
 test('paywalled rows are skipped without storing their teaser as a full article', () => {
   const base = { rowNumber: 2, date: '2026-10-23', source: 'AP', region: 'Europe', countries: 'UK', url: 'https://example.com/story', heading: 'Ministers agree to talks' };
   const result = convertSpreadsheetRows([

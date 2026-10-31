@@ -56,6 +56,7 @@ When a user gives a new standing editorial rule, update this document and the re
 
 - Preserve the article’s exact factual headline in content while rendering only all-caps headlines in sentence case; preserve mixed-case and title-case headlines as published. Keep abbreviations, proper names and official acronyms capitalised. Do not append a second agency name accidentally embedded in a headline.
 - In summary mode, follow the headline with a period, then one short factual sentence that adds a concrete important detail from the article, from the first substantive paragraph, especially its opening sentences, without repeating the headline. Finish with a period, then the agency name in parentheses linked to the original article. Avoid long, general summaries.
+- When importing a spreadsheet, leave the summary blank if the sheet supplies neither a full article body nor information beyond the headline. Do not invent an added detail or reuse an older cached summary for that row.
 - In compressed view (headline-only mode), omit the summary and put the linked agency immediately after the headline. Remove a trailing period from the headline.
 
 ## 6. Editorial review before publication
