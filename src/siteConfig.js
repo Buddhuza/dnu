@@ -199,11 +199,11 @@ export function displaySiteContent(articles, config, excludedIds = new Set(), ke
       subsection: edit?.sectionId ? edit.subsection : edit?.subsection || (legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : article.subsection),
       country: edit?.sectionId ? edit.country : edit?.country || article.country || ''
     };
-    if (!blockedPlacementReason(displayed) && !excludedHeadlineReason(displayed.title)) items.push(displayed);
+    if (!blockedPlacementReason(displayed) && !excludedHeadlineReason(displayed.title, displayed.summary)) items.push(displayed);
   }
   for (const article of config.customArticles) {
     if (article.hidden || sectionById.get(article.sectionId)?.visible === false) continue;
-    if (!blockedPlacementReason(article) && !excludedHeadlineReason(article.title)) items.push({ ...article, sourceName: displaySourceName(article.sourceName), section: sectionById.get(article.sectionId)?.name || article.sectionId });
+    if (!blockedPlacementReason(article) && !excludedHeadlineReason(article.title, article.summary)) items.push({ ...article, sourceName: displaySourceName(article.sourceName), section: sectionById.get(article.sectionId)?.name || article.sectionId });
   }
   const uniqueItems = keepImportedStories || articles.some(article => article.fromSpreadsheet) ? items : deduplicateArticles(items, excludedIds);
   const order = new Map(config.sections.map((section, index) => [section.id, index]));

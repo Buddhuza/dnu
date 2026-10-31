@@ -27,6 +27,7 @@ const compact = value => String(value ?? '').toLowerCase().replace(/[^a-z0-9]/g,
 const text = value => String(value ?? '').replace(/\s+/g, ' ').trim();
 const first = value => String(value ?? '').split(/[,;]/).map(text).find(Boolean) || '';
 const regionalSections = NEWS_SECTIONS.slice(1, 5);
+const leadHeadline = /\b(?:attack\w*|strike\w*|drone\w*|missile\w*|bomb\w*|war|conflict|ceasefire|terror\w*|invasion|coup|military|troops?|sanction\w*|election\w*|protest\w*|diplom\w*|negotiat\w*|peace|border|security|intelligence|opposition|crisis|president|prime minister|parliament|OSCE)\b/i;
 const miscRegions = new Map([
   ['europe', 'WESTERN / CENTRAL EUROPE'], ['westerncentraleurope', 'WESTERN / CENTRAL EUROPE'],
   ['middleeast', 'MIDDLE EAST / NORTH AFRICA'], ['middleeastnorthafrica', 'MIDDLE EAST / NORTH AFRICA'],
@@ -275,13 +276,14 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
     const sourceName = text(row.source) || existing?.sourceName;
     const title = cleanHeading(row.heading, sourceName, url) || existing?.title;
     if (!sourceName || !title) { skipped.push({ row: row.rowNumber, reason: 'Missing source or headline' }); continue; }
-    if (excludedHeadlineReason(title)) { skipped.push({ row: row.rowNumber, reason: excludedHeadlineReason(title) }); continue; }
+    const exclusion = excludedHeadlineReason(title, [row.shortSummary, row.summary, row.body].filter(Boolean).join(' '));
+    if (exclusion) { skipped.push({ row: row.rowNumber, reason: exclusion }); continue; }
     if (!existing && row.body && !['eng', 'und'].includes(franc(row.body.slice(0, 1500), { minLength: 100 }))) {
       skipped.push({ row: row.rowNumber, reason: 'Article body is not English; translate it before import' }); continue;
     }
     const suggestedSummary = [row.shortSummary, row.summary].map(text).find(value => value && compact(value) !== compact(title)) || '';
     const summary = suggestedSummary || summaryFromBody(row.body, title) || existing?.summary;
-    const leadPrefix = firstRegional > 0 && index < firstRegional;
+    const leadPrefix = firstRegional > 0 && index < firstRegional && leadHeadline.test(title);
     const placement = placementFromRow(row, title, summary, existing, leadPrefix);
     if (!placement?.sectionId || !placement.subsection && placement.sectionId !== 'South Eastern Europe' || placement.sectionId === 'Miscellaneous' && !placement.country) {
       skipped.push({ row: row.rowNumber, reason: 'Could not identify a DNU section and country or organisation' }); continue;

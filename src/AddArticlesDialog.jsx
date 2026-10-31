@@ -16,7 +16,7 @@ export default function AddArticlesDialog({ sections, customCountries = {}, exis
   const [completedEntries, setCompletedEntries] = useState(0);
   const dialogRef = useRef(null);
   const draftsRef = useRef(null);
-  const availableSections = sections.filter(section => section.visible);
+  const availableSections = sections.filter(section => section.visible && section.id !== 'Lead stories');
   const duplicateMatches = duplicateGroups([...existingArticles, ...drafts.filter(draft => !draft.added)]);
 
   useEffect(() => {

@@ -98,3 +98,18 @@ test('the empty DNU keeps its configured structure and shows imported stories un
     ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Iran']
   ]);
 });
+
+test('routine food poisoning is omitted and a top spreadsheet row alone does not make a lead', () => {
+  const rows = [
+    { rowNumber: 2, date: '2026-10-30', source: 'UzDaily', region: 'Central Asia Region', countries: 'Uzbekistan', url: 'https://www.uzdaily.uz/en/food-poisoning/', heading: 'Uzbekistan Court Sentences Four Over Poisoning of 105 Children', summary: 'Four catering staff were sentenced after mass food poisoning at kindergartens.' },
+    { rowNumber: 3, date: '2026-10-30', source: 'UzDaily', region: 'Central Asia Region', countries: 'Uzbekistan', url: 'https://www.uzdaily.uz/en/commercial-case/', heading: 'Uzbekistan court decides commercial fraud case' },
+    { rowNumber: 4, date: '2026-10-30', source: 'UzDaily', region: 'Central Asia Region', countries: 'Uzbekistan', url: 'https://www.uzdaily.uz/en/security-talks/', heading: 'Uzbekistan president holds regional security talks' },
+    { rowNumber: 5, date: '2026-10-30', source: 'N1', region: 'South Eastern Europe', countries: 'Serbia', url: 'https://n1info.rs/example/', heading: 'Serbia parliament debates border security' }
+  ];
+  const converted = convertSpreadsheetRows(rows);
+  assert.equal(converted.skipped[0].reason, 'Routine public-health incident outside the security and political scope');
+  assert.deepEqual(converted.articles.slice(0, 2).map(article => article.sectionId), ['Central Asia', 'Lead stories']);
+
+  const storedPoisoning = { ...converted.articles[0], id: 'older-import', title: rows[0].heading, summary: rows[0].summary, sectionId: 'Lead stories', section: 'Lead stories', subsection: 'Uzbekistan' };
+  assert.deepEqual(displaySiteContent([storedPoisoning], normalizeSiteConfig({}, [])), []);
+});
