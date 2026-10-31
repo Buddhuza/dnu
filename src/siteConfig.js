@@ -1,4 +1,4 @@
-import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, orderedSubsections, leadRegionalHeadings, compareCountryLabels } from './newsSections.js';
+import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, orderedSubsections, leadRegionalHeadings, compareCountryLabels, isSouthEasternEuropeOsceStory } from './newsSections.js';
 import { blockedPlacementReason } from './sourcePolicy.js';
 import { excludedHeadlineReason } from './headlinePolicy.js';
 import { displaySourceName } from './sourceNames.js';
@@ -201,7 +201,12 @@ export function displaySiteContent(articles, config, excludedIds = new Set(), ke
       subsection: edit?.sectionId ? edit.subsection : edit?.subsection || (legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : article.subsection),
       country: edit?.sectionId ? edit.country : edit?.country || article.country || ''
     };
-    if (article.fromSpreadsheet && !edit?.sectionId && regionalSectionIds.has(displayed.sectionId)) {
+    if (article.fromSpreadsheet && !edit?.sectionId && isSouthEasternEuropeOsceStory(displayed.title)) {
+      displayed.sectionId = 'South Eastern Europe';
+      displayed.section = sectionById.get(displayed.sectionId)?.name || displayed.sectionId;
+      displayed.subsection = '';
+      displayed.country = '';
+    } else if (article.fromSpreadsheet && !edit?.sectionId && regionalSectionIds.has(displayed.sectionId)) {
       const inferred = articlePlacement({}, displayed.title, '');
       const namedLocation = inferred && (regionalSectionIds.has(inferred.sectionId) ||
         inferred.sectionId === 'Miscellaneous' && inferred.subsection !== 'INTERNATIONAL ORGANISATIONS');
@@ -223,7 +228,13 @@ export function displaySiteContent(articles, config, excludedIds = new Set(), ke
   const articleOrder = new Map((config.articleOrder ?? []).map((id, index) => [id, index]));
   const activeLeadHeadings = new Set(uniqueItems.filter(item => item.sectionId === 'Lead stories').map(item => item.subsection));
   const extraRegionalHeadings = leadRegionalHeadings(uniqueItems, config.leadOrigins);
-  const subsectionOrder = new Map(config.sections.map(section => [section.id, new Map(orderedSubsections(section, section.id === 'Lead stories' ? activeLeadHeadings : section.subsections ?? [], extraRegionalHeadings).map((name, index) => [name, index]))]));
+  const subsectionOrder = new Map(config.sections.map(section => {
+    const labels = section.id === 'Lead stories' ? activeLeadHeadings : [
+      ...(section.subsections ?? []),
+      ...(uniqueItems.some(item => item.sectionId === section.id && !item.subsection) ? [''] : [])
+    ];
+    return [section.id, new Map(orderedSubsections(section, labels, extraRegionalHeadings).map((name, index) => [name, index]))];
+  }));
   const alphabetical = new Intl.Collator('en', { sensitivity: 'base', ignorePunctuation: true });
   return uniqueItems.sort((a, b) => (order.get(a.sectionId) ?? 999) - (order.get(b.sectionId) ?? 999)
     || (subsectionOrder.get(a.sectionId)?.get(a.subsection) ?? 999) - (subsectionOrder.get(b.sectionId)?.get(b.subsection) ?? 999)

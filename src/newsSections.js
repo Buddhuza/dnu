@@ -7,6 +7,10 @@ export const NEWS_SECTIONS = [
   { id: 'Miscellaneous', subsections: ['WESTERN / CENTRAL EUROPE', 'MIDDLE EAST / NORTH AFRICA', 'RUSSIA / EURASIA', 'AFGHANISTAN / PAKISTAN', 'NORTH EAST ASIA', 'NORTH AMERICA', 'INTERNATIONAL ORGANISATIONS'] }
 ];
 
+export function isSouthEasternEuropeOsceStory(title) {
+  return /\bOSCE\b/i.test(String(title || '')) && /\bSouth[\s-]*East(?:ern)?\s+Europe\b/i.test(String(title || ''));
+}
+
 export const MISCELLANEOUS_COUNTRIES = {
   'WESTERN / CENTRAL EUROPE': ['Austria', 'Belgium', 'Bulgaria', 'Croatia', 'Cyprus', 'Czechia', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Greece', 'Hungary', 'Iceland', 'Ireland', 'Italy', 'Latvia', 'Lithuania', 'Luxembourg', 'Malta', 'Netherlands', 'Norway', 'Poland', 'Portugal', 'Romania', 'Slovakia', 'Slovenia', 'Spain', 'Sweden', 'Switzerland', 'United Kingdom'],
   'MIDDLE EAST / NORTH AFRICA': ['Iran', 'Israel', 'Jordan', 'Lebanon', 'Libya', 'Saudi Arabia', 'Syria', 'Türkiye'],

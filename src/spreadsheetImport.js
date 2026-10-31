@@ -1,7 +1,7 @@
 import JSZip from 'jszip';
 import sax from 'sax';
 import { franc } from 'franc-min';
-import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES } from './newsSections.js';
+import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, isSouthEasternEuropeOsceStory } from './newsSections.js';
 import { canonicalArticleUrl } from './siteConfig.js';
 import { viennaWallTimeToIso } from './viennaTime.js';
 import { blockedPlacementReason } from './sourcePolicy.js';
@@ -218,6 +218,7 @@ function paywallReason(row) {
 }
 
 function placementFromRow(row, title, summary, existing, leadPrefix) {
+  if (isSouthEasternEuropeOsceStory(title)) return { sectionId: 'South Eastern Europe', subsection: '', country: '' };
   const region = text(row.region).replace(/\s+Region$/i, '');
   const regional = regionalSections.find(section => compact(section.id) === compact(region));
   const countries = String(row.countries || row.country || '').split(/[,;]/).map(text).filter(Boolean);

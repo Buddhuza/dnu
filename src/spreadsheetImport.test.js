@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import JSZip from 'jszip';
-import { createSpreadsheet } from './spreadsheetExport.js';
+import { createSpreadsheet, spreadsheetRow } from './spreadsheetExport.js';
 import { convertSpreadsheetRows, listSpreadsheetSheets, readSpreadsheet } from './spreadsheetImport.js';
 import { reportStoryText } from './reportText.js';
 import { displaySiteContent, normalizeSiteConfig } from './siteConfig.js';
@@ -148,4 +148,51 @@ test('a generic country list does not file a North Korea story under North Maced
   const regionalStory = { ...olderImport, id: 'regional-story', title: 'The EU Growth Plan for the Western Balkans' };
   const kept = displaySiteContent([regionalStory], normalizeSiteConfig({}, []));
   assert.deepEqual([kept[0].sectionId, kept[0].subsection], ['South Eastern Europe', 'North Macedonia']);
+});
+
+test('a ship attacked off Bulgaria is filed under Bulgaria, including in an older imported edition', () => {
+  const row = {
+    rowNumber: 2, date: '2026-10-30', source: 'Ekathimerini', region: 'International',
+    countries: 'Albania; Bosnia and Herzegovina; Montenegro; North Macedonia; Serbia; Ukraine',
+    url: 'https://www.ekathimerini.com/example/ship-bulgaria',
+    heading: 'Greek container ship sinks after drone attack off Bulgaria',
+    summary: 'Greek container ship sinks after drone attack off Bulgaria'
+  };
+  const article = convertSpreadsheetRows([row]).articles[0];
+  assert.deepEqual([article.sectionId, article.subsection, article.country], ['Miscellaneous', 'WESTERN / CENTRAL EUROPE', 'Bulgaria']);
+  const olderImport = { ...article, sectionId: 'South Eastern Europe', section: 'South Eastern Europe', subsection: 'Albania', country: '' };
+  const displayed = displaySiteContent([olderImport], normalizeSiteConfig({}, []));
+  assert.deepEqual([displayed[0].sectionId, displayed[0].subsection, displayed[0].country], ['Miscellaneous', 'WESTERN / CENTRAL EUROPE', 'Bulgaria']);
+});
+
+test('a region-wide OSCE conference appears before South Eastern Europe country headings', () => {
+  const osceRow = {
+    rowNumber: 2, date: '2026-10-30', source: 'OSCE', region: 'General',
+    countries: 'Albania; Bosnia and Herzegovina; Montenegro; North Macedonia; Serbia; Kosovo',
+    url: 'https://www.osce.org/example/conference',
+    heading: 'OSCE Conference Highlights Need for Stronger Institutional Response to Gender-Based Hate Crime in South-East Europe',
+    summary: 'Regional institutions met to discuss their response to hate crime.'
+  };
+  const article = convertSpreadsheetRows([osceRow]).articles[0];
+  assert.deepEqual([article.sectionId, article.subsection, article.country], ['South Eastern Europe', '', '']);
+  const olderImport = { ...article, sectionId: 'South Eastern Europe', section: 'South Eastern Europe', subsection: 'Albania' };
+  const albania = { ...article, id: 'albania-story', url: 'https://example.com/albania', title: 'Albanian parliament debates reform', subsection: 'Albania' };
+  const displayed = displaySiteContent([albania, olderImport], normalizeSiteConfig({}, []));
+  assert.deepEqual(displayed.map(item => item.subsection), ['', 'Albania']);
+});
+
+test('a possible US strike on Iran is filed under Iran and lists both countries in export', () => {
+  const row = {
+    rowNumber: 2, date: '2026-10-30', source: 'News am', region: 'International',
+    countries: 'Albania; Bosnia and Herzegovina; Montenegro; North Macedonia; Serbia; Ukraine',
+    url: 'https://example.com/us-iran-strikes',
+    heading: 'Possible US strikes on Iran in November could last several days, media report',
+    summary: 'Possible US strikes on Iran in November could last several days, media report'
+  };
+  const article = convertSpreadsheetRows([row]).articles[0];
+  assert.deepEqual([article.sectionId, article.subsection, article.country], ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Iran']);
+  const olderImport = { ...article, sectionId: 'South Eastern Europe', section: 'South Eastern Europe', subsection: 'Albania', country: '' };
+  const displayed = displaySiteContent([olderImport], normalizeSiteConfig({}, []))[0];
+  assert.deepEqual([displayed.sectionId, displayed.subsection, displayed.country], ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Iran']);
+  assert.deepEqual(spreadsheetRow(displayed, { heading: article.title, body: 'US and Iranian officials discussed possible strikes.' })[3], 'Iran, US');
 });
