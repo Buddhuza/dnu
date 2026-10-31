@@ -59,7 +59,7 @@ export default function ImportSpreadsheetDialog({ existingArticles, sources, imp
   return <div className="add-backdrop" onMouseDown={event => { if (!busy && event.target === event.currentTarget) onClose(); }}>
     <section className="add-dialog import-spreadsheet-dialog" role="dialog" aria-modal="true" aria-labelledby="import-spreadsheet-title">
       <div className="add-dialog-heading"><h2 id="import-spreadsheet-title">Import spreadsheet</h2><button type="button" onClick={onClose} disabled={busy} aria-label="Close spreadsheet import">×</button></div>
-      <p>Choose a DNU database export or a similar Excel or CSV sheet. For SITCEN workbooks, Import also reads full articles stored in the workbook’s compressed working-data sheets. Import replaces the previous article cache; paywalled rows are skipped.</p>
+      <p>Choose a DNU database export or a similar Excel or CSV sheet. For SITCEN workbooks, Import also reads full articles stored in the workbook’s compressed working-data sheets. Import adds stories to the current update; matching article URLs are updated. Paywalled rows are skipped.</p>
       <label className="import-file-label" htmlFor="import-spreadsheet-file">Spreadsheet file</label>
       <input id="import-spreadsheet-file" type="file" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" onChange={chooseFile} disabled={busy}/>
       {sheetNames.length > 1 && <label className="import-file-label" htmlFor="import-spreadsheet-sheet">Worksheet<select id="import-spreadsheet-sheet" value={sheetName} onChange={chooseSheet} disabled={busy}>{sheetNames.map(name => <option key={name} value={name}>{name.endsWith('_Audit') ? `${name} — all collected candidates` : `${name} — Morning News selection`}</option>)}</select></label>}
@@ -72,9 +72,9 @@ export default function ImportSpreadsheetDialog({ existingArticles, sources, imp
         <ul>{result.articles.slice(0, 5).map(article => <li key={article.id}><strong>{article.title}</strong><span>{article.sectionId} · {article.subsection === 'INTERNATIONAL ORGANISATIONS' ? article.country : article.subsection} · {article.sourceName}</span></li>)}</ul>
         {result.skipped.length > 0 && <details><summary>Skipped rows</summary><ul>{result.skipped.map(item => <li key={`${item.row}-${item.reason}`}>Row {item.row}: {item.reason}</li>)}</ul></details>}
       </div>}
-      <p className="import-spreadsheet-note">{sharedMode ? 'Import replaces the shared DNU update for all visitors. Clear all stories hides them for everyone while preserving the section structure and article cache.' : 'Import replaces the update displayed in this browser. It does not change the public edition; you can restore that edition here later.'}</p>
+      <p className="import-spreadsheet-note">{sharedMode ? 'Import adds stories to the shared update for all visitors. Clear all stories empties it for everyone while preserving the section structure and article cache.' : 'Import adds stories to the update in this browser. It does not change the public edition; you can restore that edition here later.'}</p>
       <div className="add-dialog-actions">
-        {sharedMode && hasStories ? <button type="button" onClick={onClear} disabled={busy}>Clear all stories</button> : !sharedMode && (publishedEmpty && hasStories ? <button type="button" onClick={onClear} disabled={busy}>Clear update</button> : importedMode && <button type="button" onClick={onRestore} disabled={busy}>Restore published update</button>)}
+        {sharedMode ? <button type="button" onClick={onClear} disabled={busy || !hasStories}>Clear all stories</button> : publishedEmpty && hasStories ? <button type="button" onClick={onClear} disabled={busy}>Clear update</button> : importedMode && <button type="button" onClick={onRestore} disabled={busy}>Restore published update</button>}
         <button type="button" onClick={onClose} disabled={busy}>Cancel</button>
         <button type="button" className="import-spreadsheet-confirm" onClick={importFile} disabled={!result?.articles.length || busy}>Import {result?.articles.length || ''} stories</button>
       </div>

@@ -31,20 +31,18 @@ export async function storeArticleBody(url, article) {
   try { await transaction(url, 'readwrite', article); } catch { /* Export can still use the fetched body. */ }
 }
 
-// A new imported sheet is a complete replacement, so clear the old browser
-// bodies and write the new ones in one transaction. If a write fails, IndexedDB
-// aborts the transaction and leaves the previous cache intact.
-export async function replaceArticleBodies(articles) {
+// Import new bodies without discarding bodies from previous sheets. A failed
+// transaction leaves the previous cache intact.
+export async function storeArticleBodies(articles) {
   const db = await openStore();
   try {
     await new Promise((resolve, reject) => {
       const tx = db.transaction('articles', 'readwrite');
       const store = tx.objectStore('articles');
-      store.clear();
       for (const article of articles) if (article?.body) store.put({ heading: article.heading, body: article.body, translated: article.translated === true }, article.url);
       tx.oncomplete = resolve;
       tx.onerror = () => reject(tx.error || new Error('Could not save imported articles.'));
-      tx.onabort = () => reject(tx.error || new Error('Could not replace the article cache.'));
+      tx.onabort = () => reject(tx.error || new Error('Could not save imported articles.'));
     });
   } finally { db.close(); }
 }
