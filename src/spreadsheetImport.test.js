@@ -209,6 +209,26 @@ test('a concise reviewed summary does not lose the country named in the source s
   assert.ok(article.summary.split(/\s+/).length <= 20);
 });
 
+test('an Ireland statement about Belarusian prisoners is filed under Belarus', () => {
+  const row = { rowNumber: 48, publishedUtc: '2026-10-29T09:00:00Z', source: 'Pozirk', region: 'International',
+    countries: 'Ireland', url: 'https://pozirk.online/en/news/209521/',
+    heading: 'Ireland concerned about ill-treatment of female prisoners in Belarus', summary: 'Ireland will work with partners to address abuses in Belarus.' };
+  const article = convertSpreadsheetRows([row]).articles[0];
+  assert.deepEqual([article.sectionId, article.subsection, article.country], ['Eastern Europe', 'Belarus', '']);
+  const olderPlacement = { ...article, sectionId: 'Miscellaneous', section: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Ireland' };
+  const displayed = displaySiteContent([olderPlacement], normalizeSiteConfig({}, []))[0];
+  assert.deepEqual([displayed.sectionId, displayed.subsection, displayed.country], ['Eastern Europe', 'Belarus', '']);
+});
+
+test('spreadsheet import drops exclusive from the display title but retains the publisher headline', () => {
+  const row = { rowNumber: 2, publishedUtc: '2026-10-29T09:00:00Z', source: 'Reuters', region: 'Europe', countries: 'France',
+    url: 'https://www.reuters.com/world/europe/example/', heading: 'EXCLUSIVE:\u00a0France and Germany agree security talks',
+    summary: 'The ministers plan to meet in Paris next month.' };
+  const article = convertSpreadsheetRows([row]).articles[0];
+  assert.equal(article.title, 'France and Germany agree security talks');
+  assert.equal(article.originalHeadline, row.heading);
+});
+
 test('ECB leadership news uses its own organisation heading while a Lagarde profile is excluded', () => {
   const base = { publishedUtc: '2026-10-29T10:33:00Z', region: 'International', country: '', countries: '' };
   const result = convertSpreadsheetRows([

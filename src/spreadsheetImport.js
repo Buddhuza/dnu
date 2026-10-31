@@ -1,13 +1,14 @@
 import JSZip from 'jszip';
 import sax from 'sax';
 import { franc } from 'franc-min';
-import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, isSouthEasternEuropeRegionalStory, isMontenegroCroatiaDialogueStory, isLithuanianBalticStory, isGreekPrimeMinisterStory } from './newsSections.js';
+import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, isSouthEasternEuropeRegionalStory, isMontenegroCroatiaDialogueStory, isLithuanianBalticStory, isGreekPrimeMinisterStory, isBelarusPrisonerStory } from './newsSections.js';
 import { canonicalArticleUrl } from './siteConfig.js';
 import { viennaWallTimeToIso } from './viennaTime.js';
 import { blockedPlacementReason, directGovernmentPublicationReason } from './sourcePolicy.js';
 import { excludedHeadlineReason } from './headlinePolicy.js';
 import { conciseDnuSummary } from './conciseSummary.js';
 import { reviewedImportedSummary } from './reviewedImportedSummaries.js';
+import { cleanHeadlinePrefix } from './headlineText.js';
 import { articlePlacement } from '../server/importArticle.js';
 
 const headerAliases = {
@@ -253,7 +254,7 @@ function spreadsheetDate(value, fallback) {
 }
 
 function cleanHeading(heading, source, url) {
-  const title = text(heading);
+  const title = cleanHeadlinePrefix(text(heading));
   let host = '';
   try { host = new URL(url).hostname.replace(/^www\./, '').split('.')[0]; } catch { /* URL is checked separately. */ }
   const brand = compact(source), domain = compact(host);
@@ -293,6 +294,7 @@ function paywallReason(row) {
 }
 
 function placementFromRow(row, title, summary, existing, leadPrefix) {
+  if (isBelarusPrisonerStory(title)) return { sectionId: 'Eastern Europe', subsection: 'Belarus', country: '' };
   if (/\b(?:European Central Bank|ECB)\b/i.test(title)) return { sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'ECB' };
   if (isGreekPrimeMinisterStory(title)) return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Greece' };
   if (isSouthEasternEuropeRegionalStory(title)) return { sectionId: 'South Eastern Europe', subsection: '', country: '' };
@@ -383,14 +385,14 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
     const source = sourceByHost.get(parsed.hostname.replace(/^www\./, '').toLowerCase()) || sourceByName.get(compact(sourceName));
     const article = {
       id: existing?.id || `spreadsheet-${key}`, url: parsed.href, sourceId: existing?.sourceId || source?.id || 'spreadsheet', sourceName,
-      title, summary, originalHeadline: text(row.heading), translated: existing?.translated === true,
+      title, summary, originalHeadline: String(row.heading || '').trim(), translated: existing?.translated === true,
       publishedAt,
       reviewed: true, ...placement, section: placement.sectionId, fromSpreadsheet: true
     };
     const restriction = blockedPlacementReason(article);
     if (restriction) { skipped.push({ row: row.rowNumber, reason: restriction }); continue; }
     articles.push(article);
-    if (text(row.body)) bodies.push({ url: parsed.href, heading: text(row.heading), body: String(row.body), translated: article.translated });
+    if (text(row.body)) bodies.push({ url: parsed.href, heading: String(row.heading || '').trim(), body: String(row.body), translated: article.translated });
   }
   return { articles, bodies, skipped };
 }

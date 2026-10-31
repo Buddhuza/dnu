@@ -1,10 +1,11 @@
-import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, orderedSubsections, leadRegionalHeadings, compareCountryLabels, isSouthEasternEuropeRegionalStory, isMontenegroCroatiaDialogueStory, isLithuanianBalticStory, isGreekPrimeMinisterStory } from './newsSections.js';
+import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, orderedSubsections, leadRegionalHeadings, compareCountryLabels, isSouthEasternEuropeRegionalStory, isMontenegroCroatiaDialogueStory, isLithuanianBalticStory, isGreekPrimeMinisterStory, isBelarusPrisonerStory } from './newsSections.js';
 import { blockedPlacementReason, directGovernmentPublicationReason } from './sourcePolicy.js';
 import { excludedHeadlineReason } from './headlinePolicy.js';
 import { displaySourceName } from './sourceNames.js';
 import { articlePlacement } from '../server/importArticle.js';
 import { conciseDnuSummary } from './conciseSummary.js';
 import { reviewedImportedSummary } from './reviewedImportedSummaries.js';
+import { cleanHeadlinePrefix } from './headlineText.js';
 
 export const THEME_PRESETS = {
   forest: { name: 'Forest', primary: '#123e47', accent: '#bce081', background: '#f4efe6', surface: '#fdfaf4', text: '#182a36', section: '#0070c0', font: 'DM Sans' },
@@ -203,8 +204,14 @@ export function displaySiteContent(articles, config, excludedIds = new Set(), ke
       subsection: edit?.sectionId ? edit.subsection : edit?.subsection || (legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : article.subsection),
       country: edit?.sectionId ? edit.country : edit?.country || article.country || ''
     };
+    displayed.title = cleanHeadlinePrefix(displayed.title);
     if (article.fromSpreadsheet && !edit?.summaryEdited) displayed.summary = reviewedImportedSummary(displayed.title, displayed.publishedAt) || conciseDnuSummary(displayed.summary, displayed.title);
-    if (article.fromSpreadsheet && !edit?.sectionId && /\b(?:European Central Bank|ECB)\b/i.test(displayed.title) && displayed.sectionId === 'Miscellaneous' && displayed.subsection === 'INTERNATIONAL ORGANISATIONS') {
+    if (article.fromSpreadsheet && isBelarusPrisonerStory(displayed.title)) {
+      displayed.sectionId = 'Eastern Europe';
+      displayed.section = sectionById.get(displayed.sectionId)?.name || displayed.sectionId;
+      displayed.subsection = 'Belarus';
+      displayed.country = '';
+    } else if (article.fromSpreadsheet && !edit?.sectionId && /\b(?:European Central Bank|ECB)\b/i.test(displayed.title) && displayed.sectionId === 'Miscellaneous' && displayed.subsection === 'INTERNATIONAL ORGANISATIONS') {
       displayed.country = 'ECB';
     } else if (article.fromSpreadsheet && !edit?.sectionId && isGreekPrimeMinisterStory(displayed.title)) {
       displayed.sectionId = 'Miscellaneous';
@@ -241,7 +248,7 @@ export function displaySiteContent(articles, config, excludedIds = new Set(), ke
   }
   for (const article of config.customArticles) {
     if (article.hidden || sectionById.get(article.sectionId)?.visible === false) continue;
-    if (!directGovernmentPublicationReason(article) && !blockedPlacementReason(article) && !excludedHeadlineReason(article.title, article.summary, article.url)) items.push({ ...article, sourceName: displaySourceName(article.sourceName), section: sectionById.get(article.sectionId)?.name || article.sectionId });
+    if (!directGovernmentPublicationReason(article) && !blockedPlacementReason(article) && !excludedHeadlineReason(article.title, article.summary, article.url)) items.push({ ...article, title: cleanHeadlinePrefix(article.title), sourceName: displaySourceName(article.sourceName), section: sectionById.get(article.sectionId)?.name || article.sectionId });
   }
   const uniqueItems = keepImportedStories || articles.some(article => article.fromSpreadsheet) ? items : deduplicateArticles(items, excludedIds);
   const order = new Map(config.sections.map((section, index) => [section.id, index]));

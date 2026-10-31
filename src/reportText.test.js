@@ -11,6 +11,13 @@ test('translated headlines keep their marker in report text', () => {
   assert.equal(sentenceCaseHeadline('(文A) Government Discusses Security Cooperation'), '(文A) Government Discusses Security Cooperation');
 });
 
+test('a leading exclusive label is removed in full and compressed report text', () => {
+  const article = { title: 'EXCLUSIVE:&#xA0;EU leaders discuss new security measures', summary: 'Officials met in Brussels.' };
+  assert.equal(reportStoryText(article).headline, 'EU leaders discuss new security measures.');
+  assert.equal(reportStoryText(article, true).headline, 'EU leaders discuss new security measures');
+  assert.equal(sentenceCaseHeadline('(文A) EXCLUSIVE: Security agreement announced'), '(文A) Security agreement announced');
+});
+
 test('only a fully all-caps headline is normalised', () => {
   assert.equal(sentenceCaseHeadline('IN BRIEF: FSB foils drone attack in Voronezh Region'), 'IN BRIEF: FSB foils drone attack in Voronezh Region');
   assert.equal(sentenceCaseHeadline('VIDEO // European Commissioner: "Let us prepare"'), 'VIDEO // European Commissioner: "Let us prepare"');

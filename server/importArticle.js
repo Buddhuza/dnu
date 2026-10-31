@@ -1,4 +1,4 @@
-import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES } from '../src/newsSections.js';
+import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, isBelarusPrisonerStory } from '../src/newsSections.js';
 import { excludedHeadlineReason } from '../src/headlinePolicy.js';
 import { preferredRegionalPlacement, ukraineAttackPlacement } from '../src/storyPlacement.js';
 import { isUkrainianOutlet } from '../src/sourcePolicy.js';
@@ -55,6 +55,7 @@ export function sourceForArticle(url, sources) {
 }
 
 function inferredPlacement(text) {
+  if (isBelarusPrisonerStory(text)) return { sectionId: 'Eastern Europe', subsection: 'Belarus', country: '' };
   const leadingWestern = western.find(country => new RegExp(`^${country}\\b`, 'i').test(String(text).replace(/^\(文A\)\s*/, '').trim()));
   if (leadingWestern) return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: ['UK', 'Britain', 'England', 'Scotland', 'Wales'].includes(leadingWestern) ? 'United Kingdom' : leadingWestern };
   if (/\b(?:European Central Bank|ECB)\b/i.test(text)) {

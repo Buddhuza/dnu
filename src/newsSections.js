@@ -37,6 +37,8 @@ export const MISCELLANEOUS_COUNTRIES = {
   'INTERNATIONAL ORGANISATIONS': ['OSCE', 'EU', 'UN', 'NATO', 'IMF', 'ECB', 'G7', 'G20', 'ICC', 'WTO', 'CIS', 'CSTO', 'BRICS']
 };
 
+export const isBelarusPrisonerStory = title => /\bprisoners?\s+in\s+Belarus\b/i.test(String(title || ''));
+
 const organisationOrder = MISCELLANEOUS_COUNTRIES['INTERNATIONAL ORGANISATIONS'];
 const eurasianOrganisation = /\b(?:CIS|CSTO|BRICS|SCO|EAEU|Eurasian|Shanghai Cooperation)\b/i;
 const regionalSectionIds = new Set(NEWS_SECTIONS.slice(1, 5).map(section => section.id));
