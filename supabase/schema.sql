@@ -62,7 +62,9 @@ begin
    returning revision into next_revision;
   if next_revision is null then return null; end if;
 
-  if p_replace_bodies then delete from public.dnu_bodies; end if;
+  -- Some Supabase projects enforce safe updates, which reject DELETE without
+  -- an explicit WHERE clause. url is the non-null primary key.
+  if p_replace_bodies then delete from public.dnu_bodies where url is not null; end if;
   insert into public.dnu_bodies (url, heading, body, translated)
   select item.value ->> 'url', coalesce(item.value ->> 'heading', ''), item.value ->> 'body',
          coalesce((item.value ->> 'translated')::boolean, false)
@@ -101,7 +103,7 @@ begin
     settings = p_settings, excluded_story_ids = '[]'::jsonb,
     compiled_at = coalesce((p_update ->> 'checkedAt')::timestamptz, now()),
     updated_at = now() where id = 'main' returning revision into next_revision;
-  delete from public.dnu_bodies;
+  delete from public.dnu_bodies where url is not null;
   insert into public.dnu_bodies (url, heading, body, translated)
   select item.value ->> 'url', coalesce(item.value ->> 'heading', ''), item.value ->> 'body',
          coalesce((item.value ->> 'translated')::boolean, false)

@@ -15,9 +15,11 @@ To activate shared editing for a new Supabase project:
 3. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` from the project's API settings for the website build. Copy [.env.example](.env.example) to an ignored `.env.production.local` for a local build. The anon/publishable key is allowed in browser code; never use a service-role key in a `VITE_` variable.
 4. Build and publish GitHub Pages with those two variables. Open the public website in one browser and log in from another. Import a sheet or edit a story, wait for **Saved for everyone**, then confirm the public browser updates. A first login before any import shows the bundled prepared edition.
 
+If an import says **Not published: DELETE requires a WHERE clause**, rerun the latest [supabase/schema.sql](supabase/schema.sql) in the project's SQL Editor. The updated publishing functions use a WHERE clause when replacing the article-body cache. Then reload the website and import the sheet again.
+
 For a future offline `NEWSRUN`, set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` only in the collection process, then run `npm run publish:shared` after reviewing `data/prepared-update.json`. This copies the prepared edition and available full bodies to the shared database. The service-role key must never be used in a website build.
 
-Until the Supabase project and build variables are configured, the live GitHub Pages deployment remains on the earlier browser-local version. Do not publish the new read-only frontend without its shared backend: that would hide editor tools without enabling login.
+The GitHub Pages deployment is configured for shared editing. Publishing-function changes in `supabase/schema.sql` must also be run in the Supabase SQL Editor; updating the repository alone does not change the live database.
 
 A local news review app for the 173 outlets in `sources.json` (transcribed from the supplied `agencies_updated.txt`). Choose a source, collect its headlines from a publisher feed where available or Firecrawl otherwise, and refine the results with included and excluded phrases. The prepared news stream can be edited and exported as a Word update.
 
