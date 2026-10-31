@@ -22,6 +22,7 @@ const headerAliases = {
   url: ['sourceurl', 'url', 'articleurl', 'link', 'hyperlink'],
   heading: ['heading', 'headline', 'title'],
   summary: ['summary', 'description'],
+  dnuSummary: ['dnusummary'],
   shortSummary: ['shortsummary'],
   body: ['body', 'articlebody', 'articletext', 'fulltext', 'text'],
   paywall: ['paywall', 'accessstatus']
@@ -301,6 +302,11 @@ function placementFromRow(row, title, summary, existing, leadPrefix) {
   if (isMontenegroCroatiaDialogueStory(title, row.source)) return { sectionId: 'South Eastern Europe', subsection: 'Montenegro', country: '' };
   if (isLithuanianBalticStory(title, summary, row.source)) return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Lithuania' };
   const region = text(row.region).replace(/\s+Region$/i, '');
+  if (compact(region) === 'leadstories') {
+    const heading = first(row.countries || row.country || row.organisations);
+    if (heading === 'Middle East' || regionalSections.some(section => section.subsections.includes(heading)))
+      return { sectionId: 'Lead stories', subsection: heading, country: '' };
+  }
   const regional = regionalSections.find(section => compact(section.id) === compact(region));
   const countries = String(row.countries || row.country || '').split(/[,;]/).map(text).filter(Boolean);
   const organisations = String(row.organisations || '').split(/[,;]/).map(text).filter(Boolean);
@@ -376,7 +382,7 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
     const suggestedSummary = [row.shortSummary, row.summary].map(text).find(value => value && compact(value) !== compact(title)) || '';
     const publishedAt = spreadsheetDate(row.publishedUtc || row.date, existing?.publishedAt || importedAt);
     const bodySummary = summaryFromBody(row.body, title);
-    const summary = reviewedImportedSummary(title, publishedAt) || conciseDnuSummary(bodySummary || suggestedSummary || (row.body ? existing?.summary : ''), title);
+    const summary = text(row.dnuSummary) || reviewedImportedSummary(title, publishedAt) || conciseDnuSummary(bodySummary || suggestedSummary || (row.body ? existing?.summary : ''), title);
     const leadPrefix = firstRegional > 0 && index < firstRegional && leadHeadline.test(title);
     const placement = placementFromRow(row, title, `${suggestedSummary} ${summary}`.trim(), existing, leadPrefix);
     if (!placement?.sectionId || !placement.subsection && placement.sectionId !== 'South Eastern Europe' || placement.sectionId === 'Miscellaneous' && !placement.country) {

@@ -1,6 +1,7 @@
 name: Publish reviewed direct-feed edition
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - .github/workflows/publish-direct-feed-36h.yml
@@ -33,7 +34,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b feed-publish-2026-10-31
+          git checkout -b feed-publish-${{ github.run_id }}
           git add -f data/direct-feed-36h-publish-status.txt
           git commit -m "Save reviewed edition publication status"
-          git push origin HEAD:feed-publish-2026-10-31
+          git push origin HEAD:feed-publish-${{ github.run_id }}

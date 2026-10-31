@@ -9,6 +9,17 @@ import { displaySiteContent, normalizeSiteConfig } from './siteConfig.js';
 
 const columns = ['2026-10-23', 'Guardian', 'Europe', 'UK, US', '', '', '', '', 'https://www.theguardian.com/example', 'UK and US ministers meet in London | Guardian', 'UK and US ministers met in London on Friday to discuss European security. They agreed to establish a working group on protection of critical undersea cables and to share intelligence across the Atlantic.'];
 
+test('reviewed CSV edition retains lead placement and its DNU summary', async () => {
+  const csv = 'Published UTC,Source,Region,Countries,Source URL,Heading,DNU Summary,Body\n2026-10-31T10:00:00Z,Guardian,Lead stories,Ukraine,https://www.theguardian.com/world/example,Ukraine secures new air defence deal,The first interceptors are expected next month.,Officials signed an agreement for additional air defence interceptors. The first shipments are scheduled to arrive next month, according to the ministry.';
+  const rows = await readSpreadsheet(new File([csv], 'edition.csv'));
+  const result = convertSpreadsheetRows(rows);
+  assert.equal(result.articles.length, 1);
+  assert.equal(result.articles[0].sectionId, 'Lead stories');
+  assert.equal(result.articles[0].subsection, 'Ukraine');
+  assert.equal(result.articles[0].summary, 'The first interceptors are expected next month.');
+  assert.equal(result.bodies.length, 1);
+});
+
 test('an exported Excel sheet imports a short DNU story and retains its full body for export', async () => {
   const workbook = await createSpreadsheet([columns]);
   const rows = await readSpreadsheet(new File([workbook], 'update.xlsx'));
