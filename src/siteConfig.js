@@ -184,6 +184,7 @@ export function displaySources(baseSources, config) {
 
 export function displaySiteContent(articles, config, excludedIds = new Set(), keepImportedStories = false) {
   const sectionById = new Map(config.sections.map(section => [section.id, section]));
+  const regionalSectionIds = new Set(NEWS_SECTIONS.slice(1, 5).map(section => section.id));
   const items = [];
   for (const article of articles) {
     const edit = config.articleEdits[article.id];
@@ -200,9 +201,11 @@ export function displaySiteContent(articles, config, excludedIds = new Set(), ke
       subsection: edit?.sectionId ? edit.subsection : edit?.subsection || (legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : article.subsection),
       country: edit?.sectionId ? edit.country : edit?.country || article.country || ''
     };
-    if (article.fromSpreadsheet && !edit?.sectionId && displayed.sectionId === 'South Eastern Europe' && displayed.subsection === 'Albania' && !/\b(?:Albania|Albanian|Tirana)\b/i.test(displayed.title)) {
-      const inferred = articlePlacement({}, displayed.title, displayed.summary);
-      if (inferred && (inferred.sectionId !== displayed.sectionId || inferred.subsection !== displayed.subsection)) {
+    if (article.fromSpreadsheet && !edit?.sectionId && regionalSectionIds.has(displayed.sectionId)) {
+      const inferred = articlePlacement({}, displayed.title, '');
+      const namedLocation = inferred && (regionalSectionIds.has(inferred.sectionId) ||
+        inferred.sectionId === 'Miscellaneous' && inferred.subsection !== 'INTERNATIONAL ORGANISATIONS');
+      if (namedLocation && (inferred.sectionId !== displayed.sectionId || inferred.subsection !== displayed.subsection)) {
         displayed.sectionId = inferred.sectionId;
         displayed.section = sectionById.get(inferred.sectionId)?.name || inferred.sectionId;
         displayed.subsection = inferred.subsection;

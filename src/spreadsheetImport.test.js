@@ -129,3 +129,23 @@ test('a generic country list does not file an Israel story under Albania', () =>
   const displayed = displaySiteContent([olderImport], normalizeSiteConfig({}, []));
   assert.deepEqual([displayed[0].sectionId, displayed[0].subsection, displayed[0].country], ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Israel']);
 });
+
+test('a generic country list does not file a North Korea story under North Macedonia', () => {
+  const row = {
+    rowNumber: 2, date: '2026-10-30', source: 'AP', region: 'International',
+    countries: 'North Macedonia; Serbia; Kosovo; Montenegro; Bosnia and Herzegovina; Albania',
+    url: 'https://apnews.com/article/north-korea-missiles',
+    heading: 'North Korea fires missile barrage toward the sea as tensions with South rise',
+    summary: 'South Korea said it detected ballistic missile launches from the North.'
+  };
+  const article = convertSpreadsheetRows([row]).articles[0];
+  assert.deepEqual([article.sectionId, article.subsection, article.country], ['Miscellaneous', 'NORTH EAST ASIA', 'North Korea']);
+
+  const olderImport = { ...article, sectionId: 'South Eastern Europe', section: 'South Eastern Europe', subsection: 'North Macedonia', country: '' };
+  const displayed = displaySiteContent([olderImport], normalizeSiteConfig({}, []));
+  assert.deepEqual([displayed[0].sectionId, displayed[0].subsection, displayed[0].country], ['Miscellaneous', 'NORTH EAST ASIA', 'North Korea']);
+
+  const regionalStory = { ...olderImport, id: 'regional-story', title: 'The EU Growth Plan for the Western Balkans' };
+  const kept = displaySiteContent([regionalStory], normalizeSiteConfig({}, []));
+  assert.deepEqual([kept[0].sectionId, kept[0].subsection], ['South Eastern Europe', 'North Macedonia']);
+});
