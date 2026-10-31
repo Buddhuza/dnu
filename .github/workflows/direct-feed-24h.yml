@@ -23,7 +23,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b feed-run-2026-10-31
+          git checkout -b feed-run-2026-10-31-retry
           git add -f data/direct-feed-24h-result.json
           git commit -m "Save direct publisher feed audit"
-          git push origin HEAD:feed-run-2026-10-31
+          git push origin HEAD:feed-run-2026-10-31-retry
