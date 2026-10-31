@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import JSZip from 'jszip';
+import { gzipSync } from 'node:zlib';
 import { createSpreadsheet, spreadsheetRow } from './spreadsheetExport.js';
 import { convertSpreadsheetRows, listSpreadsheetSheets, readSpreadsheet } from './spreadsheetImport.js';
 import { reportStoryText } from './reportText.js';
@@ -80,6 +81,24 @@ test('SITCEN workbook defaults to its dated selection and can open Audit separat
   assert.equal(morning.bodies.length, 0);
   const audit = convertSpreadsheetRows(await readSpreadsheet(file, '2026-10-30_Audit'));
   assert.equal(audit.articles[0].title, 'Audit headline');
+});
+
+test('SITCEN working-data sheets supply full bodies and a short first-paragraph summary', async () => {
+  const zip = new JSZip();
+  zip.file('xl/workbook.xml', '<workbook xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="2026-10-30" r:id="rId1"/><sheet name="NewsWork_A" r:id="rId2"/></sheets></workbook>');
+  zip.file('xl/_rels/workbook.xml.rels', '<Relationships><Relationship Id="rId1" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Target="worksheets/sheet2.xml"/></Relationships>');
+  const url = 'https://apnews.com/article/ukraine-talks';
+  const body = 'Ukraine and Russia agreed to talks. Negotiators will meet in Geneva on Friday to discuss border monitoring and prisoner exchanges.\n\nA second paragraph has less important details.';
+  zip.file('xl/worksheets/sheet1.xml', `<worksheet><sheetData><row r="1"><c r="A1" t="inlineStr"><is><t>Date</t></is></c><c r="B1" t="inlineStr"><is><t>Source</t></is></c><c r="C1" t="inlineStr"><is><t>Headline</t></is></c><c r="D1" t="inlineStr"><is><t>Link</t></is></c><c r="E1" t="inlineStr"><is><t>Summary</t></is></c></row><row r="2"><c r="A2" t="inlineStr"><is><t>2026-10-30</t></is></c><c r="B2" t="inlineStr"><is><t>AP</t></is></c><c r="C2" t="inlineStr"><is><t>Ukraine and Russia agree to talks</t></is></c><c r="D2" t="inlineStr"><is><t>${url}</t></is></c><c r="E2" t="inlineStr"><is><t>A much longer feed summary that should not be used when the article body is available.</t></is></c></row></sheetData></worksheet>`);
+  const encoded = gzipSync(JSON.stringify({ items: [{ link: `${url}?utm_source=feed`, articleBody: body }] })).toString('base64');
+  const split = Math.ceil(encoded.length / 2);
+  zip.file('xl/worksheets/sheet2.xml', `<worksheet><sheetData><row r="1"><c r="A1" t="inlineStr"><is><t>RunID</t></is></c><c r="B1" t="inlineStr"><is><t>Chunk</t></is></c><c r="C1" t="inlineStr"><is><t>JSON</t></is></c></row>${[encoded.slice(0, split), encoded.slice(split)].map((part, index) => `<row r="${index + 2}"><c r="A${index + 2}" t="inlineStr"><is><t>2026-10-30-1234</t></is></c><c r="B${index + 2}"><v>${index}</v></c><c r="C${index + 2}" t="inlineStr"><is><t>gzip:${part}</t></is></c></row>`).join('')}</sheetData></worksheet>`);
+  const file = new File([await zip.generateAsync({ type: 'uint8array' })], 'SITCEN.xlsx');
+  const rows = await readSpreadsheet(file);
+  const result = convertSpreadsheetRows(rows);
+  assert.equal(rows[0].body, body);
+  assert.equal(result.articles[0].summary, 'Negotiators will meet in Geneva on Friday to discuss border monitoring and prisoner exchanges');
+  assert.equal(result.bodies[0].body, body);
 });
 
 test('the empty DNU keeps its configured structure and shows imported stories under their headings', () => {

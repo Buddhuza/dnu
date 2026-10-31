@@ -59,7 +59,7 @@ export default function ImportSpreadsheetDialog({ existingArticles, sources, imp
   return <div className="add-backdrop" onMouseDown={event => { if (!busy && event.target === event.currentTarget) onClose(); }}>
     <section className="add-dialog import-spreadsheet-dialog" role="dialog" aria-modal="true" aria-labelledby="import-spreadsheet-title">
       <div className="add-dialog-heading"><h2 id="import-spreadsheet-title">Import spreadsheet</h2><button type="button" onClick={onClose} disabled={busy} aria-label="Close spreadsheet import">×</button></div>
-      <p>Choose a DNU database export or a similar Excel or CSV sheet. Import replaces the previous browser article cache with full bodies from this sheet. Paywalled rows are skipped. Database export uses only those imported bodies.</p>
+      <p>Choose a DNU database export or a similar Excel or CSV sheet. For SITCEN workbooks, Import also reads full articles stored in the workbook’s compressed working-data sheets. Import replaces the previous article cache; paywalled rows are skipped.</p>
       <label className="import-file-label" htmlFor="import-spreadsheet-file">Spreadsheet file</label>
       <input id="import-spreadsheet-file" type="file" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" onChange={chooseFile} disabled={busy}/>
       {sheetNames.length > 1 && <label className="import-file-label" htmlFor="import-spreadsheet-sheet">Worksheet<select id="import-spreadsheet-sheet" value={sheetName} onChange={chooseSheet} disabled={busy}>{sheetNames.map(name => <option key={name} value={name}>{name.endsWith('_Audit') ? `${name} — all collected candidates` : `${name} — Morning News selection`}</option>)}</select></label>}
@@ -67,7 +67,7 @@ export default function ImportSpreadsheetDialog({ existingArticles, sources, imp
       {error && <p className="add-manual-error" role="alert">{error}</p>}
       {result && <div className="import-spreadsheet-preview" aria-live="polite">
         <p><strong>{result.articles.length} of {result.total}</strong> rows ready · {result.skipped.length} skipped · {result.articles.filter(article => !article.summary).length} without a short summary · {result.bodies.length} full bodies available for database export</p>
-        {!result.bodies.length && <p className="import-spreadsheet-note">This worksheet has no full article bodies. It can populate the update, but database export will have no rows until the source sheet includes a Body column.</p>}
+        {!result.bodies.length && <p className="import-spreadsheet-note">No full article bodies were found in this sheet or its matching workbook cache. It can populate the update, but database export will have no rows.</p>}
         {sheetName.endsWith('_Audit') && <p className="import-spreadsheet-note">Audit includes candidates rejected by the source script’s selection rules. Review these stories before using them in the update.</p>}
         <ul>{result.articles.slice(0, 5).map(article => <li key={article.id}><strong>{article.title}</strong><span>{article.sectionId} · {article.subsection === 'INTERNATIONAL ORGANISATIONS' ? article.country : article.subsection} · {article.sourceName}</span></li>)}</ul>
         {result.skipped.length > 0 && <details><summary>Skipped rows</summary><ul>{result.skipped.map(item => <li key={`${item.row}-${item.reason}`}>Row {item.row}: {item.reason}</li>)}</ul></details>}

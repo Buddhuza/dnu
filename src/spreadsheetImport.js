@@ -37,6 +37,7 @@ const miscRegions = new Map([
   ['internationalorganizations', 'INTERNATIONAL ORGANISATIONS']
 ]);
 const workbookCache = new WeakMap();
+const workBodiesCache = new WeakMap();
 
 async function workbook(file) {
   if (!workbookCache.has(file)) workbookCache.set(file, JSZip.loadAsync(await file.arrayBuffer()));
@@ -125,6 +126,68 @@ function readWorksheet(xml, sharedStrings) {
   return rows;
 }
 
+async function inflateWorkJson(chunks) {
+  if (!globalThis.DecompressionStream) throw new Error('This browser cannot read compressed article bodies in the workbook.');
+  const encoded = chunks.map(chunk => String(chunk || '').replace(/^gzip:/, '')).join('');
+  if (encoded.length > 20_000_000) throw new Error('The workbook article cache is too large.');
+  const bytes = Uint8Array.from(atob(encoded), char => char.charCodeAt(0));
+  const reader = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip')).getReader();
+  const parts = [];
+  const decoder = new TextDecoder();
+  let length = 0;
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    length += value.length;
+    if (length > 50_000_000) { await reader.cancel(); throw new Error('The workbook article cache is too large.'); }
+    parts.push(decoder.decode(value, { stream: true }));
+  }
+  parts.push(decoder.decode());
+  return JSON.parse(parts.join(''));
+}
+
+async function workbookArticleBodies(file, zip, sheets, shared, date) {
+  if (!date) return new Map();
+  let cached = workBodiesCache.get(file);
+  if (!cached) { cached = new Map(); workBodiesCache.set(file, cached); }
+  if (cached.has(date)) return cached.get(date);
+  const task = (async () => {
+    let hadMatchingRun = false;
+    for (const name of ['NewsWork_A', 'NewsWork_B']) {
+      const sheet = sheets.find(item => item.name === name);
+      if (!sheet) continue;
+      const rows = readWorksheet(await zip.file(sheet.path).async('string'), shared);
+      const runs = new Map();
+      for (const row of rows.slice(1)) {
+        const run = String(row[0] || '');
+        if (!run.startsWith(`${date}-`) || !Number.isInteger(Number(row[1])) || !String(row[2] || '').startsWith('gzip:')) continue;
+        if (!runs.has(run)) runs.set(run, []);
+        runs.get(run)[Number(row[1])] = row[2];
+      }
+      for (const [, chunks] of [...runs].sort(([a], [b]) => b.localeCompare(a))) {
+        hadMatchingRun = true;
+        if (!chunks.length || chunks.some(chunk => !chunk)) continue;
+        try {
+          const data = await inflateWorkJson(chunks);
+          const bodies = new Map();
+          for (const item of data.items || []) {
+            if (!String(item.articleBody || '').trim()) continue;
+            for (const link of [item.link, item.originalLink]) {
+              const key = canonicalArticleUrl(link);
+              if (key) bodies.set(key, String(item.articleBody));
+            }
+          }
+          return bodies;
+        } catch { /* The other work sheet may contain a complete copy. */ }
+      }
+    }
+    if (hadMatchingRun) throw new Error('Could not decode the article bodies in the workbook working-data sheets.');
+    return new Map();
+  })();
+  cached.set(date, task);
+  return task;
+}
+
 function columnIndex(reference) {
   const label = reference.match(/^[A-Z]+/i)?.[0]?.toUpperCase();
   if (!label) return null;
@@ -150,7 +213,7 @@ function readCsv(value) {
 
 export async function readSpreadsheet(file, sheetName = '') {
   if (file.size > 40_000_000) throw new Error('Choose a spreadsheet smaller than 40 MB.');
-  let rows;
+  let rows, articleBodies = new Map();
   if (/\.csv$/i.test(file.name)) rows = readCsv(await file.text());
   else if (/\.xlsx$/i.test(file.name)) {
     const zip = await workbook(file);
@@ -160,15 +223,20 @@ export async function readSpreadsheet(file, sheetName = '') {
     if (!chosen) throw new Error(sheetName ? `Worksheet ${sheetName} was not found.` : 'No worksheet was found in this Excel file.');
     const shared = zip.file('xl/sharedStrings.xml') ? readSharedStrings(await zip.file('xl/sharedStrings.xml').async('string')) : [];
     rows = readWorksheet(await zip.file(chosen.path).async('string'), shared);
+    articleBodies = await workbookArticleBodies(file, zip, sheets, shared, chosen.name.match(/^\d{4}-\d{2}-\d{2}/)?.[0]);
   } else throw new Error('Choose an .xlsx or .csv spreadsheet.');
   const headerIndex = rows.findIndex(row => Object.values(headerAliases).some(aliases => row.some(value => aliases.includes(compact(value)))));
   if (headerIndex < 0) throw new Error('No column headings were found.');
   const header = rows[headerIndex].map(compact);
   const indexes = Object.fromEntries(Object.entries(headerAliases).map(([key, aliases]) => [key, header.findIndex(value => aliases.includes(value))]));
   if (['source', 'url', 'heading'].some(key => indexes[key] < 0)) throw new Error('The sheet needs Source, Source URL, and Heading columns.');
-  return rows.slice(headerIndex + 1).map((row, index) => ({ rowNumber: headerIndex + index + 2,
-    ...Object.fromEntries(Object.entries(indexes).map(([key, column]) => [key, column >= 0 ? String(row[column] ?? '').trim() : '']))
-  })).filter(row => Object.values(row).some((value, index) => index > 0 && value));
+  return rows.slice(headerIndex + 1).map((row, index) => {
+    const article = { rowNumber: headerIndex + index + 2,
+      ...Object.fromEntries(Object.entries(indexes).map(([key, column]) => [key, column >= 0 ? String(row[column] ?? '').trim() : '']))
+    };
+    if (!article.body) article.body = articleBodies.get(canonicalArticleUrl(article.url)) || '';
+    return article;
+  }).filter(row => Object.values(row).some((value, index) => index > 0 && value));
 }
 
 function spreadsheetDate(value, fallback) {
@@ -194,17 +262,22 @@ function cleanHeading(heading, source, url) {
 }
 
 function summaryFromBody(body, headline) {
-  const paragraphs = String(body || '').split(/\n\s*\n/).map(text).filter(Boolean).slice(0, 2);
+  const paragraph = String(body || '').split(/\n\s*\n/).map(text).find(Boolean);
+  if (!paragraph) return '';
   const headlineTerms = new Set((headline.toLowerCase().match(/[a-z]{4,}/g) || []).filter(word => !['this', 'that', 'from', 'with', 'have', 'into'].includes(word)));
   const segmenter = new Intl.Segmenter('en', { granularity: 'sentence' });
-  for (const paragraph of paragraphs) {
-    for (const { segment } of segmenter.segment(paragraph.replace(/^[A-Z][A-Z ]{1,35},?\s+\d{1,2}\s+[A-Z][a-z]+\s*\([^)]*\)\s*[-–]\s*/, ''))) {
-      const sentence = segment.trim();
-      const words = sentence.split(/\s+/);
-      if (words.length < 8 || words.length > 45 || /[?]$/.test(sentence)) continue;
-      const terms = (sentence.toLowerCase().match(/[a-z]{4,}/g) || []).filter(word => !headlineTerms.has(word));
-      if (terms.length >= 5) return sentence.replace(/[.!]+$/, '');
-    }
+  const sentences = [...segmenter.segment(paragraph.replace(/^[A-Z][A-Z ]{1,35},?\s+\d{1,2}\s+[A-Z][a-z]+\s*\([^)]*\)\s*[-–]\s*/, ''))].slice(0, 3).map(({ segment }) => segment.trim());
+  for (const sentence of sentences) {
+    const words = sentence.split(/\s+/);
+    if (words.length < 8 || words.length > 30 || /[?]$/.test(sentence)) continue;
+    const terms = (sentence.toLowerCase().match(/[a-z]{4,}/g) || []).filter(word => !headlineTerms.has(word));
+    if (terms.length >= 5) return sentence.replace(/[.!]+$/, '');
+  }
+  for (const sentence of sentences) {
+    const shortened = sentence.replace(/,\s+(?:after|before|while|during)\b.*$/i, '').replace(/\s+in an interview\b.*$/i, '').trim();
+    const words = shortened.split(/\s+/);
+    if (words.length >= 8 && words.length <= 30 && shortened !== sentence) return shortened.replace(/[.!]+$/, '');
+    if (sentence.split(/\s+/).length <= 36 && words.length >= 8 && !/[?]$/.test(sentence)) return sentence.replace(/[.!]+$/, '');
   }
   return '';
 }
@@ -296,7 +369,7 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
       skipped.push({ row: row.rowNumber, reason: 'Article body is not English; translate it before import' }); continue;
     }
     const suggestedSummary = [row.shortSummary, row.summary].map(text).find(value => value && compact(value) !== compact(title)) || '';
-    const summary = suggestedSummary || summaryFromBody(row.body, title) || existing?.summary;
+    const summary = summaryFromBody(row.body, title) || suggestedSummary || existing?.summary;
     const leadPrefix = firstRegional > 0 && index < firstRegional && leadHeadline.test(title);
     const placement = placementFromRow(row, title, summary, existing, leadPrefix);
     if (!placement?.sectionId || !placement.subsection && placement.sectionId !== 'South Eastern Europe' || placement.sectionId === 'Miscellaneous' && !placement.country) {
