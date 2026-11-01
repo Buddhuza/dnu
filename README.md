@@ -2,7 +2,7 @@
 
 ## Project instructions
 
-The versioned [editorial policy](public/editorial-policy.md) covers collection, selection, placement and story text. The separate [site specification](public/site-specification.md) covers the interface, design and exports. On GitHub Pages, both are directly available under `/dnu/`, without links in the public site header. Read and update the relevant document alongside code changes; a written rule does not by itself enforce behavior.
+The versioned [DNU rulebook](public/dnu-rules.md) is the single editable Markdown file for standing editorial, site design, export and collection workflow rules. It is publicly readable at `https://buddhuza.github.io/dnu/dnu-rules.md`, without a link in the public site header. To edit it, open the file on GitHub, click the pencil, and commit to `main`. The rules file is then republished to GitHub Pages. A written rule does not by itself enforce behavior: update and deploy the relevant code or collection workflow too. The older `editorial-policy.md` and `site-specification.md` URLs point to the rulebook.
 
 ## Shared public site and editor login
 

@@ -1,0 +1,31 @@
+name: Publish DNU rulebook
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - public/dnu-rules.md
+      - public/editorial-policy.md
+      - public/site-specification.md
+      - .github/workflows/publish-rulebook.yml
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Copy current rules to GitHub Pages
+        run: |
+          git fetch origin gh-pages
+          git worktree add /tmp/dnu-rulebook-pages origin/gh-pages
+          cp public/dnu-rules.md public/editorial-policy.md public/site-specification.md /tmp/dnu-rulebook-pages/
+          git -C /tmp/dnu-rulebook-pages config user.name github-actions[bot]
+          git -C /tmp/dnu-rulebook-pages config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git -C /tmp/dnu-rulebook-pages add dnu-rules.md editorial-policy.md site-specification.md
+          if ! git -C /tmp/dnu-rulebook-pages diff --cached --quiet; then
+            git -C /tmp/dnu-rulebook-pages commit -m 'Publish DNU rulebook'
+            git -C /tmp/dnu-rulebook-pages push origin HEAD:gh-pages
+          fi
