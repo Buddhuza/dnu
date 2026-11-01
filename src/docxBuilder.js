@@ -9,14 +9,14 @@ const escapeXml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&
 const textRun = (value, properties = '') => `<w:r><w:rPr>${properties}</w:rPr><w:t xml:space="preserve">${escapeXml(value)}</w:t></w:r>`;
 const calibri = '<w:rFonts w:eastAsia="Calibri" w:cs="Calibri"/>';
 
-function sectionParagraph(value, headlineOnly = false, lead = false) {
-  const before = lead ? (headlineOnly ? 240 : 360) : (headlineOnly ? 360 : 480);
-  return `<w:p><w:pPr><w:pStyle w:val="Heading1"/><w:keepNext/><w:spacing w:before="${before}" w:after="${headlineOnly ? 40 : 80}"/><w:rPr><w:b/><w:bCs/></w:rPr></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:bCs/>`)}</w:p>`;
+function sectionParagraph(value, lead = false) {
+  const before = lead ? 240 : 360;
+  return `<w:p><w:pPr><w:pStyle w:val="Heading1"/><w:keepNext/><w:spacing w:before="${before}" w:after="40"/><w:rPr><w:b/><w:bCs/></w:rPr></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:bCs/>`)}</w:p>`;
 }
 
-function subsectionParagraph(value, { plainTopic = false, headlineOnly = false, country = false, firstAfterSection = false, afterTopic = false, compactAfter = false } = {}) {
-  const before = afterTopic ? (headlineOnly ? 100 : 140) : firstAfterSection ? (headlineOnly ? 80 : 120) : (headlineOnly ? 190 : 260);
-  const after = compactAfter ? (headlineOnly ? 0 : 20) : (headlineOnly ? 40 : 80);
+function subsectionParagraph(value, { plainTopic = false, country = false, firstAfterSection = false, afterTopic = false, compactAfter = false } = {}) {
+  const before = afterTopic ? 100 : firstAfterSection ? 80 : 190;
+  const after = compactAfter ? 0 : 40;
   return `<w:p><w:pPr><w:keepNext/>${plainTopic ? '' : '<w:shd w:val="clear" w:color="auto" w:fill="D9E2F3"/>'}<w:spacing w:before="${before}" w:after="${after}"/><w:jc w:val="both"/></w:pPr>${textRun(value.toUpperCase(), `${calibri}<w:b/><w:color w:val="0070C0"/><w:sz w:val="${country ? 24 : 26}"/>`)}</w:p>`;
 }
 
@@ -52,7 +52,7 @@ export async function createReportDocxFromTemplate(templateBytes, { title, windo
       currentSection = section;
       currentSubsection = '';
       currentCountry = '';
-      paragraphs.push(sectionParagraph(section, headlineOnly, item.sectionId === 'Lead stories' || section === 'Lead stories'));
+      paragraphs.push(sectionParagraph(section, item.sectionId === 'Lead stories' || section === 'Lead stories'));
     }
     if (item.subsection && item.subsection !== currentSubsection) {
       const firstAfterSection = !currentSubsection;
@@ -60,12 +60,12 @@ export async function createReportDocxFromTemplate(templateBytes, { title, windo
       currentCountry = '';
       const plainTopic = section === 'Miscellaneous';
       const compactAfter = plainTopic || (item.sectionId === 'Lead stories' || section === 'Lead stories') && item.subsection === 'Middle East';
-      paragraphs.push(subsectionParagraph(reportHeadingLabel(item.subsection), { plainTopic, headlineOnly, firstAfterSection, compactAfter }));
+      paragraphs.push(subsectionParagraph(reportHeadingLabel(item.subsection), { plainTopic, firstAfterSection, compactAfter }));
     }
     if (item.country && item.country !== currentCountry) {
       const afterTopic = section === 'Miscellaneous' && !currentCountry && Boolean(currentSubsection);
       currentCountry = item.country;
-      paragraphs.push(subsectionParagraph(reportHeadingLabel(item.country), { headlineOnly, country: true, afterTopic }));
+      paragraphs.push(subsectionParagraph(reportHeadingLabel(item.country), { country: true, afterTopic }));
     }
     const relationshipId = `rIdStory${index + 1}`;
     paragraphs.push(storyParagraph(item, relationshipId, headlineOnly));
