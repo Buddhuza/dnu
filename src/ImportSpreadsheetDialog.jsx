@@ -74,7 +74,7 @@ export default function ImportSpreadsheetDialog({ existingArticles, sources, imp
       </div>}
       <p className="import-spreadsheet-note">{sharedMode ? 'Import adds stories to the shared update for all visitors. Clear all stories empties it for everyone while preserving the section structure and article cache.' : 'Import adds stories to the update in this browser. It does not change the public edition; you can restore that edition here later.'}</p>
       <div className="add-dialog-actions">
-        {sharedMode ? <button type="button" onClick={onClear} disabled={busy || !hasStories}>Clear all stories</button> : publishedEmpty && hasStories ? <button type="button" onClick={onClear} disabled={busy}>Clear update</button> : importedMode && <button type="button" onClick={onRestore} disabled={busy}>Restore published update</button>}
+        {sharedMode ? <button type="button" className="import-spreadsheet-clear" onClick={onClear} disabled={busy || !hasStories}>Clear all stories</button> : publishedEmpty && hasStories ? <button type="button" className="import-spreadsheet-clear" onClick={onClear} disabled={busy}>Clear update</button> : importedMode && <button type="button" onClick={onRestore} disabled={busy}>Restore published update</button>}
         <button type="button" onClick={onClose} disabled={busy}>Cancel</button>
         <button type="button" className="import-spreadsheet-confirm" onClick={importFile} disabled={!result?.articles.length || busy}>Import {result?.articles.length || ''} stories</button>
       </div>

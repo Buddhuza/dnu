@@ -363,6 +363,8 @@
 .import-spreadsheet-preview details{margin-top:12px}
 .import-spreadsheet-preview summary{cursor:pointer;font-weight:700}
 .import-spreadsheet-note{opacity:.8}
+.add-dialog-actions .import-spreadsheet-clear{background:#a53d39;border-color:#a53d39;color:#fff}
+.add-dialog-actions .import-spreadsheet-clear:hover:not(:disabled){background:#832b28;border-color:#832b28}
 .add-dialog-actions .import-spreadsheet-confirm{background:var(--site-primary,#123e47);color:#fff}
 
 /* Size the desktop source column to its agency labels, including the icon and arrow. */
