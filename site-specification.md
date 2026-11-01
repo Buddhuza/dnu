@@ -7,7 +7,7 @@ This document preserves standing instructions about the website interface, visua
 - Show article dates as, for example, “14 Oct 26”, and use Vienna time (CET/CEST as applicable) for other displayed times.
 - Duplicate groups remaining visible for editorial review receive distinct colours and group numbers. Remove the warning when only one checked/visible story in a group remains.
 - Hide empty country and section headings when their last story moves away. In Edit mode, permit moving any story to another section, country or organisation and creating a missing heading; retain drag and drop and the move control.
-- Both summary (extended) and compressed modes use the same compact story line height and paragraph spacing in web and Word. Compressed mode shows the headline without a trailing period, followed by the agency.
+- Both summary (extended) and compressed modes use the same compact line height, paragraph spacing and highlighted heading height in web and Word. Compressed mode shows the headline without a trailing period, followed by the agency.
 
 ## Editing, adding and navigation
 
