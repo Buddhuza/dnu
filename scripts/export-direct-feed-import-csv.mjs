@@ -1,11 +1,14 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createArticleCache } from '../server/articleCache.js';
+import { extractArticleBody } from '../server/articleBody.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const edition = JSON.parse(readFileSync(join(root, 'data/prepared-update.json'), 'utf8'));
 const audit = JSON.parse(readFileSync(join(root, process.env.FEEDRUN_AUDIT_PATH || 'data/direct-feed-36h-result.json'), 'utf8'));
 const byUrl = new Map(audit.articles.map(article => [article.url, article]));
+const cache = createArticleCache(join(root, 'data/article-cache.jsonl'));
 const regions = {
   'WESTERN / CENTRAL EUROPE': 'Europe',
   'MIDDLE EAST / NORTH AFRICA': 'Middle East',
@@ -16,7 +19,7 @@ const regions = {
 };
 const header = ['Published UTC', 'Source', 'Region', 'Countries', 'Organisations', 'Source URL', 'Heading', 'DNU Summary', 'Body'];
 const rows = edition.articles.map(article => {
-  const body = byUrl.get(article.url)?.body;
+  const body = byUrl.get(article.url)?.body || extractArticleBody(cache.get(article.url)?.page, article.title);
   if (!body) throw new Error(`Missing full body for ${article.url}`);
   const region = article.section === 'Lead stories' ? article.section : article.section === 'Miscellaneous' ? regions[article.subsection] : article.section;
   const countries = article.section === 'Lead stories' || article.section !== 'Miscellaneous' ? article.subsection : article.subsection === 'INTERNATIONAL ORGANISATIONS' ? '' : article.country;

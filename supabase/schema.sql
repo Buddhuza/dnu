@@ -79,9 +79,9 @@ $$;
 revoke all on function public.publish_dnu_state(bigint,jsonb,jsonb,jsonb,timestamptz,jsonb,boolean) from public;
 grant execute on function public.publish_dnu_state(bigint,jsonb,jsonb,jsonb,timestamptz,jsonb,boolean) to authenticated;
 
--- The offline NEWSRUN publisher uses a service-role key stored only in its
--- execution environment. It replaces the edition and cached full bodies in
--- the same transaction, while preserving theme and section settings.
+-- Legacy snapshot replacement function. Current offline publication uses
+-- revision-checked state updates and body upserts so older stories, editor
+-- settings, exclusions and cached bodies remain intact.
 create or replace function public.publish_dnu_snapshot(
   p_update jsonb,
   p_settings jsonb,

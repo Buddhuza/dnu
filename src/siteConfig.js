@@ -250,7 +250,7 @@ export function displaySiteContent(articles, config, excludedIds = new Set(), ke
     if (article.hidden || sectionById.get(article.sectionId)?.visible === false) continue;
     if (!directGovernmentPublicationReason(article) && !blockedPlacementReason(article) && !excludedHeadlineReason(article.title, article.summary, article.url)) items.push({ ...article, title: cleanHeadlinePrefix(article.title), sourceName: displaySourceName(article.sourceName), section: sectionById.get(article.sectionId)?.name || article.sectionId });
   }
-  const uniqueItems = keepImportedStories || articles.some(article => article.fromSpreadsheet) ? items : deduplicateArticles(items, excludedIds);
+  const uniqueItems = items;
   const order = new Map(config.sections.map((section, index) => [section.id, index]));
   const articleOrder = new Map((config.articleOrder ?? []).map((id, index) => [id, index]));
   const activeLeadHeadings = new Set(uniqueItems.filter(item => item.sectionId === 'Lead stories').map(item => item.subsection));

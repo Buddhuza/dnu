@@ -9,7 +9,7 @@ import AddArticlesDialog from './AddArticlesDialog.jsx';
 import ImportSpreadsheetDialog from './ImportSpreadsheetDialog.jsx';
 import EditorLoginDialog from './EditorLoginDialog.jsx';
 import MoveStoryDialog from './MoveStoryDialog.jsx';
-import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig, toggleLeadStoryInConfig, addCustomArticleInConfig, clearCustomArticlesInConfig, canonicalArticleUrl } from './siteConfig.js';
+import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig, toggleLeadStoryInConfig, addCustomArticleInConfig, canonicalArticleUrl } from './siteConfig.js';
 import { mergeImportedArticles, removeStoryFromEdition, removeStoryFromConfig } from './editionActions.js';
 import { orderedSubsections, leadRegionalHeadings } from './newsSections.js';
 import { createReportDocxFromTemplate } from './docxBuilder.js';
@@ -203,7 +203,6 @@ function App() {
       localStorage.setItem('dnu-current-edition-v1', editionId);
       return;
     }
-    clearManualStories();
     localStorage.setItem('dnu-current-edition-v1', editionId);
   }, [daily?.windowStart, daily?.windowEnd, daily?.checkedAt]);
   useEffect(() => { localStorage.setItem('dnu-source-audit-v1', JSON.stringify(auditRows)); }, [auditRows]);
@@ -361,18 +360,13 @@ function App() {
     setAuditRows(current => [row, ...current.filter(item => item.sourceId !== row.sourceId)]);
   }
 
-  function clearManualStories() {
-    setSiteConfig(clearCustomArticlesInConfig);
-    setExcludedStoryIds(current => new Set([...current].filter(id => !id.startsWith('manual-'))));
-  }
-
   async function importSpreadsheet(result, fileName) {
     const importedAt = new Date().toISOString();
-    const incomingKeys = new Set(result.articles.map(article => canonicalArticleUrl(article.url)));
     const currentArticles = [...(daily?.articles || []), ...(siteConfig.customArticles || [])];
-    const replacedIds = new Set(currentArticles.filter(article => incomingKeys.has(canonicalArticleUrl(article.url))).map(article => article.id));
-    const addedCount = result.articles.length - new Set(currentArticles.map(article => canonicalArticleUrl(article.url)).filter(key => incomingKeys.has(key))).size;
-    const mergedArticles = mergeImportedArticles(daily?.articles || [], result.articles);
+    const existingKeys = new Set(currentArticles.map(article => canonicalArticleUrl(article.url)));
+    const newArticles = result.articles.filter(article => !existingKeys.has(canonicalArticleUrl(article.url)));
+    const mergedArticles = mergeImportedArticles(daily?.articles || [], newArticles);
+    const addedCount = mergedArticles.length - (daily?.articles?.length || 0);
     const dates = mergedArticles.map(article => Date.parse(article.publishedAt)).filter(Number.isFinite);
     const priorStart = Date.parse(daily?.windowStart);
     const priorEnd = Date.parse(daily?.windowEnd);
@@ -396,20 +390,12 @@ function App() {
     }
     importedModeRef.current = true;
     setImportedMode(true);
-    setSiteConfig(current => ({
-      ...current,
-      showUpdate: true,
-      sections: current.sections.map(section => ({ ...section, visible: true })),
-      customArticles: current.customArticles.filter(article => !incomingKeys.has(canonicalArticleUrl(article.url))),
-      articleOrder: current.articleOrder.filter(id => !replacedIds.has(id) || mergedArticles.some(article => article.id === id)),
-      articleEdits: Object.fromEntries(Object.entries(current.articleEdits).filter(([id]) => !replacedIds.has(id))),
-      leadOrigins: Object.fromEntries(Object.entries(current.leadOrigins).filter(([id]) => !replacedIds.has(id)))
-    }));
+    setSiteConfig(current => ({ ...current, showUpdate: true }));
     setEditingStories(false);
     setDaily(update);
     setCompiledAt(importedAt);
     setImportingSpreadsheet(false);
-    const importedMessage = `Imported ${result.articles.length} stories from ${fileName}: ${addedCount} added, ${result.articles.length - addedCount} updated${result.skipped.length ? `; ${result.skipped.length} skipped` : ''}. Earlier stories remain in the update.`;
+    const importedMessage = `Imported ${result.articles.length} stories from ${fileName}: ${addedCount} added, ${result.articles.length - addedCount} already present${result.skipped.length ? `; ${result.skipped.length} skipped` : ''}. Earlier stories remain in the update.`;
     if (sharedEnabled) {
       pendingPublishNoticeRef.current = `${importedMessage} Saved for everyone.`;
       setSaveStatus('Saving…');
@@ -499,7 +485,6 @@ function App() {
       rememberWorkingListing(source, scan.audit);
       setResult(scan.lastPage ? { ...scan.lastPage, headlines: scan.headlines } : null);
       if (scan.audit.status === 'failed') setError(scan.audit.reason);
-      else clearManualStories();
     } catch (e) { setError(e.message); }
     finally { setLoading(false); }
   }
@@ -509,7 +494,7 @@ function App() {
     setError('');
     setResult({ headlines: [], fetchedAt: new Date().toISOString(), batch: true });
     setBatchProgress({ done: 0, total: targetSources.length, failed: 0 });
-    let done = 0, failed = 0, successful = 0;
+    let done = 0, failed = 0;
     const gathered = [];
     const batchId = `batch-${new Date().toISOString()}`;
     setAuditRows([]);
@@ -530,7 +515,6 @@ function App() {
             saveAudit(scan.audit);
             rememberWorkingListing(source, scan.audit);
             if (scan.audit.status === 'failed') failed++;
-            else successful++;
             setResult({ headlines: [...gathered].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date().toISOString(), batch: true });
           }
         } catch (error) { failed++; saveAudit(sourceAudit(source, [], [error.message])); }
@@ -542,7 +526,6 @@ function App() {
     };
     await collectGroup(targetSources.filter(source => config?.feedSourceIds?.includes(source.id)));
     await collectGroup(targetSources.filter(source => !config?.feedSourceIds?.includes(source.id)));
-    if (successful) clearManualStories();
     setLoading(false);
     if (failed) setError(`${failed} source${failed === 1 ? '' : 's'} could not be collected. Other results are shown below.`);
   }

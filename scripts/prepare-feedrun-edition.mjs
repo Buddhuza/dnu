@@ -6,6 +6,7 @@ import { extractArticleBody } from '../server/articleBody.js';
 import { blockedPlacementReason } from '../src/sourcePolicy.js';
 import { excludedHeadlineReason } from '../src/headlinePolicy.js';
 import { canonicalArticleUrl } from '../src/siteConfig.js';
+import { appendEditionStories } from '../src/editionActions.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const auditPath = process.env.FEEDRUN_AUDIT_PATH;
@@ -52,15 +53,18 @@ const sourceOutcomes = sources.map(source => {
 });
 
 const previousPath = join(root, 'data/prepared-update.json');
+const previous = existsSync(previousPath) ? JSON.parse(readFileSync(previousPath, 'utf8')) : {};
 if (existsSync(previousPath)) {
-  const previous = JSON.parse(readFileSync(previousPath, 'utf8'));
   if (previous.checkedAt) {
     const archive = join(root, `data/daily-update-${previous.checkedAt.replace(/[:.]/g, '-')}.json`);
     if (!existsSync(archive)) writeFileSync(archive, `${JSON.stringify(previous, null, 2)}\n`);
   }
 }
 const checkedAt = new Date().toISOString();
-const edition = { title: 'DAILY NEWS UPDATE', checkedAt, windowHours: 24, windowStart: audit.windowStart, windowEnd: audit.windowEnd, articles, sourceOutcomes };
+const fresh = { title: 'DAILY NEWS UPDATE', checkedAt, windowHours: 24, windowStart: audit.windowStart, windowEnd: audit.windowEnd,
+  articles, latestCollectionArticleUrls: articles.map(article => article.url), sourceOutcomes,
+  emptyPrepared: false, importedFromSpreadsheet: false };
+const edition = appendEditionStories(previous, fresh);
 writeFileSync(previousPath, `${JSON.stringify(edition, null, 2)}\n`);
 writeFileSync(join(root, `data/daily-update-${checkedAt.replace(/[:.]/g, '-')}.json`), `${JSON.stringify(edition, null, 2)}\n`);
 
@@ -70,4 +74,5 @@ for (const article of articles) {
   const body = candidates.get(article.title).body;
   cache.putPage(article.url, { markdown: body, metadata: { title: article.title, sourceURL: article.url, publishedTime: article.publishedAt } });
 }
-console.log(JSON.stringify({ selected: articles.length, checkedFeedOutlets: audit.feeds.length, verifiedPages: audit.articles.filter(article => article.status === 'verified' && article.pageDateMatchesFeed && Date.parse(article.pageDate) >= Date.parse(audit.windowStart) && Date.parse(article.pageDate) <= Date.parse(audit.windowEnd)).length, checkedAt }));
+console.log(JSON.stringify({ selected: articles.length, added: edition.articles.length - (previous.articles?.length || 0), retained: previous.articles?.length || 0, total: edition.articles.length,
+  checkedFeedOutlets: audit.feeds.length, verifiedPages: audit.articles.filter(article => article.status === 'verified' && article.pageDateMatchesFeed && Date.parse(article.pageDate) >= Date.parse(audit.windowStart) && Date.parse(article.pageDate) <= Date.parse(audit.windowEnd)).length, checkedAt }));

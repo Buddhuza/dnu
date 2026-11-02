@@ -1,3 +1,5 @@
+import { canonicalArticleUrl } from './siteConfig.js';
+
 // Conservative, local review hints. A match asks an editor to compare two stories;
 // it never removes either story from the update.
 const stop = new Set('a an the and or of in on at to for from by with as after before over under about amid says said say new latest this that its their his her who which will would could should is are was were has have had us u s uk eu un news report reports officials official country government president minister leaders top more into during following next today yesterday'.split(' '));
@@ -10,6 +12,7 @@ function terms(value) {
 }
 
 export function sameNewsEvent(a, b) {
+  if (a.url && b.url && canonicalArticleUrl(a.url) === canonicalArticleUrl(b.url)) return true;
   const left = terms(a.title), right = terms(b.title);
   if (left.length < 3 || right.length < 3) return false;
   const first = Date.parse(a.publishedAt), second = Date.parse(b.publishedAt);

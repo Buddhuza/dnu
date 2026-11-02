@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig, toggleLeadStoryInConfig, clearCustomArticlesInConfig } from './siteConfig.js';
 import { MISCELLANEOUS_COUNTRIES } from './newsSections.js';
+import { duplicateGroups } from './storyDuplicates.js';
 
 const articles = [
   { id: 'a', section: 'Europe', subsection: 'Poland', title: 'Original headline', summary: 'Original summary.', sourceName: 'Agency', url: 'https://example.com/a' },
@@ -178,15 +179,19 @@ test('moving a custom story into an empty subsection retains its new placement',
   assert.equal(moved.customArticles[0].sectionId, 'South Caucasus');
 });
 
-test('story duplicates are removed from the update and its download source', () => {
+test('story duplicates remain visible and are flagged for editor review', () => {
   const stories = [
     { id: 'first', url: 'https://example.com/article?utm_source=feed', section: 'South Caucasus', subsection: 'Azerbaijan', title: 'President hosts dinner for participants of CICA summit (PHOTO)', sourceName: 'Agency A' },
     { id: 'same-url', url: 'https://www.example.com/article/', section: 'South Caucasus', subsection: 'Azerbaijan', title: 'Completely different metadata title', sourceName: 'Agency B' },
     { id: 'same-story', url: 'https://other.example.com/story', section: 'South Caucasus', subsection: 'Azerbaijan', title: 'President hosts dinner for participants of CICA summit', sourceName: 'Agency C' },
     { id: 'different-country', url: 'https://example.com/other', section: 'South Caucasus', subsection: 'Armenia', title: 'President hosts dinner for participants of CICA summit', sourceName: 'Agency D' }
   ];
-  assert.deepEqual(displaySiteContent(stories, defaultSiteConfig(stories)).map(item => item.id), ['different-country', 'first']);
-  assert.deepEqual(displaySiteContent(stories, defaultSiteConfig(stories), new Set(['first'])).map(item => item.id), ['different-country', 'same-url']);
+  const displayed = displaySiteContent(stories, defaultSiteConfig(stories));
+  assert.deepEqual(displayed.map(item => item.id), ['different-country', 'first', 'same-url', 'same-story']);
+  const groups = duplicateGroups(displayed);
+  assert.ok(groups.has('first'));
+  assert.ok(groups.has('same-url'));
+  assert.ok(groups.has('same-story'));
 });
 
 test('similar diplomatic headlines about different countries remain separate', () => {
@@ -197,14 +202,19 @@ test('similar diplomatic headlines about different countries remain separate', (
   assert.equal(displaySiteContent(stories, defaultSiteConfig(stories)).length, 2);
 });
 
-test('one planned diplomatic trip appears once even across sections and source wording', () => {
+test('one planned diplomatic trip stays visible across sources for duplicate review', () => {
   const stories = [
     { id: 'local', section: 'Central Asia', subsection: 'Uzbekistan', title: 'Rubio to visit India, Uzbekistan', sourceName: 'Pajhwok', publishedAt: '2026-10-14T09:19:00Z' },
     { id: 'local-two', section: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States', title: 'US Secretary of State Marco Rubio to visit Uzbekistan this week', sourceName: 'Kun.uz', publishedAt: '2026-10-14T11:45:00Z' },
     { id: 'international', section: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States', title: 'US top diplomat Marco Rubio to visit India and Uzbekistan', sourceName: 'AsiaOne', publishedAt: '2026-10-14T02:43:00Z' },
     { id: 'different-trip', section: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States', title: 'Marco Rubio to visit Japan and China', sourceName: 'AP', publishedAt: '2026-10-14T04:00:00Z' }
   ];
-  assert.deepEqual(displaySiteContent(stories, defaultSiteConfig(stories)).map(item => item.id), ['international', 'different-trip']);
+  const displayed = displaySiteContent(stories, defaultSiteConfig(stories));
+  assert.deepEqual(displayed.map(item => item.id), ['local', 'local-two', 'international', 'different-trip']);
+  const groups = duplicateGroups(displayed);
+  assert.ok(groups.has('local'));
+  assert.ok(groups.has('international'));
+  assert.ok(!groups.has('different-trip'));
 });
 
 test('published update has one Rubio visit story from the preferred source', () => {
@@ -213,11 +223,11 @@ test('published update has one Rubio visit story from the preferred source', () 
   assert.deepEqual(visits.map(article => article.sourceName), ['AsiaOne']);
 });
 
-test('a manually added version replaces a matching snapshot story', () => {
+test('a manually added version stays alongside a similar snapshot story', () => {
   const stories = [{ id: 'snapshot', section: 'Eastern Europe', subsection: 'Ukraine', title: 'Ukraine and Germany agree on new security cooperation', url: 'https://example.com/original', sourceName: 'Agency' }];
   const config = defaultSiteConfig(stories);
   config.customArticles = [{ id: 'manual-new', sourceId: 'manual', sectionId: 'Eastern Europe', subsection: 'Ukraine', title: 'Ukraine and Germany agree on new security cooperation', url: 'https://example.org/alternate', sourceName: 'Another agency' }];
-  assert.deepEqual(displaySiteContent(stories, config).map(item => item.id), ['manual-new']);
+  assert.deepEqual(displaySiteContent(stories, config).map(item => item.id), ['snapshot', 'manual-new']);
 });
 
 test('similar headlines from different dates remain separate', () => {
@@ -264,7 +274,7 @@ test('moving the sole story out of a custom section removes that section', () =>
   assert.ok(!moved.sections.some(item => item.id === 'Custom section'));
 });
 
-test('a new scrape removes manually added stories without discarding site settings or prepared story edits', () => {
+test('the explicit custom-story clearing helper preserves site settings and prepared story edits', () => {
   const config = defaultSiteConfig([]);
   config.customArticles = [{ id: 'manual-old', url: 'https://example.com/old', title: 'Older imported story' }];
   config.articleOrder = ['manual-old', 'prepared-story'];
