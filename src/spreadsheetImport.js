@@ -393,7 +393,7 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
       id: existing?.id || `spreadsheet-${key}`, url: parsed.href, sourceId: existing?.sourceId || source?.id || 'spreadsheet', sourceName,
       title, summary, originalHeadline: String(row.heading || '').trim(), translated: existing?.translated === true,
       publishedAt,
-      reviewed: true, ...placement, section: placement.sectionId, fromSpreadsheet: true
+      reviewed: true, ...placement, section: placement.sectionId, fromSpreadsheet: true, ingestMethod: 'import'
     };
     const restriction = blockedPlacementReason(article);
     if (restriction) { skipped.push({ row: row.rowNumber, reason: restriction }); continue; }

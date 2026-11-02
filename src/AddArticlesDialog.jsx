@@ -83,7 +83,7 @@ export default function AddArticlesDialog({ sections, sources = [], customCountr
     const placement = articlePlacement({}, title, summary) || { sectionId: '', subsection: '', country: '' };
     const [year, month, day] = manual.date.split('-').map(Number);
     const publishedAt = manual.date ? viennaWallTimeToIso(year, month, day, 12) : null;
-    setDrafts(current => [...current, { id: `manual-${url.href}`, url: url.href, sourceId: 'manual', sourceName, title, summary, publishedAt: publishedAt || new Date().toISOString(), timeSource: publishedAt ? 'inferred' : 'current', reviewed: true, hidden: false, russianSource: false, added: false, ...placement }]);
+    setDrafts(current => [...current, { id: `manual-${url.href}`, url: url.href, sourceId: 'manual', ingestMethod: 'add', sourceName, title, summary, publishedAt: publishedAt || new Date().toISOString(), timeSource: publishedAt ? 'inferred' : 'current', reviewed: true, hidden: false, russianSource: false, added: false, ...placement }]);
     setManual({ title: '', summary: '', sourceName: '', url: '', date: '' });
     setManualError('');
     setUrlNotice('');

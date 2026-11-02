@@ -115,7 +115,7 @@ export function normalizeSiteConfig(input, articles = []) {
     const legacyOrganisations = item.sectionId === 'International organisations';
     return [{
       id: clean(item.id, `manual-${url}`, 500), url,
-      sourceId: 'manual', sourceName: clean(item.sourceName, 'Manual entry', 100),
+      sourceId: 'manual', ingestMethod: 'add', sourceName: clean(item.sourceName, 'Manual entry', 100),
       title, summary: clean(item.summary, '', 1200),
       translated: item.translated === true,
       originalHeadline: clean(item.originalHeadline, '', 400),

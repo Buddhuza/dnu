@@ -30,7 +30,7 @@ const articles = selected.map(row => {
     id: item.url, url: item.url, sourceId: item.sourceId, sourceName: item.sourceName,
     group: source.group, title: item.title, summary: String(row.summary || '').trim(),
     publishedAt: item.pageDate, section: row.section, subsection: row.subsection,
-    country: row.country || '', reviewed: true
+    country: row.country || '', reviewed: true, ingestMethod: 'feedrun'
   };
   if (!article.summary || excludedHeadlineReason(article.title, article.summary, article.url) || blockedPlacementReason(article))
     throw new Error(`Selected story fails editorial checks: ${row.title}`);
