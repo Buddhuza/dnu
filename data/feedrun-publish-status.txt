@@ -1,0 +1,6 @@
+published
+
+> dnu@1.0.0 publish:shared
+> node scripts/publish-shared-update.mjs
+
+Published shared DNU revision 71: 18 stories, 18 full bodies.
