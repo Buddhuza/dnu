@@ -249,11 +249,12 @@
 .sidebar-foot{padding:8px 14px}
 @media(max-width:720px){.sidebar-heading{padding:8px 12px 5px}.sidebar-heading h2{font-size:18px}.source-list{flex:none;max-height:min(30dvh,220px);overflow-y:auto}.source-row{height:40px}.sidebar-foot{display:none}}
 .daily-story-content{flex:1;min-width:0}
-.daily-story-inline-edit [contenteditable="true"]{cursor:text;border-radius:3px;outline:0;text-decoration:underline dotted var(--edit-underline,#8298a3);text-underline-offset:4px}
-.origin-feedrun{--edit-underline:#b42335}.origin-add{--edit-underline:#a85a00}.origin-import{--edit-underline:#187245}.origin-other{--edit-underline:#8298a3}
-.app-shell[data-mode="dark"] .origin-feedrun{--edit-underline:#ff8588}.app-shell[data-mode="dark"] .origin-add{--edit-underline:#ffb467}.app-shell[data-mode="dark"] .origin-import{--edit-underline:#78d6a1}
+.daily-story-inline-edit [contenteditable="true"]{cursor:text;border-radius:3px;outline:0;text-decoration:none}
+.origin-feedrun{--origin-highlight:rgba(180,35,53,.10)}.origin-add{--origin-highlight:rgba(190,105,0,.11)}.origin-import{--origin-highlight:rgba(25,130,70,.10)}.origin-other{--origin-highlight:rgba(130,152,163,.06)}
+.app-shell[data-mode="dark"] .origin-feedrun{--origin-highlight:rgba(255,110,120,.15)}.app-shell[data-mode="dark"] .origin-add{--origin-highlight:rgba(255,175,90,.15)}.app-shell[data-mode="dark"] .origin-import{--origin-highlight:rgba(100,210,145,.15)}.app-shell[data-mode="dark"] .origin-other{--origin-highlight:rgba(170,190,200,.08)}
+.story-origin-highlight{background:var(--origin-highlight);border-radius:2px;box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:0 1px}
 .story-origin-legend{display:flex;flex-wrap:wrap;gap:12px;margin:2px 0 10px;color:var(--site-text,#182a36);font-size:calc(var(--site-body-size,18px) - 5px)}
-.story-origin-legend span{border-bottom:2px dotted var(--edit-underline);padding-bottom:2px}
+.story-origin-legend span{background:var(--origin-highlight);border-radius:3px;padding:1px 5px}
 .daily-story-inline-edit [contenteditable="true"]:hover,.daily-story-inline-edit [contenteditable="true"]:focus{background:var(--site-bg,#f4efe6);box-shadow:0 0 0 3px var(--site-bg,#f4efe6)}
 .daily-story-inline-edit [data-edit-field="sourceName"]{color:var(--site-section,#0070c0)}
 .daily-story-inline-edit [data-edit-field="summary"]:empty{display:inline-block;min-width:5ch}
