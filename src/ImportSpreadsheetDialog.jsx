@@ -10,6 +10,7 @@ export default function ImportSpreadsheetDialog({ existingArticles, sources, imp
   const [file, setFile] = useState(null);
   const [sheetNames, setSheetNames] = useState([]);
   const [sheetName, setSheetName] = useState('');
+  const [showOlderSheets, setShowOlderSheets] = useState(false);
   const [googleUrl, setGoogleUrl] = useState(DEFAULT_GOOGLE_SHEET_URL);
 
   async function previewSheet(chosenFile, chosenSheet, link = googleUrl) {
@@ -32,6 +33,7 @@ export default function ImportSpreadsheetDialog({ existingArticles, sources, imp
     setError('');
     setSheetNames([]);
     setSheetName('');
+    setShowOlderSheets(false);
     setBusy(true);
     try { await previewSheet(null, ''); }
     catch (failure) { setError(failure.message || 'Could not read the Google Sheet.'); }
@@ -46,6 +48,7 @@ export default function ImportSpreadsheetDialog({ existingArticles, sources, imp
     setError('');
     setSheetNames([]);
     setSheetName('');
+    setShowOlderSheets(false);
     if (!file) return;
     setBusy(true);
     try {
@@ -84,10 +87,13 @@ export default function ImportSpreadsheetDialog({ existingArticles, sources, imp
       <label className="import-file-label" htmlFor="import-google-sheet-url">Google Sheet URL</label>
       <div className="import-google-controls"><input id="import-google-sheet-url" type="url" value={googleUrl} onChange={event => { setGoogleUrl(event.target.value); setResult(null); setSheetNames([]); setSheetName(''); }} disabled={busy}/><button type="button" onClick={loadGoogleSheet} disabled={busy}>Load latest</button></div>
       <details className="import-file-fallback"><summary>Use an Excel or CSV file instead</summary><label className="import-file-label" htmlFor="import-spreadsheet-file">Spreadsheet file</label><input id="import-spreadsheet-file" type="file" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" onChange={chooseFile} disabled={busy}/></details>
-      {sheetNames.length > 1 && <label className="import-file-label" htmlFor="import-spreadsheet-sheet">Worksheet<select id="import-spreadsheet-sheet" value={sheetName} onChange={chooseSheet} disabled={busy}>{sheetNames.map(name => <option key={name} value={name}>{name.endsWith('_Audit') ? `${name} — all collected candidates` : `${name} — Morning News selection`}</option>)}</select></label>}
+      {sheetNames.length > 1 && <label className="import-file-label" htmlFor="import-spreadsheet-sheet">Worksheet (exact tab name)<select id="import-spreadsheet-sheet" value={sheetName} onChange={chooseSheet} disabled={busy}>{(showOlderSheets ? sheetNames : sheetNames.slice(0, 2)).map(name => <option key={name} value={name}>{name}</option>)}</select></label>}
+      {sheetNames.length > 2 && !showOlderSheets && <button className="import-older-sheets" type="button" onClick={() => setShowOlderSheets(true)} disabled={busy}>Show {sheetNames.length - 2} older worksheets</button>}
+      {sheetNames.length > 1 && <p className="import-spreadsheet-note">Dated tabs contain the selected news. Tabs ending in _Audit contain all collected candidates. Sources, Rejected and technical tabs are excluded.</p>}
       {busy && <p role="status">Preparing spreadsheet…</p>}
       {error && <p className="add-manual-error" role="alert">{error}</p>}
       {result && <div className="import-spreadsheet-preview" aria-live="polite">
+        {result.sheetName && <p className="import-spreadsheet-note">Previewing worksheet: <strong>{result.sheetName}</strong></p>}
         <p><strong>{result.articles.length} of {result.total}</strong> rows ready · {result.skipped.length} skipped · {result.articles.filter(article => !article.summary).length} without a short summary · {result.bodies.length} full bodies available for database export</p>
         {!result.bodies.length && <p className="import-spreadsheet-note">No full article bodies were found in this sheet or its matching workbook cache. It can populate the update, but database export will have no rows.</p>}
         {result.cacheWarning && <p className="import-spreadsheet-note">{result.cacheWarning}</p>}

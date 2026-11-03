@@ -96,7 +96,7 @@ test('SITCEN workbook defaults to its dated selection and can open Audit separat
   zip.file('xl/worksheets/sheet2.xml', worksheet('Morning headline', '2026-10-29T12:00:00Z'));
   zip.file('xl/worksheets/sheet3.xml', worksheet('Audit headline', '2026-10-28T11:00:00Z'));
   const file = new File([await zip.generateAsync({ type: 'uint8array' })], 'SITCEN.xlsx');
-  assert.deepEqual((await listSpreadsheetSheets(file)).sort(), ['2026-10-30', '2026-10-30_Audit']);
+  assert.deepEqual(await listSpreadsheetSheets(file), ['2026-10-30', '2026-10-30_Audit']);
   const morning = convertSpreadsheetRows(await readSpreadsheet(file));
   assert.equal(morning.articles[0].title, 'Morning headline');
   assert.equal(morning.articles[0].publishedAt, '2026-10-29T12:00:00.000Z');
@@ -104,6 +104,16 @@ test('SITCEN workbook defaults to its dated selection and can open Audit separat
   assert.equal(morning.bodies.length, 0);
   const audit = convertSpreadsheetRows(await readSpreadsheet(file, '2026-10-30_Audit'));
   assert.equal(audit.articles[0].title, 'Audit headline');
+});
+
+test('worksheet choices use exact workbook tab names with the newest morning sheet first', async () => {
+  const zip = new JSZip();
+  const names = ['2026-11-02_Audit', '2026-11-03_Sources', '2026-11-03_Audit', '2026-11-02', '2026-11-03', 'NewsWork_B'];
+  zip.file('xl/workbook.xml', `<workbook xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${names.map((name, index) => `<sheet name="${name}" r:id="rId${index + 1}"/>`).join('')}</sheets></workbook>`);
+  zip.file('xl/_rels/workbook.xml.rels', `<Relationships>${names.map((_, index) => `<Relationship Id="rId${index + 1}" Target="worksheets/sheet${index + 1}.xml"/>`).join('')}</Relationships>`);
+  names.forEach((_, index) => zip.file(`xl/worksheets/sheet${index + 1}.xml`, '<worksheet><sheetData/></worksheet>'));
+  const file = new File([await zip.generateAsync({ type: 'uint8array' })], 'news.xlsx');
+  assert.deepEqual(await listSpreadsheetSheets(file), ['2026-11-03', '2026-11-03_Audit', '2026-11-02', '2026-11-02_Audit']);
 });
 
 test('SITCEN working-data sheets supply full bodies and a short first-paragraph summary', async () => {

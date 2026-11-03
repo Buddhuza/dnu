@@ -81,7 +81,7 @@ export async function listSpreadsheetSheets(file) {
   if (file.size > 40_000_000) throw new Error('Choose a spreadsheet smaller than 40 MB.');
   const sheets = await worksheetOptions(await workbook(file));
   return sheets.map(({ name }) => name).filter(name => /^\d{4}-\d{2}-\d{2}(?:_Audit)?$/i.test(name))
-    .sort((a, b) => b.localeCompare(a));
+    .sort((a, b) => b.slice(0, 10).localeCompare(a.slice(0, 10)) || Number(a.endsWith('_Audit')) - Number(b.endsWith('_Audit')));
 }
 
 function readSharedStrings(xml = '') {
