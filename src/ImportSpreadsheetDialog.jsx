@@ -7,7 +7,7 @@ const NEW = '__create_new__';
 const DIRECT = '__directly_under_section__';
 const DIRECT_SUBSECTION = '__directly_under_subsection__';
 
-function PlacementChooser({ item, sections, customCountries, onApply }) {
+function PlacementChooser({ item, sections, customCountries, onApply, onDelete }) {
   const hint = item.suggested || {};
   const initialSectionKnown = sections.some(section => section.id === hint.sectionId);
   const [sectionId, setSectionId] = useState(initialSectionKnown ? hint.sectionId : '');
@@ -50,6 +50,7 @@ function PlacementChooser({ item, sections, customCountries, onApply }) {
       {chosenSection === 'Miscellaneous' && chosenSubsection && !direct && <label>{chosenSubsection === 'INTERNATIONAL ORGANISATIONS' ? 'Organisation' : 'Country or organisation'}<select value={createCountry ? NEW : country} onChange={event => { setCreateCountry(event.target.value === NEW); setCountry(event.target.value === NEW ? '' : event.target.value); }}><option value={DIRECT_SUBSECTION}>Directly under subsection</option>{countryOptions.map(value => <option key={value} value={value}>{value}</option>)}<option value={NEW}>Create country or organisation…</option></select></label>}
       {chosenSection === 'Miscellaneous' && chosenSubsection && createCountry && !direct && <label>New country or organisation<input value={newCountry} maxLength={100} onChange={event => setNewCountry(event.target.value)} placeholder="Name"/></label>}
       <button type="button" disabled={!valid} onClick={() => onApply(item.row, { sectionId: chosenSection, subsection: direct ? '' : chosenSubsection, country: chosenSection === 'Miscellaneous' && !direct ? chosenCountry : '' })}>Use placement</button>
+      <button type="button" className="import-placement-delete" onClick={() => onDelete(item.row)}>Delete story</button>
     </div>
   </li>;
 }
@@ -66,6 +67,12 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
   const [otherGoogleTab, setOtherGoogleTab] = useState('');
   const [rawRows, setRawRows] = useState([]);
   const [placementOverrides, setPlacementOverrides] = useState({});
+  const [discardedRows, setDiscardedRows] = useState(new Set());
+
+  function reviewedRows(overrides, discarded) {
+    const converted = convertSpreadsheetRows(rawRows.filter(row => !discarded.has(row.rowNumber)), { existingArticles, sources, placementOverrides: overrides });
+    return { ...converted, skipped: [...converted.skipped, ...[...discarded].map(row => ({ row, reason: 'Deleted during import review' }))] };
+  }
 
   async function previewSheet(chosenFile, chosenSheet, link = googleUrl) {
     const online = chosenFile ? null : await readGoogleSheetEdition(link, chosenSheet);
@@ -75,6 +82,7 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
       setFileName(`Google Sheet ${online.date}`);
       setRawRows([]);
       setPlacementOverrides({});
+      setDiscardedRows(new Set());
       setResult({ articles: [], bodies: [], skipped: [], needsPlacement: [], total: online.totalRows, sheetName: online.sheetName, tablePreview: online.tablePreview, cacheWarning: online.cacheWarning });
       return;
     }
@@ -85,6 +93,7 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
       const grid = await readSpreadsheetGrid(chosenFile, chosenSheet);
       setRawRows([]);
       setPlacementOverrides({});
+      setDiscardedRows(new Set());
       setResult({ articles: [], bodies: [], skipped: [], needsPlacement: [], total: Math.max(0, grid.length - 1), sheetName: chosenSheet, tablePreview: grid.slice(0, 8) });
       return;
     }
@@ -92,6 +101,7 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
     if (!converted.articles.length && !converted.needsPlacement.length) throw new Error('No usable DNU stories were found in this sheet. This tab may not contain article columns, or all rows were excluded by editorial rules.');
     setRawRows(rows);
     setPlacementOverrides({});
+    setDiscardedRows(new Set());
     if (online) {
       setSheetNames(online.sheetNames);
       setSheetName(online.sheetName);
@@ -166,8 +176,18 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
 
   function applyPlacement(row, placement) {
     const next = { ...placementOverrides, [row]: placement };
-    const converted = convertSpreadsheetRows(rawRows, { existingArticles, sources, placementOverrides: next });
+    const converted = reviewedRows(next, discardedRows);
     setPlacementOverrides(next);
+    setResult(current => ({ ...current, ...converted }));
+  }
+
+  function deleteStory(row) {
+    const nextDiscarded = new Set(discardedRows).add(row);
+    const nextOverrides = { ...placementOverrides };
+    delete nextOverrides[row];
+    const converted = reviewedRows(nextOverrides, nextDiscarded);
+    setDiscardedRows(nextDiscarded);
+    setPlacementOverrides(nextOverrides);
     setResult(current => ({ ...current, ...converted }));
   }
 
@@ -190,7 +210,7 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
         {result.cacheWarning && <p className="import-spreadsheet-note">{result.cacheWarning}</p>}
         {sheetName.endsWith('_Audit') && <p className="import-spreadsheet-note">Audit includes candidates rejected by the source script’s selection rules. Review these stories before using them in the update.</p>}
         {result.tablePreview && <div className="import-technical-preview"><p>This tab has no importable article columns. Its first rows are shown below.</p><table><tbody>{result.tablePreview.map((row, index) => <tr key={index}>{row.slice(0, 8).map((value, column) => <td key={column} title={String(value ?? '').slice(0, 500)}>{String(value ?? '').slice(0, 120)}</td>)}</tr>)}</tbody></table></div>}
-        {result.needsPlacement.length > 0 && <details open className="import-placement-review"><summary>Place {result.needsPlacement.length} stories before importing</summary><ul>{result.needsPlacement.map(item => <PlacementChooser key={item.row} item={item} sections={sections} customCountries={customCountries} onApply={applyPlacement}/>)}</ul></details>}
+        {result.needsPlacement.length > 0 && <details open className="import-placement-review"><summary>Place {result.needsPlacement.length} stories before importing</summary><ul>{result.needsPlacement.map(item => <PlacementChooser key={item.row} item={item} sections={sections} customCountries={customCountries} onApply={applyPlacement} onDelete={deleteStory}/>)}</ul></details>}
         <ul>{result.articles.slice(0, 5).map(article => <li key={article.id}><strong>{article.title}</strong><span>{article.sectionId} · {article.subsection === 'INTERNATIONAL ORGANISATIONS' ? article.country : article.subsection} · {article.sourceName}</span></li>)}</ul>
         {result.skipped.length > 0 && <details><summary>Skipped rows</summary><ul>{result.skipped.map(item => <li key={`${item.row}-${item.reason}`}>Row {item.row}: {item.reason}</li>)}</ul></details>}
       </div>}
