@@ -117,7 +117,7 @@ test('worksheet choices use exact workbook tab names with the newest morning she
   const file = new File([await zip.generateAsync({ type: 'uint8array' })], 'news.xlsx');
   assert.deepEqual(await listSpreadsheetSheets(file), ['2026-11-03', '2026-11-03_Audit', '2026-11-03_Sources', '2026-11-02', '2026-11-02_Audit', 'NewsWork_B']);
   assert.deepEqual(groupRecentWorksheets(['2026-11-03', '2026-11-03_Sources', '2026-10-28_Rejected', '2026-10-27', 'NewsWork_B']), {
-    recent: ['2026-11-03', '2026-11-03_Sources', '2026-10-28_Rejected'], older: ['2026-10-27', 'NewsWork_B']
+    recent: ['2026-11-03'], older: ['2026-11-03_Sources', '2026-10-28_Rejected', '2026-10-27', 'NewsWork_B']
   });
   assert.deepEqual(await readSpreadsheetGrid(file, '2026-11-03_Sources'), [['Source', 'Status'], ['AP', 'ok']]);
 });

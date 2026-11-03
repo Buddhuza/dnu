@@ -89,11 +89,14 @@ export async function listSpreadsheetSheets(file) {
 export function groupRecentWorksheets(names) {
   const dates = names.map(name => name.match(/20\d{2}-\d{2}-\d{2}/)?.[0]).filter(Boolean);
   const latest = dates.sort().at(-1);
-  if (!latest) return { recent: names, older: [] };
-  const cutoff = new Date(`${latest}T12:00:00Z`);
-  cutoff.setUTCDate(cutoff.getUTCDate() - 6);
+  const cutoff = latest ? new Date(`${latest}T12:00:00Z`) : null;
+  cutoff?.setUTCDate(cutoff.getUTCDate() - 6);
   const recent = [], older = [];
-  for (const name of names) ((name.match(/20\d{2}-\d{2}-\d{2}/)?.[0] || '') >= cutoff.toISOString().slice(0, 10) ? recent : older).push(name);
+  for (const name of names) {
+    const date = name.match(/20\d{2}-\d{2}-\d{2}/)?.[0] || '';
+    const isSourceOrRejected = /(?:^|_)(?:Sources|Rejected)$/i.test(name);
+    (isSourceOrRejected || cutoff && date < cutoff.toISOString().slice(0, 10) ? older : recent).push(name);
+  }
   return { recent, older };
 }
 
