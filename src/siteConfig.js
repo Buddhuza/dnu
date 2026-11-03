@@ -71,6 +71,11 @@ export function normalizeSiteConfig(input, articles = []) {
     const subsections = Array.isArray(item?.subsections)
       ? [...new Set(item.subsections.map(value => clean(value, '', 100).trim()).filter(Boolean))].slice(0, 40)
       : [...(standard?.subsections ?? [])];
+    if (id === 'Miscellaneous' && !subsections.includes('SOUTH PACIFIC')) {
+      const northAmerica = subsections.indexOf('NORTH AMERICA');
+      const northEastAsia = subsections.indexOf('NORTH EAST ASIA');
+      subsections.splice(northAmerica >= 0 ? northAmerica : northEastAsia >= 0 ? northEastAsia + 1 : subsections.length, 0, 'SOUTH PACIFIC');
+    }
     return [{ id, name: clean(item?.name, id, 80).trim() || id, visible: item?.visible !== false, subsections: id === 'Lead stories' ? subsections.map(value => value === 'Middle East / North Africa' ? 'Middle East' : value) : subsections }];
   });
   for (const section of base.sections) if (!seen.has(section.id)) sections.push(section);
@@ -204,6 +209,7 @@ export function displaySiteContent(articles, config, excludedIds = new Set(), ke
       subsection: edit?.sectionId ? edit.subsection : edit?.subsection || (legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : article.subsection),
       country: edit?.sectionId ? edit.country : edit?.country || article.country || ''
     };
+    if (displayed.sectionId === 'Miscellaneous' && displayed.subsection === 'OCEANIA' && ['Australia', 'New Zealand'].includes(displayed.country)) displayed.subsection = 'SOUTH PACIFIC';
     displayed.title = cleanHeadlinePrefix(displayed.title);
     if (article.fromSpreadsheet && !edit?.summaryEdited) displayed.summary = reviewedImportedSummary(displayed.title, displayed.publishedAt) || conciseDnuSummary(displayed.summary, displayed.title);
     if (article.fromSpreadsheet && isBelarusPrisonerStory(displayed.title)) {
@@ -248,7 +254,7 @@ export function displaySiteContent(articles, config, excludedIds = new Set(), ke
   }
   for (const article of config.customArticles) {
     if (article.hidden || sectionById.get(article.sectionId)?.visible === false) continue;
-    if (!directGovernmentPublicationReason(article) && !blockedPlacementReason(article) && !excludedHeadlineReason(article.title, article.summary, article.url)) items.push({ ...article, title: cleanHeadlinePrefix(article.title), sourceName: displaySourceName(article.sourceName), section: sectionById.get(article.sectionId)?.name || article.sectionId });
+    if (!directGovernmentPublicationReason(article) && !blockedPlacementReason(article) && !excludedHeadlineReason(article.title, article.summary, article.url)) items.push({ ...article, subsection: article.sectionId === 'Miscellaneous' && article.subsection === 'OCEANIA' && ['Australia', 'New Zealand'].includes(article.country) ? 'SOUTH PACIFIC' : article.subsection, title: cleanHeadlinePrefix(article.title), sourceName: displaySourceName(article.sourceName), section: sectionById.get(article.sectionId)?.name || article.sectionId });
   }
   const uniqueItems = items;
   const order = new Map(config.sections.map((section, index) => [section.id, index]));

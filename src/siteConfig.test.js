@@ -5,6 +5,16 @@ import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySour
 import { MISCELLANEOUS_COUNTRIES } from './newsSections.js';
 import { duplicateGroups } from './storyDuplicates.js';
 
+test('existing site settings gain South Pacific between North East Asia and North America', () => {
+  const previous = defaultSiteConfig([]);
+  previous.sections.find(section => section.id === 'Miscellaneous').subsections = previous.sections.find(section => section.id === 'Miscellaneous').subsections.filter(name => name !== 'SOUTH PACIFIC');
+  const config = normalizeSiteConfig(previous, []);
+  const subsections = config.sections.find(section => section.id === 'Miscellaneous').subsections;
+  assert.deepEqual(subsections.slice(subsections.indexOf('NORTH EAST ASIA'), subsections.indexOf('NORTH AMERICA') + 1),
+    ['NORTH EAST ASIA', 'SOUTH PACIFIC', 'NORTH AMERICA']);
+  assert.deepEqual(MISCELLANEOUS_COUNTRIES['SOUTH PACIFIC'], ['Australia', 'New Zealand']);
+});
+
 const articles = [
   { id: 'a', section: 'Europe', subsection: 'Poland', title: 'Original headline', summary: 'Original summary.', sourceName: 'Agency', url: 'https://example.com/a' },
   { id: 'b', section: 'Asia', subsection: 'Japan', title: 'Second headline', summary: 'Second summary.', sourceName: 'Agency', url: 'https://example.com/b' }

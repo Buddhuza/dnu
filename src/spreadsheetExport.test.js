@@ -24,6 +24,7 @@ test('spreadsheet uses database region names and the visible placement of lead s
     ['WESTERN / CENTRAL EUROPE', 'Europe'],
     ['RUSSIA / EURASIA', 'Eurasia'],
     ['NORTH EAST ASIA', 'North East Asia'],
+    ['SOUTH PACIFIC', 'South Pacific'],
     ['NORTH AMERICA', 'North America'],
     ['INTERNATIONAL ORGANISATIONS', ''],
     ['AFGHANISTAN / PAKISTAN', 'AFGHANISTAN / PAKISTAN']

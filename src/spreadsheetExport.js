@@ -9,6 +9,7 @@ const exportRegions = {
   'WESTERN / CENTRAL EUROPE': 'Europe',
   'RUSSIA / EURASIA': 'Eurasia',
   'NORTH EAST ASIA': 'North East Asia',
+  'SOUTH PACIFIC': 'South Pacific',
   'NORTH AMERICA': 'North America',
   'INTERNATIONAL ORGANISATIONS': ''
 };

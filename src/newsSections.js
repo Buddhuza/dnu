@@ -4,7 +4,7 @@ export const NEWS_SECTIONS = [
   { id: 'Eastern Europe', subsections: ['Belarus', 'Moldova', 'Moldova / Transdniestria', 'Ukraine'] },
   { id: 'South Caucasus', subsections: ['Armenia', 'Azerbaijan', 'Georgia', 'Georgia / Abkhazia / South Ossetia'] },
   { id: 'Central Asia', subsections: ['Kazakhstan', 'Kyrgyzstan', 'Tajikistan', 'Turkmenistan', 'Uzbekistan'] },
-  { id: 'Miscellaneous', subsections: ['WESTERN / CENTRAL EUROPE', 'MIDDLE EAST / NORTH AFRICA', 'RUSSIA / EURASIA', 'AFGHANISTAN / PAKISTAN', 'NORTH EAST ASIA', 'NORTH AMERICA', 'INTERNATIONAL ORGANISATIONS'] }
+  { id: 'Miscellaneous', subsections: ['WESTERN / CENTRAL EUROPE', 'MIDDLE EAST / NORTH AFRICA', 'RUSSIA / EURASIA', 'AFGHANISTAN / PAKISTAN', 'NORTH EAST ASIA', 'SOUTH PACIFIC', 'NORTH AMERICA', 'INTERNATIONAL ORGANISATIONS'] }
 ];
 
 export function isSouthEasternEuropeRegionalStory(title) {
@@ -33,6 +33,7 @@ export const MISCELLANEOUS_COUNTRIES = {
   'RUSSIA / EURASIA': ['Russia'],
   'AFGHANISTAN / PAKISTAN': ['Afghanistan'],
   'NORTH EAST ASIA': ['China', 'Japan', 'Mongolia', 'South Korea', 'North Korea'],
+  'SOUTH PACIFIC': ['Australia', 'New Zealand'],
   'NORTH AMERICA': ['Canada', 'United States'],
   'INTERNATIONAL ORGANISATIONS': ['OSCE', 'EU', 'UN', 'NATO', 'IMF', 'ECB', 'G7', 'G20', 'ICC', 'WTO', 'CIS', 'CSTO', 'BRICS']
 };

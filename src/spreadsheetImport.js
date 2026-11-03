@@ -37,6 +37,7 @@ const miscRegions = new Map([
   ['middleeast', 'MIDDLE EAST / NORTH AFRICA'], ['middleeastnorthafrica', 'MIDDLE EAST / NORTH AFRICA'],
   ['eurasia', 'RUSSIA / EURASIA'], ['russiaeurasia', 'RUSSIA / EURASIA'],
   ['afghanistanpakistan', 'AFGHANISTAN / PAKISTAN'], ['northeastasia', 'NORTH EAST ASIA'],
+  ['southpacific', 'SOUTH PACIFIC'], ['oceania', 'SOUTH PACIFIC'],
   ['northamerica', 'NORTH AMERICA'], ['internationalorganisations', 'INTERNATIONAL ORGANISATIONS'],
   ['internationalorganizations', 'INTERNATIONAL ORGANISATIONS']
 ]);
@@ -386,7 +387,8 @@ function suggestedPlacement(row, title) {
     [/\b(?:Yemen|Yemeni|Houthi)\b/i, 'MIDDLE EAST / NORTH AFRICA', 'Yemen'],
     [/\b(?:Greece|Greek)\b/i, 'WESTERN / CENTRAL EUROPE', 'Greece'],
     [/\b(?:Bulgaria|Bulgarian|Iotova)\b/i, 'WESTERN / CENTRAL EUROPE', 'Bulgaria'],
-    [/\b(?:Australia|Australian)\b/i, 'OCEANIA', 'Australia'],
+    [/\b(?:Australia|Australian)\b/i, 'SOUTH PACIFIC', 'Australia'],
+    [/\b(?:New Zealand|Kiwi)\b/i, 'SOUTH PACIFIC', 'New Zealand'],
     [/\b(?:Europe|European)\b/i, 'WESTERN / CENTRAL EUROPE', 'Europe']
   ].find(([pattern]) => pattern.test(title));
   if (named) return { sectionId: 'Miscellaneous', subsection: named[1], country: named[2] };
@@ -433,6 +435,9 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
     const leadPrefix = firstRegional > 0 && index < firstRegional && leadHeadline.test(title);
     const override = placementOverrides[row.rowNumber];
     const placement = override || placementFromRow(row, title, `${suggestedSummary} ${summary}`.trim(), existing, leadPrefix);
+    if (!override && placement?.sectionId === 'Miscellaneous' && placement.subsection === 'SOUTH PACIFIC' && placement.country === 'New Zealand') {
+      needsPlacement.push({ row: row.rowNumber, title, sourceName, url: parsed.href, suggested: placement, reason: 'Review whether this New Zealand story is important enough for the update' }); continue;
+    }
     if (!placement?.sectionId || !override && (!placement.subsection && placement.sectionId !== 'South Eastern Europe' || placement.sectionId === 'Miscellaneous' && !placement.country)) {
       needsPlacement.push({ row: row.rowNumber, title, sourceName, url: parsed.href, suggested: suggestedPlacement(row, title) }); continue;
     }

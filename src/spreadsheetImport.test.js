@@ -151,15 +151,24 @@ test('an imported story can appear directly under a Miscellaneous subsection', (
     ['Miscellaneous', 'WESTERN / CENTRAL EUROPE', '']);
 });
 
-test('import can create a new subsection and country for an article with no standard location', () => {
+test('an Australian article imports under South Pacific', () => {
   const rows = [{ rowNumber: 4, date: '2026-11-03', source: 'ABC', region: 'International', countries: '',
-    url: 'https://www.abc.net.au/news/example', heading: 'Australian court hears challenge to social media ban' }];
-  const placed = convertSpreadsheetRows(rows, { placementOverrides: { 4: { sectionId: 'Miscellaneous', subsection: 'OCEANIA', country: 'Australia' } } });
+    url: 'https://www.abc.net.au/news/example', heading: 'Australia announces Pacific security pact' }];
+  const placed = convertSpreadsheetRows(rows);
   assert.equal(placed.articles.length, 1);
   const config = normalizeSiteConfig(extendSiteConfigForImportedPlacements(normalizeSiteConfig({}, []), placed.articles), placed.articles);
-  assert.ok(config.sections.find(section => section.id === 'Miscellaneous').subsections.includes('OCEANIA'));
-  assert.ok(config.customCountries.OCEANIA.includes('Australia'));
-  assert.equal(displaySiteContent(placed.articles, config)[0].subsection, 'OCEANIA');
+  assert.ok(config.sections.find(section => section.id === 'Miscellaneous').subsections.includes('SOUTH PACIFIC'));
+  assert.equal(displaySiteContent(placed.articles, config)[0].subsection, 'SOUTH PACIFIC');
+});
+
+test('New Zealand imports require editorial placement review', () => {
+  const rows = [{ rowNumber: 5, date: '2026-11-03', source: 'AP', region: 'South Pacific', countries: 'New Zealand',
+    url: 'https://apnews.com/article/new-zealand', heading: 'New Zealand government announces security talks' }];
+  const pending = convertSpreadsheetRows(rows);
+  assert.equal(pending.articles.length, 0);
+  assert.equal(pending.needsPlacement[0].suggested.country, 'New Zealand');
+  const confirmed = convertSpreadsheetRows(rows, { placementOverrides: { 5: pending.needsPlacement[0].suggested } });
+  assert.equal(confirmed.articles[0].subsection, 'SOUTH PACIFIC');
 });
 
 test('SITCEN working-data sheets supply full bodies and a short first-paragraph summary', async () => {

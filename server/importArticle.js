@@ -34,6 +34,7 @@ const miscellaneous = [
   ['NORTH EAST ASIA', 'Mongolia', /\bMongolia|Mongolian|Ulaanbaatar\b/i],
   ['NORTH EAST ASIA', 'South Korea', /\bSouth Korea|Seoul\b/i],
   ['NORTH EAST ASIA', 'North Korea', /\bNorth Korea|Pyongyang\b/i],
+  ['SOUTH PACIFIC', 'Australia', /\bAustralia|Australian|Canberra\b/i],
   ['NORTH AMERICA', 'Canada', /\bCanada|Canadian|Ottawa\b/i],
   ['NORTH AMERICA', 'United States', /\bUnited States|\bU\.S\.|\bUS\b|American|Washington|Trump\b/i]
 ];
