@@ -132,7 +132,11 @@ function readWorksheet(xml, sharedStrings) {
 
 async function inflateWorkJson(chunks) {
   if (!globalThis.DecompressionStream) throw new Error('This browser cannot read compressed article bodies in the workbook.');
-  const encoded = chunks.map(chunk => String(chunk || '').replace(/^gzip:/, '')).join('');
+  const joined = chunks.map(chunk => String(chunk || '').replace(/^gzip:/, '')).join('');
+  // A working sheet can retain a stale trailing chunk after a complete gzip value.
+  // Base64 padding marks the end of the first value; atob rejects anything after it.
+  const padding = joined.indexOf('=');
+  const encoded = padding < 0 ? joined : joined.slice(0, padding + (joined[padding + 1] === '=' ? 2 : 1));
   if (encoded.length > 20_000_000) throw new Error('The workbook article cache is too large.');
   const bytes = Uint8Array.from(atob(encoded), char => char.charCodeAt(0));
   const reader = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip')).getReader();

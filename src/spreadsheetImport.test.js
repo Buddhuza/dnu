@@ -124,6 +124,22 @@ test('SITCEN working-data sheets supply full bodies and a short first-paragraph 
   assert.equal(result.bodies[0].body, body);
 });
 
+test('SITCEN import falls back to a backup working sheet and ignores a stale chunk after base64 padding', async () => {
+  const zip = new JSZip();
+  zip.file('xl/workbook.xml', '<workbook xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="2026-11-03" r:id="rId1"/><sheet name="NewsWork_A" r:id="rId2"/><sheet name="NewsWork_B" r:id="rId3"/></sheets></workbook>');
+  zip.file('xl/_rels/workbook.xml.rels', '<Relationships><Relationship Id="rId1" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Target="worksheets/sheet3.xml"/></Relationships>');
+  const url = 'https://apnews.com/article/ukraine-security-talks';
+  const body = 'The ministers agreed to meet in Geneva next week to discuss border monitoring and prisoner exchanges.';
+  zip.file('xl/worksheets/sheet1.xml', `<worksheet><sheetData><row r="1"><c r="A1" t="inlineStr"><is><t>Headline</t></is></c><c r="B1" t="inlineStr"><is><t>Source</t></is></c><c r="C1" t="inlineStr"><is><t>Link</t></is></c><c r="D1" t="inlineStr"><is><t>Country</t></is></c></row><row r="2"><c r="A2" t="inlineStr"><is><t>Ukraine security talks begin</t></is></c><c r="B2" t="inlineStr"><is><t>AP</t></is></c><c r="C2" t="inlineStr"><is><t>${url}</t></is></c><c r="D2" t="inlineStr"><is><t>Ukraine</t></is></c></row></sheetData></worksheet>`);
+  zip.file('xl/worksheets/sheet2.xml', '<worksheet><sheetData><row r="1"/><row r="2"><c r="A2" t="inlineStr"><is><t>2026-11-03-run</t></is></c><c r="B2"><v>0</v></c><c r="C2" t="inlineStr"><is><t>gzip:AAAA</t></is></c></row></sheetData></worksheet>');
+  let encoded = gzipSync(JSON.stringify({ items: [{ link: url, articleBody: body }] })).toString('base64');
+  assert.match(encoded, /=$/);
+  const chunks = [encoded.slice(0, Math.ceil(encoded.length / 2)), encoded.slice(Math.ceil(encoded.length / 2)), 'AAAA'];
+  zip.file('xl/worksheets/sheet3.xml', `<worksheet><sheetData><row r="1"/>${chunks.map((chunk, index) => `<row r="${index + 2}"><c r="A${index + 2}" t="inlineStr"><is><t>2026-11-03-run</t></is></c><c r="B${index + 2}"><v>${index}</v></c><c r="C${index + 2}" t="inlineStr"><is><t>gzip:${chunk}</t></is></c></row>`).join('')}</sheetData></worksheet>`);
+  const rows = await readSpreadsheet(new File([await zip.generateAsync({ type: 'uint8array' })], 'live.xlsx'));
+  assert.equal(rows[0].body, body);
+});
+
 test('the empty DNU keeps its configured structure and shows imported stories under their headings', () => {
   const config = normalizeSiteConfig({}, []);
   assert.equal(config.sections.length, 6);
