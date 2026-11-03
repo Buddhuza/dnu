@@ -66,6 +66,12 @@ function editionDate(value) {
   return Number.isFinite(parsed) ? new Date(parsed).toISOString().slice(0, 10) : '';
 }
 
+function priorDate(date, days) {
+  const instant = new Date(`${date}T12:00:00Z`);
+  instant.setUTCDate(instant.getUTCDate() - days);
+  return instant.toISOString().slice(0, 10);
+}
+
 async function googleWorkingBodies(id, date, queryTable) {
   const failures = [];
   for (const sheet of ['NewsWork_B', 'NewsWork_A']) {
@@ -93,18 +99,38 @@ export async function readGoogleSheetEdition(link, sheetName = '', queryTable = 
   const id = googleSheetId(link);
   if (!id) throw new Error('Enter a Google Sheets link from docs.google.com.');
   const status = googleTableGrid(await queryTable(id, 'NewsStatus'));
-  const fields = new Map(status.slice(1).map(row => [String(row[0] || '').trim(), row[1]]));
-  if (String(fields.get('status') || '').toUpperCase() !== 'COMPLETE') {
-    throw new Error('The live news sheet is still being prepared. Try again when NewsStatus says COMPLETE.');
+  const fields = new Map(status.map(row => [String(row[0] || '').trim().toLowerCase(), row[1]]));
+  const runStatus = String(fields.get('status') || '').trim().toUpperCase();
+  if (!runStatus) throw new Error('Could not read the status in NewsStatus. Check viewer access or the sheet layout.');
+  const currentDate = editionDate(fields.get('edition'));
+  if (!currentDate) throw new Error('Could not find the latest edition date in NewsStatus.');
+  let date = currentDate;
+  let selected = sheetName || date;
+  let table;
+  let statusWarning = '';
+  if (runStatus === 'COMPLETE') {
+    if (selected !== date && selected !== `${date}_Audit`) throw new Error('Choose the current Morning News or Audit worksheet.');
+    table = await queryTable(id, selected);
+  } else {
+    const preferred = sheetName.match(/^(\d{4}-\d{2}-\d{2})(?:_Audit)?$/)?.[1];
+    const candidates = [...new Set([preferred, ...Array.from({ length: 7 }, (_, index) => priorDate(currentDate, index + 1))])].filter(Boolean);
+    for (const candidate of candidates) {
+      if (candidate >= currentDate) continue;
+      try {
+        const morning = await queryTable(id, candidate);
+        if (!spreadsheetRowsFromGrid(googleTableGrid(morning)).length) continue;
+        date = candidate;
+        selected = sheetName === `${candidate}_Audit` ? sheetName : candidate;
+        table = selected === candidate ? morning : await queryTable(id, selected);
+        statusWarning = `The ${currentDate} edition is ${runStatus.toLowerCase()}. Loaded the previous completed edition, ${date}, for review instead.`;
+        break;
+      } catch { /* Try the next earlier dated worksheet. */ }
+    }
+    if (!table) throw new Error(`The ${currentDate} edition is ${runStatus.toLowerCase()}, and no earlier dated edition could be read. Try again after the sheet finishes updating.`);
   }
-  const date = editionDate(fields.get('edition'));
-  if (!date) throw new Error('Could not find the latest edition date in NewsStatus.');
-  const selected = sheetName || date;
-  if (selected !== date && selected !== `${date}_Audit`) throw new Error('Choose the current Morning News or Audit worksheet.');
-  const table = await queryTable(id, selected);
   const { bodies, warning } = await googleWorkingBodies(id, date, queryTable);
   return {
     date, sheetName: selected, sheetNames: [date, `${date}_Audit`],
-    rows: spreadsheetRowsFromGrid(googleTableGrid(table), bodies), cacheWarning: warning
+    rows: spreadsheetRowsFromGrid(googleTableGrid(table), bodies), cacheWarning: [statusWarning, warning].filter(Boolean).join(' ')
   };
 }

@@ -37,10 +37,35 @@ test('the configured Google link loads the completed dated sheet and its article
   assert.equal(converted.bodies[0].body, body);
 });
 
-test('Google import rejects non-Google links and unfinished editions', async () => {
+test('Google import accepts a complete status with extra whitespace', async () => {
+  const query = async (_id, sheet) => {
+    if (sheet === 'NewsStatus') return table(['Field', 'Value'], [['status', ' COMPLETE '], ['edition', 'Date(2026,10,3)']]);
+    if (sheet === '2026-11-03') return table(['Headline', 'Source', 'Link'], [['Ukraine security talks begin', 'AP', 'https://apnews.com/article/talks']]);
+    return table(['RunID', 'Chunk', 'JSON'], []);
+  };
+  const result = await readGoogleSheetEdition(DEFAULT_GOOGLE_SHEET_URL, '', query);
+  assert.equal(result.date, '2026-11-03');
+  assert.equal(result.rows.length, 1);
+});
+
+test('an active Google run offers the previous completed dated worksheet', async () => {
+  const calls = [];
+  const query = async (_id, sheet) => {
+    calls.push(sheet);
+    if (sheet === 'NewsStatus') return table(['Field', 'Value'], [['status', 'RUNNING'], ['edition', 'Date(2026,10,3)']]);
+    if (sheet === '2026-11-02') return table(['Headline', 'Source', 'Link'], [['Ukraine security talks begin', 'AP', 'https://apnews.com/article/talks']]);
+    return table(['RunID', 'Chunk', 'JSON'], []);
+  };
+  const result = await readGoogleSheetEdition(DEFAULT_GOOGLE_SHEET_URL, '', query);
+  assert.equal(result.date, '2026-11-02');
+  assert.match(result.cacheWarning, /previous completed edition/);
+  assert.deepEqual(calls, ['NewsStatus', '2026-11-02', 'NewsWork_B', 'NewsWork_A']);
+});
+
+test('Google import rejects non-Google links and gives a clear error when no finished date is readable', async () => {
   assert.equal(googleSheetId('https://docs.google.com.evil.example/spreadsheets/d/abc/edit'), '');
   await assert.rejects(readGoogleSheetEdition('https://example.com/sheet'), /Google Sheets link/);
   await assert.rejects(readGoogleSheetEdition(DEFAULT_GOOGLE_SHEET_URL, '', async () => table(['Field', 'Value'], [
     ['status', 'RUNNING'], ['edition', 'Date(2026,10,3)']
-  ])), /still being prepared/);
+  ])), /no earlier dated edition could be read/);
 });
