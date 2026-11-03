@@ -5,6 +5,7 @@ import { MISCELLANEOUS_COUNTRIES } from './newsSections.js';
 
 const NEW = '__create_new__';
 const DIRECT = '__directly_under_section__';
+const DIRECT_SUBSECTION = '__directly_under_subsection__';
 
 function PlacementChooser({ item, sections, customCountries, onApply }) {
   const hint = item.suggested || {};
@@ -19,14 +20,14 @@ function PlacementChooser({ item, sections, customCountries, onApply }) {
   const [createSubsection, setCreateSubsection] = useState(Boolean(hint.subsection && !initialSubsectionKnown));
   const [direct, setDirect] = useState(false);
   const initialCountries = [...(MISCELLANEOUS_COUNTRIES[hint.subsection] || []), ...(customCountries[hint.subsection] || [])];
-  const [country, setCountry] = useState(initialCountries.includes(hint.country) ? hint.country : '');
+  const [country, setCountry] = useState(initialCountries.includes(hint.country) ? hint.country : hint.country ? '' : DIRECT_SUBSECTION);
   const [newCountry, setNewCountry] = useState(initialCountries.includes(hint.country) ? '' : hint.country || '');
   const [createCountry, setCreateCountry] = useState(Boolean(hint.country && !initialCountries.includes(hint.country)));
   const section = sections.find(value => value.id === sectionId);
   const chosenSubsection = createSubsection ? newSubsection.trim() : subsection;
   const countryOptions = [...new Set([...(MISCELLANEOUS_COUNTRIES[chosenSubsection] || []), ...(customCountries[chosenSubsection] || [])])];
   const chosenSection = createSection ? newSection.trim() : sectionId;
-  const directlyUnderSubsection = country === DIRECT && !createCountry;
+  const directlyUnderSubsection = country === DIRECT_SUBSECTION && !createCountry;
   const chosenCountry = createCountry ? newCountry.trim() : directlyUnderSubsection ? '' : country;
   const valid = chosenSection && (direct || chosenSubsection) && (chosenSection !== 'Miscellaneous' || direct || directlyUnderSubsection || chosenCountry);
 
@@ -43,10 +44,10 @@ function PlacementChooser({ item, sections, customCountries, onApply }) {
       {chosenSection && <label>{chosenSection === 'Miscellaneous' ? 'Subsection' : 'Country or heading'}<select value={direct ? DIRECT : createSubsection ? NEW : subsection} onChange={event => {
         const value = event.target.value;
         setDirect(value === DIRECT); setCreateSubsection(value === NEW); setSubsection(value === NEW || value === DIRECT ? '' : value);
-        setCountry(''); setNewCountry(''); setCreateCountry(false);
+        setCountry(DIRECT_SUBSECTION); setNewCountry(''); setCreateCountry(false);
       }}><option value="">Choose heading</option><option value={DIRECT}>Directly under section</option>{(section?.subsections || []).map(value => <option key={value} value={value}>{value}</option>)}<option value={NEW}>Create heading…</option></select></label>}
       {createSubsection && <label>New heading<input value={newSubsection} maxLength={100} onChange={event => setNewSubsection(event.target.value)} placeholder="Country, organisation or subsection"/></label>}
-      {chosenSection === 'Miscellaneous' && chosenSubsection && !direct && <label>{chosenSubsection === 'INTERNATIONAL ORGANISATIONS' ? 'Organisation' : 'Country or organisation'}<select value={createCountry ? NEW : country} onChange={event => { setCreateCountry(event.target.value === NEW); setCountry(event.target.value === NEW ? '' : event.target.value); }}><option value="">Choose location</option><option value={DIRECT}>Directly under subsection</option>{countryOptions.map(value => <option key={value} value={value}>{value}</option>)}<option value={NEW}>Create country or organisation…</option></select></label>}
+      {chosenSection === 'Miscellaneous' && chosenSubsection && !direct && <label>{chosenSubsection === 'INTERNATIONAL ORGANISATIONS' ? 'Organisation' : 'Country or organisation'}<select value={createCountry ? NEW : country} onChange={event => { setCreateCountry(event.target.value === NEW); setCountry(event.target.value === NEW ? '' : event.target.value); }}><option value={DIRECT_SUBSECTION}>Directly under subsection</option>{countryOptions.map(value => <option key={value} value={value}>{value}</option>)}<option value={NEW}>Create country or organisation…</option></select></label>}
       {chosenSection === 'Miscellaneous' && chosenSubsection && createCountry && !direct && <label>New country or organisation<input value={newCountry} maxLength={100} onChange={event => setNewCountry(event.target.value)} placeholder="Name"/></label>}
       <button type="button" disabled={!valid} onClick={() => onApply(item.row, { sectionId: chosenSection, subsection: direct ? '' : chosenSubsection, country: chosenSection === 'Miscellaneous' && !direct ? chosenCountry : '' })}>Use placement</button>
     </div>
