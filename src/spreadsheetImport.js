@@ -80,8 +80,21 @@ export async function listSpreadsheetSheets(file) {
   if (!/\.xlsx$/i.test(file.name)) throw new Error('Choose an .xlsx or .csv spreadsheet.');
   if (file.size > 40_000_000) throw new Error('Choose a spreadsheet smaller than 40 MB.');
   const sheets = await worksheetOptions(await workbook(file));
-  return sheets.map(({ name }) => name).filter(name => /^\d{4}-\d{2}-\d{2}(?:_Audit)?$/i.test(name))
-    .sort((a, b) => b.slice(0, 10).localeCompare(a.slice(0, 10)) || Number(a.endsWith('_Audit')) - Number(b.endsWith('_Audit')));
+  const dateOf = name => name.match(/20\d{2}-\d{2}-\d{2}/)?.[0] || '';
+  const rank = name => /^20\d{2}-\d{2}-\d{2}$/.test(name) ? 0 : /_Audit$/i.test(name) ? 1 : /_Sources$/i.test(name) ? 2 : /_Rejected$/i.test(name) ? 3 : /^NewsCommitted_/i.test(name) ? 4 : /^NewsAnalysis_/i.test(name) ? 5 : 6;
+  return sheets.map(({ name }, index) => ({ name, index })).sort((a, b) =>
+    dateOf(b.name).localeCompare(dateOf(a.name)) || rank(a.name) - rank(b.name) || a.index - b.index).map(({ name }) => name);
+}
+
+export function groupRecentWorksheets(names) {
+  const dates = names.map(name => name.match(/20\d{2}-\d{2}-\d{2}/)?.[0]).filter(Boolean);
+  const latest = dates.sort().at(-1);
+  if (!latest) return { recent: names, older: [] };
+  const cutoff = new Date(`${latest}T12:00:00Z`);
+  cutoff.setUTCDate(cutoff.getUTCDate() - 6);
+  const recent = [], older = [];
+  for (const name of names) ((name.match(/20\d{2}-\d{2}-\d{2}/)?.[0] || '') >= cutoff.toISOString().slice(0, 10) ? recent : older).push(name);
+  return { recent, older };
 }
 
 function readSharedStrings(xml = '') {
@@ -240,6 +253,17 @@ export async function readSpreadsheet(file, sheetName = '') {
   return spreadsheetRowsFromGrid(rows, articleBodies);
 }
 
+export async function readSpreadsheetGrid(file, sheetName = '') {
+  if (file.size > 40_000_000) throw new Error('Choose a spreadsheet smaller than 40 MB.');
+  if (/\.csv$/i.test(file.name)) return readCsv(await file.text());
+  if (!/\.xlsx$/i.test(file.name)) throw new Error('Choose an .xlsx or .csv spreadsheet.');
+  const zip = await workbook(file);
+  const sheet = (await worksheetOptions(zip)).find(item => item.name === sheetName);
+  if (!sheet) throw new Error(`Worksheet ${sheetName} was not found.`);
+  const shared = zip.file('xl/sharedStrings.xml') ? readSharedStrings(await zip.file('xl/sharedStrings.xml').async('string')) : [];
+  return readWorksheet(await zip.file(sheet.path).async('string'), shared);
+}
+
 export function spreadsheetRowsFromGrid(rows, articleBodies = new Map()) {
   const headerIndex = rows.findIndex(row => Object.values(headerAliases).some(aliases => row.some(value => aliases.includes(compact(value)))));
   if (headerIndex < 0) throw new Error('No column headings were found.');
@@ -360,7 +384,29 @@ function placementFromRow(row, title, summary, existing, leadPrefix) {
     : articlePlacement({}, title, summary);
 }
 
-export function convertSpreadsheetRows(rows, { existingArticles = [], sources = [], importedAt = new Date().toISOString() } = {}) {
+function suggestedPlacement(row, title) {
+  const region = text(row.region).replace(/\s+Region$/i, '');
+  const countryCandidates = String(row.country || row.countries || '').split(/[,;]/).map(text).filter(Boolean);
+  const rawCountry = countryCandidates.length <= 3 ? countryCandidates[0] || '' : '';
+  const country = rawCountry === 'Kosovo' ? 'Serbia / Kosovo' : rawCountry;
+  const regional = regionalSections.find(section => compact(section.id) === compact(region) || section.subsections.includes(country));
+  if (regional) return { sectionId: regional.id, subsection: country || '', country: '' };
+  const knownMisc = Object.entries(MISCELLANEOUS_COUNTRIES).find(([, names]) => names.includes(country));
+  if (knownMisc) return { sectionId: 'Miscellaneous', subsection: knownMisc[0], country };
+  const named = [
+    [/\b(?:Yemen|Yemeni|Houthi)\b/i, 'MIDDLE EAST / NORTH AFRICA', 'Yemen'],
+    [/\b(?:Greece|Greek)\b/i, 'WESTERN / CENTRAL EUROPE', 'Greece'],
+    [/\b(?:Bulgaria|Bulgarian|Iotova)\b/i, 'WESTERN / CENTRAL EUROPE', 'Bulgaria'],
+    [/\b(?:Australia|Australian)\b/i, 'OCEANIA', 'Australia'],
+    [/\b(?:Europe|European)\b/i, 'WESTERN / CENTRAL EUROPE', 'Europe']
+  ].find(([pattern]) => pattern.test(title));
+  if (named) return { sectionId: 'Miscellaneous', subsection: named[1], country: named[2] };
+  const misc = miscRegions.get(compact(region));
+  if (misc) return { sectionId: 'Miscellaneous', subsection: misc, country: country || '' };
+  return { sectionId: 'Miscellaneous', subsection: '', country: country || '' };
+}
+
+export function convertSpreadsheetRows(rows, { existingArticles = [], sources = [], importedAt = new Date().toISOString(), placementOverrides = {} } = {}) {
   const existingByUrl = new Map(existingArticles.map(article => [canonicalArticleUrl(article.url), article]));
   const sourceByName = new Map(sources.map(source => [compact(source.name), source]));
   const sourceByHost = new Map(sources.flatMap(source => {
@@ -368,7 +414,7 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
     catch { return []; }
   }));
   const seen = new Set();
-  const articles = [], bodies = [], skipped = [];
+  const articles = [], bodies = [], skipped = [], needsPlacement = [];
   const firstRegional = rows.findIndex(row => compact(row.region) === 'southeasterneurope');
   for (const [index, row] of rows.entries()) {
     const paywall = paywallReason(row);
@@ -396,9 +442,10 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
     const bodySummary = summaryFromBody(row.body, title);
     const summary = text(row.dnuSummary) || reviewedImportedSummary(title, publishedAt) || conciseDnuSummary(bodySummary || suggestedSummary || (row.body ? existing?.summary : ''), title);
     const leadPrefix = firstRegional > 0 && index < firstRegional && leadHeadline.test(title);
-    const placement = placementFromRow(row, title, `${suggestedSummary} ${summary}`.trim(), existing, leadPrefix);
-    if (!placement?.sectionId || !placement.subsection && placement.sectionId !== 'South Eastern Europe' || placement.sectionId === 'Miscellaneous' && !placement.country) {
-      skipped.push({ row: row.rowNumber, reason: 'Could not identify a DNU section and country or organisation' }); continue;
+    const override = placementOverrides[row.rowNumber];
+    const placement = override || placementFromRow(row, title, `${suggestedSummary} ${summary}`.trim(), existing, leadPrefix);
+    if (!placement?.sectionId || !override && (!placement.subsection && placement.sectionId !== 'South Eastern Europe' || placement.sectionId === 'Miscellaneous' && !placement.country)) {
+      needsPlacement.push({ row: row.rowNumber, title, sourceName, url: parsed.href, suggested: suggestedPlacement(row, title) }); continue;
     }
     const source = sourceByHost.get(parsed.hostname.replace(/^www\./, '').toLowerCase()) || sourceByName.get(compact(sourceName));
     const article = {
@@ -408,9 +455,13 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
       reviewed: true, ...placement, section: placement.sectionId, fromSpreadsheet: true, ingestMethod: 'import'
     };
     const restriction = blockedPlacementReason(article);
-    if (restriction) { skipped.push({ row: row.rowNumber, reason: restriction }); continue; }
+    if (restriction) {
+      if (placementOverrides[row.rowNumber]) needsPlacement.push({ row: row.rowNumber, title, sourceName, url: parsed.href, suggested: placementOverrides[row.rowNumber], reason: restriction });
+      else skipped.push({ row: row.rowNumber, reason: restriction });
+      continue;
+    }
     articles.push(article);
     if (text(row.body)) bodies.push({ url: parsed.href, heading: String(row.heading || '').trim(), body: String(row.body), translated: article.translated });
   }
-  return { articles, bodies, skipped };
+  return { articles, bodies, skipped, needsPlacement };
 }

@@ -87,6 +87,15 @@ function datedNewsRows(table, date) {
   return rows;
 }
 
+function knownGoogleTabs(date) {
+  const tabs = [];
+  for (let day = 0; day < 7; day++) {
+    const name = priorDate(date, day);
+    tabs.push(name, `${name}_Audit`, `${name}_Sources`, `${name}_Rejected`);
+  }
+  return [...tabs, 'NewsStatus', 'NewsWork_A', 'NewsWork_B', 'NewsPreview', 'NewsEditionDiagnostics', 'SourceRegistry', 'ExtraFeeds', 'EditorialOverrides'];
+}
+
 async function googleWorkingBodies(id, date, queryTable) {
   const failures = [];
   for (const sheet of ['NewsWork_B', 'NewsWork_A']) {
@@ -121,7 +130,7 @@ export async function readGoogleSheetEdition(link, sheetName = '', queryTable = 
   const runStatus = String(fields.get('status') || '').trim().toUpperCase();
   const statusDate = editionDate(fields.get('edition'));
   const today = todayInVienna(now);
-  const preferred = sheetName.match(/^(\d{4}-\d{2}-\d{2})(?:_Audit)?$/)?.[1];
+  const preferred = sheetName.match(/^(\d{4}-\d{2}-\d{2})(?:_(?:Audit|Sources|Rejected))?$/)?.[1];
   const candidates = [...new Set([preferred, statusDate, ...Array.from({ length: 8 }, (_, index) => priorDate(today, index))])].filter(Boolean);
   let date = '', selected = '', selectedTable;
   for (const candidate of candidates) {
@@ -129,9 +138,13 @@ export async function readGoogleSheetEdition(link, sheetName = '', queryTable = 
     try {
       const morning = await queryTable(id, candidate);
       datedNewsRows(morning, candidate);
-      const choice = sheetName === `${candidate}_Audit` ? sheetName : candidate;
+      const choice = sheetName && sheetName !== candidate && (sheetName.startsWith(`${candidate}_`) || !/^20\d{2}-\d{2}-\d{2}/.test(sheetName)) ? sheetName : candidate;
       selectedTable = choice === candidate ? morning : await queryTable(id, choice);
-      if (choice !== candidate) spreadsheetRowsFromGrid(googleTableGrid(selectedTable));
+      const headings = googleTableGrid(selectedTable).slice(0, 2).flat();
+      if (choice.endsWith('_Audit')) spreadsheetRowsFromGrid(googleTableGrid(selectedTable));
+      const expected = choice.endsWith('_Sources') ? 'Status' : choice.endsWith('_Rejected') ? 'Reason'
+        : choice === 'NewsStatus' ? 'Field' : /^NewsWork_[AB]$/.test(choice) ? 'RunID' : '';
+      if (expected && !headings.some(header => String(header).toLowerCase() === expected.toLowerCase())) throw new Error('Google returned a different tab.');
       date = candidate;
       selected = choice;
       break;
@@ -141,9 +154,16 @@ export async function readGoogleSheetEdition(link, sheetName = '', queryTable = 
   const statusWarning = runStatus && runStatus !== 'COMPLETE' && statusDate
     ? `The ${statusDate} edition is ${runStatus.toLowerCase()}. Loaded the previous completed edition, ${date}, for review instead.`
     : !runStatus ? `NewsStatus was unavailable; the ${date} news worksheet was verified directly.` : '';
-  const { bodies, warning } = await googleWorkingBodies(id, date, queryTable);
+  const grid = googleTableGrid(selectedTable);
+  let rows = [], tablePreview;
+  try { rows = spreadsheetRowsFromGrid(grid); }
+  catch (error) {
+    if (!/No column headings|needs Source, Source URL, and Heading/i.test(error.message)) throw error;
+    tablePreview = grid.slice(0, 8);
+  }
+  const { bodies, warning } = rows.length ? await googleWorkingBodies(id, date, queryTable) : { bodies: new Map(), warning: '' };
   return {
-    date, sheetName: selected, sheetNames: [date, `${date}_Audit`],
-    rows: spreadsheetRowsFromGrid(googleTableGrid(selectedTable), bodies), cacheWarning: [statusWarning, warning].filter(Boolean).join(' ')
+    date, sheetName: selected, sheetNames: [...new Set([...knownGoogleTabs(date), selected])], tablePreview, totalRows: Math.max(0, grid.length - 1),
+    rows: rows.length ? spreadsheetRowsFromGrid(grid, bodies) : [], cacheWarning: [statusWarning, warning].filter(Boolean).join(' ')
   };
 }

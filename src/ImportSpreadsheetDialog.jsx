@@ -1,8 +1,58 @@
 import React, { useState } from 'react';
-import { convertSpreadsheetRows, listSpreadsheetSheets, readSpreadsheet } from './spreadsheetImport.js';
+import { convertSpreadsheetRows, groupRecentWorksheets, listSpreadsheetSheets, readSpreadsheet, readSpreadsheetGrid } from './spreadsheetImport.js';
 import { DEFAULT_GOOGLE_SHEET_URL, readGoogleSheetEdition } from './googleSheetClient.js';
+import { MISCELLANEOUS_COUNTRIES } from './newsSections.js';
 
-export default function ImportSpreadsheetDialog({ existingArticles, sources, importedMode, sharedMode = false, publishedEmpty, hasStories, onImport, onRestore, onClear, onClose }) {
+const NEW = '__create_new__';
+const DIRECT = '__directly_under_section__';
+
+function PlacementChooser({ item, sections, customCountries, onApply }) {
+  const hint = item.suggested || {};
+  const initialSectionKnown = sections.some(section => section.id === hint.sectionId);
+  const [sectionId, setSectionId] = useState(initialSectionKnown ? hint.sectionId : '');
+  const [newSection, setNewSection] = useState(initialSectionKnown ? '' : hint.sectionId || '');
+  const [createSection, setCreateSection] = useState(Boolean(hint.sectionId && !initialSectionKnown));
+  const initialSection = sections.find(section => section.id === hint.sectionId);
+  const initialSubsectionKnown = initialSection?.subsections.includes(hint.subsection);
+  const [subsection, setSubsection] = useState(initialSubsectionKnown ? hint.subsection : '');
+  const [newSubsection, setNewSubsection] = useState(initialSubsectionKnown ? '' : hint.subsection || '');
+  const [createSubsection, setCreateSubsection] = useState(Boolean(hint.subsection && !initialSubsectionKnown));
+  const [direct, setDirect] = useState(false);
+  const initialCountries = [...(MISCELLANEOUS_COUNTRIES[hint.subsection] || []), ...(customCountries[hint.subsection] || [])];
+  const [country, setCountry] = useState(initialCountries.includes(hint.country) ? hint.country : '');
+  const [newCountry, setNewCountry] = useState(initialCountries.includes(hint.country) ? '' : hint.country || '');
+  const [createCountry, setCreateCountry] = useState(Boolean(hint.country && !initialCountries.includes(hint.country)));
+  const section = sections.find(value => value.id === sectionId);
+  const chosenSubsection = createSubsection ? newSubsection.trim() : subsection;
+  const countryOptions = [...new Set([...(MISCELLANEOUS_COUNTRIES[chosenSubsection] || []), ...(customCountries[chosenSubsection] || [])])];
+  const chosenSection = createSection ? newSection.trim() : sectionId;
+  const chosenCountry = createCountry ? newCountry.trim() : country;
+  const valid = chosenSection && (direct || chosenSubsection) && (chosenSection !== 'Miscellaneous' || direct || chosenCountry);
+
+  return <li className="import-placement-item">
+    <strong>{item.title}</strong><span>{item.sourceName} · row {item.row}</span>
+    {item.reason && <p role="alert">{item.reason}. Choose another placement.</p>}
+    <div className="import-placement-controls">
+      <label>Section<select value={createSection ? NEW : sectionId} onChange={event => {
+        const value = event.target.value;
+        setCreateSection(value === NEW); setSectionId(value === NEW ? '' : value);
+        setSubsection(''); setNewSubsection(''); setCreateSubsection(false); setDirect(false); setCountry(''); setNewCountry(''); setCreateCountry(false);
+      }}><option value="">Choose section</option>{sections.filter(value => value.id !== 'Lead stories' && value.visible !== false).map(value => <option key={value.id} value={value.id}>{value.name}</option>)}<option value={NEW}>Create section…</option></select></label>
+      {createSection && <label>New section<input value={newSection} maxLength={80} onChange={event => setNewSection(event.target.value)} placeholder="Section name"/></label>}
+      {chosenSection && <label>{chosenSection === 'Miscellaneous' ? 'Subsection' : 'Country or heading'}<select value={direct ? DIRECT : createSubsection ? NEW : subsection} onChange={event => {
+        const value = event.target.value;
+        setDirect(value === DIRECT); setCreateSubsection(value === NEW); setSubsection(value === NEW || value === DIRECT ? '' : value);
+        setCountry(''); setNewCountry(''); setCreateCountry(false);
+      }}><option value="">Choose heading</option><option value={DIRECT}>Directly under section</option>{(section?.subsections || []).map(value => <option key={value} value={value}>{value}</option>)}<option value={NEW}>Create heading…</option></select></label>}
+      {createSubsection && <label>New heading<input value={newSubsection} maxLength={100} onChange={event => setNewSubsection(event.target.value)} placeholder="Country, organisation or subsection"/></label>}
+      {chosenSection === 'Miscellaneous' && chosenSubsection && !direct && <label>{chosenSubsection === 'INTERNATIONAL ORGANISATIONS' ? 'Organisation' : 'Country or organisation'}<select value={createCountry ? NEW : country} onChange={event => { setCreateCountry(event.target.value === NEW); setCountry(event.target.value === NEW ? '' : event.target.value); }}><option value="">Choose location</option>{countryOptions.map(value => <option key={value} value={value}>{value}</option>)}<option value={NEW}>Create country or organisation…</option></select></label>}
+      {chosenSection === 'Miscellaneous' && chosenSubsection && createCountry && !direct && <label>New country or organisation<input value={newCountry} maxLength={100} onChange={event => setNewCountry(event.target.value)} placeholder="Name"/></label>}
+      <button type="button" disabled={!valid} onClick={() => onApply(item.row, { sectionId: chosenSection, subsection: direct ? '' : chosenSubsection, country: chosenSection === 'Miscellaneous' && !direct ? chosenCountry : '' })}>Use placement</button>
+    </div>
+  </li>;
+}
+
+export default function ImportSpreadsheetDialog({ sections = [], customCountries = {}, existingArticles, sources, importedMode, sharedMode = false, publishedEmpty, hasStories, onImport, onRestore, onClear, onClose }) {
   const [fileName, setFileName] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
@@ -12,12 +62,36 @@ export default function ImportSpreadsheetDialog({ existingArticles, sources, imp
   const [sheetName, setSheetName] = useState('');
   const [showOlderSheets, setShowOlderSheets] = useState(false);
   const [googleUrl, setGoogleUrl] = useState(DEFAULT_GOOGLE_SHEET_URL);
+  const [otherGoogleTab, setOtherGoogleTab] = useState('');
+  const [rawRows, setRawRows] = useState([]);
+  const [placementOverrides, setPlacementOverrides] = useState({});
+  const worksheetGroups = groupRecentWorksheets(sheetNames);
 
   async function previewSheet(chosenFile, chosenSheet, link = googleUrl) {
     const online = chosenFile ? null : await readGoogleSheetEdition(link, chosenSheet);
-    const rows = online?.rows || await readSpreadsheet(chosenFile, chosenSheet);
+    if (online?.tablePreview) {
+      setSheetNames(online.sheetNames);
+      setSheetName(online.sheetName);
+      setFileName(`Google Sheet ${online.date}`);
+      setRawRows([]);
+      setPlacementOverrides({});
+      setResult({ articles: [], bodies: [], skipped: [], needsPlacement: [], total: online.totalRows, sheetName: online.sheetName, tablePreview: online.tablePreview, cacheWarning: online.cacheWarning });
+      return;
+    }
+    let rows;
+    try { rows = online?.rows || await readSpreadsheet(chosenFile, chosenSheet); }
+    catch (failure) {
+      if (!chosenFile || !/No column headings|needs Source, Source URL, and Heading/i.test(failure.message)) throw failure;
+      const grid = await readSpreadsheetGrid(chosenFile, chosenSheet);
+      setRawRows([]);
+      setPlacementOverrides({});
+      setResult({ articles: [], bodies: [], skipped: [], needsPlacement: [], total: Math.max(0, grid.length - 1), sheetName: chosenSheet, tablePreview: grid.slice(0, 8) });
+      return;
+    }
     const converted = convertSpreadsheetRows(rows, { existingArticles, sources });
-    if (!converted.articles.length) throw new Error('No usable DNU stories were found in this sheet. Check the column names and the skipped-row reasons.');
+    if (!converted.articles.length && !converted.needsPlacement.length) throw new Error('No usable DNU stories were found in this sheet. This tab may not contain article columns, or all rows were excluded by editorial rules.');
+    setRawRows(rows);
+    setPlacementOverrides({});
     if (online) {
       setSheetNames(online.sheetNames);
       setSheetName(online.sheetName);
@@ -72,12 +146,31 @@ export default function ImportSpreadsheetDialog({ existingArticles, sources, imp
     finally { setBusy(false); }
   }
 
+  async function openNamedGoogleTab() {
+    const name = otherGoogleTab.trim();
+    if (!name) return;
+    setFile(null);
+    setResult(null);
+    setError('');
+    setBusy(true);
+    try { await previewSheet(null, name); }
+    catch (failure) { setError(failure.message || 'Could not read this Google worksheet.'); }
+    finally { setBusy(false); }
+  }
+
   async function importFile() {
-    if (!result || busy) return;
+    if (!result || result.needsPlacement.length || busy) return;
     setBusy(true);
     setError('');
     try { await onImport(result, fileName); }
     catch (failure) { setError(failure.message || 'Could not import this spreadsheet.'); setBusy(false); }
+  }
+
+  function applyPlacement(row, placement) {
+    const next = { ...placementOverrides, [row]: placement };
+    const converted = convertSpreadsheetRows(rawRows, { existingArticles, sources, placementOverrides: next });
+    setPlacementOverrides(next);
+    setResult(current => ({ ...current, ...converted }));
   }
 
   return <div className="add-backdrop" onMouseDown={event => { if (!busy && event.target === event.currentTarget) onClose(); }}>
@@ -86,18 +179,21 @@ export default function ImportSpreadsheetDialog({ existingArticles, sources, imp
       <p>Load the latest completed edition directly from the live Google Sheet. Review the stories before importing them into the update; existing article URLs remain unchanged.</p>
       <label className="import-file-label" htmlFor="import-google-sheet-url">Google Sheet URL</label>
       <div className="import-google-controls"><input id="import-google-sheet-url" type="url" value={googleUrl} onChange={event => { setGoogleUrl(event.target.value); setResult(null); setSheetNames([]); setSheetName(''); }} disabled={busy}/><button type="button" onClick={loadGoogleSheet} disabled={busy}>Load latest</button></div>
+      <details className="import-file-fallback"><summary>Open another live worksheet by exact name</summary><div className="import-google-controls"><input aria-label="Exact Google worksheet name" value={otherGoogleTab} onChange={event => setOtherGoogleTab(event.target.value)} maxLength={100} placeholder="Paste the tab name" disabled={busy}/><button type="button" onClick={openNamedGoogleTab} disabled={busy || !otherGoogleTab.trim()}>Preview tab</button></div></details>
       <details className="import-file-fallback"><summary>Use an Excel or CSV file instead</summary><label className="import-file-label" htmlFor="import-spreadsheet-file">Spreadsheet file</label><input id="import-spreadsheet-file" type="file" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" onChange={chooseFile} disabled={busy}/></details>
-      {sheetNames.length > 1 && <label className="import-file-label" htmlFor="import-spreadsheet-sheet">Worksheet (exact tab name)<select id="import-spreadsheet-sheet" value={sheetName} onChange={chooseSheet} disabled={busy}>{(showOlderSheets ? sheetNames : sheetNames.slice(0, 2)).map(name => <option key={name} value={name}>{name}</option>)}</select></label>}
-      {sheetNames.length > 2 && !showOlderSheets && <button className="import-older-sheets" type="button" onClick={() => setShowOlderSheets(true)} disabled={busy}>Show {sheetNames.length - 2} older worksheets</button>}
-      {sheetNames.length > 1 && <p className="import-spreadsheet-note">Dated tabs contain the selected news. Tabs ending in _Audit contain all collected candidates. Sources, Rejected and technical tabs are excluded.</p>}
+      {sheetNames.length > 1 && <label className="import-file-label" htmlFor="import-spreadsheet-sheet">Worksheet (exact tab name)<select id="import-spreadsheet-sheet" value={sheetName} onChange={chooseSheet} disabled={busy}>{(showOlderSheets ? sheetNames : worksheetGroups.recent).map(name => <option key={name} value={name}>{name}</option>)}</select></label>}
+      {worksheetGroups.older.length > 0 && !showOlderSheets && <button className="import-older-sheets" type="button" onClick={() => setShowOlderSheets(true)} disabled={busy}>Show {worksheetGroups.older.length} older worksheets</button>}
+      {sheetNames.length > 1 && <p className="import-spreadsheet-note">{file ? 'All workbook tabs from the latest seven days are shown. Older and undated tabs are available through the link.' : 'The live link lists the date-named news, Audit, Sources and Rejected tabs from the latest week. Technical tabs are behind the older worksheets link.'} Tabs without article columns can be inspected but have no stories to import.</p>}
       {busy && <p role="status">Preparing spreadsheet…</p>}
       {error && <p className="add-manual-error" role="alert">{error}</p>}
       {result && <div className="import-spreadsheet-preview" aria-live="polite">
         {result.sheetName && <p className="import-spreadsheet-note">Previewing worksheet: <strong>{result.sheetName}</strong></p>}
-        <p><strong>{result.articles.length} of {result.total}</strong> rows ready · {result.skipped.length} skipped · {result.articles.filter(article => !article.summary).length} without a short summary · {result.bodies.length} full bodies available for database export</p>
+        <p><strong>{result.articles.length} of {result.total}</strong> rows ready · {result.needsPlacement.length} need placement · {result.skipped.length} skipped · {result.articles.filter(article => !article.summary).length} without a short summary · {result.bodies.length} full bodies available for database export</p>
         {!result.bodies.length && <p className="import-spreadsheet-note">No full article bodies were found in this sheet or its matching workbook cache. It can populate the update, but database export will have no rows.</p>}
         {result.cacheWarning && <p className="import-spreadsheet-note">{result.cacheWarning}</p>}
         {sheetName.endsWith('_Audit') && <p className="import-spreadsheet-note">Audit includes candidates rejected by the source script’s selection rules. Review these stories before using them in the update.</p>}
+        {result.tablePreview && <div className="import-technical-preview"><p>This tab has no importable article columns. Its first rows are shown below.</p><table><tbody>{result.tablePreview.map((row, index) => <tr key={index}>{row.slice(0, 8).map((value, column) => <td key={column} title={String(value ?? '').slice(0, 500)}>{String(value ?? '').slice(0, 120)}</td>)}</tr>)}</tbody></table></div>}
+        {result.needsPlacement.length > 0 && <details open className="import-placement-review"><summary>Place {result.needsPlacement.length} stories before importing</summary><ul>{result.needsPlacement.map(item => <PlacementChooser key={item.row} item={item} sections={sections} customCountries={customCountries} onApply={applyPlacement}/>)}</ul></details>}
         <ul>{result.articles.slice(0, 5).map(article => <li key={article.id}><strong>{article.title}</strong><span>{article.sectionId} · {article.subsection === 'INTERNATIONAL ORGANISATIONS' ? article.country : article.subsection} · {article.sourceName}</span></li>)}</ul>
         {result.skipped.length > 0 && <details><summary>Skipped rows</summary><ul>{result.skipped.map(item => <li key={`${item.row}-${item.reason}`}>Row {item.row}: {item.reason}</li>)}</ul></details>}
       </div>}
@@ -105,7 +201,7 @@ export default function ImportSpreadsheetDialog({ existingArticles, sources, imp
       <div className="add-dialog-actions">
         {sharedMode ? <button type="button" className="import-spreadsheet-clear" onClick={onClear} disabled={busy || !hasStories}>Clear all stories</button> : publishedEmpty && hasStories ? <button type="button" className="import-spreadsheet-clear" onClick={onClear} disabled={busy}>Clear update</button> : importedMode && <button type="button" onClick={onRestore} disabled={busy}>Restore published update</button>}
         <button type="button" onClick={onClose} disabled={busy}>Cancel</button>
-        <button type="button" className="import-spreadsheet-confirm" onClick={importFile} disabled={!result?.articles.length || busy}>Import {result?.articles.length || ''} stories</button>
+        <button type="button" className="import-spreadsheet-confirm" onClick={importFile} disabled={!result?.articles.length || Boolean(result?.needsPlacement.length) || busy}>Import {result?.articles.length || ''} stories</button>
       </div>
     </section>
   </div>;

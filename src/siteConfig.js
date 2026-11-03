@@ -290,6 +290,26 @@ export function addCustomArticleInConfig(config, article, { createSubsection = f
   return { ...config, sections, customCountries, customArticles: [...config.customArticles, { ...article, subsection, country }] };
 }
 
+export function extendSiteConfigForImportedPlacements(config, articles) {
+  const sections = config.sections.map(section => ({ ...section, subsections: [...section.subsections] }));
+  const customCountries = Object.fromEntries(Object.entries(config.customCountries || {}).map(([key, values]) => [key, [...values]]));
+  for (const article of articles) {
+    let section = sections.find(item => item.id === article.sectionId);
+    if (!section && article.sectionId && sections.length < 40) {
+      section = { id: article.sectionId, name: article.sectionId, visible: true, subsections: [] };
+      sections.push(section);
+    }
+    if (!section) continue;
+    if (article.subsection && !section.subsections.includes(article.subsection) && section.subsections.length < 40) section.subsections.push(article.subsection);
+    if (article.sectionId === 'Miscellaneous' && article.subsection && article.country &&
+      !(MISCELLANEOUS_COUNTRIES[article.subsection] || []).includes(article.country) &&
+      !(customCountries[article.subsection] || []).includes(article.country)) {
+      customCountries[article.subsection] = [...(customCountries[article.subsection] || []), article.country];
+    }
+  }
+  return { ...config, sections, customCountries };
+}
+
 export function clearCustomArticlesInConfig(config) {
   if (!config.customArticles.length) return config;
   const removed = new Set(config.customArticles.map(article => article.id));

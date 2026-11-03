@@ -30,7 +30,7 @@ test('the configured Google link loads the completed dated sheet and its article
   };
   const result = await readGoogleSheetEdition(DEFAULT_GOOGLE_SHEET_URL, '', query, testNow);
   assert.equal(result.date, '2026-11-03');
-  assert.deepEqual(result.sheetNames, ['2026-11-03', '2026-11-03_Audit']);
+  assert.deepEqual(result.sheetNames.slice(0, 4), ['2026-11-03', '2026-11-03_Audit', '2026-11-03_Sources', '2026-11-03_Rejected']);
   assert.deepEqual(calls, ['NewsStatus', '2026-11-03', 'NewsWork_B']);
   assert.equal(result.rows[0].body, body);
   const converted = convertSpreadsheetRows(result.rows);
@@ -86,6 +86,22 @@ test('Google import finds a dated news tab when NewsStatus returns an unrelated 
   assert.equal(result.rows[0].heading, 'Ukraine security talks begin');
   assert.match(result.cacheWarning, /NewsStatus was unavailable/);
   assert.deepEqual(calls, ['NewsStatus', '2026-11-03', 'NewsWork_B', 'NewsWork_A']);
+});
+
+test('Google Sources tab is listed and can be inspected without importing it as an article', async () => {
+  const query = async (_id, sheet) => {
+    if (sheet === 'NewsStatus') return table(['Field', 'Value'], [['status', 'COMPLETE'], ['edition', 'Date(2026,10,3)']]);
+    if (sheet === '2026-11-03') return table(['Date', 'Headline', 'Source', 'Link'], [
+      ['2026-11-03', 'Ukraine security talks begin', 'AP', 'https://apnews.com/article/talks']
+    ]);
+    if (sheet === '2026-11-03_Sources') return table(['Source', 'Status', 'FeedItems'], [['AP', 'ok', 20]]);
+    throw new Error('Unexpected tab');
+  };
+  const result = await readGoogleSheetEdition(DEFAULT_GOOGLE_SHEET_URL, '2026-11-03_Sources', query, testNow);
+  assert.equal(result.sheetName, '2026-11-03_Sources');
+  assert.equal(result.rows.length, 0);
+  assert.deepEqual(result.tablePreview, [['Source', 'Status', 'FeedItems'], ['AP', 'ok', '20']]);
+  assert.ok(result.sheetNames.includes('NewsStatus'));
 });
 
 test('Google import rejects a different worksheet served under a dated tab name', async () => {

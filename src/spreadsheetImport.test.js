@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import JSZip from 'jszip';
 import { gzipSync } from 'node:zlib';
 import { createSpreadsheet, spreadsheetRow } from './spreadsheetExport.js';
-import { convertSpreadsheetRows, listSpreadsheetSheets, readSpreadsheet } from './spreadsheetImport.js';
+import { convertSpreadsheetRows, groupRecentWorksheets, listSpreadsheetSheets, readSpreadsheet, readSpreadsheetGrid } from './spreadsheetImport.js';
 import { reportStoryText } from './reportText.js';
-import { displaySiteContent, normalizeSiteConfig } from './siteConfig.js';
+import { displaySiteContent, extendSiteConfigForImportedPlacements, normalizeSiteConfig } from './siteConfig.js';
 
 const columns = ['2026-10-23', 'Guardian', 'Europe', 'UK, US', '', '', '', '', 'https://www.theguardian.com/example', 'UK and US ministers meet in London | Guardian', 'UK and US ministers met in London on Friday to discuss European security. They agreed to establish a working group on protection of critical undersea cables and to share intelligence across the Atlantic.'];
 
@@ -96,7 +96,7 @@ test('SITCEN workbook defaults to its dated selection and can open Audit separat
   zip.file('xl/worksheets/sheet2.xml', worksheet('Morning headline', '2026-10-29T12:00:00Z'));
   zip.file('xl/worksheets/sheet3.xml', worksheet('Audit headline', '2026-10-28T11:00:00Z'));
   const file = new File([await zip.generateAsync({ type: 'uint8array' })], 'SITCEN.xlsx');
-  assert.deepEqual(await listSpreadsheetSheets(file), ['2026-10-30', '2026-10-30_Audit']);
+  assert.deepEqual(await listSpreadsheetSheets(file), ['2026-10-30', '2026-10-30_Audit', '2026-10-30_Rejected']);
   const morning = convertSpreadsheetRows(await readSpreadsheet(file));
   assert.equal(morning.articles[0].title, 'Morning headline');
   assert.equal(morning.articles[0].publishedAt, '2026-10-29T12:00:00.000Z');
@@ -111,9 +111,45 @@ test('worksheet choices use exact workbook tab names with the newest morning she
   const names = ['2026-11-02_Audit', '2026-11-03_Sources', '2026-11-03_Audit', '2026-11-02', '2026-11-03', 'NewsWork_B'];
   zip.file('xl/workbook.xml', `<workbook xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${names.map((name, index) => `<sheet name="${name}" r:id="rId${index + 1}"/>`).join('')}</sheets></workbook>`);
   zip.file('xl/_rels/workbook.xml.rels', `<Relationships>${names.map((_, index) => `<Relationship Id="rId${index + 1}" Target="worksheets/sheet${index + 1}.xml"/>`).join('')}</Relationships>`);
-  names.forEach((_, index) => zip.file(`xl/worksheets/sheet${index + 1}.xml`, '<worksheet><sheetData/></worksheet>'));
+  names.forEach((name, index) => zip.file(`xl/worksheets/sheet${index + 1}.xml`, name.endsWith('_Sources')
+    ? '<worksheet><sheetData><row r="1"><c r="A1" t="inlineStr"><is><t>Source</t></is></c><c r="B1" t="inlineStr"><is><t>Status</t></is></c></row><row r="2"><c r="A2" t="inlineStr"><is><t>AP</t></is></c><c r="B2" t="inlineStr"><is><t>ok</t></is></c></row></sheetData></worksheet>'
+    : '<worksheet><sheetData/></worksheet>'));
   const file = new File([await zip.generateAsync({ type: 'uint8array' })], 'news.xlsx');
-  assert.deepEqual(await listSpreadsheetSheets(file), ['2026-11-03', '2026-11-03_Audit', '2026-11-02', '2026-11-02_Audit']);
+  assert.deepEqual(await listSpreadsheetSheets(file), ['2026-11-03', '2026-11-03_Audit', '2026-11-03_Sources', '2026-11-02', '2026-11-02_Audit', 'NewsWork_B']);
+  assert.deepEqual(groupRecentWorksheets(['2026-11-03', '2026-11-03_Sources', '2026-10-28_Rejected', '2026-10-27', 'NewsWork_B']), {
+    recent: ['2026-11-03', '2026-11-03_Sources', '2026-10-28_Rejected'], older: ['2026-10-27', 'NewsWork_B']
+  });
+  assert.deepEqual(await readSpreadsheetGrid(file, '2026-11-03_Sources'), [['Source', 'Status'], ['AP', 'ok']]);
+});
+
+test('unplaced articles stay available for a chosen or newly created destination', () => {
+  const rows = [{ rowNumber: 2, date: '2026-11-03', source: 'AP', region: 'International', countries: '',
+    url: 'https://apnews.com/article/yemen-medical-centre', heading: 'Five killed in Houthi strike on medical centre' }];
+  const pending = convertSpreadsheetRows(rows);
+  assert.equal(pending.articles.length, 0);
+  assert.equal(pending.skipped.length, 0);
+  assert.equal(pending.needsPlacement.length, 1);
+  assert.deepEqual(pending.needsPlacement[0].suggested, {
+    sectionId: 'Miscellaneous', subsection: 'MIDDLE EAST / NORTH AFRICA', country: 'Yemen'
+  });
+  const placed = convertSpreadsheetRows(rows, { placementOverrides: { 2: pending.needsPlacement[0].suggested } });
+  assert.equal(placed.needsPlacement.length, 0);
+  assert.deepEqual([placed.articles[0].sectionId, placed.articles[0].subsection, placed.articles[0].country],
+    ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Yemen']);
+  const config = extendSiteConfigForImportedPlacements(normalizeSiteConfig({}, []), placed.articles);
+  assert.ok(config.customCountries['MIDDLE EAST / NORTH AFRICA'].includes('Yemen'));
+  assert.equal(displaySiteContent(placed.articles, config)[0].country, 'Yemen');
+});
+
+test('import can create a new subsection and country for an article with no standard location', () => {
+  const rows = [{ rowNumber: 4, date: '2026-11-03', source: 'ABC', region: 'International', countries: '',
+    url: 'https://www.abc.net.au/news/example', heading: 'Australian court hears challenge to social media ban' }];
+  const placed = convertSpreadsheetRows(rows, { placementOverrides: { 4: { sectionId: 'Miscellaneous', subsection: 'OCEANIA', country: 'Australia' } } });
+  assert.equal(placed.articles.length, 1);
+  const config = normalizeSiteConfig(extendSiteConfigForImportedPlacements(normalizeSiteConfig({}, []), placed.articles), placed.articles);
+  assert.ok(config.sections.find(section => section.id === 'Miscellaneous').subsections.includes('OCEANIA'));
+  assert.ok(config.customCountries.OCEANIA.includes('Australia'));
+  assert.equal(displaySiteContent(placed.articles, config)[0].subsection, 'OCEANIA');
 });
 
 test('SITCEN working-data sheets supply full bodies and a short first-paragraph summary', async () => {
