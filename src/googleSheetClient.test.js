@@ -8,6 +8,7 @@ const table = (headers, rows) => ({
   cols: headers.map(label => ({ label })),
   rows: rows.map(row => ({ c: row.map(value => value == null ? null : { v: value }) }))
 });
+const testNow = new Date('2026-11-03T12:00:00Z');
 
 test('the configured Google link loads the completed dated sheet and its article cache', async () => {
   const url = 'https://apnews.com/article/ukraine-border-talks';
@@ -27,7 +28,7 @@ test('the configured Google link loads the completed dated sheet and its article
     ]);
     throw new Error('Unexpected sheet');
   };
-  const result = await readGoogleSheetEdition(DEFAULT_GOOGLE_SHEET_URL, '', query);
+  const result = await readGoogleSheetEdition(DEFAULT_GOOGLE_SHEET_URL, '', query, testNow);
   assert.equal(result.date, '2026-11-03');
   assert.deepEqual(result.sheetNames, ['2026-11-03', '2026-11-03_Audit']);
   assert.deepEqual(calls, ['NewsStatus', '2026-11-03', 'NewsWork_B']);
@@ -40,10 +41,10 @@ test('the configured Google link loads the completed dated sheet and its article
 test('Google import accepts a complete status with extra whitespace', async () => {
   const query = async (_id, sheet) => {
     if (sheet === 'NewsStatus') return table(['Field', 'Value'], [['status', ' COMPLETE '], ['edition', 'Date(2026,10,3)']]);
-    if (sheet === '2026-11-03') return table(['Headline', 'Source', 'Link'], [['Ukraine security talks begin', 'AP', 'https://apnews.com/article/talks']]);
+    if (sheet === '2026-11-03') return table(['Date', 'Headline', 'Source', 'Link'], [['2026-11-03', 'Ukraine security talks begin', 'AP', 'https://apnews.com/article/talks']]);
     return table(['RunID', 'Chunk', 'JSON'], []);
   };
-  const result = await readGoogleSheetEdition(DEFAULT_GOOGLE_SHEET_URL, '', query);
+  const result = await readGoogleSheetEdition(DEFAULT_GOOGLE_SHEET_URL, '', query, testNow);
   assert.equal(result.date, '2026-11-03');
   assert.equal(result.rows.length, 1);
 });
@@ -53,10 +54,10 @@ test('an active Google run offers the previous completed dated worksheet', async
   const query = async (_id, sheet) => {
     calls.push(sheet);
     if (sheet === 'NewsStatus') return table(['Field', 'Value'], [['status', 'RUNNING'], ['edition', 'Date(2026,10,3)']]);
-    if (sheet === '2026-11-02') return table(['Headline', 'Source', 'Link'], [['Ukraine security talks begin', 'AP', 'https://apnews.com/article/talks']]);
+    if (sheet === '2026-11-02') return table(['Date', 'Headline', 'Source', 'Link'], [['2026-11-02', 'Ukraine security talks begin', 'AP', 'https://apnews.com/article/talks']]);
     return table(['RunID', 'Chunk', 'JSON'], []);
   };
-  const result = await readGoogleSheetEdition(DEFAULT_GOOGLE_SHEET_URL, '', query);
+  const result = await readGoogleSheetEdition(DEFAULT_GOOGLE_SHEET_URL, '', query, testNow);
   assert.equal(result.date, '2026-11-02');
   assert.match(result.cacheWarning, /previous completed edition/);
   assert.deepEqual(calls, ['NewsStatus', '2026-11-02', 'NewsWork_B', 'NewsWork_A']);
@@ -67,5 +68,29 @@ test('Google import rejects non-Google links and gives a clear error when no fin
   await assert.rejects(readGoogleSheetEdition('https://example.com/sheet'), /Google Sheets link/);
   await assert.rejects(readGoogleSheetEdition(DEFAULT_GOOGLE_SHEET_URL, '', async () => table(['Field', 'Value'], [
     ['status', 'RUNNING'], ['edition', 'Date(2026,10,3)']
-  ])), /no earlier dated edition could be read/);
+  ]), testNow), /No recent dated news worksheet/);
+});
+
+test('Google import finds a dated news tab when NewsStatus returns an unrelated table', async () => {
+  const calls = [];
+  const query = async (_id, sheet) => {
+    calls.push(sheet);
+    if (sheet === 'NewsStatus') return table(['Old', 'Table'], [['unrelated', 'value']]);
+    if (sheet === '2026-11-03') return table(['Date', 'Headline', 'Source', 'Link'], [
+      ['2026-11-03', 'Ukraine security talks begin', 'AP', 'https://apnews.com/article/talks']
+    ]);
+    return table(['RunID', 'Chunk', 'JSON'], []);
+  };
+  const result = await readGoogleSheetEdition(DEFAULT_GOOGLE_SHEET_URL, '', query, testNow);
+  assert.equal(result.date, '2026-11-03');
+  assert.equal(result.rows[0].heading, 'Ukraine security talks begin');
+  assert.match(result.cacheWarning, /NewsStatus was unavailable/);
+  assert.deepEqual(calls, ['NewsStatus', '2026-11-03', 'NewsWork_B', 'NewsWork_A']);
+});
+
+test('Google import rejects a different worksheet served under a dated tab name', async () => {
+  const query = async (_id, sheet) => sheet === 'NewsStatus'
+    ? table(['Old', 'Table'], [['unrelated', 'value']])
+    : table(['Date', 'Headline', 'Source', 'Link'], [['2025-01-01', 'Old headline', 'AP', 'https://apnews.com/article/old']]);
+  await assert.rejects(readGoogleSheetEdition(DEFAULT_GOOGLE_SHEET_URL, '', query, testNow), /No recent dated news worksheet/);
 });

@@ -72,6 +72,21 @@ function priorDate(date, days) {
   return instant.toISOString().slice(0, 10);
 }
 
+function todayInVienna(now) {
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en', {
+    timeZone: 'Europe/Vienna', year: 'numeric', month: '2-digit', day: '2-digit'
+  }).formatToParts(now).filter(part => part.type !== 'literal').map(part => [part.type, part.value]));
+  return `${parts.year}-${parts.month}-${parts.day}`;
+}
+
+function datedNewsRows(table, date) {
+  const rows = spreadsheetRowsFromGrid(googleTableGrid(table));
+  if (!rows.length || !rows.some(row => editionDate(row.date) === date)) {
+    throw new Error(`Google did not return the dated news worksheet ${date}.`);
+  }
+  return rows;
+}
+
 async function googleWorkingBodies(id, date, queryTable) {
   const failures = [];
   for (const sheet of ['NewsWork_B', 'NewsWork_A']) {
@@ -95,42 +110,40 @@ async function googleWorkingBodies(id, date, queryTable) {
   return { bodies: new Map(), warning: failures.length ? 'The Google Sheet loaded, but its full article cache could not be read. Stories can still be imported; database export will omit bodies that are unavailable.' : '' };
 }
 
-export async function readGoogleSheetEdition(link, sheetName = '', queryTable = googleTable) {
+export async function readGoogleSheetEdition(link, sheetName = '', queryTable = googleTable, now = new Date()) {
   const id = googleSheetId(link);
   if (!id) throw new Error('Enter a Google Sheets link from docs.google.com.');
-  const status = googleTableGrid(await queryTable(id, 'NewsStatus'));
-  const fields = new Map(status.map(row => [String(row[0] || '').trim().toLowerCase(), row[1]]));
+  let fields = new Map();
+  try {
+    const status = googleTableGrid(await queryTable(id, 'NewsStatus'));
+    fields = new Map(status.map(row => [String(row[0] || '').trim().toLowerCase(), row[1]]));
+  } catch { /* Dated news tabs remain usable when NewsStatus is unavailable. */ }
   const runStatus = String(fields.get('status') || '').trim().toUpperCase();
-  if (!runStatus) throw new Error('Could not read the status in NewsStatus. Check viewer access or the sheet layout.');
-  const currentDate = editionDate(fields.get('edition'));
-  if (!currentDate) throw new Error('Could not find the latest edition date in NewsStatus.');
-  let date = currentDate;
-  let selected = sheetName || date;
-  let table;
-  let statusWarning = '';
-  if (runStatus === 'COMPLETE') {
-    if (selected !== date && selected !== `${date}_Audit`) throw new Error('Choose the current Morning News or Audit worksheet.');
-    table = await queryTable(id, selected);
-  } else {
-    const preferred = sheetName.match(/^(\d{4}-\d{2}-\d{2})(?:_Audit)?$/)?.[1];
-    const candidates = [...new Set([preferred, ...Array.from({ length: 7 }, (_, index) => priorDate(currentDate, index + 1))])].filter(Boolean);
-    for (const candidate of candidates) {
-      if (candidate >= currentDate) continue;
-      try {
-        const morning = await queryTable(id, candidate);
-        if (!spreadsheetRowsFromGrid(googleTableGrid(morning)).length) continue;
-        date = candidate;
-        selected = sheetName === `${candidate}_Audit` ? sheetName : candidate;
-        table = selected === candidate ? morning : await queryTable(id, selected);
-        statusWarning = `The ${currentDate} edition is ${runStatus.toLowerCase()}. Loaded the previous completed edition, ${date}, for review instead.`;
-        break;
-      } catch { /* Try the next earlier dated worksheet. */ }
-    }
-    if (!table) throw new Error(`The ${currentDate} edition is ${runStatus.toLowerCase()}, and no earlier dated edition could be read. Try again after the sheet finishes updating.`);
+  const statusDate = editionDate(fields.get('edition'));
+  const today = todayInVienna(now);
+  const preferred = sheetName.match(/^(\d{4}-\d{2}-\d{2})(?:_Audit)?$/)?.[1];
+  const candidates = [...new Set([preferred, statusDate, ...Array.from({ length: 8 }, (_, index) => priorDate(today, index))])].filter(Boolean);
+  let date = '', selected = '', selectedTable;
+  for (const candidate of candidates) {
+    if (runStatus && runStatus !== 'COMPLETE' && candidate === statusDate) continue;
+    try {
+      const morning = await queryTable(id, candidate);
+      datedNewsRows(morning, candidate);
+      const choice = sheetName === `${candidate}_Audit` ? sheetName : candidate;
+      selectedTable = choice === candidate ? morning : await queryTable(id, choice);
+      if (choice !== candidate) spreadsheetRowsFromGrid(googleTableGrid(selectedTable));
+      date = candidate;
+      selected = choice;
+      break;
+    } catch { /* Try another dated news tab. */ }
   }
+  if (!date) throw new Error('No recent dated news worksheet could be read from Google. Check that the sheet is shared with viewers and contains a date-named news tab.');
+  const statusWarning = runStatus && runStatus !== 'COMPLETE' && statusDate
+    ? `The ${statusDate} edition is ${runStatus.toLowerCase()}. Loaded the previous completed edition, ${date}, for review instead.`
+    : !runStatus ? `NewsStatus was unavailable; the ${date} news worksheet was verified directly.` : '';
   const { bodies, warning } = await googleWorkingBodies(id, date, queryTable);
   return {
     date, sheetName: selected, sheetNames: [date, `${date}_Audit`],
-    rows: spreadsheetRowsFromGrid(googleTableGrid(table), bodies), cacheWarning: [statusWarning, warning].filter(Boolean).join(' ')
+    rows: spreadsheetRowsFromGrid(googleTableGrid(selectedTable), bodies), cacheWarning: [statusWarning, warning].filter(Boolean).join(' ')
   };
 }
