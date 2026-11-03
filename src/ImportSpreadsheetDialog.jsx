@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { convertSpreadsheetRows, groupRecentWorksheets, listSpreadsheetSheets, readSpreadsheet, readSpreadsheetGrid } from './spreadsheetImport.js';
+import { convertSpreadsheetRows, listSpreadsheetSheets, readSpreadsheet, readSpreadsheetGrid } from './spreadsheetImport.js';
 import { DEFAULT_GOOGLE_SHEET_URL, readGoogleSheetEdition } from './googleSheetClient.js';
 import { MISCELLANEOUS_COUNTRIES } from './newsSections.js';
 
@@ -60,12 +60,10 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
   const [file, setFile] = useState(null);
   const [sheetNames, setSheetNames] = useState([]);
   const [sheetName, setSheetName] = useState('');
-  const [showOlderSheets, setShowOlderSheets] = useState(false);
   const [googleUrl, setGoogleUrl] = useState(DEFAULT_GOOGLE_SHEET_URL);
   const [otherGoogleTab, setOtherGoogleTab] = useState('');
   const [rawRows, setRawRows] = useState([]);
   const [placementOverrides, setPlacementOverrides] = useState({});
-  const worksheetGroups = groupRecentWorksheets(sheetNames);
 
   async function previewSheet(chosenFile, chosenSheet, link = googleUrl) {
     const online = chosenFile ? null : await readGoogleSheetEdition(link, chosenSheet);
@@ -107,7 +105,6 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
     setError('');
     setSheetNames([]);
     setSheetName('');
-    setShowOlderSheets(false);
     setBusy(true);
     try { await previewSheet(null, ''); }
     catch (failure) { setError(failure.message || 'Could not read the Google Sheet.'); }
@@ -122,7 +119,6 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
     setError('');
     setSheetNames([]);
     setSheetName('');
-    setShowOlderSheets(false);
     if (!file) return;
     setBusy(true);
     try {
@@ -181,9 +177,8 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
       <div className="import-google-controls"><input id="import-google-sheet-url" type="url" value={googleUrl} onChange={event => { setGoogleUrl(event.target.value); setResult(null); setSheetNames([]); setSheetName(''); }} disabled={busy}/><button type="button" onClick={loadGoogleSheet} disabled={busy}>Load latest</button></div>
       <details className="import-file-fallback"><summary>Open another live worksheet by exact name</summary><div className="import-google-controls"><input aria-label="Exact Google worksheet name" value={otherGoogleTab} onChange={event => setOtherGoogleTab(event.target.value)} maxLength={100} placeholder="Paste the tab name" disabled={busy}/><button type="button" onClick={openNamedGoogleTab} disabled={busy || !otherGoogleTab.trim()}>Preview tab</button></div></details>
       <details className="import-file-fallback"><summary>Use an Excel or CSV file instead</summary><label className="import-file-label" htmlFor="import-spreadsheet-file">Spreadsheet file</label><input id="import-spreadsheet-file" type="file" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" onChange={chooseFile} disabled={busy}/></details>
-      {sheetNames.length > 1 && <label className="import-file-label" htmlFor="import-spreadsheet-sheet">Worksheet (exact tab name)<select id="import-spreadsheet-sheet" value={sheetName} onChange={chooseSheet} disabled={busy}>{(showOlderSheets ? sheetNames : worksheetGroups.recent).map(name => <option key={name} value={name}>{name}</option>)}</select></label>}
-      {worksheetGroups.older.length > 0 && !showOlderSheets && <button className="import-older-sheets" type="button" onClick={() => setShowOlderSheets(true)} disabled={busy}>Show {worksheetGroups.older.length} older worksheets</button>}
-      {sheetNames.length > 1 && <p className="import-spreadsheet-note">{file ? 'News and other dated workbook tabs from the latest seven days are shown.' : 'The live link lists date-named news and Audit tabs from the latest week.'} Sources, Rejected and older tabs are available through the link. Tabs without article columns can be inspected but have no stories to import.</p>}
+      {sheetNames.length > 1 && <label className="import-file-label" htmlFor="import-spreadsheet-sheet">Worksheet (exact tab name)<select id="import-spreadsheet-sheet" value={sheetName} onChange={chooseSheet} disabled={busy}>{sheetNames.map(name => <option key={name} value={name}>{name}</option>)}</select></label>}
+      {sheetNames.length > 1 && <p className="import-spreadsheet-note">{file ? 'All workbook dates and technical tabs are listed.' : 'Live tab names are listed when available; open any other tab by its exact name above.'} Source lists and Rejected tabs are omitted from the menu. Tabs without article columns can be inspected but have no stories to import.</p>}
       {busy && <p role="status">Preparing spreadsheet…</p>}
       {error && <p className="add-manual-error" role="alert">{error}</p>}
       {result && <div className="import-spreadsheet-preview" aria-live="polite">

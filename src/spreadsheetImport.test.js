@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import JSZip from 'jszip';
 import { gzipSync } from 'node:zlib';
 import { createSpreadsheet, spreadsheetRow } from './spreadsheetExport.js';
-import { convertSpreadsheetRows, groupRecentWorksheets, listSpreadsheetSheets, readSpreadsheet, readSpreadsheetGrid } from './spreadsheetImport.js';
+import { convertSpreadsheetRows, listSpreadsheetSheets, readSpreadsheet, readSpreadsheetGrid } from './spreadsheetImport.js';
 import { reportStoryText } from './reportText.js';
 import { displaySiteContent, extendSiteConfigForImportedPlacements, normalizeSiteConfig } from './siteConfig.js';
 
@@ -96,7 +96,7 @@ test('SITCEN workbook defaults to its dated selection and can open Audit separat
   zip.file('xl/worksheets/sheet2.xml', worksheet('Morning headline', '2026-10-29T12:00:00Z'));
   zip.file('xl/worksheets/sheet3.xml', worksheet('Audit headline', '2026-10-28T11:00:00Z'));
   const file = new File([await zip.generateAsync({ type: 'uint8array' })], 'SITCEN.xlsx');
-  assert.deepEqual(await listSpreadsheetSheets(file), ['2026-10-30', '2026-10-30_Audit', '2026-10-30_Rejected']);
+  assert.deepEqual(await listSpreadsheetSheets(file), ['2026-10-30', '2026-10-30_Audit']);
   const morning = convertSpreadsheetRows(await readSpreadsheet(file));
   assert.equal(morning.articles[0].title, 'Morning headline');
   assert.equal(morning.articles[0].publishedAt, '2026-10-29T12:00:00.000Z');
@@ -108,17 +108,14 @@ test('SITCEN workbook defaults to its dated selection and can open Audit separat
 
 test('worksheet choices use exact workbook tab names with the newest morning sheet first', async () => {
   const zip = new JSZip();
-  const names = ['2026-11-02_Audit', '2026-11-03_Sources', '2026-11-03_Audit', '2026-11-02', '2026-11-03', 'NewsWork_B'];
+  const names = ['2026-11-02_Audit', '2026-11-03_Sources', '2026-11-03_Audit', '2026-11-02', '2026-11-03', '2026-10-01', '2026-10-01_Rejected', 'SourceRegistry', 'NewsWork_B'];
   zip.file('xl/workbook.xml', `<workbook xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${names.map((name, index) => `<sheet name="${name}" r:id="rId${index + 1}"/>`).join('')}</sheets></workbook>`);
   zip.file('xl/_rels/workbook.xml.rels', `<Relationships>${names.map((_, index) => `<Relationship Id="rId${index + 1}" Target="worksheets/sheet${index + 1}.xml"/>`).join('')}</Relationships>`);
   names.forEach((name, index) => zip.file(`xl/worksheets/sheet${index + 1}.xml`, name.endsWith('_Sources')
     ? '<worksheet><sheetData><row r="1"><c r="A1" t="inlineStr"><is><t>Source</t></is></c><c r="B1" t="inlineStr"><is><t>Status</t></is></c></row><row r="2"><c r="A2" t="inlineStr"><is><t>AP</t></is></c><c r="B2" t="inlineStr"><is><t>ok</t></is></c></row></sheetData></worksheet>'
     : '<worksheet><sheetData/></worksheet>'));
   const file = new File([await zip.generateAsync({ type: 'uint8array' })], 'news.xlsx');
-  assert.deepEqual(await listSpreadsheetSheets(file), ['2026-11-03', '2026-11-03_Audit', '2026-11-03_Sources', '2026-11-02', '2026-11-02_Audit', 'NewsWork_B']);
-  assert.deepEqual(groupRecentWorksheets(['2026-11-03', '2026-11-03_Sources', '2026-10-28_Rejected', '2026-10-27', 'NewsWork_B']), {
-    recent: ['2026-11-03'], older: ['2026-11-03_Sources', '2026-10-28_Rejected', '2026-10-27', 'NewsWork_B']
-  });
+  assert.deepEqual(await listSpreadsheetSheets(file), ['2026-11-03', '2026-11-03_Audit', '2026-11-02', '2026-11-02_Audit', '2026-10-01', 'NewsWork_B']);
   assert.deepEqual(await readSpreadsheetGrid(file, '2026-11-03_Sources'), [['Source', 'Status'], ['AP', 'ok']]);
 });
 

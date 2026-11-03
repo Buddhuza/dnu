@@ -363,7 +363,6 @@
 .import-google-controls button{padding:8px 12px;border:1px solid var(--site-primary,#123e47);border-radius:6px;background:var(--site-primary,#123e47);color:#fff;font:inherit;font-size:14px;white-space:nowrap;cursor:pointer}
 .import-google-controls button:disabled{opacity:.6;cursor:wait}
 .import-file-fallback{margin-top:14px}.import-file-fallback summary{cursor:pointer;font-weight:700}
-.import-older-sheets{margin-top:8px;padding:4px 0;border:0;background:none;color:var(--site-primary,#123e47);font:inherit;font-size:14px;text-decoration:underline;cursor:pointer}
 .import-spreadsheet-dialog input[type="file"]{width:100%;padding:10px;font-size:14px}
 .import-spreadsheet-dialog select{display:block;width:100%;margin-top:7px;padding:9px;border:1px solid #a7bbba;border-radius:6px;background:var(--site-surface,#fff);color:var(--site-text,#182a36);font-size:14px}
 .import-spreadsheet-preview{margin-top:15px;border:1px solid #a7bbba;border-radius:8px;padding:12px}

@@ -91,9 +91,9 @@ function knownGoogleTabs(date) {
   const tabs = [];
   for (let day = 0; day < 7; day++) {
     const name = priorDate(date, day);
-    tabs.push(name, `${name}_Audit`, `${name}_Sources`, `${name}_Rejected`);
+    tabs.push(name, `${name}_Audit`);
   }
-  return [...tabs, 'NewsStatus', 'NewsWork_A', 'NewsWork_B', 'NewsPreview', 'NewsEditionDiagnostics', 'SourceRegistry', 'ExtraFeeds', 'EditorialOverrides'];
+  return [...tabs, 'NewsStatus', 'NewsWork_A', 'NewsWork_B', 'NewsPreview', 'NewsEditionDiagnostics', 'ExtraFeeds', 'EditorialOverrides'];
 }
 
 async function googleWorkingBodies(id, date, queryTable) {
@@ -163,7 +163,7 @@ export async function readGoogleSheetEdition(link, sheetName = '', queryTable = 
   }
   const { bodies, warning } = rows.length ? await googleWorkingBodies(id, date, queryTable) : { bodies: new Map(), warning: '' };
   return {
-    date, sheetName: selected, sheetNames: [...new Set([...knownGoogleTabs(date), selected])], tablePreview, totalRows: Math.max(0, grid.length - 1),
+    date, sheetName: selected, sheetNames: [...new Set([...knownGoogleTabs(date), ...(/(?:^|_)(?:Sources|Rejected)$/i.test(selected) || /^SourceRegistry$/i.test(selected) ? [] : [selected])])], tablePreview, totalRows: Math.max(0, grid.length - 1),
     rows: rows.length ? spreadsheetRowsFromGrid(grid, bodies) : [], cacheWarning: [statusWarning, warning].filter(Boolean).join(' ')
   };
 }

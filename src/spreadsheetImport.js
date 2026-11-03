@@ -81,23 +81,9 @@ export async function listSpreadsheetSheets(file) {
   if (file.size > 40_000_000) throw new Error('Choose a spreadsheet smaller than 40 MB.');
   const sheets = await worksheetOptions(await workbook(file));
   const dateOf = name => name.match(/20\d{2}-\d{2}-\d{2}/)?.[0] || '';
-  const rank = name => /^20\d{2}-\d{2}-\d{2}$/.test(name) ? 0 : /_Audit$/i.test(name) ? 1 : /_Sources$/i.test(name) ? 2 : /_Rejected$/i.test(name) ? 3 : /^NewsCommitted_/i.test(name) ? 4 : /^NewsAnalysis_/i.test(name) ? 5 : 6;
-  return sheets.map(({ name }, index) => ({ name, index })).sort((a, b) =>
+  const rank = name => /^20\d{2}-\d{2}-\d{2}$/.test(name) ? 0 : /_Audit$/i.test(name) ? 1 : /^NewsCommitted_/i.test(name) ? 2 : /^NewsAnalysis_/i.test(name) ? 3 : 4;
+  return sheets.map(({ name }, index) => ({ name, index })).filter(({ name }) => !/(?:^|_)(?:Sources|Rejected)$/i.test(name) && !/^SourceRegistry$/i.test(name)).sort((a, b) =>
     dateOf(b.name).localeCompare(dateOf(a.name)) || rank(a.name) - rank(b.name) || a.index - b.index).map(({ name }) => name);
-}
-
-export function groupRecentWorksheets(names) {
-  const dates = names.map(name => name.match(/20\d{2}-\d{2}-\d{2}/)?.[0]).filter(Boolean);
-  const latest = dates.sort().at(-1);
-  const cutoff = latest ? new Date(`${latest}T12:00:00Z`) : null;
-  cutoff?.setUTCDate(cutoff.getUTCDate() - 6);
-  const recent = [], older = [];
-  for (const name of names) {
-    const date = name.match(/20\d{2}-\d{2}-\d{2}/)?.[0] || '';
-    const isSourceOrRejected = /(?:^|_)(?:Sources|Rejected)$/i.test(name);
-    (isSourceOrRejected || cutoff && date < cutoff.toISOString().slice(0, 10) ? older : recent).push(name);
-  }
-  return { recent, older };
 }
 
 function readSharedStrings(xml = '') {

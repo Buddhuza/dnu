@@ -30,7 +30,7 @@ test('the configured Google link loads the completed dated sheet and its article
   };
   const result = await readGoogleSheetEdition(DEFAULT_GOOGLE_SHEET_URL, '', query, testNow);
   assert.equal(result.date, '2026-11-03');
-  assert.deepEqual(result.sheetNames.slice(0, 4), ['2026-11-03', '2026-11-03_Audit', '2026-11-03_Sources', '2026-11-03_Rejected']);
+  assert.deepEqual(result.sheetNames.slice(0, 4), ['2026-11-03', '2026-11-03_Audit', '2026-11-02', '2026-11-02_Audit']);
   assert.deepEqual(calls, ['NewsStatus', '2026-11-03', 'NewsWork_B']);
   assert.equal(result.rows[0].body, body);
   const converted = convertSpreadsheetRows(result.rows);
@@ -88,7 +88,7 @@ test('Google import finds a dated news tab when NewsStatus returns an unrelated 
   assert.deepEqual(calls, ['NewsStatus', '2026-11-03', 'NewsWork_B', 'NewsWork_A']);
 });
 
-test('Google Sources tab is listed and can be inspected without importing it as an article', async () => {
+test('Google Sources tab can be inspected by exact name but stays out of the menu', async () => {
   const query = async (_id, sheet) => {
     if (sheet === 'NewsStatus') return table(['Field', 'Value'], [['status', 'COMPLETE'], ['edition', 'Date(2026,10,3)']]);
     if (sheet === '2026-11-03') return table(['Date', 'Headline', 'Source', 'Link'], [
@@ -102,6 +102,7 @@ test('Google Sources tab is listed and can be inspected without importing it as 
   assert.equal(result.rows.length, 0);
   assert.deepEqual(result.tablePreview, [['Source', 'Status', 'FeedItems'], ['AP', 'ok', '20']]);
   assert.ok(result.sheetNames.includes('NewsStatus'));
+  assert.ok(!result.sheetNames.some(name => /(?:^|_)(?:Sources|Rejected)$/i.test(name)));
 });
 
 test('Google import rejects a different worksheet served under a dated tab name', async () => {
