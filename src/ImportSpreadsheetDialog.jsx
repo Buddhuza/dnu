@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { convertSpreadsheetRows, listSpreadsheetSheets, readSpreadsheet } from './spreadsheetImport.js';
+import { DEFAULT_GOOGLE_SHEET_URL, readGoogleSheetEdition } from './googleSheetClient.js';
 
 export default function ImportSpreadsheetDialog({ existingArticles, sources, importedMode, sharedMode = false, publishedEmpty, hasStories, onImport, onRestore, onClear, onClose }) {
   const [fileName, setFileName] = useState('');
@@ -9,12 +10,32 @@ export default function ImportSpreadsheetDialog({ existingArticles, sources, imp
   const [file, setFile] = useState(null);
   const [sheetNames, setSheetNames] = useState([]);
   const [sheetName, setSheetName] = useState('');
+  const [googleUrl, setGoogleUrl] = useState(DEFAULT_GOOGLE_SHEET_URL);
 
-  async function previewSheet(chosenFile, chosenSheet) {
-    const rows = await readSpreadsheet(chosenFile, chosenSheet);
+  async function previewSheet(chosenFile, chosenSheet, link = googleUrl) {
+    const online = chosenFile ? null : await readGoogleSheetEdition(link, chosenSheet);
+    const rows = online?.rows || await readSpreadsheet(chosenFile, chosenSheet);
     const converted = convertSpreadsheetRows(rows, { existingArticles, sources });
     if (!converted.articles.length) throw new Error('No usable DNU stories were found in this sheet. Check the column names and the skipped-row reasons.');
-    setResult({ ...converted, total: rows.length, sheetName: chosenSheet });
+    if (online) {
+      setSheetNames(online.sheetNames);
+      setSheetName(online.sheetName);
+      setFileName(`Google Sheet ${online.date}`);
+    }
+    setResult({ ...converted, total: rows.length, sheetName: online?.sheetName || chosenSheet, cacheWarning: online?.cacheWarning || '' });
+  }
+
+  async function loadGoogleSheet() {
+    setFile(null);
+    setFileName('');
+    setResult(null);
+    setError('');
+    setSheetNames([]);
+    setSheetName('');
+    setBusy(true);
+    try { await previewSheet(null, ''); }
+    catch (failure) { setError(failure.message || 'Could not read the Google Sheet.'); }
+    finally { setBusy(false); }
   }
 
   async function chooseFile(event) {
@@ -59,15 +80,17 @@ export default function ImportSpreadsheetDialog({ existingArticles, sources, imp
   return <div className="add-backdrop" onMouseDown={event => { if (!busy && event.target === event.currentTarget) onClose(); }}>
     <section className="add-dialog import-spreadsheet-dialog" role="dialog" aria-modal="true" aria-labelledby="import-spreadsheet-title">
       <div className="add-dialog-heading"><h2 id="import-spreadsheet-title">Import spreadsheet</h2><button type="button" onClick={onClose} disabled={busy} aria-label="Close spreadsheet import">×</button></div>
-      <p>Choose a DNU database export or a similar Excel or CSV sheet. For SITCEN workbooks, Import also reads full articles stored in the workbook’s compressed working-data sheets. Import adds new stories to the current update; existing article URLs remain unchanged. Paywalled rows are skipped.</p>
-      <label className="import-file-label" htmlFor="import-spreadsheet-file">Spreadsheet file</label>
-      <input id="import-spreadsheet-file" type="file" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" onChange={chooseFile} disabled={busy}/>
+      <p>Load the latest completed edition directly from the live Google Sheet. Review the stories before importing them into the update; existing article URLs remain unchanged.</p>
+      <label className="import-file-label" htmlFor="import-google-sheet-url">Google Sheet URL</label>
+      <div className="import-google-controls"><input id="import-google-sheet-url" type="url" value={googleUrl} onChange={event => { setGoogleUrl(event.target.value); setResult(null); setSheetNames([]); setSheetName(''); }} disabled={busy}/><button type="button" onClick={loadGoogleSheet} disabled={busy}>Load latest</button></div>
+      <details className="import-file-fallback"><summary>Use an Excel or CSV file instead</summary><label className="import-file-label" htmlFor="import-spreadsheet-file">Spreadsheet file</label><input id="import-spreadsheet-file" type="file" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" onChange={chooseFile} disabled={busy}/></details>
       {sheetNames.length > 1 && <label className="import-file-label" htmlFor="import-spreadsheet-sheet">Worksheet<select id="import-spreadsheet-sheet" value={sheetName} onChange={chooseSheet} disabled={busy}>{sheetNames.map(name => <option key={name} value={name}>{name.endsWith('_Audit') ? `${name} — all collected candidates` : `${name} — Morning News selection`}</option>)}</select></label>}
       {busy && <p role="status">Preparing spreadsheet…</p>}
       {error && <p className="add-manual-error" role="alert">{error}</p>}
       {result && <div className="import-spreadsheet-preview" aria-live="polite">
         <p><strong>{result.articles.length} of {result.total}</strong> rows ready · {result.skipped.length} skipped · {result.articles.filter(article => !article.summary).length} without a short summary · {result.bodies.length} full bodies available for database export</p>
         {!result.bodies.length && <p className="import-spreadsheet-note">No full article bodies were found in this sheet or its matching workbook cache. It can populate the update, but database export will have no rows.</p>}
+        {result.cacheWarning && <p className="import-spreadsheet-note">{result.cacheWarning}</p>}
         {sheetName.endsWith('_Audit') && <p className="import-spreadsheet-note">Audit includes candidates rejected by the source script’s selection rules. Review these stories before using them in the update.</p>}
         <ul>{result.articles.slice(0, 5).map(article => <li key={article.id}><strong>{article.title}</strong><span>{article.sectionId} · {article.subsection === 'INTERNATIONAL ORGANISATIONS' ? article.country : article.subsection} · {article.sourceName}</span></li>)}</ul>
         {result.skipped.length > 0 && <details><summary>Skipped rows</summary><ul>{result.skipped.map(item => <li key={`${item.row}-${item.reason}`}>Row {item.row}: {item.reason}</li>)}</ul></details>}

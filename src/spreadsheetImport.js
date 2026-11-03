@@ -130,7 +130,7 @@ function readWorksheet(xml, sharedStrings) {
   return rows;
 }
 
-async function inflateWorkJson(chunks) {
+export async function inflateWorkJson(chunks) {
   if (!globalThis.DecompressionStream) throw new Error('This browser cannot read compressed article bodies in the workbook.');
   const joined = chunks.map(chunk => String(chunk || '').replace(/^gzip:/, '')).join('');
   // A working sheet can retain a stale trailing chunk after a complete gzip value.
@@ -152,6 +152,18 @@ async function inflateWorkJson(chunks) {
   }
   parts.push(decoder.decode());
   return JSON.parse(parts.join(''));
+}
+
+export function articleBodiesFromWorkData(data) {
+  const bodies = new Map();
+  for (const item of data.items || []) {
+    if (!String(item.articleBody || '').trim()) continue;
+    for (const link of [item.link, item.originalLink]) {
+      const key = canonicalArticleUrl(link);
+      if (key) bodies.set(key, String(item.articleBody));
+    }
+  }
+  return bodies;
 }
 
 async function workbookArticleBodies(file, zip, sheets, shared, date) {
@@ -177,15 +189,7 @@ async function workbookArticleBodies(file, zip, sheets, shared, date) {
         if (!chunks.length || chunks.some(chunk => !chunk)) continue;
         try {
           const data = await inflateWorkJson(chunks);
-          const bodies = new Map();
-          for (const item of data.items || []) {
-            if (!String(item.articleBody || '').trim()) continue;
-            for (const link of [item.link, item.originalLink]) {
-              const key = canonicalArticleUrl(link);
-              if (key) bodies.set(key, String(item.articleBody));
-            }
-          }
-          return bodies;
+          return articleBodiesFromWorkData(data);
         } catch { /* The other work sheet may contain a complete copy. */ }
       }
     }
@@ -233,6 +237,10 @@ export async function readSpreadsheet(file, sheetName = '') {
     rows = readWorksheet(await zip.file(chosen.path).async('string'), shared);
     articleBodies = await workbookArticleBodies(file, zip, sheets, shared, chosen.name.match(/^\d{4}-\d{2}-\d{2}/)?.[0]);
   } else throw new Error('Choose an .xlsx or .csv spreadsheet.');
+  return spreadsheetRowsFromGrid(rows, articleBodies);
+}
+
+export function spreadsheetRowsFromGrid(rows, articleBodies = new Map()) {
   const headerIndex = rows.findIndex(row => Object.values(headerAliases).some(aliases => row.some(value => aliases.includes(compact(value)))));
   if (headerIndex < 0) throw new Error('No column headings were found.');
   const header = rows[headerIndex].map(compact);
