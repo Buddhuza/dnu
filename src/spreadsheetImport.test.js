@@ -138,6 +138,19 @@ test('unplaced articles stay available for a chosen or newly created destination
   assert.equal(displaySiteContent(placed.articles, config)[0].country, 'Yemen');
 });
 
+test('an imported story can appear directly under a Miscellaneous subsection', () => {
+  const rows = [{ rowNumber: 2, date: '2026-11-03', source: 'AP', region: 'International', countries: '',
+    url: 'https://apnews.com/article/region-talks', heading: 'Regional officials announce security talks' }];
+  const placement = { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: '' };
+  const result = convertSpreadsheetRows(rows, { placementOverrides: { 2: placement } });
+  assert.equal(result.needsPlacement.length, 0);
+  assert.equal(result.articles.length, 1);
+  const config = extendSiteConfigForImportedPlacements(normalizeSiteConfig({}, []), result.articles);
+  const [displayed] = displaySiteContent(result.articles, config);
+  assert.deepEqual([displayed.sectionId, displayed.subsection, displayed.country],
+    ['Miscellaneous', 'WESTERN / CENTRAL EUROPE', '']);
+});
+
 test('import can create a new subsection and country for an article with no standard location', () => {
   const rows = [{ rowNumber: 4, date: '2026-11-03', source: 'ABC', region: 'International', countries: '',
     url: 'https://www.abc.net.au/news/example', heading: 'Australian court hears challenge to social media ban' }];
