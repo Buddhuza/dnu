@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { convertSpreadsheetRows, listSpreadsheetSheets, readSpreadsheet, readSpreadsheetGrid } from './spreadsheetImport.js';
 import { DEFAULT_GOOGLE_SHEET_URL, readGoogleSheetEdition } from './googleSheetClient.js';
 import { MISCELLANEOUS_COUNTRIES } from './newsSections.js';
+import { useEscapeToClose } from './useEscapeToClose.js';
 
 const NEW = '__create_new__';
 const DIRECT = '__directly_under_section__';
@@ -68,15 +69,7 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
   const [placementOverrides, setPlacementOverrides] = useState({});
   const [discardedRows, setDiscardedRows] = useState(new Set());
 
-  useEffect(() => {
-    const closeOnEscape = event => {
-      if (event.key !== 'Escape' || busy) return;
-      event.preventDefault();
-      onClose();
-    };
-    window.addEventListener('keydown', closeOnEscape);
-    return () => window.removeEventListener('keydown', closeOnEscape);
-  }, [busy, onClose]);
+  useEscapeToClose('import-spreadsheet-title', onClose, !busy);
 
   function reviewedRows(overrides, discarded) {
     const converted = convertSpreadsheetRows(rawRows.filter(row => !discarded.has(row.rowNumber)), { existingArticles, sources, placementOverrides: overrides });

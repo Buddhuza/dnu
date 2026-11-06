@@ -7,6 +7,7 @@ import { articlePlacement, publicArticleUrl } from '../server/importArticle.js';
 import { duplicateGroups, duplicateGroupHue } from './storyDuplicates.js';
 import { excludedHeadlineReason } from './headlinePolicy.js';
 import { articleHintsFromUrl, articleHintsFromPage } from './urlArticleHints.js';
+import { useEscapeToClose } from './useEscapeToClose.js';
 
 const NEW = '__new__';
 
@@ -21,6 +22,7 @@ export default function AddArticlesDialog({ sections, sources = [], customCountr
   const draftsRef = useRef(null);
   const availableSections = sections.filter(section => section.visible && section.id !== 'Lead stories');
   const duplicateMatches = duplicateGroups([...existingArticles, ...drafts.filter(draft => !draft.added)]);
+  useEscapeToClose('add-dialog-title', onClose);
 
   useEffect(() => {
     if (!completedEntries) return;

@@ -1,10 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import { MISCELLANEOUS_COUNTRIES, compareCountryLabels } from './newsSections.js';
 import { blockedPlacementReason } from './sourcePolicy.js';
+import { useEscapeToClose } from './useEscapeToClose.js';
 
 const NEW = '__new__';
 
 export default function MoveStoryDialog({ story, sections, articles, customCountries, onMove, onClose }) {
+  useEscapeToClose('move-story-title', onClose);
   const [sectionId, setSectionId] = useState(story.sectionId || story.section);
   const [subsectionChoice, setSubsectionChoice] = useState(story.subsection || '');
   const [countryChoice, setCountryChoice] = useState(story.country || '');
@@ -30,7 +32,7 @@ export default function MoveStoryDialog({ story, sections, articles, customCount
   };
 
   return <div className="move-dialog-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}>
-    <form className="move-dialog" role="dialog" aria-modal="true" aria-labelledby="move-story-title" onSubmit={submit} onKeyDown={event => { if (event.key === 'Escape') onClose(); }}>
+    <form className="move-dialog" role="dialog" aria-modal="true" aria-labelledby="move-story-title" onSubmit={submit}>
       <div className="move-dialog-heading"><h2 id="move-story-title">Move story</h2><button type="button" aria-label="Close move dialog" onClick={onClose}>×</button></div>
       <p className="move-dialog-story">{story.title}</p>
       <label>Section<select autoFocus value={sectionId} onChange={event => { setSectionId(event.target.value); setSubsectionChoice(''); setCountryChoice(''); setNewSubsection(''); setNewCountry(''); }}>

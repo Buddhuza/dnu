@@ -1,10 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import { THEME_PRESETS, normalizeSiteConfig } from './siteConfig.js';
+import { useEscapeToClose } from './useEscapeToClose.js';
 import './cms.css';
 
 const tabs = ['Content', 'Scope', 'Collect', 'Sections', 'Stories', 'Sources', 'Theme', 'Save & share'];
 
 export default function SiteManager({ initialTab = 'Content', collectionPanel, config, setConfig, articles, baseSources, includeText, setIncludeText, excludeText, setExcludeText, applyScope, onClose, onReset }) {
+  useEscapeToClose('cms-title', onClose);
   const [tab, setTab] = useState(initialTab);
   const [search, setSearch] = useState('');
   const [sourceSearch, setSourceSearch] = useState('');

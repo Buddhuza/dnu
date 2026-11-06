@@ -28,6 +28,7 @@ import { editorEmail, loadSharedBody, loadSharedEdition, publishSharedEdition, s
 import { emptyEdition } from './emptyEdition.js';
 import { createSpreadsheet, spreadsheetRow } from './spreadsheetExport.js';
 import { reportHeadingLabel } from './reportLabels.js';
+import { useEscapeToClose } from './useEscapeToClose.js';
 import './styles.css';
 
 const readStored = (key, fallback, legacyKey) => {
@@ -106,6 +107,7 @@ function App() {
   const [toast, setToast] = useState('');
   const [exportingSheet, setExportingSheet] = useState(false);
   const [spreadsheetResults, setSpreadsheetResults] = useState(null);
+  useEscapeToClose('spreadsheet-results-title', () => setSpreadsheetResults(null), Boolean(spreadsheetResults));
   const [managing, setManaging] = useState(false);
   const [editingStories, setEditingStories] = useState(false);
   const [headlineOnly, setHeadlineOnly] = useState(() => readStored('dnu-headline-only-v1', false) === true);

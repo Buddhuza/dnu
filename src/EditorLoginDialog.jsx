@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { editorEmail, sharedClient } from './sharedEdition.js';
+import { useEscapeToClose } from './useEscapeToClose.js';
 
 export default function EditorLoginDialog({ onLogin, onClose }) {
   const [email, setEmail] = useState(editorEmail);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  useEscapeToClose('editor-login-title', onClose);
 
   async function submit(event) {
     event.preventDefault();
