@@ -56,6 +56,18 @@ test('a headline-only sheet row does not inherit an older summary for the same U
   assert.equal(result.bodies.length, 0);
 });
 
+test('sheet agency names are normalised and OSCE website links are excluded', () => {
+  const rows = [
+    { rowNumber: 2, date: '2026-11-06', source: 'Albanian Daily News', region: 'South Eastern Europe', countries: 'Albania', url: 'https://albaniandailynews.com/news/example', heading: 'Albania opens talks with EU officials' },
+    { rowNumber: 3, date: '2026-11-06', source: 'OSCE', region: 'South Eastern Europe', countries: 'Albania', url: 'https://www.osce.org/secretariat/12345', heading: 'OSCE opens new mission' }
+  ];
+  const imported = convertSpreadsheetRows(rows);
+  assert.deepEqual(imported.articles.map(article => article.sourceName), ['ADN']);
+  assert.match(imported.skipped[0].reason, /OSCE website links/);
+  const older = { id: 'older-osce', sectionId: 'South Eastern Europe', subsection: 'Albania', title: 'OSCE opens new mission', sourceName: 'OSCE', url: 'https://osce.org/secretariat/12345' };
+  assert.deepEqual(displaySiteContent([older], normalizeSiteConfig({}, [older])), []);
+});
+
 test('paywalled rows are skipped without storing their teaser as a full article', () => {
   const base = { rowNumber: 2, date: '2026-10-23', source: 'AP', region: 'Europe', countries: 'UK', url: 'https://example.com/story', heading: 'Ministers agree to talks' };
   const result = convertSpreadsheetRows([
@@ -337,9 +349,9 @@ test('ECB leadership news uses its own organisation heading while a Lagarde prof
 
 test('a region-wide OSCE conference appears before South Eastern Europe country headings', () => {
   const osceRow = {
-    rowNumber: 2, date: '2026-10-30', source: 'OSCE', region: 'General',
+    rowNumber: 2, date: '2026-10-30', source: 'N1', region: 'General',
     countries: 'Albania; Bosnia and Herzegovina; Montenegro; North Macedonia; Serbia; Kosovo',
-    url: 'https://www.osce.org/example/conference',
+    url: 'https://n1info.ba/english/news/osce-conference',
     heading: 'OSCE Conference Highlights Need for Stronger Institutional Response to Gender-Based Hate Crime in South-East Europe',
     summary: 'Regional institutions met to discuss their response to hate crime.'
   };

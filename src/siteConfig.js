@@ -184,10 +184,10 @@ export function displaySources(baseSources, config) {
   return [...baseSources.map(source => {
     const alternate = config.sourceListingOverrides?.[source.id];
     try {
-    if (alternate && new URL(alternate).origin === new URL(source.url).origin) return { ...source, name: displaySourceName(source.name), listingUrl: alternate };
+    if (alternate && new URL(alternate).origin === new URL(source.url).origin) return { ...source, name: displaySourceName(source.name, source), listingUrl: alternate };
     } catch { /* Ignore an invalid local override. */ }
-    return { ...source, name: displaySourceName(source.name) };
-  }), ...config.customSources.map(source => ({ ...source, name: displaySourceName(source.name) }))].filter(source => !hidden.has(source.id));
+    return { ...source, name: displaySourceName(source.name, source) };
+  }), ...config.customSources.map(source => ({ ...source, name: displaySourceName(source.name, source) }))].filter(source => !hidden.has(source.id));
 }
 
 export function displaySiteContent(articles, config, excludedIds = new Set(), keepImportedStories = false) {
@@ -203,7 +203,7 @@ export function displaySiteContent(articles, config, excludedIds = new Set(), ke
       ...article,
       title: edit?.title?.trim() || article.title,
       summary: edit?.summaryEdited ? edit.summary : edit?.summary?.trim() || article.summary,
-      sourceName: displaySourceName(edit?.sourceName?.trim() || article.sourceName),
+      sourceName: displaySourceName(edit?.sourceName?.trim() || article.sourceName, article),
       section: sectionById.get(sectionId)?.name || sectionId,
       sectionId,
       subsection: edit?.sectionId ? edit.subsection : edit?.subsection || (legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : article.subsection),
@@ -254,7 +254,7 @@ export function displaySiteContent(articles, config, excludedIds = new Set(), ke
   }
   for (const article of config.customArticles) {
     if (article.hidden || sectionById.get(article.sectionId)?.visible === false) continue;
-    if (!directGovernmentPublicationReason(article) && !blockedPlacementReason(article) && !excludedHeadlineReason(article.title, article.summary, article.url)) items.push({ ...article, subsection: article.sectionId === 'Miscellaneous' && article.subsection === 'OCEANIA' && ['Australia', 'New Zealand'].includes(article.country) ? 'SOUTH PACIFIC' : article.subsection, title: cleanHeadlinePrefix(article.title), sourceName: displaySourceName(article.sourceName), section: sectionById.get(article.sectionId)?.name || article.sectionId });
+    if (!directGovernmentPublicationReason(article) && !blockedPlacementReason(article) && !excludedHeadlineReason(article.title, article.summary, article.url)) items.push({ ...article, subsection: article.sectionId === 'Miscellaneous' && article.subsection === 'OCEANIA' && ['Australia', 'New Zealand'].includes(article.country) ? 'SOUTH PACIFIC' : article.subsection, title: cleanHeadlinePrefix(article.title), sourceName: displaySourceName(article.sourceName, article), section: sectionById.get(article.sectionId)?.name || article.sectionId });
   }
   const uniqueItems = items;
   const order = new Map(config.sections.map((section, index) => [section.id, index]));

@@ -84,8 +84,7 @@ export function spreadsheetRow(article, page, leadOrigins = {}) {
   found.delete('Georgia / Abkhazia / South Ossetia');
   const organisationsFound = new Set(initial && (placedUnderOrganisation || organisations.some(([name]) => name === initial)) ? [initial] : []);
   for (const [name, pattern] of organisations) if (pattern.test(context)) organisationsFound.add(name);
-  const source = article.sourceName === 'IPN' && (article.sourceId === 'source-63' || /^https?:\/\/(?:www\.)?interpressnews\.ge\//i.test(article.url || ''))
-    ? 'InterPressNews' : displaySourceName(article.sourceName);
+  const source = displaySourceName(article.sourceName, article);
   return [date(article.publishedAt || article.addedAt), source, Object.hasOwn(exportRegions, region) ? exportRegions[region] : region, [...new Set([...found].map(reportHeadingLabel))].join(', '), localRegions.join(', '), [...new Set([...organisationsFound].map(reportHeadingLabel))].join(', '), '', '', article.url, page.heading || article.title, page.body];
 }
 

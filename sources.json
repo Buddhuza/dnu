@@ -187,7 +187,7 @@
   },
   {
     "id": "source-32",
-    "name": "IPN",
+    "name": "IPN.md",
     "group": "East Europe",
     "url": "https://ipn.md/en/all-news/"
   },
@@ -367,13 +367,13 @@
   },
   {
     "id": "source-62",
-    "name": "1TV",
+    "name": "1TV.ge",
     "group": "South Caucasus",
     "url": "https://1tv.ge/lang/en?s=&post_type=news"
   },
   {
     "id": "source-63",
-    "name": "IPN",
+    "name": "IPN.ge",
     "group": "South Caucasus",
     "url": "https://www.interpressnews.ge/en/latestnews"
   },

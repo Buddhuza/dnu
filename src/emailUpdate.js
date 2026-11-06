@@ -42,7 +42,7 @@ export function emailUpdateHtml({ title = 'DAILY NEWS UPDATE', compiledAt, artic
     }
     const { headline, summary } = reportStoryText(article, headlineOnly);
     const detail = !headlineOnly && summary ? ` ${escapeHtml(summary)}` : '';
-    paragraphs.push(`<p style="font-size:12pt;line-height:${headlineOnly ? '1.25' : '1.32'};margin:0 0 ${headlineOnly ? '2pt' : '5pt'}"><strong>${escapeHtml(headline)}</strong>${detail} (<a style="color:#0563c1;text-decoration:underline" href="${escapeHtml(article.url)}">${escapeHtml(displaySourceName(article.sourceName))}</a>)</p>`);
+    paragraphs.push(`<p style="font-size:12pt;line-height:${headlineOnly ? '1.25' : '1.32'};margin:0 0 ${headlineOnly ? '2pt' : '5pt'}"><strong>${escapeHtml(headline)}</strong>${detail} (<a style="color:#0563c1;text-decoration:underline" href="${escapeHtml(article.url)}">${escapeHtml(displaySourceName(article.sourceName, article))}</a>)</p>`);
   }
   paragraphs.push(`<div style="border-top:1px solid #808080;margin-top:18pt;padding-top:7pt;font-size:9pt;line-height:1.35"><p style="margin:0 0 7pt"><strong>Disclaimer:</strong> ${escapeHtml(disclaimerFirst)}</p><p style="margin:0">${escapeHtml(disclaimerSecond)}</p></div></div>`);
   return paragraphs.join('');
@@ -57,7 +57,7 @@ export function emailUpdateText({ title = 'DAILY NEWS UPDATE', compiledAt, artic
     if (article.subsection && article.subsection !== subsection) { subsection = article.subsection; country = ''; lines.push(reportHeadingLabel(subsection).toUpperCase()); }
     if (article.country && article.country !== country) { country = article.country; lines.push(reportHeadingLabel(country).toUpperCase()); }
     const { headline, summary } = reportStoryText(article, headlineOnly);
-    lines.push(`${headline}${!headlineOnly && summary ? ` ${summary}` : ''} (${displaySourceName(article.sourceName)}: ${article.url})`, '');
+    lines.push(`${headline}${!headlineOnly && summary ? ` ${summary}` : ''} (${displaySourceName(article.sourceName, article)}: ${article.url})`, '');
   }
   lines.push(`Disclaimer: ${disclaimerFirst}`, '', disclaimerSecond);
   return lines.join('\n');

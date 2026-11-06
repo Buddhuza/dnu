@@ -9,6 +9,7 @@ import { excludedHeadlineReason } from './headlinePolicy.js';
 import { conciseDnuSummary } from './conciseSummary.js';
 import { reviewedImportedSummary } from './reviewedImportedSummaries.js';
 import { cleanHeadlinePrefix } from './headlineText.js';
+import { displaySourceName } from './sourceNames.js';
 import { articlePlacement } from '../server/importArticle.js';
 
 const headerAliases = {
@@ -418,8 +419,9 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
     if (seen.has(key)) { skipped.push({ row: row.rowNumber, reason: 'Repeated article link' }); continue; }
     seen.add(key);
     const existing = existingByUrl.get(key);
-    const sourceName = text(row.source) || existing?.sourceName;
-    const title = cleanHeading(row.heading, sourceName, url) || existing?.title;
+    const rawSourceName = text(row.source) || existing?.sourceName;
+    const sourceName = displaySourceName(rawSourceName, { url: parsed.href });
+    const title = cleanHeading(row.heading, rawSourceName, url) || existing?.title;
     if (!sourceName || !title) { skipped.push({ row: row.rowNumber, reason: 'Missing source or headline' }); continue; }
     const governmentSource = directGovernmentPublicationReason({ sourceName, url: parsed.href });
     if (governmentSource) { skipped.push({ row: row.rowNumber, reason: governmentSource }); continue; }

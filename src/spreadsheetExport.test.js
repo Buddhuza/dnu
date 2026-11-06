@@ -66,12 +66,12 @@ test('spreadsheet keeps the placed country first when the text mentions a neighb
   assert.equal(row[3], 'Serbia, Serbia / Kosovo');
 });
 
-test('spreadsheet distinguishes Georgian InterPressNews from Moldovan IPN', () => {
+test('spreadsheet distinguishes Georgian IPN.ge from Moldovan IPN.md', () => {
   const page = { heading: 'Talks continue', body: 'Officials held talks.' };
   const article = { sourceName: 'IPN', section: 'South Caucasus', subsection: 'Georgia', title: 'Talks continue' };
-  assert.equal(spreadsheetRow({ ...article, sourceId: 'source-63', url: 'https://www.interpressnews.ge/en/story' }, page)[1], 'InterPressNews');
-  assert.equal(spreadsheetRow({ ...article, url: 'https://www.interpressnews.ge/en/story' }, page)[1], 'InterPressNews');
-  assert.equal(spreadsheetRow({ ...article, sourceId: 'source-32', url: 'https://ipn.md/en/story' }, page)[1], 'IPN');
+  assert.equal(spreadsheetRow({ ...article, sourceId: 'source-63', url: 'https://www.interpressnews.ge/en/story' }, page)[1], 'IPN.ge');
+  assert.equal(spreadsheetRow({ ...article, url: 'https://www.interpressnews.ge/en/story' }, page)[1], 'IPN.ge');
+  assert.equal(spreadsheetRow({ ...article, sourceId: 'source-32', url: 'https://ipn.md/en/story' }, page)[1], 'IPN.md');
 });
 
 test('spreadsheet files Abkhazia and South Ossetia under Georgia and identifies the relevant local regions', () => {

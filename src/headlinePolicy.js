@@ -1,4 +1,8 @@
 export function excludedHeadlineReason(value, summary = '', url = '') {
+  try {
+    const host = new URL(url).hostname.toLowerCase();
+    if (host === 'osce.org' || host.endsWith('.osce.org')) return 'OSCE website links are excluded';
+  } catch { /* Some callers check headlines before they have a URL. */ }
   const headline = String(value || '').trim().replace(/^\(文A\)\s*/, '');
   const detail = `${headline} ${summary}`;
   if (/\blive\s*:/i.test(headline) || /^live(?:\s+updates?)?\s*[:|–-]/i.test(headline) || /\/(?:liveblog|live-blog|live-updates)(?:\/|$)/i.test(String(url))) return 'Live blogs are excluded';

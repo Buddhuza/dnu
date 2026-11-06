@@ -1,10 +1,38 @@
-const localNames = {
-  'Local Sweden': 'Local.se',
-  'Local France': 'Local.fr',
-  'Local Germany': 'Local.de',
-  'Local Spain': 'Local.es',
-  'Local Switzerland': 'Local.ch',
-  'Local Austria': 'Local.at'
+const aliases = {
+  'local sweden': 'Local.se',
+  'local france': 'Local.fr',
+  'local germany': 'Local.de',
+  'local spain': 'Local.es',
+  'local switzerland': 'Local.ch',
+  'local austria': 'Local.at',
+  'dtt net': 'DTT',
+  'albanian daily news': 'ADN',
+  'n1 bosnia': 'N1',
+  'n1 serbia': 'N1',
+  'greekreporter.com': 'Greek Reporter',
+  'mezha.net': 'Mezha',
+  'rfe rl': 'RFE/RL',
+  '1tv georgia': '1TV.ge',
+  '1tv': '1TV.ge',
+  'asia plus': 'Asia-Plus',
+  'crude oil prices today | oilprice.com': 'OilPrice.com',
+  'ipn moldova': 'IPN.md',
+  'ipn.md': 'IPN.md',
+  'interpressnews': 'IPN.ge',
+  'interpressnews.ge': 'IPN.ge',
+  'ipn.ge': 'IPN.ge',
+  'qazinform': 'Kazinform',
+  'politico europe': 'Politico.eu'
 };
 
-export const displaySourceName = name => localNames[name] || name;
+export function displaySourceName(name, source = {}) {
+  const raw = String(name || '').trim();
+  const key = raw.toLowerCase().replace(/\s+/g, ' ');
+  if (['ipn', 'ipn moldova', 'ipn.md', 'interpressnews', 'interpressnews.ge', 'ipn.ge'].includes(key)) {
+    let host = '';
+    try { host = new URL(source.url).hostname.replace(/^www\./, '').toLowerCase(); } catch { /* A source name may have no URL yet. */ }
+    if (source.sourceId === 'source-63' || source.id === 'source-63' || host === 'interpressnews.ge') return 'IPN.ge';
+    if (source.sourceId === 'source-32' || source.id === 'source-32' || host === 'ipn.md') return 'IPN.md';
+  }
+  return aliases[key] || raw;
+}
