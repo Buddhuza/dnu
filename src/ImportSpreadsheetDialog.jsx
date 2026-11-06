@@ -64,7 +64,6 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
   const [sheetNames, setSheetNames] = useState([]);
   const [sheetName, setSheetName] = useState('');
   const [googleUrl, setGoogleUrl] = useState(DEFAULT_GOOGLE_SHEET_URL);
-  const [otherGoogleTab, setOtherGoogleTab] = useState('');
   const [rawRows, setRawRows] = useState([]);
   const [placementOverrides, setPlacementOverrides] = useState({});
   const [discardedRows, setDiscardedRows] = useState(new Set());
@@ -154,18 +153,6 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
     finally { setBusy(false); }
   }
 
-  async function openNamedGoogleTab() {
-    const name = otherGoogleTab.trim();
-    if (!name) return;
-    setFile(null);
-    setResult(null);
-    setError('');
-    setBusy(true);
-    try { await previewSheet(null, name); }
-    catch (failure) { setError(failure.message || 'Could not read this Google worksheet.'); }
-    finally { setBusy(false); }
-  }
-
   async function importFile() {
     if (!result || result.needsPlacement.length || busy) return;
     setBusy(true);
@@ -194,13 +181,12 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
   return <div className="add-backdrop" onMouseDown={event => { if (!busy && event.target === event.currentTarget) onClose(); }}>
     <section className="add-dialog import-spreadsheet-dialog" role="dialog" aria-modal="true" aria-labelledby="import-spreadsheet-title">
       <div className="add-dialog-heading"><h2 id="import-spreadsheet-title">Import spreadsheet</h2><button type="button" onClick={onClose} disabled={busy} aria-label="Close spreadsheet import">×</button></div>
-      <p>Load the latest completed edition directly from the live Google Sheet. Review the stories before importing them into the update; existing article URLs remain unchanged.</p>
+      <p>Load the latest completed edition directly from the live Google Sheet.</p>
       <label className="import-file-label" htmlFor="import-google-sheet-url">Google Sheet URL</label>
       <div className="import-google-controls"><input id="import-google-sheet-url" type="url" value={googleUrl} onChange={event => { setGoogleUrl(event.target.value); setResult(null); setSheetNames([]); setSheetName(''); }} disabled={busy}/><button type="button" onClick={loadGoogleSheet} disabled={busy}>Load latest</button></div>
-      <details className="import-file-fallback"><summary>Open another live worksheet by exact name</summary><div className="import-google-controls"><input aria-label="Exact Google worksheet name" value={otherGoogleTab} onChange={event => setOtherGoogleTab(event.target.value)} maxLength={100} placeholder="Paste the tab name" disabled={busy}/><button type="button" onClick={openNamedGoogleTab} disabled={busy || !otherGoogleTab.trim()}>Preview tab</button></div></details>
       <details className="import-file-fallback"><summary>Use an Excel or CSV file instead</summary><label className="import-file-label" htmlFor="import-spreadsheet-file">Spreadsheet file</label><input id="import-spreadsheet-file" type="file" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" onChange={chooseFile} disabled={busy}/></details>
       {sheetNames.length > 1 && <label className="import-file-label" htmlFor="import-spreadsheet-sheet">Worksheet (exact tab name)<select id="import-spreadsheet-sheet" value={sheetName} onChange={chooseSheet} disabled={busy}>{sheetNames.map(name => <option key={name} value={name}>{name}</option>)}</select></label>}
-      {sheetNames.length > 1 && <p className="import-spreadsheet-note">{file ? 'All workbook dates and technical tabs are listed.' : 'Live tab names are listed when available; open any other tab by its exact name above.'} Source lists and Rejected tabs are omitted from the menu. Tabs without article columns can be inspected but have no stories to import.</p>}
+      {sheetNames.length > 1 && <p className="import-spreadsheet-note">{file ? 'All workbook dates and technical tabs are listed.' : 'Available live tabs are listed above.'} Source lists and Rejected tabs are omitted from the menu. Tabs without article columns can be inspected but have no stories to import.</p>}
       {busy && <p role="status">Preparing spreadsheet…</p>}
       {error && <p className="add-manual-error" role="alert">{error}</p>}
       {result && <div className="import-spreadsheet-preview" aria-live="polite">
