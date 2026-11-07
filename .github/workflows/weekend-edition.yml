@@ -1,0 +1,47 @@
+name: Weekend DNU edition and Outlook email
+
+on:
+  schedule:
+    # 07:00 Vienna time, summer and winter. The script skips the other slot.
+    - cron: '0 5,6 * * 6,0'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Check today's completed sheet and selection without publishing or sending
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: weekend-dnu-edition
+  cancel-in-progress: false
+
+jobs:
+  weekend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    env:
+      SUPABASE_URL: https://epghsyajgspcywqqbfso.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      MS_TENANT_ID: ${{ secrets.MS_TENANT_ID }}
+      MS_CLIENT_ID: ${{ secrets.MS_CLIENT_ID }}
+      MS_CLIENT_SECRET: ${{ secrets.MS_CLIENT_SECRET }}
+      DNU_MAIL_FROM: ${{ secrets.DNU_MAIL_FROM }}
+      DNU_MAIL_TO: ${{ secrets.DNU_MAIL_TO }}
+      DNU_GOOGLE_SHEET_URL: ${{ vars.DNU_GOOGLE_SHEET_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - name: Prepare weekend edition and send at 08:00 Vienna time
+        run: |
+          if [ '${{ github.event_name }}' = 'workflow_dispatch' ] && [ '${{ inputs.dry_run }}' = 'true' ]; then
+            node scripts/weekend-edition.mjs --dry-run
+          else
+            node scripts/weekend-edition.mjs
+          fi

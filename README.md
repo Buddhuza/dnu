@@ -23,6 +23,25 @@ The GitHub Pages deployment is configured for shared editing. Publishing-functio
 
 A local news review app for the 173 outlets in `sources.json` (transcribed from the supplied `agencies_updated.txt`). Choose a source, collect its headlines from a publisher feed where available or Firecrawl otherwise, and refine the results with included and excluded phrases. The prepared news stream can be edited and exported as a Word update.
 
+## Weekend edition and Outlook delivery
+
+`.github/workflows/weekend-edition.yml` is scheduled for Saturday and Sunday mornings. It starts at 07:00 Europe/Vienna (the workflow has both summer and winter UTC slots, and the script ignores the wrong slot). It reads the date-named Morning News tab from the live Google Sheet, requires `NewsStatus` to say `COMPLETE` for that same date, uses the existing import rules, and removes matched duplicate events while preferring major international agencies. It publishes a **fresh** shared edition to Supabase, preserving site configuration but replacing stories from earlier dates. It then submits the rich HTML version, with an inline logo, to Microsoft 365 Outlook at 08:00 Vienna time. Manual imports still append to the current edition.
+
+To activate it, a Microsoft 365 administrator must register an application in Microsoft Entra ID, give it Microsoft Graph **Mail.Send** application permission with admin consent, and scope its mailbox access to the intended sender. Add the following **GitHub Actions repository secrets** in **Settings → Secrets and variables → Actions**:
+
+| Secret | Value |
+| --- | --- |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server-only key for the DNU Supabase project |
+| `MS_TENANT_ID` | Microsoft 365 tenant ID |
+| `MS_CLIENT_ID` | Entra application (client) ID |
+| `MS_CLIENT_SECRET` | Entra application secret value |
+| `DNU_MAIL_FROM` | Sender's Microsoft 365 mailbox email address |
+| `DNU_MAIL_TO` | Mailing-list addresses, separated by commas or semicolons |
+
+`SUPABASE_URL` is set in the workflow. If the Google Sheet URL changes, set the optional Actions repository variable `DNU_GOOGLE_SHEET_URL`. The sheet must be viewer-accessible to the GitHub runner. Until all secrets and addresses are configured, the scheduled job stops without publishing or mailing. To check the sheet and story selection without changing the site or sending mail, run **Actions → Weekend DNU edition and Outlook email → Run workflow** with **dry_run** selected. This check requires a COMPLETE worksheet for the current Vienna date.
+
+The job records a send claim in Supabase before calling Microsoft Graph, so a rerun cannot send the same edition twice. If Graph accepts a message but its delivery is uncertain, the job will not retry it automatically; inspect Outlook's Sent Items and the Actions log. GitHub Actions may start a scheduled job late, and Microsoft Graph accepts messages asynchronously. The script aims to submit at 08:00, skips a late send, and cannot guarantee exact inbox delivery time. A dedicated scheduler is needed if strict delivery time is essential.
+
 Before the first shared import, the homepage opens with the bundled edition in `data/prepared-update.json`. The previous English-language edition remains in `data/daily-update-2026-10-24.json`, and its scraped article pages remain in the cache. Dated editions remain in `data/`.
 
 For a complete published update, tell Codex `NEWSRUN`. That shortcut runs the last 24 hours in Vienna time unless you specify another window, checks every configured source under the editorial policy, audits omissions and publishes the new edition. Defining or discussing the shortcut does not start a scrape.

@@ -163,7 +163,7 @@ export async function readGoogleSheetEdition(link, sheetName = '', queryTable = 
   }
   const { bodies, warning } = rows.length ? await googleWorkingBodies(id, date, queryTable) : { bodies: new Map(), warning: '' };
   return {
-    date, sheetName: selected, sheetNames: [...new Set([...knownGoogleTabs(date), ...(/(?:^|_)(?:Sources|Rejected)$/i.test(selected) || /^SourceRegistry$/i.test(selected) ? [] : [selected])])], tablePreview, totalRows: Math.max(0, grid.length - 1),
+    date, runStatus, statusDate, sheetName: selected, sheetNames: [...new Set([...knownGoogleTabs(date), ...(/(?:^|_)(?:Sources|Rejected)$/i.test(selected) || /^SourceRegistry$/i.test(selected) ? [] : [selected])])], tablePreview, totalRows: Math.max(0, grid.length - 1),
     rows: rows.length ? spreadsheetRowsFromGrid(grid, bodies) : [], cacheWarning: [statusWarning, warning].filter(Boolean).join(' ')
   };
 }
