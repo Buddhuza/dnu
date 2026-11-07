@@ -20,7 +20,7 @@ import { duplicateGroups, duplicateGroupHue } from './storyDuplicates.js';
 import { storyOrigin } from './storyOrigin.js';
 import { disclaimerFirst, disclaimerSecond } from './disclaimer.js';
 import { sourceAudit } from './collectionAudit.js';
-import CollectionReport from './CollectionReport.jsx';
+import { countCoveredCountries } from './collectionSummary.js';
 import { formatViennaDateTime } from './viennaTime.js';
 import { emailSubject, emailUpdateHtml, emailUpdateText } from './emailUpdate.js';
 import { loadFullArticle } from './articleBodyClient.js';
@@ -277,6 +277,7 @@ function App() {
   const displayedArticles = useMemo(() => displaySiteContent(daily?.articles ?? [], siteConfig, excludedStoryIds, daily?.importedFromSpreadsheet === true), [daily, siteConfig, excludedStoryIds]);
   const storyToMove = displayedArticles.find(item => item.id === moveStoryId);
   const selectedArticles = useMemo(() => displayedArticles.filter(item => !excludedStoryIds.has(item.id)), [displayedArticles, excludedStoryIds]);
+  const coveredCountries = useMemo(() => countCoveredCountries(selectedArticles), [selectedArticles]);
   const readingArticles = editingStories ? displayedArticles : selectedArticles;
   const duplicateMatches = useMemo(() => isEditor ? duplicateGroups(selectedArticles) : new Map(), [selectedArticles, isEditor]);
   const updateSearchQuery = updateSearchText.trim().toLocaleLowerCase();
@@ -803,7 +804,7 @@ function App() {
             {!readingArticles.length && <p className="daily-empty">{displayedArticles.length ? isEditor ? 'No stories are selected. Press Edit to choose stories for this update.' : 'No stories are selected for this update.' : isEditor ? 'No stories yet. Press Import spreadsheet to populate the update.' : 'No stories have been published yet.'}</p>}
             {selectedArticles.length > 0 && <div className="daily-disclaimer"><p><strong>Disclaimer:</strong> {disclaimerFirst}</p><p>{disclaimerSecond}</p></div>}
             {siteConfig.showCoverage && coverageNote && selectedArticles.length > 0 && <p className="daily-coverage">{coverageNote}</p>}
-            <CollectionReport sources={configuredSources} articles={selectedArticles} outcomes={daily.sourceOutcomes || []} imported={daily.importedFromSpreadsheet === true}/>
+            <div className="collection-summary" aria-label="Collection report"><strong>Collection report</strong><p>{selectedArticles.length} {selectedArticles.length === 1 ? 'story' : 'stories'} included</p><p>{coveredCountries} {coveredCountries === 1 ? 'country' : 'countries'} represented</p>{reportWindow?.windowStart && reportWindow?.windowEnd && <p>Coverage period: {dateLabel(reportWindow.windowStart)} – {dateLabel(reportWindow.windowEnd)}</p>}</div>
           </div>}
         </section>}
         {websiteSource && <section className="website-panel" aria-label={`${websiteSource.name} website`}><div className="website-panel-heading"><div><span className="eyebrow">SOURCE WEBSITE</span><h2>{websiteSource.name}</h2></div><button onClick={() => setWebsiteSourceId('')} aria-label="Close source website">×</button></div><div className="website-panel-actions"><a href={websiteSource.url} target="_blank" rel="noopener noreferrer">Open website in new tab ↗</a></div><p>{isEditor ? 'To add an article, copy its link address, then paste it into Add.' : 'Some publishers block display here; use the link above if this panel stays blank.'}</p><iframe key={websiteSource.id} src={websiteSource.url} title={`${websiteSource.name} website`} referrerPolicy="no-referrer" loading="lazy"/></section>}
