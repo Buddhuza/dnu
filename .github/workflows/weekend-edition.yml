@@ -31,6 +31,7 @@ jobs:
       MS_CLIENT_SECRET: ${{ secrets.MS_CLIENT_SECRET }}
       DNU_MAIL_FROM: ${{ secrets.DNU_MAIL_FROM }}
       DNU_MAIL_TO: ${{ secrets.DNU_MAIL_TO }}
+      DNU_MAIL_DELIVERY: ${{ vars.DNU_MAIL_DELIVERY }}
       DNU_GOOGLE_SHEET_URL: ${{ vars.DNU_GOOGLE_SHEET_URL }}
     steps:
       - uses: actions/checkout@v4

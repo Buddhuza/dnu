@@ -16,13 +16,16 @@ const appId = process.env.MS_CLIENT_ID;
 const appSecret = process.env.MS_CLIENT_SECRET;
 const sender = process.env.DNU_MAIL_FROM;
 const recipients = [...new Set(String(process.env.DNU_MAIL_TO || '').split(/[,;\n]+/).map(value => value.trim()).filter(Boolean))];
+const windowsDelivery = process.env.DNU_MAIL_DELIVERY === 'windows';
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 function requiredConfiguration() {
   if (dryRun) return;
-  const missing = Object.entries({ SUPABASE_URL: supabaseUrl, SUPABASE_SERVICE_ROLE_KEY: serviceKey, MS_TENANT_ID: tenant, MS_CLIENT_ID: appId, MS_CLIENT_SECRET: appSecret, DNU_MAIL_FROM: sender, DNU_MAIL_TO: recipients.length }).filter(([, value]) => !value).map(([name]) => name);
+  const required = { SUPABASE_URL: supabaseUrl, SUPABASE_SERVICE_ROLE_KEY: serviceKey };
+  if (!windowsDelivery) Object.assign(required, { MS_TENANT_ID: tenant, MS_CLIENT_ID: appId, MS_CLIENT_SECRET: appSecret, DNU_MAIL_FROM: sender, DNU_MAIL_TO: recipients.length });
+  const missing = Object.entries(required).filter(([, value]) => !value).map(([name]) => name);
   if (missing.length) throw new Error(`Weekend automation is not active; missing configuration: ${missing.join(', ')}`);
-  if (!recipients.every(value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))) throw new Error('DNU_MAIL_TO contains an invalid address.');
+  if (!windowsDelivery && !recipients.every(value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))) throw new Error('DNU_MAIL_TO contains an invalid address.');
 }
 
 function todayAndDue() {
@@ -141,10 +144,14 @@ const edition = {
   title: 'DAILY NEWS UPDATE', checkedAt: new Date(due).toISOString(),
   windowStart: new Date(due - 24 * 3600_000).toISOString(), windowEnd: new Date(due).toISOString(),
   articles: selection.articles, sourceOutcomes: [],
-  weekendAutomation: { date: now.date, status: 'prepared', worksheet: sheet.sheetName }
+  weekendAutomation: { date: now.date, status: 'prepared', delivery: windowsDelivery ? 'windows' : 'graph', worksheet: sheet.sheetName }
 };
 await updateState(client, state, { edition, settings: newSettings, excluded_story_ids: [], compiled_at: edition.checkedAt });
 console.log(`Published the ${now.date} weekend edition with ${edition.articles.length} stories.`);
+if (windowsDelivery) {
+  console.log('Windows Outlook delivery is selected. The Windows task will send this prepared edition; Microsoft Graph was not called.');
+  process.exit(0);
+}
 const token = await graphToken();
 state = await readState(client);
 if (state.edition?.weekendAutomation?.date !== now.date || state.edition?.weekendAutomation?.status !== 'prepared') throw new Error('Edition changed before email sending; no email was sent.');

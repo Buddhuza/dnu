@@ -1,0 +1,8 @@
+{
+  "supabaseUrl": "https://epghsyajgspcywqqbfso.supabase.co",
+  "supabaseAnonKey": "PASTE_THE_PUBLIC_PUBLISHABLE_KEY_HERE",
+  "senderAccount": "",
+  "mailingLists": [
+    "example-list@your-organisation.org"
+  ]
+}

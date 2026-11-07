@@ -10,3 +10,5 @@ data/alternate-listings-*.json
 .env
 .env.*
 !.env.example
+scripts/windows-outlook.config.json
+scripts/windows-outlook-send-state.json

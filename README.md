@@ -42,6 +42,19 @@ To activate it, a Microsoft 365 administrator must register an application in Mi
 
 The job records a send claim in Supabase before calling Microsoft Graph, so a rerun cannot send the same edition twice. If Graph accepts a message but its delivery is uncertain, the job will not retry it automatically; inspect Outlook's Sent Items and the Actions log. GitHub Actions may start a scheduled job late, and Microsoft Graph accepts messages asynchronously. The script aims to submit at 08:00, skips a late send, and cannot guarantee exact inbox delivery time. A dedicated scheduler is needed if strict delivery time is essential.
 
+### Send through classic Outlook on a Windows computer
+
+This is an alternative to Microsoft Graph delivery. The GitHub workflow still publishes the fresh weekend edition to Supabase; the Windows computer reads that **published** edition and sends it through the signed-in classic Outlook profile. It does not scrape or import the sheet itself.
+
+1. In GitHub **Settings → Secrets and variables → Actions → Variables**, add `DNU_MAIL_DELIVERY` with value `windows`. Keep `SUPABASE_SERVICE_ROLE_KEY` as a repository secret so the weekend workflow can publish. The Graph secrets are unnecessary in this mode. This setting stops the GitHub workflow from sending a second email.
+2. On the Windows computer, install Node.js 22 or later and **classic Outlook for Windows**. Sign in to the intended work account in Outlook. New Outlook does not support this COM script. Keep the computer awake and the Windows account signed in for scheduled sending.
+3. Download or clone this repository to the computer. Open a command prompt in its `dnu` folder and run `npm ci` once.
+4. Copy `scripts\windows-outlook.config.example.json` to `scripts\windows-outlook.config.json`. Fill in the **public** Supabase publishable/anon key, the exact Outlook `senderAccount` email address, and the `mailingLists` addresses. The filled config is ignored by Git. Do not put a service-role key in it.
+5. When the public site has a prepared weekend edition for today, preview it with `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\Send-DnuWithOutlook.ps1`. This opens an unsent draft with the formatted update and logo. Check the recipients and formatting.
+6. In Windows **Task Scheduler**, create one weekly task for **Saturday and Sunday at 07:55**. Use **Run only when user is logged on**, **Wake the computer to run this task**, and the same signed-in Windows account that has the Outlook profile. Set **Program** to `powershell.exe` and **Arguments** to `-NoProfile -ExecutionPolicy Bypass -File "C:\path\to\dnu\scripts\Send-DnuWithOutlook.ps1" -Send -AtEight`. Use the actual DNU path. Set the Windows clock to the Vienna time zone, or adjust the task trigger so it starts at 07:55 Vienna time. The script waits until 08:00 Vienna time after preparing the message, and refuses a late send.
+
+The Windows script keeps a local `scripts\windows-outlook-send-state.json` claim so a rerun on that computer cannot send the same date twice. If Outlook fails after the claim, inspect Sent Items before resetting that file. Use only one sending computer. Outlook's programmatic-access policy may require an administrator to permit unattended sending. Exact inbox delivery time still depends on Outlook and the mail server.
+
 Before the first shared import, the homepage opens with the bundled edition in `data/prepared-update.json`. The previous English-language edition remains in `data/daily-update-2026-10-24.json`, and its scraped article pages remain in the cache. Dated editions remain in `data/`.
 
 For a complete published update, tell Codex `NEWSRUN`. That shortcut runs the last 24 hours in Vienna time unless you specify another window, checks every configured source under the editorial policy, audits omissions and publishes the new edition. Defining or discussing the shortcut does not start a scrape.
