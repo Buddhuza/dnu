@@ -20,6 +20,20 @@ test('reviewed CSV edition retains lead placement and its DNU summary', async ()
   assert.equal(result.bodies.length, 1);
 });
 
+test('explicit lead rows can feature countries outside Ukraine and group Middle East countries', () => {
+  const rows = [
+    { rowNumber: 2, date: '2026-11-08', source: 'AP', region: 'Lead stories', countries: 'Poland', url: 'https://apnews.com/article/poland-lead', heading: 'Poland holds snap election after government collapse' },
+    { rowNumber: 3, date: '2026-11-08', source: 'Reuters', region: 'Lead stories', countries: 'US', url: 'https://reuters.com/world/us-lead', heading: 'US imposes new sanctions after border attack' },
+    { rowNumber: 4, date: '2026-11-08', source: 'AFP', region: 'Lead stories', countries: 'Iran', url: 'https://afp.com/article/iran-lead', heading: 'Iran agrees ceasefire after regional talks' },
+    { rowNumber: 5, date: '2026-11-08', source: 'DW', region: 'Lead stories', countries: 'Yemen', url: 'https://dw.com/en/yemen-lead', heading: 'Yemen ceasefire deal ends weeks of fighting' }
+  ];
+  const result = convertSpreadsheetRows(rows);
+  assert.equal(result.needsPlacement.length, 0);
+  assert.deepEqual(result.articles.map(article => [article.sectionId, article.subsection]), [
+    ['Lead stories', 'Poland'], ['Lead stories', 'United States'], ['Lead stories', 'Middle East'], ['Lead stories', 'Middle East']
+  ]);
+});
+
 test('an exported Excel sheet imports a short DNU story and retains its full body for export', async () => {
   const workbook = await createSpreadsheet([columns]);
   const rows = await readSpreadsheet(new File([workbook], 'update.xlsx'));

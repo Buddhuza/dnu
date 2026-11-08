@@ -131,11 +131,12 @@ const importedAt = new Date().toISOString();
 const converted = resolveWeekendPlacementRows(sheet.rows, (rows, options = {}) => convertSpreadsheetRows(rows, { importedAt, ...options }));
 const selection = selectWeekendStories(converted.articles);
 if (!selection.articles.length) throw new Error('No publishable stories were found in the completed sheet.');
-console.log(`Worksheet ${sheet.date}: ${sheet.rows.length} rows, ${converted.articles.length} eligible, ${converted.autoPlaced.length} automatically placed, ${selection.removed.length} duplicates removed, ${selection.articles.length} selected, ${converted.unplaced.length} still unplaced, ${converted.policyBlocked.length} blocked by placement policy, ${converted.skipped.length} otherwise rejected.`);
+console.log(`Worksheet ${sheet.date}: ${sheet.rows.length} rows, ${converted.articles.length} eligible, ${converted.autoPlaced.length} automatically placed, ${selection.removed.length} duplicates removed, ${selection.promoted.length} promoted to leads, ${selection.articles.length} selected, ${converted.unplaced.length} still unplaced, ${converted.policyBlocked.length} blocked by placement policy, ${converted.skipped.length} otherwise rejected.`);
 for (const item of converted.autoPlaced) console.log(`Auto placement: row ${item.row} ${item.title} → ${[item.placement.sectionId, item.placement.subsection, item.placement.country].filter(Boolean).join(' / ')}`);
 for (const item of converted.unplaced) console.log(`Unplaced: row ${item.row} ${item.title}`);
 for (const item of converted.policyBlocked) console.log(`Placement policy: row ${item.row} ${item.title} — ${item.reason}`);
 for (const removed of selection.removed) console.log(`Duplicate: ${removed.article.sourceName} — ${removed.article.title} → kept ${removed.preferred.sourceName}`);
+for (const item of selection.promoted) console.log(`Lead: ${item.heading} — ${item.article.title} (${item.sourceCount} distinct agencies)`);
 if (dryRun) process.exit(0);
 const client = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
 let state = await readState(client);
@@ -155,7 +156,7 @@ const newSettings = {
   ...settings, customArticles: [],
   articleEdits: Object.fromEntries(Object.entries(settings.articleEdits).filter(([id]) => selectedIds.has(id))),
   articleOrder: settings.articleOrder.filter(id => selectedIds.has(id)),
-  leadOrigins: Object.fromEntries(Object.entries(settings.leadOrigins).filter(([id]) => selectedIds.has(id)))
+  leadOrigins: { ...Object.fromEntries(Object.entries(settings.leadOrigins).filter(([id]) => selectedIds.has(id))), ...selection.leadOrigins }
 };
 if (!displaySiteContent(selection.articles, newSettings, new Set()).length) throw new Error('Site settings hide all selected stories; no weekend edition or email was published.');
 const edition = {

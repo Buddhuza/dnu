@@ -11,6 +11,7 @@ import { reviewedImportedSummary } from './reviewedImportedSummaries.js';
 import { cleanHeadlinePrefix } from './headlineText.js';
 import { displaySourceName } from './sourceNames.js';
 import { articlePlacement } from '../server/importArticle.js';
+import { ukraineAttackPlacement } from './storyPlacement.js';
 
 const headerAliases = {
   date: ['date', 'publicationdate', 'publishedat'],
@@ -30,9 +31,8 @@ const headerAliases = {
 };
 const compact = value => String(value ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
 const text = value => String(value ?? '').replace(/\s+/g, ' ').trim();
-const first = value => String(value ?? '').split(/[,;]/).map(text).find(Boolean) || '';
 const regionalSections = NEWS_SECTIONS.slice(1, 5);
-const leadHeadline = /\b(?:attack\w*|strike\w*|drone\w*|missile\w*|bomb\w*|war|conflict|ceasefire|terror\w*|invasion|coup|military|troops?|sanction\w*|election\w*|protest\w*|diplom\w*|negotiat\w*|peace|border|security|intelligence|opposition|crisis|president|prime minister|parliament|OSCE)\b/i;
+const leadHeadline = /\b(?:attack\w*|strike\w*|drone\w*|missile\w*|bomb\w*|war|conflict|ceasefire|terror\w*|invasion|coup|military|defen[cs]e|troops?|sanction\w*|election\w*|protest\w*|diplom\w*|negotiat\w*|peace|border|security|intelligence|opposition|crisis|president|prime minister|parliament|OSCE)\b/i;
 const miscRegions = new Map([
   ['europe', 'WESTERN / CENTRAL EUROPE'], ['westerncentraleurope', 'WESTERN / CENTRAL EUROPE'],
   ['middleeast', 'MIDDLE EAST / NORTH AFRICA'], ['middleeastnorthafrica', 'MIDDLE EAST / NORTH AFRICA'],
@@ -330,9 +330,17 @@ function placementFromRow(row, title, summary, existing, leadPrefix) {
   if (isLithuanianBalticStory(title, summary, row.source)) return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Lithuania' };
   const region = text(row.region).replace(/\s+Region$/i, '');
   if (compact(region) === 'leadstories') {
-    const heading = first(row.countries || row.country || row.organisations);
-    if (heading === 'Middle East' || regionalSections.some(section => section.subsections.includes(heading)))
-      return { sectionId: 'Lead stories', subsection: heading, country: '' };
+    const middleEast = new Set([...MISCELLANEOUS_COUNTRIES['MIDDLE EAST / NORTH AFRICA'], 'Yemen', 'Iraq', 'Qatar', 'United Arab Emirates', 'UAE', 'Oman', 'Bahrain', 'Kuwait', 'Egypt', 'Palestine']);
+    const named = String(row.countries || row.country || row.organisations || '').split(/[,;]/).map(text).filter(Boolean);
+    const inferred = articlePlacement({}, title, '');
+    const candidates = [ukraineAttackPlacement(title)?.subsection || '', ...named, inferred?.country || inferred?.subsection || ''];
+    const heading = candidates.map(value => ({ US: 'United States', UK: 'United Kingdom', Kosovo: 'Serbia / Kosovo' })[value] || value).find(value =>
+      value === 'Middle East' || value === 'MIDDLE EAST / NORTH AFRICA' || middleEast.has(value) ||
+      regionalSections.some(section => section.subsections.includes(value)) ||
+      Object.entries(MISCELLANEOUS_COUNTRIES).some(([subsection, countries]) => subsection !== 'INTERNATIONAL ORGANISATIONS' && countries.includes(value)) ||
+      value === 'OSCE' && /\b(?:ceasefire|agreement|security|war|conflict|attack|summit|crisis)\b/i.test(title));
+    if (heading && leadHeadline.test(title))
+      return { sectionId: 'Lead stories', subsection: heading === 'Middle East' || heading === 'MIDDLE EAST / NORTH AFRICA' || middleEast.has(heading) ? 'Middle East' : heading, country: '' };
   }
   const regional = regionalSections.find(section => compact(section.id) === compact(region));
   const countries = String(row.countries || row.country || '').split(/[,;]/).map(text).filter(Boolean);
