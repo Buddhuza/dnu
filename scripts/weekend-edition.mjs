@@ -3,9 +3,10 @@ import { createHash } from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 import { DEFAULT_GOOGLE_SHEET_URL, readGoogleSheetEdition } from '../src/googleSheetClient.js';
 import { convertSpreadsheetRows } from '../src/spreadsheetImport.js';
-import { defaultSiteConfig, displaySiteContent, normalizeSiteConfig } from '../src/siteConfig.js';
+import { defaultSiteConfig, displaySiteContent, extendSiteConfigForImportedPlacements, normalizeSiteConfig } from '../src/siteConfig.js';
 import { emailSubject, emailUpdateHtml } from '../src/emailUpdate.js';
 import { selectWeekendStories, viennaSchedule, weekendSheetReadiness } from '../src/weekendEdition.js';
+import { resolveWeekendPlacementRows } from '../src/weekendPlacement.js';
 import { viennaWallTimeToIso } from '../src/viennaTime.js';
 
 const dryRun = process.argv.includes('--dry-run');
@@ -126,10 +127,14 @@ while (!sheet) {
     await sleep(30000);
   }
 }
-const converted = convertSpreadsheetRows(sheet.rows, { importedAt: new Date().toISOString() });
+const importedAt = new Date().toISOString();
+const converted = resolveWeekendPlacementRows(sheet.rows, (rows, options = {}) => convertSpreadsheetRows(rows, { importedAt, ...options }));
 const selection = selectWeekendStories(converted.articles);
 if (!selection.articles.length) throw new Error('No publishable stories were found in the completed sheet.');
-console.log(`Worksheet ${sheet.date}: ${sheet.rows.length} rows, ${converted.articles.length} eligible, ${selection.removed.length} duplicates removed, ${selection.articles.length} selected, ${converted.needsPlacement.length} needing placement, ${converted.skipped.length} rejected.`);
+console.log(`Worksheet ${sheet.date}: ${sheet.rows.length} rows, ${converted.articles.length} eligible, ${converted.autoPlaced.length} automatically placed, ${selection.removed.length} duplicates removed, ${selection.articles.length} selected, ${converted.unplaced.length} still unplaced, ${converted.policyBlocked.length} blocked by placement policy, ${converted.skipped.length} otherwise rejected.`);
+for (const item of converted.autoPlaced) console.log(`Auto placement: row ${item.row} ${item.title} → ${[item.placement.sectionId, item.placement.subsection, item.placement.country].filter(Boolean).join(' / ')}`);
+for (const item of converted.unplaced) console.log(`Unplaced: row ${item.row} ${item.title}`);
+for (const item of converted.policyBlocked) console.log(`Placement policy: row ${item.row} ${item.title} — ${item.reason}`);
 for (const removed of selection.removed) console.log(`Duplicate: ${removed.article.sourceName} — ${removed.article.title} → kept ${removed.preferred.sourceName}`);
 if (dryRun) process.exit(0);
 const client = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
@@ -144,7 +149,7 @@ if (bodies.length) {
   const { error } = await client.from('dnu_bodies').upsert(bodies, { onConflict: 'url' });
   if (error) throw error;
 }
-const settings = normalizeSiteConfig(state.settings, selection.articles);
+const settings = extendSiteConfigForImportedPlacements(normalizeSiteConfig(state.settings, selection.articles), selection.articles);
 const selectedIds = new Set(selection.articles.map(article => article.id));
 const newSettings = {
   ...settings, customArticles: [],

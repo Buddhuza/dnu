@@ -241,7 +241,7 @@ export function displaySiteContent(articles, config, excludedIds = new Set(), ke
       displayed.section = sectionById.get(displayed.sectionId)?.name || displayed.sectionId;
       displayed.subsection = 'WESTERN / CENTRAL EUROPE';
       displayed.country = 'Lithuania';
-    } else if (article.fromSpreadsheet && !edit?.sectionId && regionalSectionIds.has(displayed.sectionId)) {
+    } else if (article.fromSpreadsheet && !article.weekendAutoPlaced && !edit?.sectionId && regionalSectionIds.has(displayed.sectionId)) {
       const inferred = articlePlacement({}, displayed.title, '');
       const namedLocation = inferred && (regionalSectionIds.has(inferred.sectionId) ||
         inferred.sectionId === 'Miscellaneous' && inferred.subsection !== 'INTERNATIONAL ORGANISATIONS');
