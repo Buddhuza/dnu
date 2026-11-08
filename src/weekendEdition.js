@@ -24,3 +24,10 @@ export function viennaSchedule(now = new Date()) {
   }).formatToParts(now).map(part => [part.type, part.value]));
   return { date: `${parts.year}-${parts.month}-${parts.day}`, hour: Number(parts.hour), minute: Number(parts.minute), weekend: ['Sat', 'Sun'].includes(parts.weekday) };
 }
+
+export function weekendSheetReadiness(sheet, date) {
+  if (sheet?.date !== date || sheet.sheetName !== date || !sheet.rows?.length) return 'missing';
+  if (sheet.runStatus === 'COMPLETE' && sheet.statusDate === date) return 'complete';
+  if (sheet.runStatus && sheet.statusDate === date) return 'in-progress';
+  return 'verify-stable';
+}

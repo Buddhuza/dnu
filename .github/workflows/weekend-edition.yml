@@ -4,6 +4,10 @@ on:
   schedule:
     # 07:00 Vienna time, summer and winter. The script skips the other slot.
     - cron: '0 5,6 * * 6,0'
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/weekend-edition.yml
   workflow_dispatch:
     inputs:
       dry_run:
@@ -13,7 +17,7 @@ on:
         default: true
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: weekend-dnu-edition
@@ -41,8 +45,23 @@ jobs:
       - run: npm ci
       - name: Prepare weekend edition and send at 08:00 Vienna time
         run: |
-          if [ '${{ github.event_name }}' = 'workflow_dispatch' ] && [ '${{ inputs.dry_run }}' = 'true' ]; then
-            node scripts/weekend-edition.mjs --dry-run
+          set -o pipefail
+          if [ '${{ github.event_name }}' = 'push' ]; then
+            node scripts/weekend-edition.mjs --publish-only 2>&1 | tee data/weekend-run-status.txt
+          elif [ '${{ github.event_name }}' = 'workflow_dispatch' ] && [ '${{ inputs.dry_run }}' = 'true' ]; then
+            node scripts/weekend-edition.mjs --dry-run 2>&1 | tee data/weekend-run-status.txt
           else
-            node scripts/weekend-edition.mjs
+            node scripts/weekend-edition.mjs 2>&1 | tee data/weekend-run-status.txt
           fi
+      - name: Save run outcome for review
+        if: always()
+        run: |
+          if [ ! -f data/weekend-run-status.txt ]; then
+            printf 'The edition step did not start. Check this workflow run in Actions.\n' > data/weekend-run-status.txt
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b weekend-run-${{ github.run_id }}
+          git add -f data/weekend-run-status.txt
+          git commit -m "Record weekend edition run outcome"
+          git push origin HEAD:weekend-run-${{ github.run_id }}

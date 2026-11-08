@@ -1,13 +1,15 @@
 import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 import { DEFAULT_GOOGLE_SHEET_URL, readGoogleSheetEdition } from '../src/googleSheetClient.js';
 import { convertSpreadsheetRows } from '../src/spreadsheetImport.js';
 import { defaultSiteConfig, displaySiteContent, normalizeSiteConfig } from '../src/siteConfig.js';
 import { emailSubject, emailUpdateHtml } from '../src/emailUpdate.js';
-import { selectWeekendStories, viennaSchedule } from '../src/weekendEdition.js';
+import { selectWeekendStories, viennaSchedule, weekendSheetReadiness } from '../src/weekendEdition.js';
 import { viennaWallTimeToIso } from '../src/viennaTime.js';
 
 const dryRun = process.argv.includes('--dry-run');
+const publishOnly = process.argv.includes('--publish-only');
 const sheetUrl = process.env.DNU_GOOGLE_SHEET_URL || DEFAULT_GOOGLE_SHEET_URL;
 const supabaseUrl = process.env.SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -17,15 +19,16 @@ const appSecret = process.env.MS_CLIENT_SECRET;
 const sender = process.env.DNU_MAIL_FROM;
 const recipients = [...new Set(String(process.env.DNU_MAIL_TO || '').split(/[,;\n]+/).map(value => value.trim()).filter(Boolean))];
 const windowsDelivery = process.env.DNU_MAIL_DELIVERY === 'windows';
+const graphConfigured = Boolean(tenant && appId && appSecret && sender && recipients.length);
+const mailDelivery = publishOnly ? 'none' : windowsDelivery ? 'windows' : graphConfigured ? 'graph' : 'none';
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 function requiredConfiguration() {
   if (dryRun) return;
   const required = { SUPABASE_URL: supabaseUrl, SUPABASE_SERVICE_ROLE_KEY: serviceKey };
-  if (!windowsDelivery) Object.assign(required, { MS_TENANT_ID: tenant, MS_CLIENT_ID: appId, MS_CLIENT_SECRET: appSecret, DNU_MAIL_FROM: sender, DNU_MAIL_TO: recipients.length });
   const missing = Object.entries(required).filter(([, value]) => !value).map(([name]) => name);
   if (missing.length) throw new Error(`Weekend automation is not active; missing configuration: ${missing.join(', ')}`);
-  if (!windowsDelivery && !recipients.every(value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))) throw new Error('DNU_MAIL_TO contains an invalid address.');
+  if (mailDelivery === 'graph' && !recipients.every(value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))) throw new Error('DNU_MAIL_TO contains an invalid address.');
 }
 
 function todayAndDue() {
@@ -49,12 +52,20 @@ async function googleTable(id, sheet) {
   return result.table;
 }
 
-async function latestComplete(date) {
+async function latestReady(date) {
   const sheet = await readGoogleSheetEdition(sheetUrl, date, googleTable);
-  if (sheet.date !== date || sheet.sheetName !== date || sheet.runStatus !== 'COMPLETE' || sheet.statusDate !== date || !sheet.rows.length) {
-    throw new Error(`Today's worksheet is not complete (worksheet ${sheet.sheetName}, NewsStatus ${sheet.runStatus || 'unavailable'} ${sheet.statusDate || ''}).`);
-  }
-  return sheet;
+  const readiness = weekendSheetReadiness(sheet, date);
+  if (readiness === 'complete') return sheet;
+  if (readiness !== 'verify-stable') throw new Error(`Today's worksheet is not ready (worksheet ${sheet.sheetName}, NewsStatus ${sheet.runStatus || 'unavailable'} ${sheet.statusDate || ''}).`);
+  const clock = viennaSchedule();
+  if (!dryRun && !publishOnly && clock.hour === 7 && clock.minute < 45) throw new Error('NewsStatus is unavailable; waiting until 07:45 Vienna time to verify a stable dated worksheet.');
+  const fingerprint = value => createHash('sha256').update(JSON.stringify(value.rows.map(row => [row.url, row.heading, row.date]))).digest('hex');
+  await sleep(60000);
+  const repeat = await readGoogleSheetEdition(sheetUrl, date, googleTable);
+  if (weekendSheetReadiness(repeat, date) === 'complete') return repeat;
+  if (weekendSheetReadiness(repeat, date) !== 'verify-stable' || fingerprint(repeat) !== fingerprint(sheet)) throw new Error('Today’s dated worksheet is still changing or no longer readable.');
+  console.log(`NewsStatus is unavailable; verified that the ${date} dated worksheet remained unchanged across two reads.`);
+  return repeat;
 }
 
 async function readState(client) {
@@ -100,16 +111,17 @@ async function sendOutlook(edition, settings, token) {
 
 requiredConfiguration();
 let { now, due } = todayAndDue();
-if (!dryRun && (!now.weekend || now.hour !== 7)) {
-  console.log('No action: this workflow slot is outside Saturday or Sunday at 07:00 Vienna time.');
+if (!dryRun && (!now.weekend || !publishOnly && now.hour < 7)) {
+  console.log('No action: this workflow slot is outside the Saturday or Sunday publication window.');
   process.exit(0);
 }
-if (!dryRun && Date.now() >= due) throw new Error('The 08:00 Vienna deadline has passed; no late edition or email will be published.');
 let sheet;
+let attempts = 0;
 while (!sheet) {
-  try { sheet = await latestComplete(now.date); }
+  try { sheet = await latestReady(now.date); }
   catch (error) {
-    if (dryRun || Date.now() >= due - 120000) throw error;
+    attempts++;
+    if (dryRun || publishOnly && attempts >= 3 || !publishOnly && Date.now() >= due + 3600_000) throw error;
     console.log(`Waiting for completed ${now.date} worksheet: ${error.message}`);
     await sleep(30000);
   }
@@ -120,11 +132,12 @@ if (!selection.articles.length) throw new Error('No publishable stories were fou
 console.log(`Worksheet ${sheet.date}: ${sheet.rows.length} rows, ${converted.articles.length} eligible, ${selection.removed.length} duplicates removed, ${selection.articles.length} selected, ${converted.needsPlacement.length} needing placement, ${converted.skipped.length} rejected.`);
 for (const removed of selection.removed) console.log(`Duplicate: ${removed.article.sourceName} — ${removed.article.title} → kept ${removed.preferred.sourceName}`);
 if (dryRun) process.exit(0);
-if (Date.now() >= due - 60000) throw new Error('The sheet was ready too late to prepare the edition before 08:00; no email was sent.');
-
 const client = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
 let state = await readState(client);
-if (state.edition?.weekendAutomation?.date === now.date) throw new Error('This weekend edition has already been prepared or sent; no duplicate email was sent.');
+if (state.edition?.weekendAutomation?.date === now.date) {
+  console.log(`The ${now.date} weekend edition is already published. No duplicate publication or email was attempted.`);
+  process.exit(0);
+}
 const selectedUrls = new Set(selection.articles.map(article => article.url));
 const bodies = converted.bodies.filter(body => selectedUrls.has(body.url));
 if (bodies.length) {
@@ -141,15 +154,20 @@ const newSettings = {
 };
 if (!displaySiteContent(selection.articles, newSettings, new Set()).length) throw new Error('Site settings hide all selected stories; no weekend edition or email was published.');
 const edition = {
-  title: 'DAILY NEWS UPDATE', checkedAt: new Date(due).toISOString(),
+  title: 'DAILY NEWS UPDATE', checkedAt: new Date(Math.max(Date.now(), due)).toISOString(),
   windowStart: new Date(due - 24 * 3600_000).toISOString(), windowEnd: new Date(due).toISOString(),
   articles: selection.articles, sourceOutcomes: [],
-  weekendAutomation: { date: now.date, status: 'prepared', delivery: windowsDelivery ? 'windows' : 'graph', worksheet: sheet.sheetName }
+  weekendAutomation: { date: now.date, status: mailDelivery === 'none' ? 'published' : 'prepared', delivery: mailDelivery, worksheet: sheet.sheetName }
 };
 await updateState(client, state, { edition, settings: newSettings, excluded_story_ids: [], compiled_at: edition.checkedAt });
 console.log(`Published the ${now.date} weekend edition with ${edition.articles.length} stories.`);
-if (windowsDelivery) {
-  console.log('Windows Outlook delivery is selected. The Windows task will send this prepared edition; Microsoft Graph was not called.');
+if (mailDelivery !== 'graph') {
+  if (mailDelivery === 'none') console.log('Email is not configured; the website edition was published without sending mail.');
+  else console.log('Windows Outlook delivery is selected. The Windows task will send this prepared edition; Microsoft Graph was not called.');
+  process.exit(0);
+}
+if (Date.now() >= due) {
+  console.log('The website edition was published after 08:00 Vienna time; no late email was sent.');
   process.exit(0);
 }
 const token = await graphToken();
