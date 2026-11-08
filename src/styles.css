@@ -33,7 +33,7 @@
 
 .add-backdrop{position:fixed;inset:0;z-index:1300;display:grid;place-items:center;background:#102633a8;padding:16px}
 .add-dialog{width:min(100%,620px);max-height:min(90vh,850px);overflow:auto;background:var(--site-surface,#fff);color:var(--site-text,#182a36);border:1px solid #8ca7a4;border-radius:12px;box-shadow:0 20px 60px #071a2673;padding:24px}
-.add-article-dialog,.spreadsheet-results{background:var(--site-surface,#fff)}
+.add-article-dialog{background:var(--site-bg,#f4efe6)}
 .add-dialog-heading{display:flex;justify-content:space-between;align-items:start;gap:12px}
 .add-dialog-heading h2{font-size:calc(var(--site-body-size,18px) + 4px);margin:0}
 .add-dialog-heading button{border:0;background:transparent;color:inherit;font-size:28px;line-height:1;cursor:pointer}
