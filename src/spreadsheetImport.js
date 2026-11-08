@@ -4,7 +4,7 @@ import { franc } from 'franc-min';
 import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, isSouthEasternEuropeRegionalStory, isMontenegroCroatiaDialogueStory, isLithuanianBalticStory, isGreekPrimeMinisterStory, isBelarusPrisonerStory } from './newsSections.js';
 import { canonicalArticleUrl } from './siteConfig.js';
 import { viennaWallTimeToIso } from './viennaTime.js';
-import { blockedPlacementReason, directGovernmentPublicationReason } from './sourcePolicy.js';
+import { blockedPlacementReason, directGovernmentPublicationReason, paywalledSourceReason } from './sourcePolicy.js';
 import { excludedHeadlineReason } from './headlinePolicy.js';
 import { conciseDnuSummary } from './conciseSummary.js';
 import { reviewedImportedSummary } from './reviewedImportedSummaries.js';
@@ -431,6 +431,8 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
     const sourceName = displaySourceName(rawSourceName, { url: parsed.href });
     const title = cleanHeading(row.heading, rawSourceName, url) || existing?.title;
     if (!sourceName || !title) { skipped.push({ row: row.rowNumber, reason: 'Missing source or headline' }); continue; }
+    const sourcePaywall = paywalledSourceReason({ sourceName, url: parsed.href });
+    if (sourcePaywall) { skipped.push({ row: row.rowNumber, reason: sourcePaywall }); continue; }
     const governmentSource = directGovernmentPublicationReason({ sourceName, url: parsed.href });
     if (governmentSource) { skipped.push({ row: row.rowNumber, reason: governmentSource }); continue; }
     const exclusion = excludedHeadlineReason(title, [row.shortSummary, row.summary, row.body].filter(Boolean).join(' '), parsed.href);

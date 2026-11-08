@@ -68,7 +68,7 @@ test('star creates a lead heading and removing it restores the original placemen
 test('lead stories sort regional headings before Miscellaneous headings', () => {
   const stories = [
     { id: 'me', section: 'Lead stories', subsection: 'Middle East', title: 'Iran story', sourceName: 'Agency', url: 'https://example.com/me' },
-    { id: 'ua', section: 'Lead stories', subsection: 'Ukraine', title: 'Ukraine story', sourceName: 'Agency', url: 'https://example.com/ua' },
+    { id: 'ua', section: 'Lead stories', subsection: 'Ukraine', title: 'Ukraine story', sourceName: 'Reuters', url: 'https://example.com/ua' },
     { id: 'other', section: 'South Caucasus', subsection: 'Armenia', title: 'Armenia story', sourceName: 'Agency', url: 'https://example.com/other' }
   ];
   const initial = defaultSiteConfig(stories);
@@ -83,7 +83,7 @@ test('lead stories sort regional headings before Miscellaneous headings', () => 
 test('an Albanian lead precedes Ukraine and Middle East in the website and download order', () => {
   const stories = [
     { id: 'me', section: 'Lead stories', subsection: 'Middle East', title: 'Iran story', sourceName: 'Agency', url: 'https://example.com/me' },
-    { id: 'ua', section: 'Lead stories', subsection: 'Ukraine', title: 'Ukraine story', sourceName: 'Agency', url: 'https://example.com/ua' },
+    { id: 'ua', section: 'Lead stories', subsection: 'Ukraine', title: 'Ukraine story', sourceName: 'Reuters', url: 'https://example.com/ua' },
     { id: 'al', section: 'South Eastern Europe', subsection: 'Albania', title: 'Albania story', sourceName: 'Agency', url: 'https://example.com/al' }
   ];
   const config = toggleLeadStoryInConfig(defaultSiteConfig(stories), stories, 'al');
@@ -223,8 +223,8 @@ test('similar diplomatic headlines about different countries remain separate', (
 test('one planned diplomatic trip stays visible across sources for duplicate review', () => {
   const stories = [
     { id: 'local', section: 'Central Asia', subsection: 'Uzbekistan', title: 'Rubio to visit India, Uzbekistan', sourceName: 'Pajhwok', publishedAt: '2026-10-14T09:19:00Z' },
-    { id: 'local-two', section: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States', title: 'US Secretary of State Marco Rubio to visit Uzbekistan this week', sourceName: 'Kun.uz', publishedAt: '2026-10-14T11:45:00Z' },
-    { id: 'international', section: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States', title: 'US top diplomat Marco Rubio to visit India and Uzbekistan', sourceName: 'AsiaOne', publishedAt: '2026-10-14T02:43:00Z' },
+    { id: 'local-two', section: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States', title: 'US Secretary of State Marco Rubio to visit Uzbekistan this week', sourceName: 'Reuters', publishedAt: '2026-10-14T11:45:00Z' },
+    { id: 'international', section: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States', title: 'US top diplomat Marco Rubio to visit India and Uzbekistan', sourceName: 'AFP', publishedAt: '2026-10-14T02:43:00Z' },
     { id: 'different-trip', section: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States', title: 'Marco Rubio to visit Japan and China', sourceName: 'AP', publishedAt: '2026-10-14T04:00:00Z' }
   ];
   const displayed = displaySiteContent(stories, defaultSiteConfig(stories));
@@ -242,7 +242,7 @@ test('published update has one Rubio visit story from the preferred source', () 
 });
 
 test('a manually added version stays alongside a similar snapshot story', () => {
-  const stories = [{ id: 'snapshot', section: 'Eastern Europe', subsection: 'Ukraine', title: 'Ukraine and Germany agree on new security cooperation', url: 'https://example.com/original', sourceName: 'Agency' }];
+  const stories = [{ id: 'snapshot', section: 'Eastern Europe', subsection: 'Ukraine', title: 'Ukraine and Germany agree on new security cooperation', url: 'https://example.com/original', sourceName: 'Reuters' }];
   const config = defaultSiteConfig(stories);
   config.customArticles = [{ id: 'manual-new', sourceId: 'manual', sectionId: 'Eastern Europe', subsection: 'Ukraine', title: 'Ukraine and Germany agree on new security cooperation', url: 'https://example.org/alternate', sourceName: 'Another agency' }];
   assert.deepEqual(displaySiteContent(stories, config).map(item => item.id), ['snapshot', 'manual-new']);

@@ -22,7 +22,13 @@ const aliases = {
   'interpressnews.ge': 'IPN.ge',
   'ipn.ge': 'IPN.ge',
   'qazinform': 'Kazinform',
-  'politico europe': 'Politico.eu'
+  'politico europe': 'Politico.eu',
+  'vreme.com': 'Vreme',
+  'aol.com': 'AOL',
+  'nin.rs': 'NIN',
+  'euroradio.fm': 'Euroradio',
+  'pan armenian': 'PAN',
+  'novinite.com': 'Novinite'
 };
 
 export function displaySourceName(name, source = {}) {

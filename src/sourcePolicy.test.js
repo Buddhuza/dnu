@@ -21,7 +21,7 @@ test('display and move rules keep Ukrainian outlet stories out of Ukraine', () =
     { id: 'other', section: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States', sourceId: 'source-34', url: 'https://www.ukrinform.net/other', title: 'US story' }
   ];
   const config = defaultSiteConfig(articles);
-  assert.deepEqual(displaySiteContent(articles, config).map(item => item.id), ['global', 'other']);
+  assert.deepEqual(displaySiteContent(articles, config).map(item => item.id), ['global']);
   assert.equal(moveArticleInConfig(config, articles, 'other', { sectionId: 'Lead stories', subsection: 'Ukraine' }), config);
 });
 
@@ -50,9 +50,26 @@ test('archived edition follows outlet placement restrictions', () => {
   const update = JSON.parse(readFileSync(new URL('../data/daily-update-2026-10-24.json', import.meta.url), 'utf8'));
   assert.ok(update.articles.some(article => article.section === 'Lead stories' && article.subsection === 'Ukraine'));
   assert.ok(update.articles.some(article => article.section === 'Eastern Europe' && article.subsection === 'Ukraine'));
-  assert.ok(update.articles.every(article => !blockedPlacementReason(article)));
+  assert.ok(displaySiteContent(update.articles, defaultSiteConfig(update.articles)).every(article => !blockedPlacementReason(article)));
   assert.ok(update.articles.every(article => String(article.summary || '').trim().split(/\s+/).length <= 30));
   assert.ok(!update.articles.some(article => article.url.includes('tirana-erupts-in-chaos')));
+});
+
+test('Ukraine leads use international outlets and cross-country regional reporting is excluded', () => {
+  const ukraine = { sectionId: 'Lead stories', subsection: 'Ukraine' };
+  for (const sourceName of ['Ukrinform', 'APA', 'BelTA', 'Armenpress', 'Kyiv Independent']) {
+    assert.match(blockedPlacementReason({ sourceName, url: 'https://example.com/story' }, ukraine), /international/);
+  }
+  assert.equal(blockedPlacementReason({ sourceName: 'Reuters', url: 'https://reuters.com/story' }, ukraine), '');
+  const armenia = { sectionId: 'South Caucasus', subsection: 'Armenia' };
+  assert.match(blockedPlacementReason({ sourceName: 'Azernews', url: 'https://azernews.com/story' }, armenia), /Azerbaijani/);
+  const france = { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'France' };
+  assert.match(blockedPlacementReason({ sourceName: 'Ukrinform', url: 'https://ukrinform.net/story' }, france), /France coverage/);
+  assert.equal(blockedPlacementReason({ sourceName: 'France 24', url: 'https://france24.com/story' }, france), '');
+  const russia = { sectionId: 'Miscellaneous', subsection: 'RUSSIA / EURASIA', country: 'Russia' };
+  assert.match(blockedPlacementReason({ sourceName: 'شبكة تواصل الإخبارية', url: 'https://example.com/story' }, russia), /Russia coverage/);
+  const us = { sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' };
+  for (const sourceName of ['Sarajevo Times', 'Gulf News']) assert.match(blockedPlacementReason({ sourceName, url: 'https://example.com/story' }, us), /US coverage/);
 });
 
 
