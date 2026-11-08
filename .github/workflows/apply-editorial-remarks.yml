@@ -1,0 +1,40 @@
+name: Apply editorial remarks to current DNU
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/apply-editorial-remarks.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SUPABASE_URL: https://epghsyajgspcywqqbfso.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - name: Apply corrections to the shared edition
+        run: |
+          set -o pipefail
+          node scripts/apply-editorial-remarks.mjs 2>&1 | tee data/editorial-remarks-status.txt
+      - name: Save review outcome
+        if: always()
+        run: |
+          if [ ! -f data/editorial-remarks-status.txt ]; then
+            printf 'The edition review did not start. Check this workflow run in Actions.\n' > data/editorial-remarks-status.txt
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b editorial-remarks-${{ github.run_id }}
+          git add -f data/editorial-remarks-status.txt
+          git commit -m "Record editorial remarks outcome"
+          git push origin HEAD:editorial-remarks-${{ github.run_id }}
