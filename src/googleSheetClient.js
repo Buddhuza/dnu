@@ -153,7 +153,7 @@ export async function readGoogleSheetEdition(link, sheetName = '', queryTable = 
   if (!date) throw new Error('No recent dated news worksheet could be read from Google. Check that the sheet is shared with viewers and contains a date-named news tab.');
   const statusWarning = runStatus && runStatus !== 'COMPLETE' && statusDate
     ? `The ${statusDate} edition is ${runStatus.toLowerCase()}. Loaded the previous completed edition, ${date}, for review instead.`
-    : !runStatus ? `NewsStatus was unavailable; the ${date} news worksheet was verified directly.` : '';
+    : '';
   const grid = googleTableGrid(selectedTable);
   let rows = [], tablePreview;
   try { rows = spreadsheetRowsFromGrid(grid); }

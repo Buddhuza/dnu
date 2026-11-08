@@ -84,7 +84,7 @@ test('Google import finds a dated news tab when NewsStatus returns an unrelated 
   const result = await readGoogleSheetEdition(DEFAULT_GOOGLE_SHEET_URL, '', query, testNow);
   assert.equal(result.date, '2026-11-03');
   assert.equal(result.rows[0].heading, 'Ukraine security talks begin');
-  assert.match(result.cacheWarning, /NewsStatus was unavailable/);
+  assert.doesNotMatch(result.cacheWarning, /NewsStatus/);
   assert.deepEqual(calls, ['NewsStatus', '2026-11-03', 'NewsWork_B', 'NewsWork_A']);
 });
 
