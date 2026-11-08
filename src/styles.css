@@ -361,7 +361,7 @@
   .daily-downloads .daily-action,.daily-downloads .daily-action.daily-download{width:25px;height:25px;min-width:25px;padding:4px}
   .daily-title-row .report-date{font-size:13px}
 }
-.import-spreadsheet-dialog{width:min(100%,680px)}
+.import-spreadsheet-dialog{width:min(100%,680px);background:var(--site-bg,#f4efe6)}
 .import-file-label{display:block;font-weight:800;margin:16px 0 7px}
 .import-google-controls{display:flex;gap:8px;align-items:stretch}
 .import-google-controls input{flex:1;min-width:0;padding:9px;border:1px solid #a7bbba;border-radius:6px;background:var(--site-surface,#fff);color:var(--site-text,#182a36);font:inherit;font-size:14px}
@@ -370,7 +370,7 @@
 .import-file-fallback{margin-top:14px}.import-file-fallback summary{cursor:pointer;font-weight:700}
 .import-spreadsheet-dialog input[type="file"]{width:100%;padding:10px;font-size:14px}
 .import-spreadsheet-dialog select{display:block;width:100%;margin-top:7px;padding:9px;border:1px solid #a7bbba;border-radius:6px;background:var(--site-surface,#fff);color:var(--site-text,#182a36);font-size:14px}
-.import-spreadsheet-preview{margin-top:15px;border:1px solid #a7bbba;border-radius:8px;padding:12px}
+.import-spreadsheet-preview{margin-top:15px;border:1px solid #a7bbba;border-radius:8px;padding:12px;background:var(--site-surface,#fdfaf4)}
 .import-spreadsheet-preview p{margin:0 0 9px}
 .import-spreadsheet-preview ul{max-height:210px;overflow:auto;margin:0;padding-left:20px}
 .import-spreadsheet-preview li{margin:7px 0;line-height:1.35}
@@ -378,7 +378,7 @@
 .import-spreadsheet-preview details{margin-top:12px}
 .import-spreadsheet-preview summary{cursor:pointer;font-weight:700}
 .import-placement-review ul{max-height:340px;overflow:auto;padding-left:0;list-style:none}
-.import-placement-item{position:relative;margin:10px 0;padding:10px;border:1px solid #a7bbba;border-radius:6px}
+.import-placement-item{position:relative;margin:10px 0;padding:10px;border:1px solid #a7bbba;border-radius:6px;background:var(--site-bg,#f4efe6)}
 .import-placement-item>strong{display:block;padding-right:38px}
 .import-placement-item>span{display:block;opacity:.75;font-size:.85em}
 .import-placement-delete{position:absolute;top:9px;right:9px;display:grid;place-items:center;width:30px;height:30px;padding:5px;border:1px solid #a53d39;border-radius:6px;background:transparent;color:#a53d39;cursor:pointer}
