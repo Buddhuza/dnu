@@ -112,6 +112,8 @@ Use the latest direct instruction from the editor when it changes a rule. Record
 
 ### Visual design and labels
 
+- In the light Import spreadsheet dialog, use the site's pale beige background for the dialog and placement cards, with a lighter surface for the worksheet preview and form fields. Follow the active dark theme colours in dark mode.
+
 - The page brand is SITUATION ROOM and the update is DAILY NEWS UPDATE; omit the OSCE logo from the web header. Use a slightly beige light background and a working dark-mode switch. Section headings are uppercase and larger than subsection headings; subsection headings are larger than country headings. Keep country heading size at the established smaller size.
 - Countries and organisations have pale blue highlighted headings in web and Word. The Miscellaneous subsection headings themselves are not highlighted. In Lead stories, Middle East retains its highlight. Keep the specified spacing: more above main sections other than Lead stories, little below section/subsection headings, and a little more above subsection headings.
 - Keep the update column readable rather than page-wide. Use compact top bars and controls. The update controls are Add, Import spreadsheet, Edit/Save, compressed-view toggle, Download, Email, spreadsheet export and Search; prefer small blue icon buttons with clear hover labels. Section shortcut buttons are centred and evenly distributed.
