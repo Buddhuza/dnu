@@ -12,7 +12,8 @@ test('automatic import excludes the specific non-news and paywalled examples', (
     'INTERVIEW: John Bolton: Stability of BiH Is Crucial for the Balkans',
     'CESEC: Europe is spending enormous sums on high energy costs',
     'US-Israel-Iran War',
-    '- politico.eu (Politico.eu) 7 Nov 26'
+    '- politico.eu (Politico.eu) 7 Nov 26',
+    '- politico.eu'
   ];
   for (const title of titles) assert.ok(excludedHeadlineReason(title), title);
   const paywalled = { id: 'bloomberg', section: 'South Eastern Europe', subsection: 'Albania', sourceName: 'Bloomberg', title: 'Albania Protests Turn Violent as Pressure on PM Continues', url: 'https://www.bloomberg.com/news/articles/example' };
