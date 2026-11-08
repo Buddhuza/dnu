@@ -1,0 +1,22 @@
+Removed: Bloomberg — Albania Protests Turn Violent as Pressure on PM Continues — Bloomberg article is paywalled
+Removed: APA — Ukraine strikes Russian missile launchers, air defense systems in Bryansk Oblast, General Staff says — Ukraine coverage requires an international news source
+Removed: Ukrinform — Russian forces attack Odesa, damaging residential house — Ukraine coverage requires an international news source
+Removed: Ukrinform — Russia attacks power transmission networks carrying electricity from nuclear power plants to Kyiv and central — Ukraine coverage requires an international news source
+Removed: Azernews — Sybiha: Russia's actions fit definition of genocide — Russia coverage requires an international or Russian news source
+Removed: Sarajevo Times — INTERVIEW: John Bolton: Stability of BiH Is Crucial for the Balkans — Interview headlines are excluded
+Removed: Ukrinform — Defense Forces strike three more Russian air defense systems and drone operator training center in Luhansk reg — Ukraine coverage requires an international news source
+Removed: Ukrinform — Russia may have used North Korean KN-23 missiles to strike Ukrainian energy facility – Zelensky — Ukraine coverage requires an international news source
+Removed: Ukrinform — Emergency power cuts introduced in Kyiv region — Ukraine coverage requires an international news source
+Removed: Ukrinform — Private house damaged in Russian attack on Kyiv's Shevchenkivskyi district — Ukraine coverage requires an international news source
+Removed: Ukrinform — Russian attack on Kharkiv leaves two injured — Ukraine coverage requires an international news source
+Removed: APA — Armenia's Simonyan regrets asking Russia to stop 2020 war — Azerbaijani outlet excluded from Armenia coverage
+Removed: Gulf News — US Mission to UAE warns Americans of higher attack risk 1 m read — US coverage requires an international or US news source
+Removed: Azernews — French education unions call strike for November 10 — France coverage requires an international or French news source
+Removed: AA — US-Israel-Iran War — Topic page rather than a specific news article
+Removed: Kyiv Independent — Germany cannot provide Ukraine with more Patriot systems for now, defense minister says — Germany coverage requires an international or German news source
+Removed: World Bank — Energy Efficiency in the Western Balkans: Building Markets and Creating Jobs — Direct organisation publication
+Removed: Armenpress — German defence minister sees little prospect of a swift ceasefire in Ukraine — Ukraine coverage requires an international news source
+Removed: Hina — CESEC: Europe is spending enormous sums on high energy costs — Analytical article without a specific news development
+Removed: Kyiv Independent — Russia to send senior diplomats, military officials to upcoming peace talks in Abu Dhabi — Russia coverage requires an international or Russian news source
+Removed: ABC — PM says US midterm result won't change how he deals with Trump | ABC News Top Stories — US coverage requires an international or US news source
+Published corrected shared edition: 85 stories retained, 21 removed.
