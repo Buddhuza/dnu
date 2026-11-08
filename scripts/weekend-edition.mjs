@@ -11,6 +11,10 @@ import { viennaWallTimeToIso } from '../src/viennaTime.js';
 
 const dryRun = process.argv.includes('--dry-run');
 const publishOnly = process.argv.includes('--publish-only');
+const forceRepublish = process.argv.includes('--force-republish');
+const publishAtArgument = process.argv.find(value => value.startsWith('--publish-at='));
+const publishAt = publishAtArgument ? Date.parse(publishAtArgument.slice('--publish-at='.length)) : null;
+if (publishAtArgument && !Number.isFinite(publishAt)) throw new Error('Invalid --publish-at timestamp.');
 const sheetUrl = process.env.DNU_GOOGLE_SHEET_URL || DEFAULT_GOOGLE_SHEET_URL;
 const supabaseUrl = process.env.SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -140,7 +144,7 @@ for (const item of selection.promoted) console.log(`Lead: ${item.heading} — ${
 if (dryRun) process.exit(0);
 const client = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
 let state = await readState(client);
-if (state.edition?.weekendAutomation?.date === now.date) {
+if (!forceRepublish && state.edition?.weekendAutomation?.date === now.date) {
   console.log(`The ${now.date} weekend edition is already published. No duplicate publication or email was attempted.`);
   process.exit(0);
 }
@@ -160,11 +164,20 @@ const newSettings = {
 };
 if (!displaySiteContent(selection.articles, newSettings, new Set()).length) throw new Error('Site settings hide all selected stories; no weekend edition or email was published.');
 const edition = {
-  title: 'DAILY NEWS UPDATE', checkedAt: new Date(Math.max(Date.now(), due)).toISOString(),
+  title: 'DAILY NEWS UPDATE', checkedAt: new Date(Math.max(Date.now(), due, publishAt || 0)).toISOString(),
   windowStart: new Date(due - 24 * 3600_000).toISOString(), windowEnd: new Date(due).toISOString(),
   articles: selection.articles, sourceOutcomes: [],
   weekendAutomation: { date: now.date, status: mailDelivery === 'none' ? 'published' : 'prepared', delivery: mailDelivery, worksheet: sheet.sheetName }
 };
+if (publishAt && Date.now() < publishAt) {
+  console.log(`Edition prepared. Waiting until ${new Date(publishAt).toISOString()} to publish.`);
+  await sleep(publishAt - Date.now());
+  state = await readState(client);
+  if (state.edition?.weekendAutomation?.date === now.date && state.edition?.weekendAutomation?.worksheet === sheet.sheetName && !forceRepublish) {
+    console.log('Edition was published while waiting; no duplicate publication was attempted.');
+    process.exit(0);
+  }
+}
 await updateState(client, state, { edition, settings: newSettings, excluded_story_ids: [], compiled_at: edition.checkedAt });
 console.log(`Published the ${now.date} weekend edition with ${edition.articles.length} stories.`);
 if (mailDelivery !== 'graph') {

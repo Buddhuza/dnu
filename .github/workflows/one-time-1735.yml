@@ -1,0 +1,41 @@
+name: One-time DNU refresh at 17:35 Vienna
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/one-time-1735.yml
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SUPABASE_URL: https://epghsyajgspcywqqbfso.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      DNU_GOOGLE_SHEET_URL: ${{ vars.DNU_GOOGLE_SHEET_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - name: Refresh the website edition at 17:35 Vienna time
+        run: |
+          set -o pipefail
+          node scripts/weekend-edition.mjs --publish-only --force-republish --publish-at=2026-11-08T16:35:00Z 2>&1 | tee data/one-time-1735-status.txt
+      - name: Save the outcome
+        if: always()
+        run: |
+          if [ ! -f data/one-time-1735-status.txt ]; then
+            printf 'The edition step did not start. Check this workflow run in Actions.\n' > data/one-time-1735-status.txt
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b one-time-1735-${{ github.run_id }}
+          git add -f data/one-time-1735-status.txt
+          git commit -m "Record 17:35 DNU refresh outcome"
+          git push origin HEAD:one-time-1735-${{ github.run_id }}
