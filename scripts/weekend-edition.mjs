@@ -10,7 +10,6 @@ import { viennaWallTimeToIso } from '../src/viennaTime.js';
 
 const dryRun = process.argv.includes('--dry-run');
 const publishOnly = process.argv.includes('--publish-only');
-const forcePublish = publishOnly && process.argv.includes('--force-publish');
 const sheetUrl = process.env.DNU_GOOGLE_SHEET_URL || DEFAULT_GOOGLE_SHEET_URL;
 const supabaseUrl = process.env.SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -135,7 +134,7 @@ for (const removed of selection.removed) console.log(`Duplicate: ${removed.artic
 if (dryRun) process.exit(0);
 const client = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
 let state = await readState(client);
-if (!forcePublish && state.edition?.weekendAutomation?.date === now.date) {
+if (state.edition?.weekendAutomation?.date === now.date) {
   console.log(`The ${now.date} weekend edition is already published. No duplicate publication or email was attempted.`);
   process.exit(0);
 }
