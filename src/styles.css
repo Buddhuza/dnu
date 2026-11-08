@@ -152,9 +152,6 @@
 .coverage-row p{margin:6px 0;line-height:1.45}
 .coverage-row a{font-size:13px;color:var(--site-section,#0070c0);overflow-wrap:anywhere}
 .app-shell[data-mode="dark"] .coverage-counts span,.app-shell[data-mode="dark"] .coverage-row.selected{background:#263a43}
-.collection-summary{border-top:1px solid #d6dfdf;margin-top:22px;padding:12px 0 5px;color:var(--site-text,#182a36);font-size:13px;line-height:1.45}
-.collection-summary strong{display:block;margin-bottom:5px;font-size:14px}
-.collection-summary p{margin:2px 0}
 @media(max-width:1100px){.brand-text strong{font-size:max(28px,calc(var(--section-heading-size,26px) + 2px))}.brand-mark,.brand-mark img{height:44px}.live-pill{display:none}}
 @media(max-width:720px){.topbar{flex-wrap:wrap}.brand-mark,.brand-mark img{height:38px}.brand-text strong{font-size:max(27px,calc(var(--section-heading-size,26px) + 1px));letter-spacing:-.05em}.brand-text small{display:block;font-size:10px}.coverage-controls{flex-direction:column}.source-coverage{padding:20px 18px}}
 

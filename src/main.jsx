@@ -301,13 +301,15 @@ function App() {
     const times = selectedArticles.map(item => Date.parse(item.publishedAt)).filter(Number.isFinite);
     return { ...daily, windowStart: new Date(Math.min(Date.parse(daily.windowStart), ...times)).toISOString(), windowEnd: new Date(Math.max(Date.parse(daily.windowEnd), ...times)).toISOString() };
   }, [daily, selectedArticles]);
-  const coverageNote = !daily ? '' : daily.emptyPrepared
+  const coverageDetails = `${selectedArticles.length} ${selectedArticles.length === 1 ? 'story' : 'stories'} included · ${coveredCountries} ${coveredCountries === 1 ? 'country' : 'countries'} represented${reportWindow?.windowStart && reportWindow?.windowEnd ? ` · Coverage period: ${dateLabel(reportWindow.windowStart)} – ${dateLabel(reportWindow.windowEnd)}` : ''}.`;
+  const coverageDescription = !daily ? '' : daily.emptyPrepared
     ? selectedArticles.length ? sharedEnabled ? 'This update contains stories added by the editor.' : 'This update contains stories added in this browser; the published edition is empty.' : ''
     : daily.importedFromSpreadsheet
     ? `Imported from ${daily.importedFileName || 'a spreadsheet'}${sharedEnabled ? ' for the shared update.' : ' in this browser. The public edition has not changed.'}`
     : siteConfig.coverageText || (reportWindow?.windowStart
-    ? `Coverage: ${dateLabel(reportWindow.windowStart)} to ${dateLabel(reportWindow.windowEnd)}. Original snapshot prepared ${dateLabel(daily.checkedAt)} from selected article pages.${selectedArticles.some(item => item.id.startsWith('manual-')) ? ' Includes articles added in this browser.' : ''}${selectedArticles.some(item => item.timeSource === 'inferred' || item.timeSource === 'current') ? ' Some added articles have inferred dates or were stamped when added.' : ''} The original snapshot does not refresh automatically.`
+    ? `Original snapshot prepared ${dateLabel(daily.checkedAt)} from selected article pages.${selectedArticles.some(item => item.id.startsWith('manual-')) ? ' Includes articles added in this browser.' : ''}${selectedArticles.some(item => item.timeSource === 'inferred' || item.timeSource === 'current') ? ' Some added articles have inferred dates or were stamped when added.' : ''} The original snapshot does not refresh automatically.`
     : `Prepared ${dateLabel(daily?.checkedAt)} from selected reporting in the preceding ${daily?.windowHours || 48} hours.`);
+  const coverageNote = daily ? `${coverageDescription ? `${coverageDescription.trim()} ` : ''}${coverageDetails}` : '';
   const activeTheme = siteConfig.darkMode ? siteConfig.darkTheme : siteConfig.theme;
   const themeStyle = {
     '--site-primary': activeTheme.primary, '--site-accent': activeTheme.accent,
@@ -815,7 +817,6 @@ function App() {
             {!readingArticles.length && <p className="daily-empty">{displayedArticles.length ? isEditor ? 'No stories are selected. Press Edit to choose stories for this update.' : 'No stories are selected for this update.' : isEditor ? 'No stories yet. Press Import spreadsheet to populate the update.' : 'No stories have been published yet.'}</p>}
             {selectedArticles.length > 0 && <div className="daily-disclaimer"><p><strong>Disclaimer:</strong> {disclaimerFirst}</p><p>{disclaimerSecond}</p></div>}
             {siteConfig.showCoverage && coverageNote && selectedArticles.length > 0 && <p className="daily-coverage">{coverageNote}</p>}
-            <div className="collection-summary" aria-label="Collection report"><strong>Collection report</strong><p>{selectedArticles.length} {selectedArticles.length === 1 ? 'story' : 'stories'} included</p><p>{coveredCountries} {coveredCountries === 1 ? 'country' : 'countries'} represented</p>{reportWindow?.windowStart && reportWindow?.windowEnd && <p>Coverage period: {dateLabel(reportWindow.windowStart)} – {dateLabel(reportWindow.windowEnd)}</p>}</div>
           </div>}
         </section>}
         {websiteSource && <section className="website-panel" aria-label={`${websiteSource.name} website`}><div className="website-panel-heading"><div><span className="eyebrow">SOURCE WEBSITE</span><h2>{websiteSource.name}</h2></div><button onClick={() => setWebsiteSourceId('')} aria-label="Close source website">×</button></div><div className="website-panel-actions"><a href={websiteSource.url} target="_blank" rel="noopener noreferrer">Open website in new tab ↗</a></div><p>{isEditor ? 'To add an article, copy its link address, then paste it into Add.' : 'Some publishers block display here; use the link above if this panel stays blank.'}</p><iframe key={websiteSource.id} src={websiteSource.url} title={`${websiteSource.name} website`} referrerPolicy="no-referrer" loading="lazy"/></section>}
