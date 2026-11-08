@@ -107,6 +107,14 @@ test('headline, empty summary, and agency edits survive saved settings', () => {
   assert.equal(story.sourceName, 'New agency');
 });
 
+test('an edited article date survives saved settings and appears in the public story', () => {
+  const stories = [{ id: 'dated', section: 'Eastern Europe', subsection: 'Ukraine', title: 'Ukraine and EU meet', sourceName: 'Reuters', url: 'https://example.com/dated', publishedAt: '2026-11-08T10:00:00Z' }];
+  const config = defaultSiteConfig(stories);
+  config.articleEdits.dated = { publishedAt: '2026-11-07T10:00:00Z' };
+  const restored = normalizeSiteConfig(config, stories);
+  assert.equal(displaySiteContent(stories, restored)[0].publishedAt, '2026-11-07T10:00:00.000Z');
+});
+
 test('old text-only edits restore the original country and subsection', () => {
   const stories = [{ id: 'italy', section: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Italy', title: 'Original', sourceName: 'Agency' }];
   const config = normalizeSiteConfig({ ...defaultSiteConfig(stories), articleEdits: { italy: { title: 'Edited', summary: '', summaryEdited: true, sourceName: 'New agency', sectionId: '', subsection: '', country: '' } } }, stories);

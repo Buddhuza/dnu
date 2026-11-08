@@ -262,6 +262,8 @@
 .daily-story-inline-edit [data-edit-field="sourceName"]{color:var(--site-section,#0070c0)}
 .daily-story-inline-edit [data-edit-field="summary"]:empty{display:inline-block;min-width:5ch}
 .daily-story-inline-edit [data-edit-field="summary"]:empty::before{content:attr(data-placeholder);opacity:.55}
+.daily-story-inline-edit [data-edit-field="publishedAt"]:empty{display:inline-block;min-width:7ch}
+.daily-story-inline-edit [data-edit-field="publishedAt"]:empty::before{content:attr(data-placeholder);opacity:.55}
 .story-edit-tools{flex:none;display:grid;grid-template-columns:repeat(2,26px);gap:3px;width:55px}
 .daily-story .story-edit-tools button{display:grid;place-items:center;flex:none;width:26px;height:26px;margin:0;padding:0;border:1px solid #aabac2;border-radius:5px;background:var(--site-surface,#fff);color:var(--site-section,#0070c0);line-height:1}
 .daily-story .story-edit-tools button:hover,.daily-story .story-edit-tools button:focus-visible{background:var(--site-bg,#f4efe6);text-decoration:none}

@@ -15,6 +15,7 @@ import { orderedSubsections, leadRegionalHeadings } from './newsSections.js';
 import { createReportDocxFromTemplate } from './docxBuilder.js';
 import { reportFilename } from './reportFilename.js';
 import { reportEndDateLabel, reportShortDateLabel } from './reportDate.js';
+import { parseEditedArticleDate } from './articleDateEdit.js';
 import { reportStoryText } from './reportText.js';
 import { duplicateGroups, duplicateGroupHue } from './storyDuplicates.js';
 import { storyOrigin } from './storyOrigin.js';
@@ -607,22 +608,32 @@ function App() {
     finally { setExportingSheet(false); }
   }
 
-  const readStoryDrafts = () => Object.fromEntries([...document.querySelectorAll('.daily-scroll .daily-story[data-story-id]')].map(story => [story.dataset.storyId, {
-    title: story.querySelector('[data-edit-field="title"]')?.innerText.trim() || '',
-    summary: story.querySelector('[data-edit-field="summary"]')?.innerText.trim() || '',
-    sourceName: story.querySelector('[data-edit-field="sourceName"]')?.innerText.trim() || ''
-  }]));
+  const readStoryDrafts = () => Object.fromEntries([...document.querySelectorAll('.daily-scroll .daily-story[data-story-id]')].map(story => {
+    const dateField = story.querySelector('[data-edit-field="publishedAt"]');
+    return [story.dataset.storyId, {
+      title: story.querySelector('[data-edit-field="title"]')?.innerText.trim() || '',
+      summary: story.querySelector('[data-edit-field="summary"]')?.innerText.trim() || '',
+      sourceName: story.querySelector('[data-edit-field="sourceName"]')?.innerText.trim() || '',
+      publishedAt: parseEditedArticleDate(dateField?.innerText, dateField?.getAttribute('datetime'))
+    }];
+  }));
   const validStoryDrafts = drafts => {
-    if (!Object.values(drafts).some(draft => !draft.title || !draft.sourceName)) return true;
-    setToast('Each story needs a headline and agency before saving.');
-    return false;
+    if (Object.values(drafts).some(draft => !draft.title || !draft.sourceName)) {
+      setToast('Each story needs a headline and agency before saving.');
+      return false;
+    }
+    if (Object.values(drafts).some(draft => !draft.publishedAt)) {
+      setToast('Enter each article date as 14 Oct 26 or 2026-10-14 before saving.');
+      return false;
+    }
+    return true;
   };
   const applyStoryDrafts = (current, drafts) => ({
     ...current,
     articleEdits: Object.fromEntries([...Object.entries(current.articleEdits), ...Object.entries(drafts)
       .filter(([id]) => !(current.customArticles.some(item => item.id === id)))
-      .map(([id, draft]) => [id, { ...(current.articleEdits[id] || {}), title: draft.title.trim(), summary: draft.summary.trim(), summaryEdited: true, sourceName: draft.sourceName.trim() }])]),
-    customArticles: current.customArticles.map(item => drafts[item.id] ? { ...item, title: drafts[item.id].title, summary: drafts[item.id].summary, sourceName: drafts[item.id].sourceName } : item)
+      .map(([id, draft]) => [id, { ...(current.articleEdits[id] || {}), title: draft.title.trim(), summary: draft.summary.trim(), summaryEdited: true, sourceName: draft.sourceName.trim(), publishedAt: draft.publishedAt }])]),
+    customArticles: current.customArticles.map(item => drafts[item.id] ? { ...item, title: drafts[item.id].title, summary: drafts[item.id].summary, sourceName: drafts[item.id].sourceName, publishedAt: drafts[item.id].publishedAt } : item)
   });
   const rememberReadingPosition = () => {
     const scroller = document.querySelector('.daily-scroll');
@@ -796,7 +807,7 @@ function App() {
                       <button type="button" className={`story-star-button ${item.sectionId === 'Lead stories' ? 'is-lead' : ''}`} aria-label={`${item.sectionId === 'Lead stories' ? 'Remove from' : 'Add to'} lead stories: ${item.title}`} aria-pressed={item.sectionId === 'Lead stories'} title={item.sectionId === 'Lead stories' ? 'Return to original country' : 'Make lead story'} onClick={() => toggleLeadStory(item.id)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg></button>
                       <button type="button" className="story-delete-button" aria-label={`Delete story: ${item.title}`} title="Delete story from the update" onClick={() => deleteStory(item.id)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v6m4-6v6"/></svg></button>
                     </div>}
-                    <div className="daily-story-content">{editingStories ? <p className={`daily-story-inline-edit origin-${storyOrigin(item)}`} title={`Story source: ${storyOrigin(item) === "other" ? "unknown source" : storyOrigin(item)}`}><span className="story-origin-highlight"><strong contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit headline" data-edit-field="title" onKeyDown={keepStoryTextInline}>{reportStoryText(item, headlineOnly).headline}</strong>{' '}<span contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit summary" data-edit-field="summary" data-placeholder="Add summary" onKeyDown={keepStoryTextInline}>{reportStoryText(item).summary}</span>{' '}(<span contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit agency" data-edit-field="sourceName" onKeyDown={keepStoryTextInline}>{item.sourceName}</span>){Number.isFinite(Date.parse(item.publishedAt)) && <> <time className="daily-story-date" dateTime={item.publishedAt}>{reportShortDateLabel(item.publishedAt)}</time></>}</span></p> : <p><strong>{highlightSearch(reportStoryText(item, headlineOnly).headline)}</strong>{!headlineOnly && item.summary && <> {highlightSearch(reportStoryText(item).summary)}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{highlightSearch(item.sourceName)}</a>){Number.isFinite(Date.parse(item.publishedAt)) && <> <time className="daily-story-date" dateTime={item.publishedAt}>{highlightSearch(reportShortDateLabel(item.publishedAt))}</time></>}</p>}{duplicateMatches.has(item.id) && <span className="story-duplicate-flag" style={{ '--duplicate-hue': duplicateGroupHue(duplicateMatches.get(item.id).number) }} title={duplicateMatches.get(item.id).matches.map(other => `${other.sourceName}: ${other.title}`).join('\n')}>Possible duplicate · Group {duplicateMatches.get(item.id).number} · {duplicateMatches.get(item.id).matches.map(other => other.sourceName).join(', ')}</span>}</div>
+                    <div className="daily-story-content">{editingStories ? <p className={`daily-story-inline-edit origin-${storyOrigin(item)}`} title={`Story source: ${storyOrigin(item) === "other" ? "unknown source" : storyOrigin(item)}`}><span className="story-origin-highlight"><strong contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit headline" data-edit-field="title" onKeyDown={keepStoryTextInline}>{reportStoryText(item, headlineOnly).headline}</strong>{' '}<span contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit summary" data-edit-field="summary" data-placeholder="Add summary" onKeyDown={keepStoryTextInline}>{reportStoryText(item).summary}</span>{' '}(<span contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit agency" data-edit-field="sourceName" onKeyDown={keepStoryTextInline}>{item.sourceName}</span>){' '}<time className="daily-story-date" dateTime={item.publishedAt || ''} contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit article date" data-edit-field="publishedAt" data-placeholder="14 Oct 26" onKeyDown={keepStoryTextInline}>{Number.isFinite(Date.parse(item.publishedAt)) ? reportShortDateLabel(item.publishedAt) : ''}</time></span></p> : <p><strong>{highlightSearch(reportStoryText(item, headlineOnly).headline)}</strong>{!headlineOnly && item.summary && <> {highlightSearch(reportStoryText(item).summary)}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{highlightSearch(item.sourceName)}</a>){Number.isFinite(Date.parse(item.publishedAt)) && <> <time className="daily-story-date" dateTime={item.publishedAt}>{highlightSearch(reportShortDateLabel(item.publishedAt))}</time></>}</p>}{duplicateMatches.has(item.id) && <span className="story-duplicate-flag" style={{ '--duplicate-hue': duplicateGroupHue(duplicateMatches.get(item.id).number) }} title={duplicateMatches.get(item.id).matches.map(other => `${other.sourceName}: ${other.title}`).join('\n')}>Possible duplicate · Group {duplicateMatches.get(item.id).number} · {duplicateMatches.get(item.id).matches.map(other => other.sourceName).join(', ')}</span>}</div>
                   </article>
                 </React.Fragment>)}
               </div>)}
