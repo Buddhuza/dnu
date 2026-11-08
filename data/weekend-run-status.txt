@@ -1,0 +1,9 @@
+NewsStatus is unavailable; verified that the 2026-11-08 dated worksheet remained unchanged across two reads.
+Worksheet 2026-11-08: 124 rows, 106 eligible, 6 duplicates removed, 100 selected, 7 needing placement, 11 rejected.
+Duplicate: AP — Drone and missile attacks wound 9 as Ukraine prepares for talks with Russia and the US → kept AP
+Duplicate: AP — Israel’s president taps opposition candidate Eisenkot to form a government, in setback for Netanyahu → kept Al Jazeera
+Duplicate: Al Jazeera — Israel’s president picks Eisenkot over Netanyahu to form next government → kept Al Jazeera
+Duplicate: France 24 — Yemen: 30 dead in strikes on Taiz market → kept DW
+Duplicate: Arab News — Iran executes man convicted of attack on police station → kept Reuters
+Duplicate: Guardian — US carries out another round of ‘minor’ strikes on Iran, Trump says → kept Euronews
+The 2026-11-08 weekend edition is already published. No duplicate publication or email was attempted.
