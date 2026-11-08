@@ -1,0 +1,3 @@
+Inspected source-list title: - politico.eu
+Removed: Politico.eu — - politico.eu — Source listing rather than a news article
+Published corrected shared edition: 84 stories retained, 1 removed.
