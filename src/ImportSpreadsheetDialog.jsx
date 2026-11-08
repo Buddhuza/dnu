@@ -51,9 +51,11 @@ function PlacementChooser({ item, sections, customCountries, onApply, onDelete }
         }}><option value="">{chosenSection ? 'Choose heading' : 'Choose section first'}</option><option value={DIRECT}>Directly under section</option>{(section?.subsections || []).map(value => <option key={value} value={value}>{value}</option>)}<option value={NEW}>Create heading…</option></select></label>
         <label>{chosenSubsection === 'INTERNATIONAL ORGANISATIONS' ? 'Organisation' : 'Country or organisation'}<select value={showCountry ? createCountry ? NEW : country : ''} disabled={!showCountry} onChange={event => { setCreateCountry(event.target.value === NEW); setCountry(event.target.value === NEW ? '' : event.target.value); }}><option value="">{chosenSection && chosenSection !== 'Miscellaneous' ? 'Not used for this section' : 'Choose subsection first'}</option><option value={DIRECT_SUBSECTION}>Directly under subsection</option>{countryOptions.map(value => <option key={value} value={value}>{value}</option>)}<option value={NEW}>Create country or organisation…</option></select></label>
       </div>
-      <div className="import-placement-details">
+      {(createSection || createSubsection) && <div className="import-placement-extra">
         {createSection && <label>New section<input value={newSection} maxLength={80} onChange={event => setNewSection(event.target.value)} placeholder="Section name"/></label>}
         {createSubsection && <label>New heading<input value={newSubsection} maxLength={100} onChange={event => setNewSubsection(event.target.value)} placeholder="Country, organisation or subsection"/></label>}
+      </div>}
+      <div className="import-placement-details">
         <label>New country or organisation<input value={newCountry} maxLength={100} disabled={!showCountry || !createCountry} onChange={event => setNewCountry(event.target.value)} placeholder={showCountry ? 'Choose Create country or organisation above' : 'Choose a Miscellaneous subsection first'}/></label>
         <button type="button" disabled={!valid} onClick={() => onApply(item.row, { sectionId: chosenSection, subsection: direct ? '' : chosenSubsection, country: chosenSection === 'Miscellaneous' && !direct ? chosenCountry : '' })}>Use placement</button>
       </div>
@@ -206,7 +208,6 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
         {result.needsPlacement.length > 0 && <details open className="import-placement-review"><summary>Place {result.needsPlacement.length} stories before importing</summary><ul>{result.needsPlacement.map(item => <PlacementChooser key={item.row} item={item} sections={sections} customCountries={customCountries} onApply={applyPlacement} onDelete={deleteStory}/>)}</ul></details>}
         {result.skipped.length > 0 && <details><summary>Skipped rows</summary><ul>{result.skipped.map(item => <li key={`${item.row}-${item.reason}`}>Row {item.row}: {item.reason}</li>)}</ul></details>}
       </div>}
-      <p className="import-spreadsheet-note">{sharedMode ? 'Import adds stories to the shared update for all visitors. Clear all stories empties it for everyone while preserving the section structure and article cache.' : 'Import adds stories to the update in this browser. It does not change the public edition; you can restore that edition here later.'}</p>
       <div className="add-dialog-actions">
         {sharedMode ? <button type="button" className="import-spreadsheet-clear" onClick={onClear} disabled={busy || !hasStories}>Clear all stories</button> : publishedEmpty && hasStories ? <button type="button" className="import-spreadsheet-clear" onClick={onClear} disabled={busy}>Clear update</button> : importedMode && <button type="button" onClick={onRestore} disabled={busy}>Restore published update</button>}
         <button type="button" onClick={onClose} disabled={busy}>Cancel</button>
