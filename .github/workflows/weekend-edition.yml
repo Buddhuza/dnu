@@ -43,6 +43,8 @@ jobs:
         with:
           node-version: '22'
       - run: npm ci
+      - name: Check weekend placement and selection rules
+        run: node --test src/weekendPlacement.test.js src/weekendEdition.test.js
       - name: Prepare weekend edition and send at 08:00 Vienna time
         run: |
           set -o pipefail
