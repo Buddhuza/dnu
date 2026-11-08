@@ -10,6 +10,8 @@ test('weekend placement uses headline city, nationality and country clues', () =
     { sectionId: 'Miscellaneous', subsection: 'MIDDLE EAST / NORTH AFRICA', country: 'Yemen' });
   assert.deepEqual(weekendPlacementForRow({ heading: 'Greek cargo ship sinks off Bulgaria', region: 'Europe' }),
     { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Bulgaria' });
+  assert.deepEqual(weekendPlacementForRow({ heading: 'Parties compile candidate lists for Riigikogu elections', region: 'International' }),
+    { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Estonia' });
   assert.deepEqual(weekendPlacementForRow({ heading: 'Russia hits Kyiv with airstrikes', region: 'International' }),
     { sectionId: 'Eastern Europe', subsection: 'Ukraine', country: '' });
 });
@@ -26,6 +28,9 @@ test('weekend placement can use the organisation or broad region when no country
     { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: '' });
   assert.deepEqual(weekendPlacementForRow({ heading: 'Officials discuss cross-border energy links', region: 'International' }),
     { sectionId: 'Miscellaneous', subsection: '', country: '' });
+  assert.deepEqual(weekendPlacementForRow({ heading: 'CESEC: Europe faces rising energy costs', region: 'International' },
+    { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Europe' }),
+  { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: '' });
 });
 
 test('weekend conversion publishes rows that manual import would hold for placement', () => {

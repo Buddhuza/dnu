@@ -49,7 +49,11 @@ jobs:
         run: |
           set -o pipefail
           if [ '${{ github.event_name }}' = 'push' ]; then
-            node scripts/weekend-edition.mjs --publish-only 2>&1 | tee data/weekend-run-status.txt
+            if [ "$(date -u +%F)" = '2026-11-08' ]; then
+              node scripts/weekend-edition.mjs --publish-only --force-publish 2>&1 | tee data/weekend-run-status.txt
+            else
+              node scripts/weekend-edition.mjs --publish-only 2>&1 | tee data/weekend-run-status.txt
+            fi
           elif [ '${{ github.event_name }}' = 'workflow_dispatch' ] && [ '${{ inputs.dry_run }}' = 'true' ]; then
             node scripts/weekend-edition.mjs --dry-run 2>&1 | tee data/weekend-run-status.txt
           else

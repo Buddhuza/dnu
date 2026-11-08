@@ -30,7 +30,7 @@ const aliases = {
   'Cyprus': ['Cypriot', 'Nicosia'],
   'Czechia': ['Czech', 'Prague'],
   'Denmark': ['Danish', 'Copenhagen'],
-  'Estonia': ['Estonian', 'Tallinn'],
+  'Estonia': ['Estonian', 'Tallinn', 'Riigikogu'],
   'Finland': ['Finnish', 'Helsinki'],
   'France': ['French', 'Paris'],
   'Germany': ['German', 'Berlin'],
@@ -136,7 +136,10 @@ export function weekendPlacementForRow(row, suggested = {}) {
     return { sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: organisation[0] };
   }
   if (location) return location;
-  if (suggested.sectionId && suggested.subsection) return suggested;
+  if (suggested.sectionId && suggested.subsection) {
+    const broadHeading = /^(?:Europe|Asia|Middle East|Western Balkans|Eurasia|North America)$/i.test(suggested.country || '');
+    return broadHeading ? { ...suggested, country: '' } : suggested;
+  }
   const region = compact(row.region);
   const regionalSection = regional.find(section => compact(section.id) === region);
   if (regionalSection) return { sectionId: regionalSection.id, subsection: '', country: '' };
