@@ -191,7 +191,6 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
   return <div className="add-backdrop" onMouseDown={event => { if (!busy && event.target === event.currentTarget) onClose(); }}>
     <section className="add-dialog import-spreadsheet-dialog" role="dialog" aria-modal="true" aria-labelledby="import-spreadsheet-title">
       <div className="add-dialog-heading"><h2 id="import-spreadsheet-title">Import spreadsheet</h2><button type="button" onClick={onClose} disabled={busy} aria-label="Close spreadsheet import">×</button></div>
-      <p>Load the latest completed edition directly from the live Google Sheet.</p>
       <label className="import-file-label" htmlFor="import-google-sheet-url">Google Sheet URL</label>
       <div className="import-google-controls"><input id="import-google-sheet-url" type="url" value={googleUrl} onChange={event => { setGoogleUrl(event.target.value); setResult(null); setSheetNames([]); setSheetName(''); }} disabled={busy}/><button type="button" onClick={loadGoogleSheet} disabled={busy}>Load latest</button></div>
       <details className="import-file-fallback"><summary>Use an Excel or CSV file instead</summary><label className="import-file-label" htmlFor="import-spreadsheet-file">Spreadsheet file</label><input id="import-spreadsheet-file" type="file" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" onChange={chooseFile} disabled={busy}/></details>
@@ -199,7 +198,6 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
       {busy && <p role="status">Preparing spreadsheet…</p>}
       {error && <p className="add-manual-error" role="alert">{error}</p>}
       {result && <div className="import-spreadsheet-preview" aria-live="polite">
-        {result.sheetName && <p className="import-spreadsheet-note">Previewing worksheet: <strong>{result.sheetName}</strong></p>}
         <p><strong>{result.articles.length} of {result.total}</strong> rows ready · {result.needsPlacement.length} need placement · {result.skipped.length} skipped · {result.articles.filter(article => !article.summary).length} without a short summary · {result.bodies.length} full bodies available for database export</p>
         {!result.bodies.length && <p className="import-spreadsheet-note">No full article bodies were found in this sheet or its matching workbook cache. It can populate the update, but database export will have no rows.</p>}
         {result.cacheWarning && <p className="import-spreadsheet-note">{result.cacheWarning}</p>}

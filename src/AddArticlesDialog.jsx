@@ -67,9 +67,9 @@ export default function AddArticlesDialog({ sections, sources = [], customCountr
     setManual(current => current.url.trim() === url.href || current.url.trim() === manual.url.trim()
       ? { ...current, title: current.title || title, sourceName: current.sourceName || sourceName, summary: current.summary || summary, date: current.date || date }
       : current);
-    setUrlNotice(pageAvailable ? 'Page metadata suggested. Verify the headline, summary, agency and date before adding.'
-      : title || sourceName || date ? 'Suggestions came from the URL; verify the exact headline and write a summary if needed.'
-        : 'This URL does not reveal article details. Enter the headline, agency and summary yourself.');
+    setUrlNotice(pageAvailable ? 'Page metadata suggested. Verify the headline, text, agency and date before adding.'
+      : title || sourceName || date ? 'Suggestions came from the URL; verify the exact headline and add text if needed.'
+        : 'This URL does not reveal article details. Enter the headline, agency and text yourself.');
     setUrlBusy(false);
   }
 
@@ -93,7 +93,7 @@ export default function AddArticlesDialog({ sections, sources = [], customCountr
   }
 
   return <div className="add-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}>
-    <section className="add-dialog" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="add-dialog-title">
+    <section className="add-dialog add-article-dialog" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="add-dialog-title">
       <div className="add-dialog-heading"><h2 id="add-dialog-title">Add article</h2><button type="button" onClick={onClose} aria-label="Close Add article">×</button></div>
       {remainingSlots < 1 && <p className="add-unavailable" role="status">The update has reached its 100 added-story limit. Remove an added story in Manage site → Stories before adding another.</p>}
       <form onSubmit={addManual}>
@@ -101,7 +101,7 @@ export default function AddArticlesDialog({ sections, sources = [], customCountr
         <div className="add-url-tools"><input id="add-link" type="url" value={manual.url} onChange={event => { setManual(current => ({ ...current, url: event.target.value })); setUrlNotice(''); }} placeholder="https://example.com/article" autoFocus/><button type="button" onClick={useArticleUrl} disabled={urlBusy || !manual.url.trim()}>{urlBusy ? 'Checking…' : 'Use URL'}</button></div>
         {urlNotice && <p className="add-url-notice" role="status">{urlNotice}</p>}
         <label htmlFor="add-headline">Headline</label><input id="add-headline" value={manual.title} maxLength="400" onChange={event => setManual(current => ({ ...current, title: event.target.value }))}/>
-        <label htmlFor="add-summary">Summary</label><textarea id="add-summary" rows="3" value={manual.summary} maxLength="1200" onChange={event => setManual(current => ({ ...current, summary: event.target.value }))}/>
+        <label htmlFor="add-summary">Text</label><textarea id="add-summary" rows="3" value={manual.summary} maxLength="1200" onChange={event => setManual(current => ({ ...current, summary: event.target.value }))}/>
         <label htmlFor="add-agency">Agency</label><input id="add-agency" value={manual.sourceName} maxLength="100" onChange={event => setManual(current => ({ ...current, sourceName: event.target.value }))}/>
         <label htmlFor="add-article-date">Article date in Vienna (optional)</label><input id="add-article-date" type="date" value={manual.date} onChange={event => setManual(current => ({ ...current, date: event.target.value }))}/><p className="add-url-notice">A date without a time is shown as 12:00 Vienna time.</p>
         {manualError && <p className="add-manual-error" role="alert">{manualError}</p>}
