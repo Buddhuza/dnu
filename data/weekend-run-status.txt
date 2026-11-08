@@ -1,0 +1,17 @@
+NewsStatus is unavailable; verified that the 2026-11-08 dated worksheet remained unchanged across two reads.
+Worksheet 2026-11-08: 124 rows, 113 eligible, 7 automatically placed, 7 duplicates removed, 106 selected, 0 still unplaced, 0 blocked by placement policy, 11 otherwise rejected.
+Auto placement: row 16 Yemeni gov’t forces report advances as Houthis say deadly strikes hit Sanaa → Miscellaneous / MIDDLE EAST / NORTH AFRICA / Yemen
+Auto placement: row 27 🔴 At least five people killed in shooting in Krakow, Polish police say ⤵️ → Miscellaneous / WESTERN / CENTRAL EUROPE / Poland
+Auto placement: row 61 French education unions call strike for November 10 → Miscellaneous / WESTERN / CENTRAL EUROPE / France
+Auto placement: row 63 Gunman who killed at least six people in Krakow had ‘far-right’ views, Polish government says → Miscellaneous / WESTERN / CENTRAL EUROPE / Poland
+Auto placement: row 109 CESEC: Europe is spending enormous sums on high energy costs → Miscellaneous / WESTERN / CENTRAL EUROPE
+Auto placement: row 118 The Alliance criticizes the Kurti Government: You are ending the week with violations and scandals → South Eastern Europe / Serbia / Kosovo
+Auto placement: row 123 Parties still compiling candidate lists ahead of March Riigikogu elections → Miscellaneous / WESTERN / CENTRAL EUROPE / Estonia
+Duplicate: AP — Drone and missile attacks wound 9 as Ukraine prepares for talks with Russia and the US → kept AP
+Duplicate: AP — Israel’s president taps opposition candidate Eisenkot to form a government, in setback for Netanyahu → kept Al Jazeera
+Duplicate: Al Jazeera — Israel’s president picks Eisenkot over Netanyahu to form next government → kept Al Jazeera
+Duplicate: DW — Yemen: 22 killed in strike near Sanaa, Houthis say → kept Al Jazeera
+Duplicate: France 24 — Gunman who killed at least six people in Krakow had ‘far-right’ views, Polish government says → kept AP
+Duplicate: Arab News — Iran executes man convicted of attack on police station → kept Reuters
+Duplicate: Guardian — US carries out another round of ‘minor’ strikes on Iran, Trump says → kept Euronews
+The 2026-11-08 weekend edition is already published. No duplicate publication or email was attempted.
