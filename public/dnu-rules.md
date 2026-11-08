@@ -79,6 +79,8 @@ Use the latest direct instruction from the editor when it changes a rule. Record
 
 ### Editing, adding and navigation
 
+- In spreadsheet import placement review, show each story's delete action as a small red trash icon in the upper-right corner of its card. Keep its accessible label and its existing immediate removal and skipped-row accounting.
+
 - Escape closes the currently open dialog, including login, Add, Import spreadsheet, Move story, Manage site and spreadsheet export results. An import in progress remains open until it finishes.
 
 - In Edit mode, show a simple trash button for each story in place of the check/uncheck control. Deleting removes the story immediately from the editor view and, on Save, from the published update. Keep inline headline/summary/agency editing, moving and lead promotion. Editing, saving and switching summary mode must preserve the current reading position. Save remains available after the last story is deleted.

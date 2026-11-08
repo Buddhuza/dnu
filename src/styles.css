@@ -376,16 +376,19 @@
 .import-spreadsheet-preview details{margin-top:12px}
 .import-spreadsheet-preview summary{cursor:pointer;font-weight:700}
 .import-placement-review ul{max-height:340px;overflow:auto;padding-left:0;list-style:none}
-.import-placement-item{margin:10px 0;padding:10px;border:1px solid #a7bbba;border-radius:6px}
+.import-placement-item{position:relative;margin:10px 0;padding:10px;border:1px solid #a7bbba;border-radius:6px}
+.import-placement-item>strong{display:block;padding-right:38px}
 .import-placement-item>span{display:block;opacity:.75;font-size:.85em}
+.import-placement-delete{position:absolute;top:9px;right:9px;display:grid;place-items:center;width:30px;height:30px;padding:5px;border:1px solid #a53d39;border-radius:6px;background:transparent;color:#a53d39;cursor:pointer}
+.import-placement-delete:hover{background:#a53d3920}
+.import-placement-delete:focus-visible{outline:2px solid #a53d39;outline-offset:2px}
+.import-placement-delete svg{display:block;width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .import-placement-item p[role="alert"]{color:#a53d39;margin:6px 0}
 .import-placement-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:9px}
 .import-placement-controls label{font-size:13px;font-weight:700}
 .import-placement-controls input,.import-placement-controls select{display:block;width:100%;min-width:0;margin-top:4px;padding:7px;border:1px solid #a7bbba;border-radius:6px;background:var(--site-surface,#fff);color:var(--site-text,#182a36);font:inherit}
 .import-placement-controls button{align-self:end;padding:8px;border:1px solid var(--site-primary,#123e47);border-radius:6px;background:var(--site-primary,#123e47);color:#fff;font:inherit;cursor:pointer}
 .import-placement-controls button:disabled{opacity:.5;cursor:default}
-.import-placement-controls .import-placement-delete{background:transparent;border-color:#a53d39;color:#a53d39}
-.import-placement-controls .import-placement-delete:hover{background:#a53d3920}
 .import-technical-preview{max-height:240px;overflow:auto}.import-technical-preview table{border-collapse:collapse;font-size:12px}.import-technical-preview td{padding:5px;border:1px solid #a7bbba;max-width:200px;overflow-wrap:anywhere}
 @media(max-width:520px){.import-placement-controls{grid-template-columns:1fr}}
 .import-spreadsheet-note{opacity:.8}

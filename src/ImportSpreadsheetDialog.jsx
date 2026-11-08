@@ -33,6 +33,7 @@ function PlacementChooser({ item, sections, customCountries, onApply, onDelete }
   const valid = chosenSection && (direct || chosenSubsection) && (chosenSection !== 'Miscellaneous' || direct || directlyUnderSubsection || chosenCountry);
 
   return <li className="import-placement-item">
+    <button type="button" className="import-placement-delete" aria-label={`Delete story: ${item.title}`} title="Delete story from this import" onClick={() => onDelete(item.row)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v6m4-6v6"/></svg></button>
     <strong>{item.title}</strong><span>{item.sourceName} · row {item.row}</span>
     {item.reason && <p role="alert">{item.reason}. Choose another placement.</p>}
     <div className="import-placement-controls">
@@ -51,7 +52,6 @@ function PlacementChooser({ item, sections, customCountries, onApply, onDelete }
       {chosenSection === 'Miscellaneous' && chosenSubsection && !direct && <label>{chosenSubsection === 'INTERNATIONAL ORGANISATIONS' ? 'Organisation' : 'Country or organisation'}<select value={createCountry ? NEW : country} onChange={event => { setCreateCountry(event.target.value === NEW); setCountry(event.target.value === NEW ? '' : event.target.value); }}><option value={DIRECT_SUBSECTION}>Directly under subsection</option>{countryOptions.map(value => <option key={value} value={value}>{value}</option>)}<option value={NEW}>Create country or organisation…</option></select></label>}
       {chosenSection === 'Miscellaneous' && chosenSubsection && createCountry && !direct && <label>New country or organisation<input value={newCountry} maxLength={100} onChange={event => setNewCountry(event.target.value)} placeholder="Name"/></label>}
       <button type="button" disabled={!valid} onClick={() => onApply(item.row, { sectionId: chosenSection, subsection: direct ? '' : chosenSubsection, country: chosenSection === 'Miscellaneous' && !direct ? chosenCountry : '' })}>Use placement</button>
-      <button type="button" className="import-placement-delete" onClick={() => onDelete(item.row)}>Delete story</button>
     </div>
   </li>;
 }
