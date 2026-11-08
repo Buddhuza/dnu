@@ -124,6 +124,7 @@ export function normalizeSiteConfig(input, articles = []) {
       sourceId: 'manual', ingestMethod: 'add', sourceName: clean(item.sourceName, 'Manual entry', 100),
       title, summary: clean(item.summary, '', 1200),
       translated: item.translated === true,
+      manualOverride: item.manualOverride === true,
       originalHeadline: clean(item.originalHeadline, '', 400),
       publishedAt: Number.isFinite(Date.parse(item.publishedAt)) ? new Date(item.publishedAt).toISOString() : new Date().toISOString(),
       timeSource: ['page', 'inferred', 'current'].includes(item.timeSource) ? item.timeSource : 'page',
@@ -256,7 +257,7 @@ export function displaySiteContent(articles, config, excludedIds = new Set(), ke
   }
   for (const article of config.customArticles) {
     if (article.hidden || sectionById.get(article.sectionId)?.visible === false) continue;
-    if (!directGovernmentPublicationReason(article) && !blockedPlacementReason(article) && !excludedHeadlineReason(article.title, article.summary, article.url)) items.push({ ...article, subsection: article.sectionId === 'Miscellaneous' && article.subsection === 'OCEANIA' && ['Australia', 'New Zealand'].includes(article.country) ? 'SOUTH PACIFIC' : article.subsection, title: cleanHeadlinePrefix(article.title), sourceName: displaySourceName(article.sourceName, article), section: sectionById.get(article.sectionId)?.name || article.sectionId });
+    if (article.manualOverride || (!directGovernmentPublicationReason(article) && !blockedPlacementReason(article) && !excludedHeadlineReason(article.title, article.summary, article.url))) items.push({ ...article, subsection: article.sectionId === 'Miscellaneous' && article.subsection === 'OCEANIA' && ['Australia', 'New Zealand'].includes(article.country) ? 'SOUTH PACIFIC' : article.subsection, title: cleanHeadlinePrefix(article.title), sourceName: displaySourceName(article.sourceName, article), section: sectionById.get(article.sectionId)?.name || article.sectionId });
   }
   const uniqueItems = items;
   const order = new Map(config.sections.map((section, index) => [section.id, index]));
@@ -284,8 +285,8 @@ export function addCustomArticleInConfig(config, article, { createSubsection = f
   if (!section || !subsection || (article.sectionId === 'Miscellaneous' && !country) ||
     (section.id === 'Lead stories' && !section.subsections.includes(subsection)) ||
     (!section.subsections.includes(subsection) && !createSubsection) ||
-    blockedPlacementReason(article, { sectionId: section.id, subsection, country }) ||
-    config.customArticles.some(item => canonicalArticleUrl(item.url) === canonicalArticleUrl(article.url))) return config;
+    (!article.manualOverride && blockedPlacementReason(article, { sectionId: section.id, subsection, country })) ||
+    (!article.manualOverride && config.customArticles.some(item => canonicalArticleUrl(item.url) === canonicalArticleUrl(article.url)))) return config;
   const alphabetical = new Intl.Collator('en', { sensitivity: 'base', ignorePunctuation: true });
   const sections = !section.subsections.includes(subsection)
     ? config.sections.map(item => item.id === section.id ? { ...item, subsections: [...item.subsections, subsection].sort(alphabetical.compare) } : item)
