@@ -81,6 +81,7 @@ Use the latest direct instruction from the editor when it changes a rule. Record
 
 - In spreadsheet import placement review, show each story's delete action as a small red trash icon in the upper-right corner of its card. Keep its accessible label and its existing immediate removal and skipped-row accounting.
 - Keep the four placement controls visible from the start: Section, Subsection or country heading, and Country or organisation as evenly spaced dropdowns in the first row, followed by the New country or organisation text field beside Use placement. Disable a control until its prerequisite is selected instead of making it appear later. Additional new-section and new-heading fields may appear when requested. Stack the controls on narrow screens.
+- In the Import spreadsheet dialog, do not show a sample list of the first five import-ready stories. Keep the ready count, unresolved placement cards, skipped-row details and technical-tab preview.
 
 - Escape closes the currently open dialog, including login, Add, Import spreadsheet, Move story, Manage site and spreadsheet export results. An import in progress remains open until it finishes.
 
