@@ -68,6 +68,7 @@ test('Ukraine leads use international outlets and cross-country regional reporti
   assert.equal(blockedPlacementReason({ sourceName: 'France 24', url: 'https://france24.com/story' }, france), '');
   const russia = { sectionId: 'Miscellaneous', subsection: 'RUSSIA / EURASIA', country: 'Russia' };
   assert.match(blockedPlacementReason({ sourceName: 'شبكة تواصل الإخبارية', url: 'https://example.com/story' }, russia), /Russia coverage/);
+  assert.match(blockedPlacementReason({ sourceName: 'Azernews', url: 'https://azernews.com/story' }, { sectionId: 'Lead stories', subsection: 'Russia' }), /Russia coverage/);
   const us = { sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' };
   for (const sourceName of ['Sarajevo Times', 'Gulf News']) assert.match(blockedPlacementReason({ sourceName, url: 'https://example.com/story' }, us), /US coverage/);
 });

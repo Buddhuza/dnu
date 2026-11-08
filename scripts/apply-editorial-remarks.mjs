@@ -9,6 +9,9 @@ const { data: state, error } = await client.from('dnu_state').select('revision,e
 if (error) throw error;
 if (state.edition?.weekendAutomation?.date !== '2026-11-08') throw new Error('The current edition is no longer the 8 November edition; no correction was published.');
 const result = reviewPublishedEdition(state.edition, state.settings || {});
+for (const article of state.edition.articles || []) {
+  if (/politico\.eu/i.test(article.title || '') && /^\s*[-–]/.test(article.title || '')) console.log(`Inspected source-list title: ${article.title}`);
+}
 for (const article of result.removed) console.log(`Removed: ${article.sourceName} — ${article.title} — ${article.reason}`);
 if (!result.edition.articles.length) throw new Error('The correction would empty the edition; no change was published.');
 const changed = result.removed.length || result.edition.articles.some((article, index) => article.title !== state.edition.articles[index]?.title || article.sourceName !== state.edition.articles[index]?.sourceName);

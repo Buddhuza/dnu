@@ -13,7 +13,7 @@ export function excludedHeadlineReason(value, summary = '', url = '') {
   if (/^(?:analysis|opinion|commentary|editorial|feature|in depth|explainer)\b/i.test(headline)) return 'Analysis, opinion and feature headlines are excluded';
   if (/^Energy Efficiency in the Western Balkans: Building Markets and Creating Jobs$/i.test(headline) || /^CESEC: Europe is spending enormous sums on high energy costs$/i.test(headline)) return 'Analytical article without a specific news development';
   if (/^US[\s-]+Israel[\s-]+Iran War$/i.test(headline)) return 'Topic page rather than a specific news article';
-  if (/^[-–]\s*politico\.eu\s*\(Politico\.eu\)\s*\d{1,2}\s+[A-Z][a-z]{2}\s+\d{2,4}$/i.test(headline)) return 'Source listing rather than a news article';
+  if (/^[-–]\s*[\w.-]+\s*\([\w .-]+\)\s*\d{1,2}\s+[A-Z][a-z]{2}\s+\d{2,4}$/i.test(headline)) return 'Source listing rather than a news article';
   if (/\bthe outsider who led\b/i.test(headline)) return 'Profile features are excluded';
   if (/^Critical developments ahead of\b/i.test(headline) && /\bshifting balances\b/i.test(headline)) return 'Broad analytical summit preview rather than a specific news development';
   if (/\b(?:experts?|analysts?)\s+(?:say|says|warn|warns|argue|argues|believe|believes)\b/i.test(headline)) return 'Expert commentary is excluded';
