@@ -12,6 +12,7 @@ test('political statements follow the speaker and event location', () => {
     ['Tokayev outlines key areas of cooperation with Tajikistan', 'Central Asia', 'Kazakhstan', ''],
     ["Rubio says Trump's war against Iran not 'necessarily popular' but needed to stop a nuclear threat", 'Miscellaneous', 'NORTH AMERICA', 'United States'],
     ['Trump says strikes unlikely if peace talks keep moving', 'Miscellaneous', 'NORTH AMERICA', 'United States'],
+    ['Iran: Trump says strikes unlikely if peace talks keep moving', 'Miscellaneous', 'NORTH AMERICA', 'United States'],
     ['Trump says he is unlikely to order Iran attack if talks progress, CNN reports', 'Miscellaneous', 'NORTH AMERICA', 'United States'],
     ['Trump teases ‘big, beautiful’ European security deal after meeting Putin envoy', 'Miscellaneous', 'NORTH AMERICA', 'United States'],
     ['Baku’s joy is Ankara’s pride, and Shusha’s pride is pride of our entire nation – Turkish President', 'South Caucasus', 'Azerbaijan', ''],
@@ -28,6 +29,7 @@ test('analysis, lifestyle, traffic and abuse headlines are outside the automatic
     'Kazakhstan approves ban on single-use plastic tableware',
     'Diwali celebrated in Bishkek',
     'How a university boom fuels exploitation and human trafficking',
+    'Inside Cyprus’s occupied north: How a university boom fuels exploitation and human trafficking',
     'Motorcyclists account for 38% of Cyprus road deaths',
     'School bus accident leaves several injured',
     'Police investigate child sex abuse'

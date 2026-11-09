@@ -14,6 +14,7 @@ export function excludedHeadlineReason(value, summary = '', url = '') {
   if (/^(?:analysis|opinion|commentary|editorial|feature|in depth|explainer)\b/i.test(headline)) return 'Analysis, opinion and feature headlines are excluded';
   if (/^Energy Efficiency in the Western Balkans: Building Markets and Creating Jobs$/i.test(headline) || /^CESEC: Europe is spending enormous sums on high energy costs$/i.test(headline)) return 'Analytical article without a specific news development';
   if (/^With Change of Power, Serbia Can Reinvigorate EU Accession Bid\b/i.test(headline) || /^Attempts to find resolution for Israel['’]s new government and Ukraine['’]s war\b/i.test(headline)) return 'Opinion or analysis rather than a specific news development';
+  if (/\bHow a university boom fuels exploitation and human trafficking\b/i.test(headline)) return 'Explainer rather than a specific news development';
   if (/\bban on single-use plastic tableware\b|\bDiwali celebrated in Bishkek\b|\bmotorcyclists account for \d+% of Cyprus road deaths\b|\bschool bus (?:accident|crash)\b|\b(?:accident|crash)\b.{0,35}\bschool bus\b|\bchild (?:sexual? |sex )?abuse\b/i.test(headline)) return 'Outside the political and security brief';
   if (/^US[\s-]+Israel[\s-]+Iran War$/i.test(headline)) return 'Topic page rather than a specific news article';
   if (/^[-–]\s*[\w.-]+\.[a-z]{2,}$/i.test(headline) || /^[-–]\s*[\w.-]+\s*\([\w .-]+\)\s*\d{1,2}\s+[A-Z][a-z]{2}\s+\d{2,4}$/i.test(headline)) return 'Source listing rather than a news article';

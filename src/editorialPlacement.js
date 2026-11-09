@@ -2,7 +2,7 @@ export function editorialPlacement(title) {
   const headline = String(title || '').trim();
   if (/^Tokayev outlines key areas of cooperation with Tajikistan\b/i.test(headline))
     return { sectionId: 'Central Asia', subsection: 'Kazakhstan', country: '' };
-  if (/^(?:Rubio|Trump)\s+(?:says|teases)\b/i.test(headline) || /^French presidential candidate\b/i.test(headline)) {
+  if (/^(?:Iran:\s*)?(?:Rubio|Trump)\s+(?:says|teases)\b/i.test(headline) || /^French presidential candidate\b/i.test(headline)) {
     const country = /^French presidential candidate\b/i.test(headline) ? 'France' : 'United States';
     return { sectionId: 'Miscellaneous', subsection: country === 'France' ? 'WESTERN / CENTRAL EUROPE' : 'NORTH AMERICA', country };
   }
