@@ -6,6 +6,7 @@ import { convertSpreadsheetRows } from '../src/spreadsheetImport.js';
 import { resolveWeekendPlacementRows } from '../src/weekendPlacement.js';
 
 const yahooHeadline = 'US military strikes cargo ship accused of violating Iran blockade';
+const frenchCandidateHeadline = 'French presidential candidate pledges to enforce ICC arrest warrant for Netanyahu if elected';
 async function googleTable(id, sheet) {
   const url = new URL(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq`);
   url.searchParams.set('sheet', sheet);
@@ -29,20 +30,21 @@ const { data: state, error } = await client.from('dnu_state').select('revision,e
 if (error) throw error;
 if (state.edition?.weekendAutomation?.date !== '2026-11-08') throw new Error('The current edition is no longer the 8 November edition; no correction was published.');
 let edition = state.edition;
-if (!edition.articles.some(article => article.title === yahooHeadline || article.url?.includes('CBMikAFBVV95cUxPWWwxOS1HYXM5VF9UN1FqS2ZIQ1R'))) {
+for (const target of [{ headline: yahooHeadline, sourceName: 'dpa' }, { headline: frenchCandidateHeadline }]) {
+  if (edition.articles.some(article => String(article.title || '').includes(target.headline))) continue;
   let sheet, row;
   for (const date of ['2026-11-09', '2026-11-08']) {
     const candidate = await readGoogleSheetEdition(process.env.DNU_GOOGLE_SHEET_URL || DEFAULT_GOOGLE_SHEET_URL, date, googleTable);
     if (candidate.date !== date) continue;
-    row = candidate.rows.find(item => String(item.heading || '').includes(yahooHeadline));
+    row = candidate.rows.find(item => String(item.heading || '').includes(target.headline));
     if (row) { sheet = candidate; break; }
   }
-  if (!row) throw new Error('The editor-attributed dpa story was not found in the 8 or 9 November worksheets. The shared edition was left unchanged.');
+  if (!row) throw new Error(`${target.headline} was not found in the 8 or 9 November worksheets. The shared edition was left unchanged.`);
   const converted = resolveWeekendPlacementRows([row], rows => convertSpreadsheetRows(rows));
-  const restored = converted.articles.find(article => article.title === yahooHeadline);
-  if (!restored) throw new Error(`The editor-attributed dpa story could not be placed: ${JSON.stringify(converted.skipped)} ${JSON.stringify(converted.unplaced)}`);
-  edition = { ...edition, articles: [...edition.articles, { ...restored, sourceName: 'dpa' }] };
-  console.log(`Restoring editor-attributed dpa story from ${sheet.sheetName}: ${restored.title} → ${restored.sectionId} / ${restored.subsection} / ${restored.country || ''}`);
+  const restored = converted.articles.find(article => article.title.includes(target.headline));
+  if (!restored) throw new Error(`${target.headline} could not be placed: ${JSON.stringify(converted.skipped)} ${JSON.stringify(converted.unplaced)}`);
+  edition = { ...edition, articles: [...edition.articles, { ...restored, ...(target.sourceName ? { sourceName: target.sourceName } : {}) }] };
+  console.log(`Restoring from ${sheet.sheetName}: ${restored.title} → ${restored.sectionId} / ${restored.subsection} / ${restored.country || ''}`);
 }
 const sourceCheckedArticles = [];
 for (const article of edition.articles || []) {
@@ -58,7 +60,7 @@ for (const article of edition.articles || []) {
   }
 }
 const result = reviewPublishedEdition({ ...edition, articles: sourceCheckedArticles }, state.settings || {});
-const officialCustom = (result.settings.customArticles || []).filter(article => /^(?:osce\.org|president\.uz)$/i.test(String(article.sourceName || '').trim()) || /^(?:https:\/\/)?(?:www\.)?(?:osce\.org|president\.uz)(?:\/|$)/i.test(String(article.url || '')));
+const officialCustom = (result.settings.customArticles || []).filter(article => /^(?:osce\.org|president\.uz)$/i.test(String(article.sourceName || '').trim()) || /^(?:https:\/\/)?(?:www\.)?(?:osce\.org|president\.uz)(?:\/|$)/i.test(String(article.url || '')) || /^(?:With Change of Power, Serbia Can Reinvigorate EU Accession Bid|Attempts to find resolution for Israel['’]s new government and Ukraine['’]s war|How a university boom fuels exploitation and human trafficking|Motorcyclists account for 38% of Cyprus road deaths)/i.test(String(article.title || '')) || /\b(?:ban on single-use plastic tableware|Diwali celebrated in Bishkek|school bus accident|child sex abuse)\b/i.test(String(article.title || '')));
 if (officialCustom.length) {
   const removedIds = new Set(officialCustom.map(article => article.id));
   result.settings = {
@@ -68,7 +70,7 @@ if (officialCustom.length) {
     articleOrder: (result.settings.articleOrder || []).filter(id => !removedIds.has(id)),
     leadOrigins: Object.fromEntries(Object.entries(result.settings.leadOrigins || {}).filter(([id]) => !removedIds.has(id)))
   };
-  for (const article of officialCustom) console.log(`Removed manually added official-site story: ${article.sourceName} — ${article.title}`);
+  for (const article of officialCustom) console.log(`Removed editor-specified manually added story: ${article.sourceName} — ${article.title}`);
 }
 for (const article of result.removed) console.log(`Removed: ${article.sourceName} — ${article.title} — ${article.reason}`);
 for (const article of result.moved) console.log(`Moved: ${article.sourceName} — ${article.title} → ${article.placement.sectionId} / ${article.placement.subsection} / ${article.placement.country || ''}`);

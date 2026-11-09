@@ -5,6 +5,7 @@ import { excludedHeadlineReason } from './headlinePolicy.js';
 import { displaySourceName } from './sourceNames.js';
 import { reviewPublishedEdition } from './editorialEdition.js';
 import { defaultSiteConfig, displaySiteContent } from './siteConfig.js';
+import { blockedPlacementReason } from './sourcePolicy.js';
 
 test('political statements follow the speaker and event location', () => {
   const cases = [
@@ -32,6 +33,7 @@ test('analysis, lifestyle, traffic and abuse headlines are outside the automatic
     'Police investigate child sex abuse'
   ]) assert.ok(excludedHeadlineReason(title), title);
   assert.equal(displaySourceName('Civil ge'), 'Civil.ge');
+  assert.equal(blockedPlacementReason({ sourceName: 'AA', title: 'French presidential candidate pledges to enforce ICC arrest warrant for Netanyahu if elected', url: 'https://example.com/story' }, { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'France' }), '');
 });
 
 test('a Russian outlet report on a Krakow shooting is removed rather than filed under Poland', () => {
