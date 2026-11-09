@@ -372,8 +372,8 @@ function sourcePreference(article) {
   const name = String(article.sourceName || '');
   if (/^(?:Euronews\.al|N1|Civil\.ge)$/i.test(name)) return 3;
   if (/^(?:Reuters|AP|AFP|Associated Press|BBC|DW|dpa|Euronews|Politico(?:\.eu)?|The Guardian|Guardian)$/i.test(name)) return 4;
-  if (/^(?:TemA|Tanjug|1TV)$/i.test(name)) return -1;
-  if (/^(?:AsiaOne|Al Jazeera|France 24|Deutsche Welle|The Independent|Financial Times)$/i.test(name)) return 1;
+  if (/^(?:TemA|Tanjug|1TV(?:\.ge)?)$/i.test(name)) return -1;
+  if (/^(?:AsiaOne|Al Jazeera|France 24|Deutsche Welle|The Independent|Financial Times|FT)$/i.test(name)) return 1;
   return 0;
 }
 
