@@ -28,7 +28,7 @@ function sourceHost(article) {
 export function directGovernmentPublicationReason(article) {
   const name = String(article.sourceName || '').trim();
   const host = sourceHost(article);
-  if (/^osce\.org$/i.test(name) || /(?:^|\.)osce\.org$/i.test(host)) return 'Direct OSCE publication';
+  if (/^(?:OSCE|osce\.org|Organisation for Security and Co-operation in Europe)$/i.test(name) || /(?:^|\.)osce\.org$/i.test(host)) return 'Direct OSCE publication';
   if (/^president\.uz$/i.test(name) || /(?:^|\.)president\.uz$/i.test(host)) return 'Direct presidential publication';
   if (/^(?:World Bank|International Bank for Reconstruction and Development)$/i.test(name) || /(?:^|\.)worldbank\.org$/i.test(host)) return 'Direct organisation publication';
   if (/^(?:GOV\.UK|government of\b|ministry of\b|office of the president\b|presidency\b|prime minister(?:'s|’s)? office\b|white house\b|president of\b)/i.test(name) ||

@@ -73,11 +73,13 @@ test('a headline-only sheet row does not inherit an older summary for the same U
 test('sheet agency names are normalised and OSCE website links are excluded', () => {
   const rows = [
     { rowNumber: 2, date: '2026-11-06', source: 'Albanian Daily News', region: 'South Eastern Europe', countries: 'Albania', url: 'https://albaniandailynews.com/news/example', heading: 'Albania opens talks with EU officials' },
-    { rowNumber: 3, date: '2026-11-06', source: 'OSCE', region: 'South Eastern Europe', countries: 'Albania', url: 'https://www.osce.org/secretariat/12345', heading: 'OSCE opens new mission' }
+    { rowNumber: 3, date: '2026-11-06', source: 'OSCE', region: 'South Eastern Europe', countries: 'Albania', url: 'https://www.osce.org/secretariat/12345', heading: 'OSCE opens new mission' },
+    { rowNumber: 4, date: '2026-11-06', source: 'OSCE', region: 'South Eastern Europe', countries: 'Albania', url: 'https://news.google.com/rss/articles/example', heading: 'Swiss Federal Councillor and 2026 OSCE Chairman-in-Office' }
   ];
   const imported = convertSpreadsheetRows(rows);
   assert.deepEqual(imported.articles.map(article => article.sourceName), ['ADN']);
-  assert.match(imported.skipped[0].reason, /OSCE (?:website links|publication)/);
+  assert.equal(imported.skipped.length, 2);
+  for (const row of imported.skipped) assert.match(row.reason, /OSCE (?:website links|publication)/);
   const older = { id: 'older-osce', sectionId: 'South Eastern Europe', subsection: 'Albania', title: 'OSCE opens new mission', sourceName: 'OSCE', url: 'https://osce.org/secretariat/12345' };
   assert.deepEqual(displaySiteContent([older], normalizeSiteConfig({}, [older])), []);
 });

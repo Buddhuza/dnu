@@ -90,9 +90,11 @@ test('direct government publications are excluded while independent and OSCE rep
   assert.equal(directGovernmentPublicationReason({ sourceName: 'GOV.UK', url: 'https://news.google.com/rss/articles/example' }), 'Direct government publication');
   assert.equal(directGovernmentPublicationReason({ sourceName: 'Turkmenistan government', url: 'https://news.google.com/rss/articles/example' }), 'Direct government publication');
   assert.equal(directGovernmentPublicationReason({ sourceName: 'News', url: 'https://www.gov.uk/government/news/example' }), 'Direct government publication');
-  for (const sourceName of ['BBC', 'OSCE', 'TASS']) assert.equal(directGovernmentPublicationReason({ sourceName, url: 'https://example.com/story' }), '');
+  for (const sourceName of ['BBC', 'TASS']) assert.equal(directGovernmentPublicationReason({ sourceName, url: 'https://example.com/story' }), '');
+  assert.equal(directGovernmentPublicationReason({ sourceName: 'OSCE', url: 'https://news.google.com/rss/articles/example' }), 'Direct OSCE publication');
   const stories = [
     { id: 'official', url: 'https://news.google.com/rss/articles/official', sourceName: 'GOV.UK', title: 'UK government addresses OSCE', sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'United Kingdom', fromSpreadsheet: true },
+    { id: 'osce-proxy', url: 'https://news.google.com/rss/articles/osce', sourceName: 'OSCE', title: 'Swiss Federal Councillor and 2026 OSCE Chairman-in-Office', sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'OSCE', fromSpreadsheet: true },
     { id: 'independent', url: 'https://bbc.com/news/story', sourceName: 'BBC', title: 'UK government addresses OSCE', sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'United Kingdom', fromSpreadsheet: true }
   ];
   assert.deepEqual(displaySiteContent(stories, defaultSiteConfig(stories)).map(item => item.id), ['independent']);
