@@ -65,7 +65,7 @@ export function isAzerbaijaniOutlet(article) {
 
 export function isRussianOutlet(article) {
   const host = sourceHost(article);
-  return article.russianSource === true || russianSourceIds.has(article.sourceId) || [...russianHosts].some(value => host === value || host.endsWith(`.${value}`));
+  return article.russianSource === true || russianSourceIds.has(article.sourceId) || /^(?:TASS|Izvestia|Sputnik(?: News)?|RIA Novosti|The Moscow Times|Meduza)$/i.test(String(article.sourceName || '').trim()) || [...russianHosts].some(value => host === value || host.endsWith(`.${value}`));
 }
 
 export function isUkrainePlacement(place) {

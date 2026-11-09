@@ -12,6 +12,7 @@ import { cleanHeadlinePrefix } from './headlineText.js';
 import { displaySourceName } from './sourceNames.js';
 import { articlePlacement } from '../server/importArticle.js';
 import { ukraineAttackPlacement } from './storyPlacement.js';
+import { editorialPlacement } from './editorialPlacement.js';
 
 const headerAliases = {
   date: ['date', 'publicationdate', 'publishedat'],
@@ -322,6 +323,8 @@ function paywallReason(row) {
 }
 
 function placementFromRow(row, title, summary, existing, leadPrefix) {
+  const correction = editorialPlacement(title);
+  if (correction) return correction;
   if (isBelarusPrisonerStory(title)) return { sectionId: 'Eastern Europe', subsection: 'Belarus', country: '' };
   if (/\b(?:European Central Bank|ECB)\b/i.test(title)) return { sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'ECB' };
   if (isGreekPrimeMinisterStory(title)) return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Greece' };
@@ -459,6 +462,7 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
       id: existing?.id || `spreadsheet-${key}`, url: parsed.href, sourceId: existing?.sourceId || source?.id || 'spreadsheet', sourceName,
       title, summary, originalHeadline: String(row.heading || '').trim(), translated: existing?.translated === true,
       publishedAt,
+      editorialPlacementLocked: Boolean(editorialPlacement(title)),
       reviewed: true, ...placement, section: placement.sectionId, fromSpreadsheet: true, ingestMethod: 'import'
     };
     const restriction = blockedPlacementReason(article);

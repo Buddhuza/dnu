@@ -33,7 +33,8 @@ const aliases = {
   'committee to protect journalists': 'CPJ',
   'financial times': 'FT',
   'times of central asia': 'TCA',
-  'https://aapnews.aap.com.au/': 'AAP'
+  'https://aapnews.aap.com.au/': 'AAP',
+  'civil ge': 'Civil.ge'
 };
 
 export function displaySourceName(name, source = {}) {

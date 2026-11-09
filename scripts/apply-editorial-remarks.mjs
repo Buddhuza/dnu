@@ -71,8 +71,9 @@ if (officialCustom.length) {
   for (const article of officialCustom) console.log(`Removed manually added official-site story: ${article.sourceName} — ${article.title}`);
 }
 for (const article of result.removed) console.log(`Removed: ${article.sourceName} — ${article.title} — ${article.reason}`);
+for (const article of result.moved) console.log(`Moved: ${article.sourceName} — ${article.title} → ${article.placement.sectionId} / ${article.placement.subsection} / ${article.placement.country || ''}`);
 if (!result.edition.articles.length) throw new Error('The correction would empty the edition; no change was published.');
-const changed = result.removed.length || officialCustom.length || result.edition.articles.length !== state.edition.articles.length || result.edition.articles.some((article, index) => article.title !== state.edition.articles[index]?.title || article.sourceName !== state.edition.articles[index]?.sourceName);
+const changed = result.removed.length || result.moved.length || officialCustom.length || result.edition.articles.length !== state.edition.articles.length || result.edition.articles.some((article, index) => article.title !== state.edition.articles[index]?.title || article.sourceName !== state.edition.articles[index]?.sourceName);
 if (!changed) { console.log('The shared edition already reflects these corrections.'); process.exit(0); }
 const { data: saved, error: saveError } = await client.from('dnu_state')
   .update({ edition: result.edition, settings: result.settings, revision: Number(state.revision) + 1, updated_at: new Date().toISOString() })
