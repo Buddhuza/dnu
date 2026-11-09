@@ -1,6 +1,6 @@
 import { displaySourceName } from './sourceNames.js';
 import { cleanHeadlinePrefix } from './headlineText.js';
-import { directGovernmentPublicationReason, paywalledSourceReason, blockedPlacementReason } from './sourcePolicy.js';
+import { directGovernmentPublicationReason, paywalledSourceReason, unattributedRepublisherReason, blockedPlacementReason } from './sourcePolicy.js';
 import { excludedHeadlineReason } from './headlinePolicy.js';
 
 export function reviewPublishedEdition(edition, settings) {
@@ -15,7 +15,7 @@ export function reviewPublishedEdition(edition, settings) {
       subsection: edit.sectionId ? edit.subsection : edit.subsection || article.subsection,
       country: edit.sectionId ? edit.country : edit.country || article.country || ''
     };
-    const reason = directGovernmentPublicationReason(effective) || paywalledSourceReason(effective) ||
+    const reason = directGovernmentPublicationReason(effective) || paywalledSourceReason(effective) || unattributedRepublisherReason(effective) ||
       excludedHeadlineReason(effective.title, effective.summary, effective.url) || blockedPlacementReason(effective);
     if (reason) removed.push({ title: effective.title, sourceName: effective.sourceName, reason });
     else articles.push({ ...article, title, sourceName });

@@ -5,11 +5,13 @@ import { reviewPublishedEdition } from './editorialEdition.js';
 test('review removes excluded automatic stories and keeps agency and headline corrections', () => {
   const articles = [
     { id: 'bad', sourceName: 'World Bank', url: 'https://worldbank.org/news/a', title: 'Energy Efficiency in the Western Balkans: Building Markets and Creating Jobs', sectionId: 'South Eastern Europe', subsection: 'Albania' },
-    { id: 'good', sourceName: 'vreme.com', url: 'https://vreme.com/story', title: '🔴 Serbian parliament approves new security agreement ⤵️', sectionId: 'South Eastern Europe', subsection: 'Serbia' }
+    { id: 'good', sourceName: 'vreme.com', url: 'https://vreme.com/story', title: '🔴 Serbian parliament approves new security agreement ⤵️', sectionId: 'South Eastern Europe', subsection: 'Serbia' },
+    { id: 'president', sourceName: 'president.uz', url: 'https://president.uz/news/statement', title: 'President issues statement', sectionId: 'Central Asia', subsection: 'Uzbekistan' },
+    { id: 'osce', sourceName: 'osce.org', url: 'https://osce.org/press-release', title: 'OSCE releases statement', sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'OSCE' }
   ];
   const settings = { articleEdits: { bad: { summary: 'Old' } }, articleOrder: ['bad', 'good'], leadOrigins: { bad: { sectionId: 'South Eastern Europe' } } };
   const reviewed = reviewPublishedEdition({ articles }, settings);
   assert.deepEqual(reviewed.edition.articles.map(article => [article.id, article.sourceName, article.title]), [['good', 'Vreme', 'Serbian parliament approves new security agreement']]);
   assert.deepEqual(reviewed.settings.articleOrder, ['good']);
-  assert.equal(reviewed.removed.length, 1);
+  assert.equal(reviewed.removed.length, 3);
 });

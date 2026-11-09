@@ -77,7 +77,7 @@ test('sheet agency names are normalised and OSCE website links are excluded', ()
   ];
   const imported = convertSpreadsheetRows(rows);
   assert.deepEqual(imported.articles.map(article => article.sourceName), ['ADN']);
-  assert.match(imported.skipped[0].reason, /OSCE website links/);
+  assert.match(imported.skipped[0].reason, /OSCE (?:website links|publication)/);
   const older = { id: 'older-osce', sectionId: 'South Eastern Europe', subsection: 'Albania', title: 'OSCE opens new mission', sourceName: 'OSCE', url: 'https://osce.org/secretariat/12345' };
   assert.deepEqual(displaySiteContent([older], normalizeSiteConfig({}, [older])), []);
 });

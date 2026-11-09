@@ -28,12 +28,23 @@ const aliases = {
   'nin.rs': 'NIN',
   'euroradio.fm': 'Euroradio',
   'pan armenian': 'PAN',
-  'novinite.com': 'Novinite'
+  'novinite.com': 'Novinite',
+  'abna english': 'ABNA24',
+  'committee to protect journalists': 'CPJ',
+  'financial times': 'FT',
+  'times of central asia': 'TCA',
+  'https://aapnews.aap.com.au/': 'AAP'
 };
 
 export function displaySourceName(name, source = {}) {
   const raw = String(name || '').trim();
   const key = raw.toLowerCase().replace(/\s+/g, ' ');
+  if (key === 'yahoo' || key === 'yahoo news' || key === 'yahoo.com') {
+    const credit = `${source.body || ''} ${source.summary || ''} ${source.byline || ''}`;
+    if (/\b(?:dpa|Deutsche Presse-Agentur)\b/i.test(credit)) return 'dpa';
+    return raw;
+  }
+  if (key === 'https://aapnews.aap.com.au' || key === 'aapnews.aap.com.au') return 'AAP';
   if (['ipn', 'ipn moldova', 'ipn.md', 'interpressnews', 'interpressnews.ge', 'ipn.ge'].includes(key)) {
     let host = '';
     try { host = new URL(source.url).hostname.replace(/^www\./, '').toLowerCase(); } catch { /* A source name may have no URL yet. */ }

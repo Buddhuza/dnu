@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { reviewPublishedEdition } from '../src/editorialEdition.js';
+import { displaySourceName } from '../src/sourceNames.js';
 
 const url = process.env.SUPABASE_URL;
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -8,10 +9,20 @@ const client = createClient(url, key, { auth: { persistSession: false, autoRefre
 const { data: state, error } = await client.from('dnu_state').select('revision,edition,settings').eq('id', 'main').single();
 if (error) throw error;
 if (state.edition?.weekendAutomation?.date !== '2026-11-08') throw new Error('The current edition is no longer the 8 November edition; no correction was published.');
-const result = reviewPublishedEdition(state.edition, state.settings || {});
+const sourceCheckedArticles = [];
 for (const article of state.edition.articles || []) {
   if (/politico\.eu/i.test(article.title || '') && /^\s*[-–]/.test(article.title || '')) console.log(`Inspected source-list title: ${article.title}`);
+  if (/^Yahoo(?: News|\.com)?$/i.test(article.sourceName || '')) {
+    const { data: body } = await client.from('dnu_bodies').select('body').eq('url', article.url).maybeSingle();
+    const credited = displaySourceName(article.sourceName, { body: body?.body || '' });
+    console.log(`Yahoo attribution check: ${article.title} — ${article.url} — cached body dpa credit: ${credited === 'dpa'}`);
+    if (credited !== 'dpa') throw new Error(`Could not verify dpa as the original agency for ${article.url}; the shared edition was left unchanged.`);
+    sourceCheckedArticles.push(credited === 'dpa' ? { ...article, sourceName: 'dpa' } : article);
+  } else {
+    sourceCheckedArticles.push(article);
+  }
 }
+const result = reviewPublishedEdition({ ...state.edition, articles: sourceCheckedArticles }, state.settings || {});
 for (const article of result.removed) console.log(`Removed: ${article.sourceName} — ${article.title} — ${article.reason}`);
 if (!result.edition.articles.length) throw new Error('The correction would empty the edition; no change was published.');
 const changed = result.removed.length || result.edition.articles.some((article, index) => article.title !== state.edition.articles[index]?.title || article.sourceName !== state.edition.articles[index]?.sourceName);

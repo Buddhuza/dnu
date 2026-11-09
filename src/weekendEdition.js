@@ -1,7 +1,7 @@
 import { sameNewsEvent } from './storyDuplicates.js';
 import { NEWS_SECTIONS } from './newsSections.js';
 
-const international = new Set(['reuters', 'ap', 'associated press', 'afp', 'bbc', 'dw', 'dpa', 'politico.eu', 'euronews', 'bloomberg', 'financial times', 'the guardian', 'al jazeera', 'rfe/rl', 'voa', 'pbs', 'cnn']);
+const international = new Set(['reuters', 'ap', 'associated press', 'afp', 'bbc', 'dw', 'dpa', 'politico.eu', 'euronews', 'bloomberg', 'financial times', 'ft', 'the guardian', 'al jazeera', 'rfe/rl', 'voa', 'pbs', 'cnn']);
 const regionalSections = new Set(NEWS_SECTIONS.slice(1, 5).map(section => section.id));
 const significantHeadline = /\b(?:attack\w*|strike\w*|bomb\w*|missile\w*|drone\w*|kill\w*|war|ceasefire|peace deal|coup|invasion|troops?|military|sanction\w*|election\w*|resign\w*|protest\w*|border|security|agreement|arrest\w*|assassinat\w*|hostage\w*|nuclear|government collaps\w*|form(?:s|ed)? (?:a |the )?government)\b/i;
 const agencyKey = name => ({ 'associated press': 'ap', 'politico europe': 'politico.eu' })[String(name || '').trim().toLowerCase()] || String(name || '').trim().toLowerCase();

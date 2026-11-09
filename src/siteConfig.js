@@ -1,5 +1,5 @@
 import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES, orderedSubsections, leadRegionalHeadings, compareCountryLabels, isSouthEasternEuropeRegionalStory, isMontenegroCroatiaDialogueStory, isLithuanianBalticStory, isGreekPrimeMinisterStory, isBelarusPrisonerStory } from './newsSections.js';
-import { blockedPlacementReason, directGovernmentPublicationReason, paywalledSourceReason } from './sourcePolicy.js';
+import { blockedPlacementReason, directGovernmentPublicationReason, paywalledSourceReason, unattributedRepublisherReason } from './sourcePolicy.js';
 import { excludedHeadlineReason } from './headlinePolicy.js';
 import { displaySourceName } from './sourceNames.js';
 import { articlePlacement } from '../server/importArticle.js';
@@ -253,7 +253,7 @@ export function displaySiteContent(articles, config, excludedIds = new Set(), ke
         displayed.country = inferred.country;
       }
     }
-    if (!directGovernmentPublicationReason(displayed) && !paywalledSourceReason(displayed) && !blockedPlacementReason(displayed) && !excludedHeadlineReason(displayed.title, displayed.summary, displayed.url)) items.push(displayed);
+    if (!directGovernmentPublicationReason(displayed) && !paywalledSourceReason(displayed) && !unattributedRepublisherReason(displayed) && !blockedPlacementReason(displayed) && !excludedHeadlineReason(displayed.title, displayed.summary, displayed.url)) items.push(displayed);
   }
   for (const article of config.customArticles) {
     if (article.hidden || sectionById.get(article.sectionId)?.visible === false) continue;

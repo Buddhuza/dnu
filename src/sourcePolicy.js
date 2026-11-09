@@ -9,7 +9,7 @@ const azerbaijaniSourceIds = new Set(Array.from({ length: 6 }, (_, index) => `so
 const armenianHosts = new Set(['arminfo.info']);
 const russianSourceIds = new Set(['source-97', 'source-98', 'source-99', 'source-115', 'source-116']);
 const russianHosts = new Set(['tass.com', 'iz.ru', 'sputniknews.com', 'sputnikglobe.com', 'themoscowtimes.com', 'meduza.io']);
-const internationalOutlets = /^(?:Reuters|AP|AP News|Associated Press|AFP|Agence France-Presse|BBC(?: News)?|DW|Deutsche Welle|dpa|Politico(?:\.eu| Europe)?|Euronews|France 24|Al Jazeera|CNN|The Guardian|Guardian|Financial Times|RFE\/RL|VOA|Bloomberg|PBS|NBC News|ABC News|CBS News|NPR|The New York Times|The Washington Post)$/i;
+const internationalOutlets = /^(?:Reuters|AP|AP News|Associated Press|AFP|Agence France-Presse|BBC(?: News)?|DW|Deutsche Welle|dpa|Politico(?:\.eu| Europe)?|Euronews|France 24|Al Jazeera|CNN|The Guardian|Guardian|Financial Times|FT|RFE\/RL|VOA|Bloomberg|PBS|NBC News|ABC News|CBS News|NPR|The New York Times|The Washington Post)$/i;
 const localFrenchOutlets = /^(?:Le Monde|Le Figaro|Libération|France Info|Franceinfo|RFI|Local\.fr)$/i;
 const localGermanOutlets = /^(?:Der Spiegel|Spiegel|Die Zeit|Süddeutsche Zeitung|FAZ|Tagesschau|Local\.de)$/i;
 const localUsOutlets = /^(?:USA Today|Axios|The Hill|Defense News|Defense One|Military Times|Breaking Defense|Stars and Stripes|C-SPAN|Fox(?: News)?)$/i;
@@ -28,6 +28,8 @@ function sourceHost(article) {
 export function directGovernmentPublicationReason(article) {
   const name = String(article.sourceName || '').trim();
   const host = sourceHost(article);
+  if (/^osce\.org$/i.test(name) || /(?:^|\.)osce\.org$/i.test(host)) return 'Direct OSCE publication';
+  if (/^president\.uz$/i.test(name) || /(?:^|\.)president\.uz$/i.test(host)) return 'Direct presidential publication';
   if (/^(?:World Bank|International Bank for Reconstruction and Development)$/i.test(name) || /(?:^|\.)worldbank\.org$/i.test(host)) return 'Direct organisation publication';
   if (/^(?:GOV\.UK|government of\b|ministry of\b|office of the president\b|presidency\b|prime minister(?:'s|’s)? office\b|white house\b|president of\b)/i.test(name) ||
       /\bgovernment$/i.test(name) ||
@@ -39,6 +41,11 @@ export function directGovernmentPublicationReason(article) {
 export function paywalledSourceReason(article) {
   return /^Bloomberg$/i.test(String(article.sourceName || '').trim()) || /(?:^|\.)bloomberg\.com$/i.test(sourceHost(article))
     ? 'Bloomberg article is paywalled' : '';
+}
+
+export function unattributedRepublisherReason(article) {
+  return /^Yahoo(?: News|\.com)?$/i.test(String(article.sourceName || '').trim())
+    ? 'Yahoo republication without a verified original agency' : '';
 }
 
 export function isUkrainianOutlet(article) {
