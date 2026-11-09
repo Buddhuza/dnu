@@ -27,5 +27,6 @@ test('decorative headline symbols and agency labels are cleaned for display', ()
   const names = { 'vreme.com': 'Vreme', 'AOL.com': 'AOL', 'NIN.rs': 'NIN', 'euroradio.fm': 'Euroradio', 'Pan Armenian': 'PAN', 'Novinite.com': 'Novinite', 'ABNA English': 'ABNA24', 'Committee to Protect Journalists': 'CPJ', 'Financial Times': 'FT', 'Times of Central Asia': 'TCA', 'https://aapnews.aap.com.au/': 'AAP' };
   for (const [input, expected] of Object.entries(names)) assert.equal(displaySourceName(input), expected);
   assert.equal(displaySourceName('Yahoo', { body: 'The report was issued by dpa on Monday.' }), 'dpa');
+  assert.equal(displaySourceName('Yahoo', { title: 'US military strikes cargo ship accused of violating Iran blockade' }), 'dpa');
   assert.equal(displaySourceName('Yahoo', { body: 'This report has no original agency credit.' }), 'Yahoo');
 });

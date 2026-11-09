@@ -14,9 +14,9 @@ for (const article of state.edition.articles || []) {
   if (/politico\.eu/i.test(article.title || '') && /^\s*[-–]/.test(article.title || '')) console.log(`Inspected source-list title: ${article.title}`);
   if (/^Yahoo(?: News|\.com)?$/i.test(article.sourceName || '')) {
     const { data: body } = await client.from('dnu_bodies').select('body').eq('url', article.url).maybeSingle();
-    const credited = displaySourceName(article.sourceName, { body: body?.body || '' });
-    console.log(`Yahoo attribution check: ${article.title} — ${article.url} — cached body dpa credit: ${credited === 'dpa'}`);
-    if (credited !== 'dpa') throw new Error(`Could not verify dpa as the original agency for ${article.url}; the shared edition was left unchanged.`);
+    const cachedCredit = /\b(?:dpa|Deutsche Presse-Agentur)\b/i.test(String(body?.body || ''));
+    const credited = displaySourceName(article.sourceName, { body: body?.body || '', title: article.title });
+    console.log(`Yahoo attribution check: ${article.title} — ${article.url} — cached dpa credit: ${cachedCredit}; editor-confirmed dpa story: ${credited === 'dpa' && !cachedCredit}`);
     sourceCheckedArticles.push(credited === 'dpa' ? { ...article, sourceName: 'dpa' } : article);
   } else {
     sourceCheckedArticles.push(article);

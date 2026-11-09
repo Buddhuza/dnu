@@ -428,7 +428,7 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
     seen.add(key);
     const existing = existingByUrl.get(key);
     const rawSourceName = text(row.source) || existing?.sourceName;
-    const sourceName = displaySourceName(rawSourceName, { url: parsed.href, body: row.body, summary: row.shortSummary || row.summary });
+    const sourceName = displaySourceName(rawSourceName, { url: parsed.href, title: row.heading, body: row.body, summary: row.shortSummary || row.summary });
     if (/^Yahoo(?: News|\.com)?$/i.test(sourceName)) { skipped.push({ row: row.rowNumber, reason: 'Yahoo republication without a verified original agency' }); continue; }
     const title = cleanHeading(row.heading, rawSourceName, url) || existing?.title;
     if (!sourceName || !title) { skipped.push({ row: row.rowNumber, reason: 'Missing source or headline' }); continue; }

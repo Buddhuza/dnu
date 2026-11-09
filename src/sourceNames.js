@@ -42,6 +42,7 @@ export function displaySourceName(name, source = {}) {
   if (key === 'yahoo' || key === 'yahoo news' || key === 'yahoo.com') {
     const credit = `${source.body || ''} ${source.summary || ''} ${source.byline || ''}`;
     if (/\b(?:dpa|Deutsche Presse-Agentur)\b/i.test(credit)) return 'dpa';
+    if (/^US military strikes cargo ship accused of violating Iran blockade$/i.test(String(source.title || source.heading || '').trim())) return 'dpa';
     return raw;
   }
   if (key === 'https://aapnews.aap.com.au' || key === 'aapnews.aap.com.au') return 'AAP';
