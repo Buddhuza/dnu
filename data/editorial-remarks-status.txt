@@ -1,0 +1,10 @@
+Yahoo attribution check: US military strikes cargo ship accused of violating Iran blockade — https://news.google.com/rss/articles/CBMikAFBVV95cUxPWWwxOS1HYXM5VF9UN1FqS2ZIQ1RRbGl6UDNudktYSHRtRmdPeXp1RFltem9VLVQ3dENHVkgyNlhZMERjZDRGWU0tT3ZoM2tJTTROT2dGVlZmeDVXbEtYN2c5MGtfekJWM0hJcm5ZYXpfSlF6SUlXcnBPeGRCRVlfdTM3UG84cHVNajFmRnpNaDg?oc=5 — cached body dpa credit: false
+file:///home/runner/work/dnu/dnu/scripts/apply-editorial-remarks.mjs:19
+    if (credited !== 'dpa') throw new Error(`Could not verify dpa as the original agency for ${article.url}; the shared edition was left unchanged.`);
+                                  ^
+
+Error: Could not verify dpa as the original agency for https://news.google.com/rss/articles/CBMikAFBVV95cUxPWWwxOS1HYXM5VF9UN1FqS2ZIQ1RRbGl6UDNudktYSHRtRmdPeXp1RFltem9VLVQ3dENHVkgyNlhZMERjZDRGWU0tT3ZoM2tJTTROT2dGVlZmeDVXbEtYN2c5MGtfekJWM0hJcm5ZYXpfSlF6SUlXcnBPeGRCRVlfdTM3UG84cHVNajFmRnpNaDg?oc=5; the shared edition was left unchanged.
+    at file:///home/runner/work/dnu/dnu/scripts/apply-editorial-remarks.mjs:19:35
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+Node.js v22.23.4
