@@ -74,6 +74,10 @@ if (officialCustom.length) {
 }
 for (const article of result.removed) console.log(`Removed: ${article.sourceName} — ${article.title} — ${article.reason}`);
 for (const article of result.moved) console.log(`Moved: ${article.sourceName} — ${article.title} → ${article.placement.sectionId} / ${article.placement.subsection} / ${article.placement.country || ''}`);
+for (const article of [...result.edition.articles, ...(result.settings.customArticles || [])]) {
+  if (/Tokayev outlines key areas|Baku['’]s joy is Ankara['’]s pride|Trump says strikes unlikely if peace talks keep moving|How a university boom fuels exploitation/i.test(article.title || ''))
+    console.log(`Placement audit: ${article.sourceName} — ${article.title} → ${article.sectionId || article.section} / ${article.subsection || ''} / ${article.country || ''}`);
+}
 if (!result.edition.articles.length) throw new Error('The correction would empty the edition; no change was published.');
 const changed = result.removed.length || result.moved.length || officialCustom.length || result.edition.articles.length !== state.edition.articles.length || result.edition.articles.some((article, index) => article.title !== state.edition.articles[index]?.title || article.sourceName !== state.edition.articles[index]?.sourceName);
 if (!changed) { console.log('The shared edition already reflects these corrections.'); process.exit(0); }
