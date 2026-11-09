@@ -9,8 +9,9 @@ export function reviewPublishedEdition(edition, settings) {
     const edit = settings.articleEdits?.[article.id] || {};
     const title = cleanHeadlinePrefix(article.title);
     const sourceName = displaySourceName(article.sourceName, article);
+    const editedSourceName = unattributedRepublisherReason({ sourceName: edit.sourceName }) ? sourceName : edit.sourceName || sourceName;
     const effective = {
-      ...article, title: edit.title || title, sourceName: edit.sourceName || sourceName,
+      ...article, title: edit.title || title, sourceName: editedSourceName,
       sectionId: edit.sectionId || article.sectionId || article.section,
       subsection: edit.sectionId ? edit.subsection : edit.subsection || article.subsection,
       country: edit.sectionId ? edit.country : edit.country || article.country || ''
@@ -25,7 +26,10 @@ export function reviewPublishedEdition(edition, settings) {
     edition: { ...edition, articles },
     settings: {
       ...settings,
-      articleEdits: Object.fromEntries(Object.entries(settings.articleEdits || {}).filter(([id]) => kept.has(id))),
+      articleEdits: Object.fromEntries(Object.entries(settings.articleEdits || {}).filter(([id]) => kept.has(id)).map(([id, edit]) => {
+        const article = articles.find(item => item.id === id);
+        return [id, article && unattributedRepublisherReason({ sourceName: edit.sourceName }) ? { ...edit, sourceName: article.sourceName } : edit];
+      })),
       articleOrder: (settings.articleOrder || []).filter(id => kept.has(id)),
       leadOrigins: Object.fromEntries(Object.entries(settings.leadOrigins || {}).filter(([id]) => kept.has(id)))
     },
