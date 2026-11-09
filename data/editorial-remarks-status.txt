@@ -1,0 +1,13 @@
+Removed: Kabar — Diwali celebrated in Bishkek, highlighting cultural ties between Kyrgyzstan and India — Outside the political and security brief
+Removed: BBC — Meghan's father Thomas Markle under house arrest after child sex abuse material charge — Outside the political and security brief
+Removed: Kursiv — Kazakhstan considers ban on single-use plastic tableware — Outside the political and security brief
+Removed: TASS — Among those killed, wounded in Krakow shooting citizens of Russia, other states — ministry — Russian outlet restricted to Russia
+Removed: Financial Times — Attempts to find resolution for Israel’s new government and Ukraine’s war — Opinion or analysis rather than a specific news development
+Removed: France 24 — At least two killed, 23 injured in school bus accident in eastern France — Outside the political and security brief
+Removed: AA — French presidential candidate pledges to enforce ICC arrest warrant for Netanyahu if elected — France coverage requires an international or French news source
+Removed: BIRN — With Change of Power, Serbia Can Reinvigorate EU Accession Bid — Opinion or analysis rather than a specific news development
+Removed: Phileleftheros — Motorcyclists account for 38% of Cyprus road deaths, minister says — Outside the political and security brief
+Moved: AP — Rubio says Trump's war against Iran not 'necessarily popular' but needed to stop a nuclear threat → Miscellaneous / NORTH AMERICA / United States
+Moved: CNN — Trump teases ‘big, beautiful’ European security deal after meeting Putin envoy → Miscellaneous / NORTH AMERICA / United States
+Moved: Reuters — Trump says he is unlikely to order Iran attack if talks progress, CNN reports → Miscellaneous / NORTH AMERICA / United States
+Published corrected shared edition: 89 stories retained, 9 removed.
