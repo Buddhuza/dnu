@@ -15,7 +15,7 @@ export default function NativeCollection({ onEditionReady, draftMode, onReturn }
         setStatus(result);
         if (result.state === 'complete' && result.checkedAt !== lastCompleted.current) {
           lastCompleted.current = result.checkedAt;
-          onEditionReady();
+          await onEditionReady();
         }
       } catch { if (active) setStatus({ state: 'unavailable', message: 'Start the Node DNU server to collect news.' }); }
     };

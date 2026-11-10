@@ -1,69 +1,28 @@
-name: Weekend DNU edition and Outlook email
+name: Weekend DNU collection draft (manual until approved)
 
+# Add a schedule only after the native collector and publication plan are reviewed.
 on:
-  schedule:
-    # 07:00 Vienna time, summer and winter. The script skips the other slot.
-    - cron: '0 5,6 * * 6,0'
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/weekend-edition.yml
   workflow_dispatch:
-    inputs:
-      dry_run:
-        description: Check today's completed sheet and selection without publishing or sending
-        required: true
-        type: boolean
-        default: true
 
 permissions:
-  contents: write
-
-concurrency:
-  group: weekend-dnu-edition
-  cancel-in-progress: false
+  contents: read
 
 jobs:
-  weekend:
+  collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 65
-    env:
-      SUPABASE_URL: https://epghsyajgspcywqqbfso.supabase.co
-      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-      MS_TENANT_ID: ${{ secrets.MS_TENANT_ID }}
-      MS_CLIENT_ID: ${{ secrets.MS_CLIENT_ID }}
-      MS_CLIENT_SECRET: ${{ secrets.MS_CLIENT_SECRET }}
-      DNU_MAIL_FROM: ${{ secrets.DNU_MAIL_FROM }}
-      DNU_MAIL_TO: ${{ secrets.DNU_MAIL_TO }}
-      DNU_MAIL_DELIVERY: ${{ vars.DNU_MAIL_DELIVERY }}
-      DNU_GOOGLE_SHEET_URL: ${{ vars.DNU_GOOGLE_SHEET_URL }}
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24.5.0'
+          cache: npm
       - run: npm ci
-      - name: Check weekend placement and selection rules
-        run: node --test src/weekendPlacement.test.js src/weekendEdition.test.js
-      - name: Prepare weekend edition and send at 08:00 Vienna time
-        run: |
-          set -o pipefail
-          if [ '${{ github.event_name }}' = 'push' ]; then
-            node scripts/weekend-edition.mjs --publish-only 2>&1 | tee data/weekend-run-status.txt
-          elif [ '${{ github.event_name }}' = 'workflow_dispatch' ] && [ '${{ inputs.dry_run }}' = 'true' ]; then
-            node scripts/weekend-edition.mjs --dry-run 2>&1 | tee data/weekend-run-status.txt
-          else
-            node scripts/weekend-edition.mjs 2>&1 | tee data/weekend-run-status.txt
-          fi
-      - name: Save run outcome for review
-        if: always()
-        run: |
-          if [ ! -f data/weekend-run-status.txt ]; then
-            printf 'The edition step did not start. Check this workflow run in Actions.\n' > data/weekend-run-status.txt
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b weekend-run-${{ github.run_id }}
-          git add -f data/weekend-run-status.txt
-          git commit -m "Record weekend edition run outcome"
-          git push origin HEAD:weekend-run-${{ github.run_id }}
+      - name: Collect weekend draft from publishers
+        run: npm run collect:daily
+      - name: Save JSON for editorial review
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekend-native-draft
+          path: data/prepared-update.json
+          retention-days: 7

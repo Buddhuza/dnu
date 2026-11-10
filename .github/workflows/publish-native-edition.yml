@@ -1,0 +1,25 @@
+name: Publish reviewed native DNU edition
+
+# Explicit editor action only. No collection or publishing runs on a schedule.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_URL: https://epghsyajgspcywqqbfso.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.5.0'
+          cache: npm
+      - run: npm ci
+      - name: Publish reviewed JSON and available bodies
+        run: npm run publish:shared

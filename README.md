@@ -6,7 +6,7 @@ The versioned [DNU rulebook](public/dnu-rules.md) is the single editable Markdow
 
 ## Shared public site and editor login
 
-The shared edition uses Supabase Auth and Postgres while GitHub Pages serves the website. Visitors can browse, switch views, search, download, email and export. Only the signed-in editor can add, import, edit or manage the site. The editor's changes are saved to the shared edition; public browsers load it immediately on opening and poll for changes every 20 seconds. Dark mode remains a personal browser setting. Batch source collection still requires the local server; an offline `NEWSRUN` can publish its completed edition to Supabase.
+The shared edition uses Supabase Auth and Postgres while GitHub Pages serves the website. Visitors can browse, switch views, search, download, email and export. Only the signed-in editor can add, import, edit or manage the site. The editor's changes are saved to the shared edition; public browsers load it immediately on opening and poll for changes every 20 seconds. Dark mode remains a personal browser setting. Native collection requires the Node server or an offline GitHub Actions run. Collection creates a draft JSON and does not automatically publish to Supabase.
 
 To activate shared editing for a new Supabase project:
 
@@ -17,30 +17,21 @@ To activate shared editing for a new Supabase project:
 
 If an import says **Not published: DELETE requires a WHERE clause**, rerun the latest [supabase/schema.sql](supabase/schema.sql) in the project's SQL Editor. The updated publishing functions use a WHERE clause when replacing the article-body cache. Then reload the website and import the sheet again.
 
-For a future offline `NEWSRUN`, set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` only in the collection process, then run `npm run publish:shared` after reviewing `data/prepared-update.json`. This copies the prepared edition and available full bodies to the shared database. The service-role key must never be used in a website build.
+After reviewing a native draft, set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` only in the publication process, then run `npm run publish:shared`. This copies the prepared edition and available JSON full bodies to the shared database. The service-role key must never be used in a website build.
 
 The GitHub Pages deployment is configured for shared editing. Publishing-function changes in `supabase/schema.sql` must also be run in the Supabase SQL Editor; updating the repository alone does not change the live database.
 
-A local news review app for the 173 outlets in `sources.json` (transcribed from the supplied `agencies_updated.txt`). Choose a source, collect its headlines from a publisher feed where available or Firecrawl otherwise, and refine the results with included and excluded phrases. The prepared news stream can be edited and exported as a Word update.
+## Native collector cutover (pending review)
 
-## Weekend edition and Outlook delivery
+The attached Node collector is installed in `collector/`. The combined `sources.json` retains all 173 prior IDs and adds the supplied outlets: 297 catalogue entries spanning 296 domains. `npm run collect:daily` uses Node 24.5+ to read publisher feeds and pages and Google News RSS discovery. It writes `data/prepared-update.json` atomically and preserves the previous edition when selection is empty. The file contains the selected stories, route audit, rejected rows and full article text where extraction succeeded. No Firecrawl, Google Apps Script or Google Sheet credential is needed for collection.
 
-`.github/workflows/weekend-edition.yml` is scheduled for Saturday and Sunday mornings. It starts at 07:00 Europe/Vienna (the workflow has both summer and winter UTC slots, and the script ignores the wrong slot). It reads that day's date-named Morning News tab from the live Google Sheet. If `NewsStatus` says `COMPLETE` for that date, it can publish immediately; if `NewsStatus` is unavailable, it waits until at least 07:45 and verifies that the dated tab is unchanged across two reads one minute apart. It uses the existing import rules and removes matched duplicate events while preferring major international agencies. It publishes a **fresh** shared edition to Supabase, preserving site configuration but replacing stories from earlier dates. Email delivery is optional and cannot prevent publication. Manual imports still append to the current edition.
+Run `DNU_TEST_DOMAIN=bbc.com npm run collect:daily` to test one publisher; its result is `data/native-test-edition.json`. Then run `npm run collect:daily` without the variable. `npm run schedule` is available only for a persistent Node server; it prepares a draft after 01:00 and releases the completed local JSON after 05:00 Europe/Vienna. **It is not enabled by this PR.** The daily and weekend GitHub Actions jobs are manual draft checks only. The former feed jobs and Google Sheet weekend job are retired in this branch.
 
-To activate it, a Microsoft 365 administrator must register an application in Microsoft Entra ID, give it Microsoft Graph **Mail.Send** application permission with admin consent, and scope its mailbox access to the intended sender. Add the following **GitHub Actions repository secrets** in **Settings → Secrets and variables → Actions**:
+The Node server reads completed JSON on every `/api/daily-update` and `/api/daily-update.docx` request. Its Collect endpoint requires a valid Supabase editor session; set `SUPABASE_URL` and `SUPABASE_ANON_KEY` on that server. The GitHub Pages site has no Node API, so its Collect control reports unavailable until a persistent Node server is deployed behind the site. The editor can preview a collected draft without publishing it. The public site continues to read the existing shared Supabase edition until the separate publication command is run.
 
-| Secret | Value |
-| --- | --- |
-| `SUPABASE_SERVICE_ROLE_KEY` | Server-only key for the DNU Supabase project |
-| `MS_TENANT_ID` | Microsoft 365 tenant ID |
-| `MS_CLIENT_ID` | Entra application (client) ID |
-| `MS_CLIENT_SECRET` | Entra application secret value |
-| `DNU_MAIL_FROM` | Sender's Microsoft 365 mailbox email address |
-| `DNU_MAIL_TO` | Mailing-list addresses, separated by commas or semicolons |
+To deploy after review: deploy a persistent Node 24.5+ server with a writable `data/` directory and the public Supabase URL and anon key, route `/api/*` from the website to that server, and test editor-only Collect. Run the manual **Test daily native collection** workflow or `npm run collect:daily` on the server. Review `data/prepared-update.json`, body coverage and source failures; then use the manual **Publish reviewed native DNU edition** workflow or `npm run publish:shared` with server-only service-role credentials. Build and deploy GitHub Pages separately to update bundled assets. Add a daily/weekend schedule only after confirming the runner persists the JSON and the release path is safe. No production schedule, shared publication or Outlook send is activated here.
 
-`SUPABASE_URL` is set in the workflow. If the Google Sheet URL changes, set the optional Actions repository variable `DNU_GOOGLE_SHEET_URL`. The sheet must be viewer-accessible to the GitHub runner. `SUPABASE_SERVICE_ROLE_KEY` is required to update the public site; Outlook and recipient secrets are needed only for Microsoft Graph email delivery. If they are absent, the edition is still published without email. To check the sheet and story selection without changing the site or sending mail, run **Actions → Weekend DNU edition and Outlook email → Run workflow** with **dry_run** selected. Each run also writes its result to a `weekend-run-...` branch for diagnosis.
-
-The job records a send claim in Supabase before calling Microsoft Graph, so a rerun cannot send the same edition twice. If Graph accepts a message but its delivery is uncertain, the job will not retry it automatically; inspect Outlook's Sent Items and the Actions log. GitHub Actions may start a scheduled job late, and Microsoft Graph accepts messages asynchronously. The script aims to submit at 08:00, skips a late send, and cannot guarantee exact inbox delivery time. A dedicated scheduler is needed if strict delivery time is essential.
+Rollback by reverting the integration PR, restoring the previous prepared JSON and re-enabling the prior collection configuration only if still needed.
 
 ### Send through classic Outlook on a Windows computer
 
@@ -63,15 +54,9 @@ For an update using only direct publisher feeds and original article pages, tell
 
 For a quick preview that does not clone or install the project, open the [static GitHub Pages preview](https://buddhuza.github.io/dnu/). Once shared login is activated, visitors see the current edition and exports, while the editor can log in to change it. Source-list collection still requires the local server or an offline `NEWSRUN`; the logged-in Pages editor can add individual URLs with a browser Firecrawl key.
 
-## Test an unattended collection
+## Test native collection without publishing
 
-The **Test daily collection** GitHub Actions workflow runs the existing headline-first collection across all configured sources and builds a draft update. It runs only when started manually; it does not change the public site or create a schedule. A run uses Firecrawl credits.
-
-1. In the GitHub repository, add a repository secret named `FIRECRAWL_API_KEY` under **Settings → Secrets and variables → Actions**. A key saved in the website's browser storage is not available to GitHub Actions.
-2. Open **Actions → Test daily collection → Run workflow** and select the `main` branch.
-3. Open the completed run. Its **Summary** shows the number of sources visited, selected stories, and source failures. Download the `daily-collection-test-…` artifact for the draft `prepared-update.json` and collection review file.
-
-The job fails if the key is missing, a source was not visited, the audit lacks a source, or the draft has no stories. Source-level failures are shown for investigation even when the overall run completes. Running it does not enable automatic publication; that needs a separate scheduled workflow and a publication review gate.
+Use **Actions → Native collector test (no publication)** on the integration branch for a BBC-only run followed by a full run. The status and JSON are saved on a `native-check-...` branch. On `main`, **Test daily native collection** can be run manually and uploads the completed JSON as an artifact. Neither workflow publishes the public site or sends email. The source route audit in the JSON distinguishes checked and failed routes; article bodies are present only for successful full-text extractions.
 
 ## Manage the website
 
@@ -81,7 +66,7 @@ Press **Edit** beside **Download** in the update header to show a checkbox for e
 
 The **Import spreadsheet** button beside **Add** reads a DNU database export or a similar `.xlsx` or `.csv` file in your browser. It previews usable and skipped rows, then adds the stories to the current DNU. An imported URL already in the update refreshes that story; other stories and their edits remain. Available full article bodies are added to the browser and shared caches for later spreadsheet export. Use **Clear all stories** in Import when you want an empty update. Import uses no Firecrawl credits. In the logged-in shared editor, changes publish through Supabase for all visitors.
 
-The spreadsheet icon between **Email** and **Search** exports the currently visible stories to an `.xlsx` workbook for database import. Columns are Date, Source, Region, Countries, Local Regions, Organizations, Themes, Types, Source URL, Heading, and Body. Region and the first Countries or Organizations entry follow each story's current heading in the update, including moves and Lead stories; other countries and organisations mentioned in the article follow. Optional fields without reliable data are blank. On the local server, full article bodies come from `data/article-cache.jsonl` and its dated shards and missing pages are fetched only when needed. The GitHub Pages deployment includes a public `article-bodies.json` with readable full bodies for the prepared edition. The browser saves retrieved bodies in IndexedDB. For uncached stories it can use the Firecrawl key entered through **Add**, whether remembered in this browser or kept for the current tab. If an article is unavailable, export continues with the others and shows the final counts and failed titles. Non-English articles that yield a verified English headline and summary are marked `(文A)` in the update; their spreadsheet body uses a full English translation when one is available.
+The spreadsheet icon between **Email** and **Search** exports the currently visible stories to an `.xlsx` workbook for database import. Columns are Date, Source, Region, Countries, Local Regions, Organizations, Themes, Types, Source URL, Heading, and Body. Region and the first Countries or Organizations entry follow each story's current heading in the update, including moves and Lead stories; other countries and organisations mentioned in the article follow. Optional fields without reliable data are blank. For native stories, full article bodies come directly from the completed JSON. The GitHub Pages build can include an `article-bodies.json` snapshot, and the browser also saves available bodies in IndexedDB. Missing bodies are reported and are not fetched through Firecrawl. If an article is unavailable, export continues with the others and shows the final counts and failed titles. Non-English articles that yield a verified English headline and summary are marked `(文A)` in the update; their spreadsheet body uses a full English translation when one is available.
 
 To publish the prepared edition with its body cache, run `npm run build:pages:with-cache`, then `node scripts/sync-pages.mjs dist /path/to/gh-pages-worktree` and commit and push that worktree. The sync overwrites current files while retaining older hashed files in `assets/` so an already open browser tab can still load its Add dialog after a deployment. Do not delete the old hashed assets during deployment. The generated `dist/article-bodies.json` is publicly accessible. It contains extracted article text, not Firecrawl credentials or the raw scrape cache. Rebuild it after changing `data/prepared-update.json` or any article-cache shard.
 

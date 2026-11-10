@@ -6,6 +6,7 @@ import { createArticleCache } from '../server/articleCache.js';
 import { extractArticleBody } from '../server/articleBody.js';
 import { articleJson } from '../src/articleTranslation.js';
 import { appendEditionStories, latestCollectionArticles } from '../src/editionActions.js';
+import { extendSiteConfigForImportedPlacements, normalizeSiteConfig } from '../src/siteConfig.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const url = process.env.SUPABASE_URL;
@@ -33,9 +34,12 @@ for (let attempt = 0; attempt < 3; attempt++) {
   if (readError) throw readError;
   const customUrls = (state.settings?.customArticles || []).map(article => article.url);
   const update = appendEditionStories(state.edition?.articles ? state.edition : {}, { ...edition, articles: incoming.map(({ body, ...article }) => article) }, customUrls);
+  const settings = extendSiteConfigForImportedPlacements(normalizeSiteConfig(state.settings, update.articles), update.articles);
+  settings.leadOrigins = { ...settings.leadOrigins, ...(edition.leadOrigins || {}) };
   const { data, error } = await client.from('dnu_state').update({
     revision: Number(state.revision) + 1,
     edition: update,
+    settings,
     compiled_at: edition.checkedAt,
     updated_at: new Date().toISOString()
   }).eq('id', 'main').eq('revision', state.revision).select('revision').maybeSingle();

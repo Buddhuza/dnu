@@ -21,7 +21,6 @@ import { reportStoryText } from './reportText.js';
 import { duplicateGroups, duplicateGroupHue } from './storyDuplicates.js';
 import { storyOrigin } from './storyOrigin.js';
 import { disclaimerFirst, disclaimerSecond } from './disclaimer.js';
-import { sourceAudit } from './collectionAudit.js';
 import { countCoveredCountries } from './collectionSummary.js';
 import { formatViennaDateTime } from './viennaTime.js';
 import { emailSubject, emailUpdateHtml, emailUpdateText } from './emailUpdate.js';
@@ -37,7 +36,6 @@ import './styles.css';
 const readStored = (key, fallback, legacyKey) => {
   try { return JSON.parse(localStorage.getItem(key) ?? (legacyKey ? localStorage.getItem(legacyKey) : null)) ?? fallback; } catch { return fallback; }
 };
-const words = text => [...new Set(text.split(/[,\n]/).map(x => x.trim()).filter(Boolean))].slice(0, 40);
 const defaultScope = 'OSCE, cooperation, diplomacy, bilateral, foreign policy, talks, summit, peace, sanctions, NATO, EU, UN, security, defense, defence, conflict, war, terrorism, military, politics, political, election, Russia, Ukraine';
 const dateLabel = formatViennaDateTime;
 const sharedEnabled = Boolean(sharedClient);
@@ -96,18 +94,11 @@ function App() {
   const importedModeRef = useRef(importedMode);
   const restoringImportRef = useRef(false);
   const [staticPreview, setStaticPreview] = useState(false);
-  const [activeId, setActiveId] = useState(preparedSources[0]?.id || '');
   const [websiteSourceId, setWebsiteSourceId] = useState('');
   const [search, setSearch] = useState('');
   const [group, setGroup] = useState('All sources');
   const [includeText, setIncludeText] = useState(() => readStored('dnu-include', defaultScope, 'signal-include'));
   const [excludeText, setExcludeText] = useState(() => readStored('dnu-exclude', '', 'signal-exclude'));
-  const [scope, setScope] = useState(() => ({ include: words(readStored('dnu-include', defaultScope, 'signal-include')), exclude: words(readStored('dnu-exclude', '', 'signal-exclude')) }));
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [batchProgress, setBatchProgress] = useState(null);
-  const [auditRows, setAuditRows] = useState(() => { const saved = readStored('dnu-source-audit-v1', []); return Array.isArray(saved) ? saved : []; });
-  const [error, setError] = useState('');
   const [toast, setToast] = useState('');
   const [exportingSheet, setExportingSheet] = useState(false);
   const [spreadsheetResults, setSpreadsheetResults] = useState(null);
@@ -212,7 +203,6 @@ function App() {
     }
     localStorage.setItem('dnu-current-edition-v1', editionId);
   }, [daily?.windowStart, daily?.windowEnd, daily?.checkedAt]);
-  useEffect(() => { localStorage.setItem('dnu-source-audit-v1', JSON.stringify(auditRows)); }, [auditRows]);
   useEffect(() => { if (!sharedEnabled) localStorage.setItem('dnu-excluded-story-ids-v1', JSON.stringify([...excludedStoryIds])); }, [excludedStoryIds]);
   useEffect(() => { if (!sharedEnabled && importedModeRef.current && daily?.importedFromSpreadsheet) localStorage.setItem(importedUpdateKey, JSON.stringify(daily)); }, [daily]);
   useEffect(() => { localStorage.setItem('dnu-headline-only-v1', JSON.stringify(headlineOnly)); }, [headlineOnly]);
@@ -271,12 +261,9 @@ function App() {
   }, [editingStories, headlineOnly]);
   const configuredSources = useMemo(() => displaySources(config?.sources ?? [], { ...siteConfig, hiddenSourceIds: [] }), [config, siteConfig]);
   const sources = useMemo(() => displaySources(config?.sources ?? [], siteConfig), [config, siteConfig]);
-  const active = configuredSources.find(x => x.id === activeId);
   const websiteSource = sources.find(x => x.id === websiteSourceId);
-  const canCollect = Boolean(config?.firecrawlConfigured || config?.feedSourceIds?.includes(activeId));
   const groups = ['All sources', ...new Set(sources.map(x => x.group))];
   const visibleSources = useMemo(() => sources.filter(x => (group === 'All sources' || x.group === group) && `${x.name} ${x.group} ${x.url}`.toLowerCase().includes(search.toLowerCase())), [sources, group, search]);
-  const collectionSources = useMemo(() => [...visibleSources].sort((a, b) => Number(config?.feedSourceIds?.includes(b.id)) - Number(config?.feedSourceIds?.includes(a.id))), [visibleSources, config]);
   const displayedArticles = useMemo(() => displaySiteContent(daily?.articles ?? [], siteConfig, excludedStoryIds, daily?.importedFromSpreadsheet === true), [daily, siteConfig, excludedStoryIds]);
   const storyToMove = displayedArticles.find(item => item.id === moveStoryId);
   const selectedArticles = useMemo(() => displayedArticles.filter(item => !excludedStoryIds.has(item.id)), [displayedArticles, excludedStoryIds]);
@@ -340,36 +327,6 @@ function App() {
       subsections: orderedSubsections(siteConfig.sections.find(item => item.id === sectionId), subsections.keys(), extraRegionalHeadings).map(label => [label, subsections.get(label)])
     }));
   }, [readingArticles, siteConfig.sections, siteConfig.leadOrigins]);
-  const selectedSourceStories = selectedArticles.filter(item => item.sourceId === activeId);
-  const sourceRequest = source => ({ sourceId: source.id, ...(source.id.startsWith('manual-source-') ? { customSource: source } : {}), ...(source.listingUrl ? { listingUrlOverride: source.listingUrl } : {}), ...scope });
-
-  async function scanSource(source, fullScan, onPage = () => {}, selective = false, batchId = '', manualRescrape = false) {
-    const headlines = [];
-    const attempts = [];
-    const errors = [];
-    for (const strategy of ['primary', 'alternate', 'search']) {
-      if (strategy !== 'primary' && !config?.firecrawlConfigured) break;
-      if (strategy !== 'primary' && headlines.length) break;
-      let cursor = 0;
-      do {
-        try {
-          const response = await fetch('/api/headlines', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...sourceRequest(source), fullScan, selective, cursor, batchId, manualRescrape, fallback: strategy === 'alternate', search: strategy === 'search' }) });
-          const data = await response.json();
-          if (!response.ok) throw new Error(data.error || 'Collection failed');
-          headlines.push(...data.headlines);
-          attempts.push({ ...data, headlines: data.headlines.length });
-          cursor = data.nextCursor;
-          onPage(headlines, data);
-        } catch (error) { errors.push(error.message); cursor = null; }
-      } while (fullScan && cursor !== null && !(selective && headlines.length >= 2));
-    }
-    return { headlines: [...new Map(headlines.map(item => [item.url, item])).values()].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), audit: sourceAudit(source, attempts, errors), lastPage: attempts.at(-1) };
-  }
-
-  function saveAudit(row) {
-    setAuditRows(current => [row, ...current.filter(item => item.sourceId !== row.sourceId)]);
-  }
-
   async function importSpreadsheet(result, fileName) {
     const importedAt = new Date().toISOString();
     const currentArticles = [...(daily?.articles || []), ...(siteConfig.customArticles || [])];
@@ -466,78 +423,10 @@ function App() {
     setToast('Update cleared. Its structure and article cache remain available.');
   }
 
-  function rememberWorkingListing(source, audit) {
-    const working = audit.attempts?.find(attempt => attempt.headlines > 0 && attempt.collectionMethod === 'firecrawl' && attempt.listingUrl && attempt.listingUrl !== (source.listingUrl || source.url));
-    if (!working || !/^source-\d+$/.test(source.id)) return;
-    setSiteConfig(current => ({ ...current, sourceListingOverrides: { ...current.sourceListingOverrides, [source.id]: working.listingUrl } }));
-  }
-
   function applyScope() {
-    const next = { include: words(includeText), exclude: words(excludeText) };
     localStorage.setItem('dnu-include', JSON.stringify(includeText));
     localStorage.setItem('dnu-exclude', JSON.stringify(excludeText));
-    setScope(next);
-    setResult(null);
-    setError('');
-    setToast('Scope updated. Refresh a source to collect matching headlines.');
-  }
-  async function loadSource(id = activeId, fullScan = false) {
-    const source = configuredSources.find(item => item.id === id);
-    if (!source) return;
-    setBatchProgress(null);
-    setActiveId(id);
-    setLoading(true);
-    setError('');
-    setResult(null);
-    try {
-      const scan = await scanSource(source, fullScan, (headlines, page) => setResult({ ...page, headlines: [...headlines] }), !fullScan, `source-${Date.now()}`, fullScan);
-      saveAudit(scan.audit);
-      rememberWorkingListing(source, scan.audit);
-      setResult(scan.lastPage ? { ...scan.lastPage, headlines: scan.headlines } : null);
-      if (scan.audit.status === 'failed') setError(scan.audit.reason);
-    } catch (e) { setError(e.message); }
-    finally { setLoading(false); }
-  }
-  async function loadVisible(targetSources = collectionSources) {
-    if (!targetSources.length) return;
-    setLoading(true);
-    setError('');
-    setResult({ headlines: [], fetchedAt: new Date().toISOString(), batch: true });
-    setBatchProgress({ done: 0, total: targetSources.length, failed: 0 });
-    let done = 0, failed = 0;
-    const gathered = [];
-    const batchId = `batch-${new Date().toISOString()}`;
-    setAuditRows([]);
-    const collectGroup = async groupSources => {
-      let cursor = 0;
-      const worker = async () => {
-      while (cursor < groupSources.length) {
-        const source = groupSources[cursor++];
-        try {
-          if (!config?.firecrawlConfigured && !config?.feedSourceIds?.includes(source.id)) {
-            saveAudit({ sourceId: source.id, name: source.name, status: 'unavailable', reason: 'No publisher feed is configured and Firecrawl is not connected to the server.', remedy: 'Set FIRECRAWL_API_KEY on the server, then retry this source.', attempts: [], errors: [] });
-          } else {
-            const scan = await scanSource(source, true, (headlines, page) => {
-              const previous = gathered.filter(item => item.sourceId !== source.id);
-              setResult({ headlines: [...previous, ...headlines].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date().toISOString(), batch: true });
-            }, true, batchId);
-            gathered.push(...scan.headlines);
-            saveAudit(scan.audit);
-            rememberWorkingListing(source, scan.audit);
-            if (scan.audit.status === 'failed') failed++;
-            setResult({ headlines: [...gathered].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)), fetchedAt: new Date().toISOString(), batch: true });
-          }
-        } catch (error) { failed++; saveAudit(sourceAudit(source, [], [error.message])); }
-        done++;
-        setBatchProgress({ done, total: targetSources.length, failed });
-      }
-    };
-      await Promise.all(Array.from({ length: Math.min(4, groupSources.length) }, worker));
-    };
-    await collectGroup(targetSources.filter(source => config?.feedSourceIds?.includes(source.id)));
-    await collectGroup(targetSources.filter(source => !config?.feedSourceIds?.includes(source.id)));
-    setLoading(false);
-    if (failed) setError(`${failed} source${failed === 1 ? '' : 's'} could not be collected. Other results are shown below.`);
+    setToast('Keywords saved locally. The native collector uses its configured editorial rules.');
   }
   async function downloadManagedDocx() {
     try {
@@ -773,6 +662,7 @@ function App() {
     const edition = await response.json();
     setNativeDraftMode(true);
     setDaily(edition);
+    setSiteConfig(current => ({ ...extendSiteConfigForImportedPlacements(current, edition.articles), leadOrigins: { ...current.leadOrigins, ...(edition.leadOrigins || {}) } }));
     setCompiledAt(edition.checkedAt);
     setStaticPreview(false);
     setSaveStatus('Draft only · not published');
@@ -790,7 +680,7 @@ function App() {
         <div className="sidebar-heading"><h2>Sources <em>{sources.length}</em></h2></div>
         <label className="search-box"><span>⌕</span><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search sources" aria-label="Search sources"/><kbd>⌘ K</kbd></label>
         <select className="group-select" value={group} onChange={e => setGroup(e.target.value)} aria-label="Filter source region">{groups.map(x => <option key={x}>{x}</option>)}</select>
-        <div className="source-list">{visibleSources.map(x => <button key={x.id} className={`source-row ${websiteSourceId === x.id ? 'active' : ''}`} onClick={() => { setActiveId(x.id); setWebsiteSourceId(x.id); setResult(null); setError(''); }} aria-label={`Show ${x.name} website beside the daily news update`}><span className="source-icon">{x.name[0]}</span><span className="source-copy"><strong>{x.name}</strong></span><span className="source-arrow">›</span></button>)}{!visibleSources.length && <p className="no-sources">No sources match this search.</p>}</div>
+        <div className="source-list">{visibleSources.map(x => <button key={x.id} className={`source-row ${websiteSourceId === x.id ? 'active' : ''}`} onClick={() => { setWebsiteSourceId(x.id); }} aria-label={`Show ${x.name} website beside the daily news update`}><span className="source-icon">{x.name[0]}</span><span className="source-copy"><strong>{x.name}</strong></span><span className="source-arrow">›</span></button>)}{!visibleSources.length && <p className="no-sources">No sources match this search.</p>}</div>
         <div className="sidebar-foot"><span className="pulse"/> {sources.length} visible sources</div>
       </aside>}
       <main className={`main-panel ${websiteSource ? 'with-website' : ''}`}>

@@ -21,6 +21,8 @@ jobs:
           node-version: '24.5.0'
           cache: npm
       - run: npm ci
+      - name: Verify native adapter and existing app
+        run: npm test && npm run build
       - name: Collect BBC only
         run: |
           set -o pipefail
