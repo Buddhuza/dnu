@@ -15,10 +15,10 @@ const articles = {};
 const cachedArticles = new Map([...archived.articles, ...update.articles].map(article => [article.url, article]));
 for (const article of cachedArticles.values()) {
   const page = cache.get(article.url)?.page;
-  const body = extractArticleBody(page, article.title);
+  const body = String(article.body || '').trim() || extractArticleBody(page, article.title);
   if (body.split(/\s+/).length < 25) continue;
   articles[article.url] = {
-    heading: String(page?.metadata?.title || articleJson(page).exactHeadline || article.title).trim(),
+    heading: String(article.originalHeadline || page?.metadata?.title || articleJson(page).exactHeadline || article.title).trim(),
     body,
     translated: article.translated === true
   };

@@ -13,7 +13,7 @@ permissions:
 jobs:
   one-publisher:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -25,6 +25,14 @@ jobs:
         run: |
           set -o pipefail
           DNU_TEST_DOMAIN=bbc.com npm run collect:daily 2>&1 | tee data/native-collector-check-status.txt
+      - name: Collect full edition without external scraper credentials
+        env:
+          FIRECRAWL_API_KEY: ''
+          DNU_GOOGLE_SHEET_URL: ''
+          GEMINI_API_KEY: ''
+        run: |
+          set -o pipefail
+          npm run collect:daily 2>&1 | tee -a data/native-collector-check-status.txt
       - name: Save result for review
         if: always()
         run: |
@@ -33,5 +41,6 @@ jobs:
           git checkout -b native-check-${{ github.run_id }}
           git add -f data/native-collector-check-status.txt
           if [ -f data/native-test-edition.json ]; then git add -f data/native-test-edition.json; fi
+          if [ -f data/prepared-update.json ]; then git add -f data/prepared-update.json; fi
           git commit -m "Record one-publisher native collection check"
           git push origin HEAD:native-check-${{ github.run_id }}

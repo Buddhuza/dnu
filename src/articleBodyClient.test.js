@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadFullArticle } from './articleBodyClient.js';
 
-test('published body cache supplies an article without another Firecrawl request', async () => {
+test('published body cache supplies an article without another network request', async () => {
   const url = 'https://example.com/article';
   const requests = [];
   const result = await loadFullArticle({ url, title: 'Example headline' }, { fetchImpl: async target => {
@@ -12,6 +12,14 @@ test('published body cache supplies an article without another Firecrawl request
   } });
   assert.deepEqual(result, { heading: 'Original headline', body: 'The complete article body.' });
   assert.equal(requests.length, 1);
+});
+
+test('native edition JSON supplies full text directly to spreadsheet export', async () => {
+  const body = 'The ministers met to discuss regional security and signed a joint statement on border cooperation. '.repeat(4);
+  const result = await loadFullArticle({ url: 'https://example.com/native', title: 'Ministers meet', body, fromNativeCollector: true }, {
+    fetchImpl: async () => { throw new Error('Unexpected request'); }
+  });
+  assert.equal(result.body, body);
 });
 
 test('spreadsheet articles without an imported full body never trigger a scrape', async () => {

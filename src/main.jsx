@@ -1,10 +1,11 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import preparedUpdate from '../data/prepared-update.json';
 import archivedImportReference from '../data/daily-update-2026-10-24.json';
 import preparedSources from '../sources.json';
 import publishedSiteConfig from '../data/site-config.json';
 import SiteManager from './SiteManager.jsx';
+import NativeCollection from './NativeCollection.jsx';
 import AddArticlesDialog from './AddArticlesDialog.jsx';
 import ImportSpreadsheetDialog from './ImportSpreadsheetDialog.jsx';
 import EditorLoginDialog from './EditorLoginDialog.jsx';
@@ -84,6 +85,7 @@ function App() {
   const [sharedReady, setSharedReady] = useState(!sharedEnabled);
   const [sharedError, setSharedError] = useState('');
   const [saveStatus, setSaveStatus] = useState('');
+  const [nativeDraftMode, setNativeDraftMode] = useState(false);
   const sharedRevisionRef = useRef(0);
   const savedPayloadRef = useRef('');
   const pendingBodiesRef = useRef(null);
@@ -215,7 +217,7 @@ function App() {
   useEffect(() => { if (!sharedEnabled && importedModeRef.current && daily?.importedFromSpreadsheet) localStorage.setItem(importedUpdateKey, JSON.stringify(daily)); }, [daily]);
   useEffect(() => { localStorage.setItem('dnu-headline-only-v1', JSON.stringify(headlineOnly)); }, [headlineOnly]);
   useEffect(() => {
-    if (!sharedClient || !editorUser || !sharedReady || !daily || editingStories) return;
+    if (!sharedClient || !editorUser || !sharedReady || !daily || editingStories || nativeDraftMode) return;
     const payload = sharedPayload(daily, siteConfig, excludedStoryIds, compiledAt);
     const fingerprint = JSON.stringify(payload);
     if (fingerprint === savedPayloadRef.current && !pendingBodiesRef.current) return;
@@ -253,7 +255,7 @@ function App() {
       }
     }, 800);
     return () => clearTimeout(timer);
-  }, [editorUser, sharedReady, daily, siteConfig, excludedStoryIds, compiledAt, editingStories, syncTick]);
+  }, [editorUser, sharedReady, daily, siteConfig, excludedStoryIds, compiledAt, editingStories, nativeDraftMode, syncTick]);
   useLayoutEffect(() => {
     const position = pendingReadingPositionRef.current;
     if (!position) return;
@@ -765,16 +767,17 @@ function App() {
     const hit = dropAtPoint(event.clientX, event.clientY, drag.storyId);
     if (hit) relocateStory(drag.storyId, hit.destination);
   };
-  const collectionPanel = (
-        <section className="headlines-section" id="live-collection"><div className="section-title"><div><h2>Live collection</h2></div><span className="time-filter">◷ &nbsp; LAST 48 HOURS</span></div><div className="source-banner"><div className="banner-icon">{active?.name?.[0] || 'S'}</div><div><strong>{active?.name || 'Select a source'}</strong><small>{active?.url || 'Choose an outlet from the left'}</small></div><button onClick={() => loadSource()} disabled={loading || !active || !canCollect || staticPreview}>{loading ? 'Collecting…' : 'Collect headlines'} <span>↗</span></button></div><div className="batch-row"><span>Automatic checks use publisher feeds first, then rank headline listings and open up to twelve promising article links. Previously scraped articles are remembered across batches and skipped. Scan all listed articles lets you manually check a source again.</span><button onClick={() => loadSource(activeId, true)} disabled={loading || !canCollect || !active || staticPreview}>Scan all listed articles</button><button onClick={() => loadVisible(collectionSources)} disabled={loading || !collectionSources.length || staticPreview}>Verify visible sources ({collectionSources.length})</button><button onClick={() => loadVisible(configuredSources)} disabled={loading || !configuredSources.length || staticPreview}>Verify all sources ({configuredSources.length})</button></div>
-          {!config?.firecrawlConfigured && <div className="notice"><p>{staticPreview ? 'This published page shows the prepared update. Live collection requires the server app; feeds work without Firecrawl, while other sources need an API key.' : <>Feed sources can be collected without an API key. Add <code>FIRECRAWL_API_KEY</code> for other sources.</>}</p></div>}
-          {error && <div className="error-box" role="alert">{error}</div>}
-          {loading && <div className="loading-box"><div className="spinner"/> {batchProgress ? `Collected ${batchProgress.done} of ${batchProgress.total} sources${batchProgress.failed ? ` · ${batchProgress.failed} failed` : ''}` : 'Collecting headlines and checking publication times…'}</div>}
-          {result && <><div className="result-meta">{result.headlines.length} headlines · Checked {dateLabel(result.fetchedAt)}{result.collectionMethod ? ` · ${result.collectionMethod === 'feed' ? 'Publisher feed, 0 Firecrawl credits' : 'Firecrawl'}` : ''}{!result.batch && result.candidatesFound ? ` · ${result.candidatesChecked} of ${result.candidatesFound} article candidates checked` : ''}</div>{result.headlines.length ? <div className="headline-list">{result.headlines.map(item => <article className="headline-card" key={item.id}><div className="headline-top"><span className="category-label">{item.sourceName}</span><span>{dateLabel(item.publishedAt)}</span></div><p><strong>{reportStoryText(item).headline}</strong>{item.summary && <> {reportStoryText(item).summary}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{item.sourceName}</a>)</p></article>)}</div> : <div className="empty-result">No matching headline was found in this scan. This does not mean the source had no relevant news. Try broader keywords.</div>}</>}
-          {auditRows.length > 0 && <section className="collection-audit" aria-label="Source verification"><h3>Source verification</h3><p>{auditRows.filter(row => row.status === 'extracted').length} of {auditRows.length} checked sources yielded articles. The remaining rows explain what was checked and what to try next.</p><div className="collection-audit-list">{auditRows.map(row => <details key={row.sourceId}><summary><strong>{row.name}</strong><span>{row.status === 'extracted' ? 'Articles extracted' : row.status === 'unavailable' ? 'Needs server access' : 'Needs follow-up'}</span></summary><p>{row.reason}</p>{row.attempts?.length > 0 && <p>Checked: {row.attempts.map(item => `${item.collectionMethod === 'feed' ? 'publisher feed' : item.listingUrl} (${item.listedCount ?? 0} listed, ${item.candidatesChecked ?? 0} article pages checked)`).join('; ')}.</p>}{row.errors?.length > 0 && <p>Errors: {row.errors.join('; ')}</p>}{row.attempts?.some(item => item.pageErrors?.length) && <p>Article errors: {row.attempts.flatMap(item => item.pageErrors || []).slice(0, 3).join('; ')}</p>}{row.remedy && <p>Next step: {row.remedy}</p>}<button onClick={() => loadSource(row.sourceId, true)} disabled={loading || staticPreview || (!config?.firecrawlConfigured && !config?.feedSourceIds?.includes(row.sourceId))}>Retry complete scan</button></details>)}</div></section>}
-          {!loading && !result && !error && (staticPreview ? <div className="snapshot-results"><p>{selectedSourceStories.length ? `${selectedSourceStories.length} prepared update stories from ${active?.name}` : `No ${active?.name || 'source'} stories were selected for this prepared update.`}</p>{selectedSourceStories.map(item => <article className="headline-card" key={item.id}><h3><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title} ↗</a></h3></article>)}</div> : <div className="empty-result"><span className="empty-symbol">◎</span><strong>Your next story starts here.</strong><p>Choose a source or collect all visible sources. Results are filtered to the past 48 hours.</p></div>)}
-        </section>
-  );
+  const loadNativeDraft = useCallback(async () => {
+    const response = await fetch('/api/daily-update', { cache: 'no-store' });
+    if (!response.ok) return;
+    const edition = await response.json();
+    setNativeDraftMode(true);
+    setDaily(edition);
+    setCompiledAt(edition.checkedAt);
+    setStaticPreview(false);
+    setSaveStatus('Draft only · not published');
+  }, []);
+  const collectionPanel = <NativeCollection onEditionReady={loadNativeDraft} draftMode={nativeDraftMode} onReturn={() => window.location.reload()}/>;
 
   return <div className="app-shell" data-mode={siteConfig.darkMode ? 'dark' : 'light'} style={themeStyle}>
     <header className="topbar"><div className="brand-text"><strong>{siteConfig.brandName}</strong><small>{siteConfig.brandTagline}</small></div><span className="topbar-spacer"/><button className="mode-button" aria-pressed={siteConfig.darkMode} onClick={() => setSiteConfig(current => ({ ...current, darkMode: !current.darkMode }))}>{siteConfig.darkMode ? '☀ Light mode' : '☾ Dark mode'}</button><button className="mode-button login-button" type="button" onClick={async () => {

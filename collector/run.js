@@ -1,6 +1,7 @@
 import { readFile, writeFile, rename } from 'node:fs/promises';
 import { load } from 'cheerio';
 import { listingCandidates_, parseItem_, extractPage_, baselineScore_, selectArticles_, topItems_, publicSummary_, feeds_, PUBLISHER_PAGES } from './rules.js';
+import { adaptSelectedArticles } from './dnuEdition.js';
 
 const root = new URL('../', import.meta.url);
 const registry = JSON.parse(await readFile(new URL('sources.json',root)));
@@ -64,14 +65,11 @@ await parallel(unique.filter(x=>x.score>0 && !x.link.startsWith('https://news.go
 });
 const selected=selectArticles_(unique.filter(x=>Date.parse(x.published)>=+window.start && Date.parse(x.published)<=+end));
 const leads=new Set(topItems_(selected).map(x=>x.id));
-const articles=selected.map(x=>{
-  const source=registry.find(s=>s.domain===x.sourceDomain);
-  const section=({'South Caucasus Region':'South Caucasus','Central Asia Region':'Central Asia',General:'Miscellaneous',International:'Miscellaneous'})[x.category]||x.category;
-  return {id:x.id,url:x.link,title:x.headline,summary:publicSummary_(x,leads.has(x.id))||x.description||'',sourceName:x.source,sourceId:source?.id||x.sourceDomain,publishedAt:x.published,sectionId:leads.has(x.id)?'Lead stories':section,subsection:x.country||'International',originSection:section,originCountry:x.country,section:leads.has(x.id)?'Lead stories':section,fromNativeCollector:true,reviewed:true,body:x.articleBody||''};
-});
-console.log(JSON.stringify({routes:outcomes.length,failed:outcomes.filter(x=>x.status==='failed').length,candidates:unique.length,selected:articles.length,firstFailure:outcomes.find(x=>x.status==='failed')?.reason}));
+for (const item of selected) item.publicSummary = publicSummary_(item, leads.has(item.id));
+const { articles, rejected } = adaptSelectedArticles(selected, leads, registry);
+console.log(JSON.stringify({routes:outcomes.length,failed:outcomes.filter(x=>x.status==='failed').length,candidates:unique.length,selected:articles.length,rejected:rejected.length,bodies:articles.filter(x=>x.body).length,firstFailure:outcomes.find(x=>x.status==='failed')?.reason}));
 if(!articles.length)throw Error('No qualifying articles. Previous edition retained.');
 const output=new URL(filter?'data/native-test-edition.json':process.argv.includes('--stage')?'data/native-pending.json':'data/prepared-update.json',root);
 const temporary=new URL(output.href+'.'+process.pid+'.tmp');
-await writeFile(temporary,JSON.stringify({nativeEdition:true,title:'DAILY NEWS UPDATE',checkedAt:end.toISOString(),windowStart:window.start.toISOString(),windowEnd:end.toISOString(),windowHours:hours,articles,sourceOutcomes:outcomes}));
+await writeFile(temporary,JSON.stringify({nativeEdition:true,title:'DAILY NEWS UPDATE',checkedAt:end.toISOString(),windowStart:window.start.toISOString(),windowEnd:end.toISOString(),windowHours:hours,articles,sourceOutcomes:outcomes,editorialRejections:rejected}));
 await rename(temporary,output);

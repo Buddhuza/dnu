@@ -18,8 +18,8 @@ const cache = createArticleCache(join(root, 'data/article-cache.jsonl'));
 const incoming = latestCollectionArticles(edition);
 const bodies = incoming.flatMap(article => {
   const page = cache.get(article.url)?.page;
-  const body = extractArticleBody(page, article.title);
-  return body.split(/\s+/).length >= 25 ? [{ url: article.url, heading: String(page?.metadata?.title || articleJson(page).exactHeadline || article.title).trim(), body, translated: article.translated === true }] : [];
+  const body = String(article.body || '').trim() || extractArticleBody(page, article.title);
+  return body.split(/\s+/).length >= 25 ? [{ url: article.url, heading: String(article.originalHeadline || page?.metadata?.title || articleJson(page).exactHeadline || article.title).trim(), body, translated: article.translated === true }] : [];
 });
 if (bodies.length) {
   const { error } = await client.from('dnu_bodies').upsert(bodies, { onConflict: 'url' });
@@ -32,7 +32,7 @@ for (let attempt = 0; attempt < 3; attempt++) {
     .select('revision,edition,settings,excluded_story_ids').eq('id', 'main').single();
   if (readError) throw readError;
   const customUrls = (state.settings?.customArticles || []).map(article => article.url);
-  const update = appendEditionStories(state.edition?.articles ? state.edition : {}, { ...edition, articles: incoming }, customUrls);
+  const update = appendEditionStories(state.edition?.articles ? state.edition : {}, { ...edition, articles: incoming.map(({ body, ...article }) => article) }, customUrls);
   const { data, error } = await client.from('dnu_state').update({
     revision: Number(state.revision) + 1,
     edition: update,
