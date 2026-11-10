@@ -58,6 +58,7 @@ jobs:
           retention-days: 7
       - name: Save result for review
         if: always()
+        continue-on-error: true
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -65,5 +66,10 @@ jobs:
           git add -f data/native-collector-check-status.txt
           if [ -f data/native-test-edition.json ]; then git add -f data/native-test-edition.json; fi
           if [ -f data/prepared-update.json ]; then git add -f data/prepared-update.json; fi
+          if git diff --cached --quiet; then exit 0; fi
           git commit -m "Record one-publisher native collection check"
-          git push origin HEAD:native-check-${{ github.run_id }}
+          for attempt in 1 2 3; do
+            if git push origin HEAD:native-check-${{ github.run_id }}; then exit 0; fi
+            sleep $((attempt * 3))
+          done
+          exit 1
