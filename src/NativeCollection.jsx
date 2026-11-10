@@ -1,8 +1,35 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { sharedClient } from './sharedEdition.js';
 import { apiUrl } from './apiUrl.js';
+import { fetchGithubDraft, githubCollectionStatus, githubCollectionWorkflow } from './githubCollection.js';
 
-export default function NativeCollection({ onEditionReady, draftMode, onReturn, autoStart = false }) {
+function GithubCollection({ onEditionReady, draftMode, onReturn }) {
+  const [status, setStatus] = useState({ state: 'checking', message: 'Checking GitHub collection…' });
+  const [error, setError] = useState('');
+  useEffect(() => {
+    let active = true;
+    const refresh = () => githubCollectionStatus().then(result => { if (active) setStatus(result); });
+    refresh();
+    const timer = setInterval(refresh, 20_000);
+    return () => { active = false; clearInterval(timer); };
+  }, []);
+  async function loadDraft() {
+    try { setError(''); await onEditionReady(await fetchGithubDraft()); }
+    catch (failure) { setError(failure.message); }
+  }
+  return <section className="native-collection">
+    <p>GitHub collects the news without a separate server. The completed JSON is a draft until you publish it.</p>
+    <a className="cms-primary" href={githubCollectionWorkflow} target="_blank" rel="noopener noreferrer">Open GitHub scraper ↗</a>
+    <p>In GitHub, choose <strong>Run workflow</strong> on the <strong>main</strong> branch. Return here to load the finished draft.</p>
+    <p role="status">{status.message}</p>
+    {status.runUrl && <p><a href={status.runUrl} target="_blank" rel="noopener noreferrer">View latest run ↗</a></p>}
+    <button type="button" onClick={loadDraft}>Load latest draft</button>
+    {error && <p role="alert">{error}</p>}
+    {draftMode && <button type="button" onClick={onReturn}>Return to published update</button>}
+  </section>;
+}
+
+function NodeCollection({ onEditionReady, draftMode, onReturn, autoStart = false }) {
   const [status, setStatus] = useState({ state: 'checking' });
   const lastCompleted = useRef('');
   const startedAutomatically = useRef(false);
@@ -50,4 +77,10 @@ export default function NativeCollection({ onEditionReady, draftMode, onReturn, 
     {status.state === 'running' && status.total > 0 && <><progress value={status.completed || 0} max={status.total} aria-label="Scraping progress"/><p>{status.completed || 0} of {status.total} {status.phase === 'routes' ? 'source routes checked' : status.phase === 'articles' ? 'article pages checked' : 'full texts checked'}{Number.isFinite(status.candidates) ? ` · ${status.candidates} candidates found` : ''}</p></>}
     {draftMode && <button type="button" onClick={onReturn}>Return to published update</button>}
   </section>;
+}
+
+export default function NativeCollection(props) {
+  return typeof window !== 'undefined' && window.DNU_COLLECTION_MODE === 'github'
+    ? <GithubCollection {...props}/>
+    : <NodeCollection {...props}/>;
 }

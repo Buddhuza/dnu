@@ -36,6 +36,7 @@
 .add-article-dialog{background:var(--site-bg,#f4efe6)}
 .native-collection progress{display:block;width:100%;height:12px;accent-color:var(--site-section,#0070c0)}
 .native-collection p[role="status"]{font-weight:700}
+.native-collection a.cms-primary{text-decoration:none}
 .scrape-live-status{position:fixed;right:16px;bottom:16px;z-index:1200;width:min(330px,calc(100vw - 32px));display:grid;gap:5px;text-align:left;padding:12px 14px;border:1px solid var(--site-primary,#123e47);border-radius:10px;background:var(--site-surface,#fff);color:var(--site-text,#182a36);box-shadow:0 8px 32px #071a2650}
 .scrape-live-status span{font-size:13px}
 .scrape-live-status progress{width:100%;height:8px;accent-color:var(--site-section,#0070c0)}

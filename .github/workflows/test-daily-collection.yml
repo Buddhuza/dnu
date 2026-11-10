@@ -8,9 +8,13 @@ on:
     - cron: '0 11 * * *'
     - cron: '0 12 * * *'
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/test-daily-collection.yml
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: native-draft-collection
@@ -28,7 +32,7 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           CRON_SCHEDULE: ${{ github.event.schedule }}
         run: |
-          if [ "$EVENT_NAME" = workflow_dispatch ] || node --input-type=module -e "import { isScheduledUtcCandidate } from './collector/slots.js'; process.exit(isScheduledUtcCandidate(process.env.CRON_SCHEDULE) ? 0 : 1)"; then
+          if [ "$EVENT_NAME" != schedule ] || node --input-type=module -e "import { isScheduledUtcCandidate } from './collector/slots.js'; process.exit(isScheduledUtcCandidate(process.env.CRON_SCHEDULE) ? 0 : 1)"; then
             echo 'run=true' >> "$GITHUB_OUTPUT"
           else
             echo 'run=false' >> "$GITHUB_OUTPUT"
@@ -53,3 +57,22 @@ jobs:
             data/native-collection-progress.json
           if-no-files-found: warn
           retention-days: 7
+      - name: Make completed draft available to the editor on GitHub Pages
+        if: steps.slot.outputs.run == 'true' && success()
+        run: |
+          set -e
+          git fetch origin gh-pages:refs/remotes/origin/gh-pages
+          git worktree add /tmp/dnu-native-draft-pages origin/gh-pages
+          cp data/prepared-update.json /tmp/dnu-native-draft-pages/native-draft.json
+          node scripts/write-native-draft-status.mjs data/prepared-update.json /tmp/dnu-native-draft-pages/native-draft-status.json
+          git -C /tmp/dnu-native-draft-pages config user.name "github-actions[bot]"
+          git -C /tmp/dnu-native-draft-pages config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C /tmp/dnu-native-draft-pages add native-draft.json native-draft-status.json
+          git -C /tmp/dnu-native-draft-pages commit -m "Save native DNU review draft for run ${{ github.run_id }}"
+          for attempt in 1 2 3; do
+            if git -C /tmp/dnu-native-draft-pages push origin HEAD:gh-pages; then exit 0; fi
+            git fetch origin gh-pages:refs/remotes/origin/gh-pages
+            git -C /tmp/dnu-native-draft-pages rebase origin/gh-pages
+            sleep $((attempt * 3))
+          done
+          exit 1

@@ -32,6 +32,7 @@ import { createSpreadsheet, spreadsheetRow } from './spreadsheetExport.js';
 import { reportHeadingLabel } from './reportLabels.js';
 import { useEscapeToClose } from './useEscapeToClose.js';
 import { apiUrl } from './apiUrl.js';
+import { fetchGithubDraft, githubCollectionStatus, githubCollectionWorkflow } from './githubCollection.js';
 import './styles.css';
 
 const readStored = (key, fallback, legacyKey) => {
@@ -40,6 +41,7 @@ const readStored = (key, fallback, legacyKey) => {
 const defaultScope = 'OSCE, cooperation, diplomacy, bilateral, foreign policy, talks, summit, peace, sanctions, NATO, EU, UN, security, defense, defence, conflict, war, terrorism, military, politics, political, election, Russia, Ukraine';
 const dateLabel = formatViennaDateTime;
 const sharedEnabled = Boolean(sharedClient);
+const githubCollectionMode = typeof window !== 'undefined' && window.DNU_COLLECTION_MODE === 'github';
 const importedUpdateKey = 'dnu-imported-update-v1';
 const importBackupKey = 'dnu-before-import-v1';
 const blankEditionResetKey = `dnu-empty-edition-reset-${preparedUpdate.checkedAt}`;
@@ -142,14 +144,18 @@ function App() {
     let active = true;
     const refresh = async () => {
       try {
-        const response = await fetch(apiUrl('/api/collection'), { cache: 'no-store' });
-        if (!response.ok) return;
-        const result = await response.json();
+        let result;
+        if (githubCollectionMode) result = await githubCollectionStatus();
+        else {
+          const response = await fetch(apiUrl('/api/collection'), { cache: 'no-store' });
+          if (!response.ok) return;
+          result = await response.json();
+        }
         if (active) setScrapeStatus(result);
       } catch { /* The separate collection server may not be deployed yet. */ }
     };
     refresh();
-    const timer = setInterval(refresh, 5000);
+    const timer = setInterval(refresh, githubCollectionMode ? 20_000 : 5000);
     return () => { active = false; clearInterval(timer); };
   }, [isEditor]);
 
@@ -602,7 +608,7 @@ function App() {
   const updateControls = () => daily && <div className="daily-downloads">
     {isEditor && <button className="daily-action daily-edit" type="button" aria-label="Add articles" title="Add article URLs" onClick={() => setAddingArticles(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M4 12h16"/></svg></button>}
     {isEditor && <button className="daily-action daily-edit" type="button" aria-label="Import spreadsheet" title={editingStories ? 'Save edits before importing a spreadsheet' : 'Import stories from an Excel or CSV file'} disabled={editingStories} onClick={() => setImportingSpreadsheet(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v16H3zM3 9h18M3 14h11M10 9v11M16 9v5m2 2v5m-3-3 3 3 3-3"/></svg></button>}
-    {isEditor && <button className="daily-action daily-edit" type="button" aria-label="Scrape news now" title={editingStories ? 'Save edits before scraping' : 'Scrape publisher sites now and review the draft'} disabled={editingStories} onClick={() => setScrapingOpen(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.8 9a7 7 0 0 1 12-2L20 12M4 12l2.2 5a7 7 0 0 0 12-2"/></svg></button>}
+    {isEditor && <button className="daily-action daily-edit" type="button" aria-label="Scrape news now" title={editingStories ? 'Save edits before scraping' : githubCollectionMode ? 'Run the GitHub news scraper and review its draft' : 'Scrape publisher sites now and review the draft'} disabled={editingStories} onClick={() => { setScrapingOpen(true); if (githubCollectionMode) window.open(githubCollectionWorkflow, '_blank', 'noopener,noreferrer'); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.8 9a7 7 0 0 1 12-2L20 12M4 12l2.2 5a7 7 0 0 0 12-2"/></svg></button>}
     {isEditor && <button className="daily-action daily-edit" type="button" aria-label={editingStories ? 'Save edits' : 'Edit update'} title={editingStories ? 'Save text and story changes' : 'Edit text and stories'} aria-pressed={editingStories} disabled={!displayedArticles.length && !editingStories} onClick={toggleStoryEditing}><svg viewBox="0 0 24 24" aria-hidden="true">{editingStories ? <path d="m4 12 5 5L20 6"/> : <><path d="m4 20 4.2-.9L19 8.3 15.7 5 4.9 15.8 4 20Z"/><path d="m13.9 6.8 3.3 3.3"/></>}</svg></button>}
     <button className={`daily-action daily-edit ${headlineOnly ? 'is-active' : ''}`} type="button" aria-label={headlineOnly ? 'Show full view' : 'Show compressed view'} title={editingStories ? 'Save edits before switching views' : headlineOnly ? 'Show full view with summaries' : 'Show compressed view without summaries'} aria-pressed={headlineOnly} disabled={editingStories} onClick={() => { rememberReadingPosition(); setHeadlineOnly(current => !current); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16"/>{!headlineOnly && <path d="M4 15h16"/>}</svg></button>
     <button className="daily-action daily-download" type="button" aria-label="Download update" title={editingStories ? 'Save edits before downloading' : headlineOnly ? 'Download compressed Word update' : 'Download Word update with summaries'} disabled={!selectedArticles.length || editingStories} onClick={downloadManagedDocx}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 17v3h16v-3"/></svg></button>
@@ -677,10 +683,13 @@ function App() {
     const hit = dropAtPoint(event.clientX, event.clientY, drag.storyId);
     if (hit) relocateStory(drag.storyId, hit.destination);
   };
-  const loadNativeDraft = useCallback(async () => {
-    const response = await fetch(apiUrl('/api/daily-update'), { cache: 'no-store' });
-    if (!response.ok) return;
-    const edition = await response.json();
+  const loadNativeDraft = useCallback(async providedEdition => {
+    let edition = providedEdition?.articles ? providedEdition : null;
+    if (!edition) {
+      const response = await fetch(apiUrl('/api/daily-update'), { cache: 'no-store' });
+      if (!response.ok) return;
+      edition = await response.json();
+    }
     setNativeDraftMode(true);
     setDaily(edition);
     setSiteConfig(current => ({ ...extendSiteConfigForImportedPlacements(current, edition.articles), leadOrigins: { ...current.leadOrigins, ...(edition.leadOrigins || {}) } }));
@@ -737,7 +746,7 @@ function App() {
 
       </main>
     </div>{toast && <div className={`toast ${toast.startsWith('Not published:') ? 'toast-error' : toast.includes('Publishing for everyone…') ? 'toast-pending' : ''}`} role={toast.startsWith('Not published:') ? 'alert' : 'status'} onClick={() => setToast('')}>{toast} ×</div>}
-    {isEditor && !scrapingOpen && (scrapeStatus?.state === 'running' || (scrapeStatus?.state === 'complete' && Date.now() - Date.parse(scrapeStatus.updatedAt) < 15 * 60_000)) && <button type="button" className="scrape-live-status" role="status" onClick={() => scrapeStatus.state === 'complete' ? loadNativeDraft() : setScrapingOpen(true)}><strong>{scrapeStatus.state === 'complete' ? 'Scrape complete' : 'Scraping news'}</strong><span>{scrapeStatus.message}</span>{scrapeStatus.state === 'running' && scrapeStatus.total > 0 && <progress value={scrapeStatus.completed || 0} max={scrapeStatus.total} aria-label="Scraping progress"/>}<small>{scrapeStatus.state === 'complete' ? 'Review draft' : scrapeStatus.total > 0 ? `${scrapeStatus.completed || 0} of ${scrapeStatus.total}` : 'Open progress'}</small></button>}
+    {isEditor && !scrapingOpen && (scrapeStatus?.state === 'running' || (scrapeStatus?.state === 'complete' && Date.now() - Date.parse(scrapeStatus.updatedAt) < 15 * 60_000)) && <button type="button" className="scrape-live-status" role="status" onClick={() => { if (githubCollectionMode && scrapeStatus.state === 'complete') fetchGithubDraft().then(loadNativeDraft).catch(error => setToast(error.message)); else if (scrapeStatus.state === 'complete') loadNativeDraft(); else setScrapingOpen(true); }}><strong>{scrapeStatus.state === 'complete' ? 'Scrape complete' : 'Scraping news'}</strong><span>{scrapeStatus.message}</span>{scrapeStatus.state === 'running' && scrapeStatus.total > 0 && <progress value={scrapeStatus.completed || 0} max={scrapeStatus.total} aria-label="Scraping progress"/>}<small>{scrapeStatus.state === 'complete' ? 'Review draft' : scrapeStatus.total > 0 ? `${scrapeStatus.completed || 0} of ${scrapeStatus.total}` : 'Open progress'}</small></button>}
     {spreadsheetResults && <div className="add-backdrop" onClick={() => setSpreadsheetResults(null)}><section className="add-dialog spreadsheet-results" role="dialog" aria-modal="true" aria-labelledby="spreadsheet-results-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="spreadsheet-results-title">Spreadsheet export results</h2><button type="button" aria-label="Close export results" onClick={() => setSpreadsheetResults(null)}>×</button></div><p>{spreadsheetResults.downloaded ? `Downloaded ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} visible full articles.` : `No spreadsheet downloaded. ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} articles available.`}</p>{spreadsheetResults.error && <p role="alert">{spreadsheetResults.error}</p>}{spreadsheetResults.failures.length > 0 && <><h3>{spreadsheetResults.failures.length} unavailable</h3><ul>{spreadsheetResults.failures.map((failure, index) => <li key={index}>{failure}</li>)}</ul></>}<div className="add-dialog-actions"><button type="button" onClick={() => setSpreadsheetResults(null)}>Close</button></div></section></div>}
     {managementEnabled && managing && <SiteManager initialTab={managerTab} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} includeText={includeText} setIncludeText={setIncludeText} excludeText={setExcludeText} setExcludeText={setExcludeText} applyScope={applyScope} onClose={() => setManaging(false)} onReset={() => setSiteConfig(defaultSiteConfig(daily?.articles ?? preparedUpdate.articles))}/>}
     {isEditor && scrapingOpen && <div className="add-backdrop" onClick={() => setScrapingOpen(false)}><section className="add-dialog add-article-dialog" role="dialog" aria-modal="true" aria-labelledby="scrape-dialog-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="scrape-dialog-title">Scrape news</h2><button type="button" aria-label="Close scrape status" onClick={() => setScrapingOpen(false)}>×</button></div><NativeCollection onEditionReady={loadNativeDraft} draftMode={nativeDraftMode} onReturn={() => window.location.reload()} autoStart/></section></div>}
