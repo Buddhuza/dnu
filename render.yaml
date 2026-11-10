@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: buddhuza-dnu-api
+    runtime: node
+    branch: main
+    plan: starter
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 24.5.0
+      - key: NODE_ENV
+        value: production
+      - key: DNU_DATA_DIR
+        value: /var/data
+      - key: DNU_ALLOWED_ORIGINS
+        value: https://buddhuza.github.io
+      - key: SUPABASE_URL
+        value: https://epghsyajgspcywqqbfso.supabase.co
+      - key: SUPABASE_ANON_KEY
+        value: sb_publishable_GVWv5b6fH2P34C66Wg43hw_id13knFN
+    disk:
+      name: dnu-collection-data
+      mountPath: /var/data
+      sizeGB: 1

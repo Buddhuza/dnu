@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { createClient } from '@supabase/supabase-js';
 import { editorEmail } from '../src/sharedEdition.js';
 import { readCompletedEdition } from './nativeEdition.js';
+import { collectionDataPath } from './dataDirectory.js';
 
 let status = { state: 'idle' };
 
@@ -11,7 +12,8 @@ export function collectionStatus() { return status; }
 
 export async function collectionStatusForClient(cwd) {
   try {
-    const saved = JSON.parse(await readFile(join(cwd, 'data/native-collection-progress.json'), 'utf8'));
+    const path = process.env.DNU_DATA_DIR ? collectionDataPath('native-collection-progress.json') : join(cwd, 'data/native-collection-progress.json');
+    const saved = JSON.parse(await readFile(path, 'utf8'));
     if (status.state !== 'idle' && Date.parse(status.updatedAt || status.startedAt) > Date.parse(saved.updatedAt)) return status;
     if (saved.state === 'running' && Date.now() - Date.parse(saved.updatedAt) > 90 * 60_000)
       return { ...saved, state: 'failed', message: 'Collection stopped before completion. Run it again.' };

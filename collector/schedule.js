@@ -3,11 +3,13 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import { dueCollectionSlot } from './slots.js';
+import { collectionDataPath, ensureCollectionData } from '../server/dataDirectory.js';
 
 const root = new URL('../', import.meta.url);
-const stateFile = new URL('data/native-schedule-state.json', root);
-const progressFile = new URL('data/native-collection-progress.json', root);
-const editionFile = new URL('data/prepared-update.json', root);
+ensureCollectionData();
+const stateFile = collectionDataPath('native-schedule-state.json');
+const progressFile = collectionDataPath('native-collection-progress.json');
+const editionFile = collectionDataPath('prepared-update.json');
 const run = promisify(execFile);
 let busy = false;
 let retryAfter = 0;
@@ -23,7 +25,7 @@ async function readJson(path) {
 }
 
 async function markCompleted(slot) {
-  const temporary = new URL(`data/native-schedule-state.${process.pid}.tmp`, root);
+  const temporary = collectionDataPath(`native-schedule-state.${process.pid}.tmp`);
   await writeFile(temporary, JSON.stringify({ slot, completedAt: new Date().toISOString() }));
   await rename(temporary, stateFile);
 }

@@ -1,5 +1,5 @@
 import express from 'express';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { createReportDocx } from './report.js';
@@ -7,12 +7,33 @@ import { reportFilename } from '../src/reportFilename.js';
 import { publicArticleUrl } from './importArticle.js';
 import { readCompletedEdition, storedArticle, storedBody } from './nativeEdition.js';
 import { authorisedEditor, collectionStatusForClient, startNativeCollection } from './nativeCollection.js';
+import { ensureCollectionData } from './dataDirectory.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+ensureCollectionData();
 const sources = JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'));
 const sourceById = new Map(sources.map(source => [source.id, source]));
 const app = express();
+const allowedOrigins = new Set((process.env.DNU_ALLOWED_ORIGINS || 'https://buddhuza.github.io,http://localhost:5173,http://127.0.0.1:5173').split(',').map(origin => origin.trim()).filter(Boolean));
+app.use((req, res, next) => {
+  const origin = req.get('Origin');
+  if (origin && allowedOrigins.has(origin)) {
+    res.set('Access-Control-Allow-Origin', origin);
+    res.set('Vary', 'Origin');
+    res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.set('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+  }
+  if (req.method === 'OPTIONS') return res.sendStatus(origin && allowedOrigins.has(origin) ? 204 : 403);
+  next();
+});
 app.use(express.json({ limit: '256kb' }));
+
+app.get('/api/health', (_req, res) => {
+  try {
+    const edition = readCompletedEdition();
+    res.json({ ok: true, checkedAt: edition.checkedAt });
+  } catch (error) { res.status(503).json({ ok: false, error: error.message }); }
+});
 
 function editionOrError(res) {
   try { return readCompletedEdition(); }
@@ -98,8 +119,10 @@ app.post('/api/report.docx', async (req, res) => {
   } catch (error) { res.status(500).json({ error: 'Could not create report: ' + error.message }); }
 });
 
-if (process.env.NODE_ENV === 'production') app.use(express.static(join(root, 'dist')));
-if (process.env.NODE_ENV === 'production') app.get('*', (_req, res) => res.sendFile(join(root, 'dist', 'index.html')));
+if (process.env.NODE_ENV === 'production' && existsSync(join(root, 'dist', 'index.html'))) {
+  app.use(express.static(join(root, 'dist')));
+  app.get('*', (_req, res) => res.sendFile(join(root, 'dist', 'index.html')));
+}
 
 const port = Number(process.env.PORT || 3001);
 app.listen(port, '0.0.0.0', () => console.log('DNU server listening on ' + port));

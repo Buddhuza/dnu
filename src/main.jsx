@@ -31,6 +31,7 @@ import { emptyEdition } from './emptyEdition.js';
 import { createSpreadsheet, spreadsheetRow } from './spreadsheetExport.js';
 import { reportHeadingLabel } from './reportLabels.js';
 import { useEscapeToClose } from './useEscapeToClose.js';
+import { apiUrl } from './apiUrl.js';
 import './styles.css';
 
 const readStored = (key, fallback, legacyKey) => {
@@ -134,14 +135,14 @@ function App() {
   const isEditor = Boolean(editorUser && sharedReady);
   const managementEnabled = isEditor;
 
-  useEffect(() => { fetch('/api/config').then(r => { if (!r.ok) throw new Error('API unavailable'); return r.json(); }).then(setConfig).catch(() => setConfig({ sources: preparedSources, firecrawlConfigured: false })); }, []);
+  useEffect(() => { fetch(apiUrl('/api/config')).then(r => { if (!r.ok) throw new Error('API unavailable'); return r.json(); }).then(setConfig).catch(() => setConfig({ sources: preparedSources, firecrawlConfigured: false })); }, []);
 
   useEffect(() => {
     if (!isEditor) { setScrapeStatus(null); return; }
     let active = true;
     const refresh = async () => {
       try {
-        const response = await fetch('/api/collection', { cache: 'no-store' });
+        const response = await fetch(apiUrl('/api/collection'), { cache: 'no-store' });
         if (!response.ok) return;
         const result = await response.json();
         if (active) setScrapeStatus(result);
@@ -203,7 +204,7 @@ function App() {
     if (sharedEnabled) return;
     const refresh = () => {
       if (importedModeRef.current) return;
-      fetch('/api/daily-update').then(r => { if (!r.ok) throw new Error('API unavailable'); return r.json(); }).then(data => { if (importedModeRef.current) return; setDaily(data); setCompiledAt(data.checkedAt || new Date().toISOString()); setStaticPreview(false); }).catch(() => { if (importedModeRef.current) return; setDaily(preparedUpdate); setCompiledAt(preparedUpdate.checkedAt || new Date().toISOString()); setStaticPreview(true); });
+      fetch(apiUrl('/api/daily-update')).then(r => { if (!r.ok) throw new Error('API unavailable'); return r.json(); }).then(data => { if (importedModeRef.current) return; setDaily(data); setCompiledAt(data.checkedAt || new Date().toISOString()); setStaticPreview(false); }).catch(() => { if (importedModeRef.current) return; setDaily(preparedUpdate); setCompiledAt(preparedUpdate.checkedAt || new Date().toISOString()); setStaticPreview(true); });
     };
     refresh();
     const timer = setInterval(refresh, 60_000);
@@ -393,7 +394,7 @@ function App() {
     const backup = readStored(importBackupKey, null);
     let update = preparedUpdate, fromServer = false;
     try {
-      const response = await fetch('/api/daily-update');
+      const response = await fetch(apiUrl('/api/daily-update'));
       if (response.ok) { update = await response.json(); fromServer = true; }
     } catch { /* GitHub Pages uses the bundled update. */ }
     restoringImportRef.current = true;
@@ -677,7 +678,7 @@ function App() {
     if (hit) relocateStory(drag.storyId, hit.destination);
   };
   const loadNativeDraft = useCallback(async () => {
-    const response = await fetch('/api/daily-update', { cache: 'no-store' });
+    const response = await fetch(apiUrl('/api/daily-update'), { cache: 'no-store' });
     if (!response.ok) return;
     const edition = await response.json();
     setNativeDraftMode(true);

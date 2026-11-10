@@ -4,13 +4,15 @@ import { load } from 'cheerio';
 import { listingCandidates_, parseItem_, extractPage_, baselineScore_, selectArticles_, publicSummary_, feeds_, PUBLISHER_PAGES } from './rules.js';
 import { adaptSelectedArticles, dedupeNativeEvents } from './dnuEdition.js';
 import { selectWeekendStories } from '../src/weekendEdition.js';
+import { collectionDataPath, ensureCollectionData } from '../server/dataDirectory.js';
 
 const root = new URL('../', import.meta.url);
+ensureCollectionData();
 const startedAt = new Date().toISOString();
-const progressFile = new URL('data/native-collection-progress.json', root);
+const progressFile = collectionDataPath('native-collection-progress.json');
 function progress(state, phase, message, completed = 0, total = 0, details = {}) {
   const update = { state, phase, message, startedAt, updatedAt: new Date().toISOString(), completed, total, ...details };
-  const temporary = new URL(`data/native-collection-progress.${process.pid}.tmp`, root);
+  const temporary = collectionDataPath(`native-collection-progress.${process.pid}.tmp`);
   writeFileSync(temporary, JSON.stringify(update));
   renameSync(temporary, progressFile);
   console.log('DNU_PROGRESS ' + JSON.stringify(update));
@@ -109,8 +111,8 @@ const articles = finalSelection.articles;
 const rejected = [...adapted.rejected, ...[...reviewed.removed, ...finalSelection.removed].map(item => ({ id: item.article.id, title: item.article.title, reason: 'Duplicate development; kept ' + item.preferred.sourceName }))];
 console.log(JSON.stringify({routes:outcomes.length,failed:outcomes.filter(x=>x.status==='failed').length,candidates:unique.length,selected:articles.length,rejected:rejected.length,bodies:articles.filter(x=>x.body).length,firstFailure:outcomes.find(x=>x.status==='failed')?.reason}));
 if(!articles.length){progress('failed','selection','No qualifying articles. Previous edition retained.');throw Error('No qualifying articles. Previous edition retained.');}
-const output=new URL(filter?'data/native-test-edition.json':process.argv.includes('--stage')?'data/native-pending.json':'data/prepared-update.json',root);
-const temporary=new URL(output.href+'.'+process.pid+'.tmp');
+const output=collectionDataPath(filter?'native-test-edition.json':process.argv.includes('--stage')?'native-pending.json':'prepared-update.json');
+const temporary=output+'.'+process.pid+'.tmp';
 await writeFile(temporary,JSON.stringify({nativeEdition:true,title:'DAILY NEWS UPDATE',checkedAt:end.toISOString(),windowStart:window.start.toISOString(),windowEnd:end.toISOString(),windowHours:hours,articles,sourceOutcomes:outcomes,bodyOutcomes,editorialRejections:rejected,leadOrigins:reviewed.leadOrigins}));
 await rename(temporary,output);
 progress('complete','complete',`Draft ready: ${articles.length} stories; ${articles.filter(x=>x.body).length} full bodies. Review before publishing.`,articles.length,articles.length,{stories:articles.length,bodies:articles.filter(x=>x.body).length,checkedAt:end.toISOString()});

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { sharedClient } from './sharedEdition.js';
+import { apiUrl } from './apiUrl.js';
 
 export default function NativeCollection({ onEditionReady, draftMode, onReturn, autoStart = false }) {
   const [status, setStatus] = useState({ state: 'checking' });
@@ -9,7 +10,7 @@ export default function NativeCollection({ onEditionReady, draftMode, onReturn, 
     let active = true;
     const refresh = async () => {
       try {
-        const response = await fetch('/api/collection', { cache: 'no-store' });
+        const response = await fetch(apiUrl('/api/collection'), { cache: 'no-store' });
         if (!response.ok) throw new Error('Collection server unavailable');
         const result = await response.json();
         if (!active) return;
@@ -34,7 +35,7 @@ export default function NativeCollection({ onEditionReady, draftMode, onReturn, 
       const { data } = await sharedClient.auth.getSession();
       const token = data.session?.access_token;
       if (!token) throw new Error('Sign in as the editor first.');
-      const response = await fetch('/api/collection', { method: 'POST', headers: { Authorization: 'Bearer ' + token } });
+      const response = await fetch(apiUrl('/api/collection'), { method: 'POST', headers: { Authorization: 'Bearer ' + token } });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Could not start collection.');
       setStatus(result);

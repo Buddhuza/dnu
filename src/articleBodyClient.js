@@ -1,4 +1,5 @@
 import { getStoredArticleBody, storeArticleBody } from './articleBodyStore.js';
+import { apiUrl } from './apiUrl.js';
 
 let onlineSnapshotPromise;
 async function cachedOnlineBody(url, fetchImpl) {
@@ -25,7 +26,7 @@ export async function loadFullArticle(article, { serverAvailable = false, cacheO
   if (cacheOnly || article.fromSpreadsheet) throw new Error('No full body was provided in the imported sheet.');
   if (serverAvailable) {
     try {
-      const response = await fetchImpl('/api/article-body', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: article.url, translated: article.translated === true }) });
+      const response = await fetchImpl(apiUrl('/api/article-body'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: article.url, translated: article.translated === true }) });
       const result = await response.json();
       if (response.ok && result.body && (!article.translated || result.translated)) { await storeArticleBody(article.url, result); return result; }
       if (response.ok || response.status !== 503) throw new Error(result.error || `Article page unavailable (HTTP ${response.status}).`);
