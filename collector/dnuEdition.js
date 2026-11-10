@@ -49,6 +49,7 @@ export function adaptSelectedArticles(selected, leads, registry) {
     const body = String(item.articleBody || '').trim();
     articles.push({
       ...base, summary: String(item.publicSummary || '').trim(), publishedAt: item.published,
+      timeSource: item.pageVerified ? 'page' : 'feed',
       sectionId: lead ? 'Lead stories' : placement.sectionId,
       section: lead ? 'Lead stories' : placement.sectionId,
       subsection: lead ? placement.country || placement.subsection : placement.subsection,

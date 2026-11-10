@@ -62,12 +62,21 @@ await parallel([...routes.values()].filter(f=>!filter||f.domain===filter),async 
 const unique=[...new Map(candidates.sort((a,b)=>a.id.localeCompare(b.id)).map(x=>[x.link,x])).values()];
 for(const item of unique)item.score=baselineScore_(item);
 await parallel(unique.filter(x=>x.score>0 && !x.link.startsWith('https://news.google.com/')).sort((a,b)=>b.score-a.score).slice(0,150),async item=>{
-  try {const page=extractPage_(await request(item.link,true),item.headline);if(page){item.published=page.published||item.published;item.articleBody=page.text||'';}}catch{/* Feed evidence remains available. */}
+  try {const page=extractPage_(await request(item.link,true),item.headline);if(page){item.published=page.published||item.published;item.pageVerified=Boolean(page.published);item.articleBody=page.text||'';}}catch{/* Feed evidence remains available. */}
 });
 const selected=selectArticles_(unique.filter(x=>Date.parse(x.published)>=+window.start && Date.parse(x.published)<=+end));
+const bodyOutcomes=[];
+await parallel(selected.filter(item=>!item.articleBody && !item.link.startsWith('https://news.google.com/')),async item=>{
+  try {
+    const page=extractPage_(await request(item.link,true),item.headline);
+    if(page){item.published=page.published||item.published;item.pageVerified=Boolean(page.published);item.articleBody=page.text||'';}
+    bodyOutcomes.push({id:item.id,status:item.articleBody?'extracted':'unavailable'});
+  } catch(error){bodyOutcomes.push({id:item.id,status:'failed',reason:error.message});}
+});
+const verifiedSelected=selected.filter(item=>Date.parse(item.published)>=+window.start && Date.parse(item.published)<=+end);
 const leads=new Set();
-for (const item of selected) item.publicSummary = publicSummary_(item, leads.has(item.id));
-const adapted = adaptSelectedArticles(selected, leads, registry);
+for (const item of verifiedSelected) item.publicSummary = publicSummary_(item, leads.has(item.id));
+const adapted = adaptSelectedArticles(verifiedSelected, leads, registry);
 const reviewed = selectWeekendStories(adapted.articles);
 const articles = reviewed.articles;
 const rejected = [...adapted.rejected, ...reviewed.removed.map(item => ({ id: item.article.id, title: item.article.title, reason: 'Duplicate development; kept ' + item.preferred.sourceName }))];
@@ -75,5 +84,5 @@ console.log(JSON.stringify({routes:outcomes.length,failed:outcomes.filter(x=>x.s
 if(!articles.length)throw Error('No qualifying articles. Previous edition retained.');
 const output=new URL(filter?'data/native-test-edition.json':process.argv.includes('--stage')?'data/native-pending.json':'data/prepared-update.json',root);
 const temporary=new URL(output.href+'.'+process.pid+'.tmp');
-await writeFile(temporary,JSON.stringify({nativeEdition:true,title:'DAILY NEWS UPDATE',checkedAt:end.toISOString(),windowStart:window.start.toISOString(),windowEnd:end.toISOString(),windowHours:hours,articles,sourceOutcomes:outcomes,editorialRejections:rejected,leadOrigins:reviewed.leadOrigins}));
+await writeFile(temporary,JSON.stringify({nativeEdition:true,title:'DAILY NEWS UPDATE',checkedAt:end.toISOString(),windowStart:window.start.toISOString(),windowEnd:end.toISOString(),windowHours:hours,articles,sourceOutcomes:outcomes,bodyOutcomes,editorialRejections:rejected,leadOrigins:reviewed.leadOrigins}));
 await rename(temporary,output);

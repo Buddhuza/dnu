@@ -35,6 +35,10 @@ jobs:
         run: |
           set -o pipefail
           npm run collect:daily 2>&1 | tee -a data/native-collector-check-status.txt
+      - name: Verify app rendering data and Word/Excel exports
+        run: |
+          set -o pipefail
+          node scripts/verify-native-edition.mjs 2>&1 | tee -a data/native-collector-check-status.txt
       - name: Save result for review
         if: always()
         run: |
