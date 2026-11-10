@@ -3,7 +3,10 @@ name: Collect native DNU draft at 01:00 and 13:00 Vienna
 on:
   schedule:
     # Winter and summer UTC candidates; the Vienna-hour guard selects one.
-    - cron: '0 23,0,11,12 * * *'
+    - cron: '0 23 * * *'
+    - cron: '0 0 * * *'
+    - cron: '0 11 * * *'
+    - cron: '0 12 * * *'
   workflow_dispatch:
 
 permissions:
@@ -23,8 +26,9 @@ jobs:
         id: slot
         env:
           EVENT_NAME: ${{ github.event_name }}
+          CRON_SCHEDULE: ${{ github.event.schedule }}
         run: |
-          if [ "$EVENT_NAME" = workflow_dispatch ] || node --input-type=module -e "import { isScheduledCollectionHour } from './collector/slots.js'; process.exit(isScheduledCollectionHour() ? 0 : 1)"; then
+          if [ "$EVENT_NAME" = workflow_dispatch ] || node --input-type=module -e "import { isScheduledUtcCandidate } from './collector/slots.js'; process.exit(isScheduledUtcCandidate(process.env.CRON_SCHEDULE) ? 0 : 1)"; then
             echo 'run=true' >> "$GITHUB_OUTPUT"
           else
             echo 'run=false' >> "$GITHUB_OUTPUT"

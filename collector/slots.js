@@ -17,3 +17,11 @@ export function isScheduledCollectionHour(now = new Date()) {
   }).format(now));
   return hour === 1 || hour === 13;
 }
+
+export function isScheduledUtcCandidate(cron, now = new Date()) {
+  const hour = Number(String(cron).match(/^0\s+(\d{1,2})\s+\*\s+\*\s+\*$/)?.[1]);
+  if (!Number.isInteger(hour) || hour < 0 || hour > 23) return false;
+  const scheduled = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), hour));
+  if (scheduled > now) scheduled.setUTCDate(scheduled.getUTCDate() - 1);
+  return isScheduledCollectionHour(scheduled);
+}
