@@ -1,1045 +1,4659 @@
 [
   {
-    "id": "source-1",
-    "name": "DTT",
-    "group": "South Eastern Europe",
-    "url": "https://dtt-net.com/category/w-balkan-news/"
-  },
-  {
-    "id": "source-2",
-    "name": "BIRN",
-    "group": "South Eastern Europe",
-    "url": "https://balkaninsight.com/all-the-news-from-the-balkans/"
-  },
-  {
-    "id": "source-3",
-    "name": "EWB",
-    "group": "South Eastern Europe",
-    "url": "https://europeanwesternbalkans.com/latest/"
-  },
-  {
-    "id": "source-4",
-    "name": "Euronews.al",
-    "group": "South Eastern Europe",
-    "url": "https://euronews.al/en/just-in/"
-  },
-  {
     "id": "source-5",
+    "domain": "albaniandailynews.com",
     "name": "ADN",
+    "country": "Albania",
     "group": "South Eastern Europe",
-    "url": "https://albaniandailynews.com/category/politics"
+    "url": "https://albaniandailynews.com/category/politics",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-5"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.albaniandailynews.com/"
   },
   {
     "id": "source-6",
+    "domain": "english.gazetatema.net",
     "name": "TemA",
+    "country": "Albania",
     "group": "South Eastern Europe",
-    "url": "https://english.gazetatema.net/category/politics/"
+    "url": "https://english.gazetatema.net/category/politics/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-6"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://english.gazetatema.net/"
   },
   {
-    "id": "source-7",
-    "name": "Tirana Times",
+    "id": "source-gas-politiko-al",
+    "domain": "politiko.al",
+    "name": "Politiko",
+    "country": "Albania",
     "group": "South Eastern Europe",
-    "url": "https://www.tiranatimes.com/"
+    "url": "https://politiko.al/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://politiko.al/"
   },
   {
-    "id": "source-8",
-    "name": "N1",
+    "id": "source-4",
+    "domain": "euronews.al",
+    "name": "Euronews.al",
+    "country": "Albania",
     "group": "South Eastern Europe",
-    "url": "https://n1info.ba/english/news"
+    "url": "https://euronews.al/en/just-in/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-4"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://euronews.al/en/just-in/"
+  },
+  {
+    "id": "source-gas-exit-al",
+    "domain": "exit.al",
+    "name": "Exit",
+    "country": "Albania",
+    "group": "South Eastern Europe",
+    "url": "https://exit.al/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://exit.al/"
+  },
+  {
+    "id": "source-gas-rtsh-al",
+    "domain": "rtsh.al",
+    "name": "RTSH",
+    "country": "Albania",
+    "group": "South Eastern Europe",
+    "url": "https://rtsh.al/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://rtsh.al/"
+  },
+  {
+    "id": "source-gas-cna-al",
+    "domain": "cna.al",
+    "name": "CNA",
+    "country": "Albania",
+    "group": "South Eastern Europe",
+    "url": "https://cna.al/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://cna.al/"
   },
   {
     "id": "source-9",
+    "domain": "sarajevotimes.com",
     "name": "Sarajevo Times",
+    "country": "Bosnia and Herzegovina",
     "group": "South Eastern Europe",
-    "url": "https://sarajevotimes.com/"
-  },
-  {
-    "id": "source-10",
-    "name": "Mina",
-    "group": "South Eastern Europe",
-    "url": "https://www.mina.news/en/category/mina-generalni-english"
-  },
-  {
-    "id": "source-11",
-    "name": "CdM",
-    "group": "South Eastern Europe",
-    "url": "https://www.cdm.me/english/"
-  },
-  {
-    "id": "source-12",
-    "name": "Vijesti.me",
-    "group": "South Eastern Europe",
-    "url": "https://en.vijesti.me/latest-news"
-  },
-  {
-    "id": "source-13",
-    "name": "Meta.mk",
-    "group": "South Eastern Europe",
-    "url": "https://meta.mk/en/category/mkd-en/"
-  },
-  {
-    "id": "source-14",
-    "name": "MIA",
-    "group": "South Eastern Europe",
-    "url": "https://mia.mk/en/latest-posts"
-  },
-  {
-    "id": "source-15",
-    "name": "Republika",
-    "group": "South Eastern Europe",
-    "url": "https://english.republika.mk/category/macedonia/"
-  },
-  {
-    "id": "source-16",
-    "name": "Skopje Diem",
-    "group": "South Eastern Europe",
-    "url": "https://skopjediem.com/"
-  },
-  {
-    "id": "source-17",
-    "name": "N1",
-    "group": "South Eastern Europe",
-    "url": "https://n1info.rs/english/news/"
-  },
-  {
-    "id": "source-18",
-    "name": "Tanjug",
-    "group": "South Eastern Europe",
-    "url": "https://www.tanjug.rs/english"
-  },
-  {
-    "id": "source-19",
-    "name": "Telegraf",
-    "group": "South Eastern Europe",
-    "url": "https://www.telegraf.rs/english"
-  },
-  {
-    "id": "source-20",
-    "name": "Prishtina Insight",
-    "group": "South Eastern Europe",
-    "url": "https://prishtinainsight.com/category/news/"
-  },
-  {
-    "id": "source-21",
-    "name": "RTK",
-    "group": "South Eastern Europe",
-    "url": "https://www.rtklive.com/en/news-category.php?CatID=5"
-  },
-  {
-    "id": "source-22",
-    "name": "Gazeta Express",
-    "group": "South Eastern Europe",
-    "url": "https://www.gazetaexpress.com/news/"
+    "url": "https://sarajevotimes.com/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-9"
+    ],
+    "feedUrls": [
+      "https://sarajevotimes.com/feed"
+    ],
+    "listingUrl": "https://sarajevotimes.com/"
   },
   {
     "id": "source-23",
+    "domain": "fena.ba",
     "name": "Fena",
+    "country": "Bosnia and Herzegovina",
     "group": "South Eastern Europe",
-    "url": "https://www.fena.ba/category/32#1"
+    "url": "https://www.fena.ba/category/32#1",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-23"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.fena.ba/category/32#1"
   },
   {
-    "id": "source-24",
-    "name": "ABC.al",
+    "id": "source-8",
+    "domain": "n1info.ba",
+    "name": "N1",
+    "country": "Bosnia and Herzegovina",
     "group": "South Eastern Europe",
-    "url": "https://abcnews.al/kategoria/english/"
+    "url": "https://n1info.ba/english/news",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-8"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://n1info.ba/english/"
+  },
+  {
+    "id": "source-gas-detektor-ba",
+    "domain": "detektor.ba",
+    "name": "Detektor",
+    "country": "Bosnia and Herzegovina",
+    "group": "South Eastern Europe",
+    "url": "https://detektor.ba/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://detektor.ba/"
+  },
+  {
+    "id": "source-11",
+    "domain": "cdm.me",
+    "name": "CdM",
+    "country": "Montenegro",
+    "group": "South Eastern Europe",
+    "url": "https://www.cdm.me/english/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-11"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.cdm.me/english/"
+  },
+  {
+    "id": "source-gas-rtcg-me",
+    "domain": "rtcg.me",
+    "name": "RTCG",
+    "country": "Montenegro",
+    "group": "South Eastern Europe",
+    "url": "https://rtcg.me/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://rtcg.me/"
+  },
+  {
+    "id": "source-12",
+    "domain": "vijesti.me",
+    "name": "Vijesti.me",
+    "country": "Montenegro",
+    "group": "South Eastern Europe",
+    "url": "https://en.vijesti.me/latest-news",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-12"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://en.vijesti.me/latest-news"
+  },
+  {
+    "id": "source-10",
+    "domain": "mina.news",
+    "name": "Mina",
+    "country": "Montenegro",
+    "group": "South Eastern Europe",
+    "url": "https://www.mina.news/en/category/mina-generalni-english",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-10"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://mina.news/"
+  },
+  {
+    "id": "source-14",
+    "domain": "mia.mk",
+    "name": "MIA",
+    "country": "North Macedonia",
+    "group": "South Eastern Europe",
+    "url": "https://mia.mk/en/latest-posts",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-14"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://mia.mk/en?lang=en"
+  },
+  {
+    "id": "source-15",
+    "domain": "english.republika.mk",
+    "name": "Republika",
+    "country": "North Macedonia",
+    "group": "South Eastern Europe",
+    "url": "https://english.republika.mk/category/macedonia/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-15"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://english.republika.mk/category/macedonia/"
+  },
+  {
+    "id": "source-16",
+    "domain": "skopjediem.com",
+    "name": "Skopje Diem",
+    "country": "North Macedonia",
+    "group": "South Eastern Europe",
+    "url": "https://skopjediem.com/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-16"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://skopjediem.com/"
+  },
+  {
+    "id": "source-13",
+    "domain": "meta.mk",
+    "name": "Meta.mk",
+    "country": "North Macedonia",
+    "group": "South Eastern Europe",
+    "url": "https://meta.mk/en/category/mkd-en/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-13"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://meta.mk/en/category/mkd-en/"
+  },
+  {
+    "id": "source-17",
+    "domain": "n1info.rs",
+    "name": "N1",
+    "country": "Serbia",
+    "group": "South Eastern Europe",
+    "url": "https://n1info.rs/english/news/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-17"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://n1info.rs/english/news/"
+  },
+  {
+    "id": "source-18",
+    "domain": "tanjug.rs",
+    "name": "Tanjug",
+    "country": "Serbia",
+    "group": "South Eastern Europe",
+    "url": "https://www.tanjug.rs/english",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-18"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.tanjug.rs/english"
+  },
+  {
+    "id": "source-19",
+    "domain": "telegraf.rs",
+    "name": "Telegraf",
+    "country": "Serbia",
+    "group": "South Eastern Europe",
+    "url": "https://www.telegraf.rs/english",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-19"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.telegraf.rs/english"
+  },
+  {
+    "id": "source-gas-betabriefing-com",
+    "domain": "betabriefing.com",
+    "name": "Beta Briefing",
+    "country": "Serbia",
+    "group": "South Eastern Europe",
+    "url": "https://betabriefing.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://betabriefing.com/"
+  },
+  {
+    "id": "source-gas-b92-net",
+    "domain": "b92.net",
+    "name": "B92",
+    "country": "Serbia",
+    "group": "South Eastern Europe",
+    "url": "https://b92.net/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://b92.net/"
+  },
+  {
+    "id": "source-gas-rts-rs",
+    "domain": "rts.rs",
+    "name": "RTS",
+    "country": "Serbia",
+    "group": "South Eastern Europe",
+    "url": "https://rts.rs/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://rts.rs/"
+  },
+  {
+    "id": "source-gas-fonet-rs",
+    "domain": "fonet.rs",
+    "name": "FoNet",
+    "country": "Serbia",
+    "group": "South Eastern Europe",
+    "url": "https://fonet.rs/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://fonet.rs/"
+  },
+  {
+    "id": "source-gas-serbianmonitor-com",
+    "domain": "serbianmonitor.com",
+    "name": "Serbian Monitor",
+    "country": "Serbia",
+    "group": "South Eastern Europe",
+    "url": "https://serbianmonitor.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://serbianmonitor.com/"
+  },
+  {
+    "id": "source-21",
+    "domain": "rtklive.com",
+    "name": "RTK",
+    "country": "Kosovo",
+    "group": "South Eastern Europe",
+    "url": "https://www.rtklive.com/en/news-category.php?CatID=5",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-21"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.rtklive.com/en/index.php"
+  },
+  {
+    "id": "source-20",
+    "domain": "prishtinainsight.com",
+    "name": "Prishtina Insight",
+    "country": "Kosovo",
+    "group": "South Eastern Europe",
+    "url": "https://prishtinainsight.com/category/news/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-20"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://prishtinainsight.com/category/news/"
+  },
+  {
+    "id": "source-22",
+    "domain": "gazetaexpress.com",
+    "name": "Gazeta Express",
+    "country": "Kosovo",
+    "group": "South Eastern Europe",
+    "url": "https://www.gazetaexpress.com/news/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-22"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.gazetaexpress.com/news/"
+  },
+  {
+    "id": "source-gas-koha-net",
+    "domain": "koha.net",
+    "name": "Koha",
+    "country": "Kosovo",
+    "group": "South Eastern Europe",
+    "url": "https://koha.net/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://koha.net/"
+  },
+  {
+    "id": "source-gas-kossev-info",
+    "domain": "kossev.info",
+    "name": "KoSSev",
+    "country": "Kosovo",
+    "group": "South Eastern Europe",
+    "url": "https://kossev.info/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://kossev.info/"
   },
   {
     "id": "source-25",
+    "domain": "kosovo-online.com",
     "name": "Kosovo Online",
+    "country": "Kosovo",
     "group": "South Eastern Europe",
-    "url": "https://www.kosovo-online.com/en"
+    "url": "https://www.kosovo-online.com/en",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-25"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.kosovo-online.com/en"
   },
   {
     "id": "source-26",
+    "domain": "belta.by",
     "name": "BelTA",
+    "country": "Belarus",
     "group": "East Europe",
-    "url": "https://eng.belta.by/all_news"
+    "url": "https://eng.belta.by/all_news",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-26"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://eng.belta.by/all_news"
+  },
+  {
+    "id": "source-gas-svaboda-org",
+    "domain": "svaboda.org",
+    "name": "Radio Svaboda",
+    "country": "Belarus",
+    "group": "East Europe",
+    "url": "https://svaboda.org/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://svaboda.org/"
   },
   {
     "id": "source-27",
+    "domain": "belsat.eu",
     "name": "Belsat",
+    "country": "Belarus",
     "group": "East Europe",
-    "url": "https://en.belsat.eu/79795236/news"
+    "url": "https://en.belsat.eu/79795236/news",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-27"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://en.belsat.eu/79795236/news"
   },
   {
-    "id": "source-28",
-    "name": "Euroradio",
+    "id": "source-gas-reform-news",
+    "domain": "reform.news",
+    "name": "Reform",
+    "country": "Belarus",
     "group": "East Europe",
-    "url": "https://euroradio.fm/en/all-news"
+    "url": "https://reform.news/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://reform.news/"
   },
   {
-    "id": "source-29",
-    "name": "Charter 97",
+    "id": "source-gas-zerkalo-io",
+    "domain": "zerkalo.io",
+    "name": "Zerkalo",
+    "country": "Belarus",
     "group": "East Europe",
-    "url": "https://charter97.org/en/news/"
+    "url": "https://zerkalo.io/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://zerkalo.io/"
+  },
+  {
+    "id": "source-gas-pozirk-online",
+    "domain": "pozirk.online",
+    "name": "Pozirk",
+    "country": "Belarus",
+    "group": "East Europe",
+    "url": "https://pozirk.online/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://pozirk.online/en/"
+  },
+  {
+    "id": "source-gas-spring96-org",
+    "domain": "spring96.org",
+    "name": "Viasna",
+    "country": "Belarus",
+    "group": "East Europe",
+    "url": "https://spring96.org/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://spring96.org/"
+  },
+  {
+    "id": "source-gas-moldova-europalibera-org",
+    "domain": "moldova.europalibera.org",
+    "name": "Europa Libera Moldova",
+    "country": "Moldova",
+    "group": "East Europe",
+    "url": "https://moldova.europalibera.org/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://moldova.europalibera.org/"
   },
   {
     "id": "source-30",
+    "domain": "moldpres.md",
     "name": "Moldpres",
+    "country": "Moldova",
     "group": "East Europe",
-    "url": "https://www.moldpres.md/eng"
-  },
-  {
-    "id": "source-31",
-    "name": "Infotag",
-    "group": "East Europe",
-    "url": "https://www.infotag.md/news_arhive_en/"
+    "url": "https://www.moldpres.md/eng",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-30"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.moldpres.md/eng/"
   },
   {
     "id": "source-32",
-    "name": "IPN.md",
+    "domain": "ipn.md",
+    "name": "IPN",
+    "country": "Moldova",
     "group": "East Europe",
-    "url": "https://ipn.md/en/all-news/"
+    "url": "https://ipn.md/en/all-news/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-32"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.ipn.md/en"
   },
   {
-    "id": "source-33",
-    "name": "Interfax.ua",
+    "id": "source-gas-newsmaker-md",
+    "domain": "newsmaker.md",
+    "name": "Newsmaker",
+    "country": "Moldova",
     "group": "East Europe",
-    "url": "https://en.interfax.com.ua/news/general.html"
+    "url": "https://newsmaker.md/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://newsmaker.md/"
+  },
+  {
+    "id": "source-gas-tv8-md",
+    "domain": "tv8.md",
+    "name": "TV8",
+    "country": "Moldova",
+    "group": "East Europe",
+    "url": "https://tv8.md/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://tv8.md/"
+  },
+  {
+    "id": "source-gas-trm-md",
+    "domain": "trm.md",
+    "name": "Radio Moldova",
+    "country": "Moldova",
+    "group": "East Europe",
+    "url": "https://trm.md/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://trm.md/"
+  },
+  {
+    "id": "source-31",
+    "domain": "infotag.md",
+    "name": "Infotag",
+    "country": "Moldova",
+    "group": "East Europe",
+    "url": "https://www.infotag.md/news_arhive_en/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-31"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.infotag.md/"
+  },
+  {
+    "id": "source-gas-moldovalive-md",
+    "domain": "moldovalive.md",
+    "name": "Moldova Live",
+    "country": "Moldova",
+    "group": "East Europe",
+    "url": "https://moldovalive.md/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://moldovalive.md/"
+  },
+  {
+    "id": "source-gas-novostipmr-com",
+    "domain": "novostipmr.com",
+    "name": "Novosti Pridnestrovya",
+    "country": "Moldova",
+    "group": "East Europe",
+    "url": "https://novostipmr.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://novostipmr.com/"
+  },
+  {
+    "id": "source-gas-radiosvoboda-org",
+    "domain": "radiosvoboda.org",
+    "name": "Radio Svoboda",
+    "country": "Ukraine",
+    "group": "East Europe",
+    "url": "https://radiosvoboda.org/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://radiosvoboda.org/"
   },
   {
     "id": "source-34",
+    "domain": "ukrinform.net",
     "name": "Ukrinform",
+    "country": "Ukraine",
     "group": "East Europe",
-    "url": "https://www.ukrinform.net/block-lastnews"
+    "url": "https://www.ukrinform.net/block-lastnews",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-34"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.ukrinform.net/"
   },
   {
-    "id": "source-35",
-    "name": "RBC.ua",
+    "id": "source-33",
+    "domain": "interfax.com.ua",
+    "name": "Interfax.ua",
+    "country": "Ukraine",
     "group": "East Europe",
-    "url": "https://newsukraine.rbc.ua/news"
-  },
-  {
-    "id": "source-36",
-    "name": "Pravda.ua",
-    "group": "East Europe",
-    "url": "https://www.pravda.com.ua/eng/news/"
-  },
-  {
-    "id": "source-37",
-    "name": "Kyiv Post",
-    "group": "East Europe",
-    "url": "https://www.kyivpost.com/all-news"
-  },
-  {
-    "id": "source-38",
-    "name": "Hromadske",
-    "group": "East Europe",
-    "url": "https://hromadske.ua/en/news"
+    "url": "https://en.interfax.com.ua/news/general.html",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-33"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://en.interfax.com.ua/news/general.html"
   },
   {
     "id": "source-39",
+    "domain": "kyivindependent.com",
     "name": "Kyiv Independent",
+    "country": "Ukraine",
     "group": "East Europe",
-    "url": "https://kyivindependent.com/news-archive/"
+    "url": "https://kyivindependent.com/news-archive/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-39"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://kyivindependent.com/"
   },
   {
-    "id": "source-40",
-    "name": "NikVesti",
+    "id": "source-36",
+    "domain": "pravda.com.ua",
+    "name": "Pravda.ua",
+    "country": "Ukraine",
     "group": "East Europe",
-    "url": "https://nikvesti.com/en/news/archive/all"
+    "url": "https://www.pravda.com.ua/eng/news/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-36"
+    ],
+    "feedUrls": [
+      "https://www.pravda.com.ua/eng/rss/"
+    ],
+    "listingUrl": "https://www.pravda.com.ua/eng/news/"
   },
   {
-    "id": "source-41",
-    "name": "KHPG",
+    "id": "source-gas-nv-ua",
+    "domain": "nv.ua",
+    "name": "NV",
+    "country": "Ukraine",
     "group": "East Europe",
-    "url": "https://khpg.org/en/page_1"
-  },
-  {
-    "id": "source-42",
-    "name": "Ukranews",
-    "group": "East Europe",
-    "url": "https://ukranews.com/en/news"
+    "url": "https://nv.ua/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://nv.ua/"
   },
   {
     "id": "source-43",
+    "domain": "unn.ua",
     "name": "UNN",
+    "country": "Ukraine",
     "group": "East Europe",
-    "url": "https://unn.ua/en/news"
+    "url": "https://unn.ua/en/news",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-43"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://unn.ua/en/news"
   },
   {
-    "id": "source-44",
-    "name": "Euromaidan",
+    "id": "source-35",
+    "domain": "rbc.ua",
+    "name": "RBC.ua",
+    "country": "Ukraine",
     "group": "East Europe",
-    "url": "https://euromaidanpress.com/"
+    "url": "https://newsukraine.rbc.ua/news",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-35"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://newsukraine.rbc.ua/news"
   },
   {
-    "id": "source-45",
-    "name": "TSN",
+    "id": "source-42",
+    "domain": "ukranews.com",
+    "name": "Ukranews",
+    "country": "Ukraine",
     "group": "East Europe",
-    "url": "https://tsn.ua/en"
+    "url": "https://ukranews.com/en/news",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-42"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://ukranews.com/en/news"
+  },
+  {
+    "id": "source-gas-mezha-ua",
+    "domain": "mezha.ua",
+    "name": "Mezha",
+    "country": "Ukraine",
+    "group": "East Europe",
+    "url": "https://mezha.ua/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://mezha.ua/"
+  },
+  {
+    "id": "source-gas-liga-net",
+    "domain": "liga.net",
+    "name": "Liga",
+    "country": "Ukraine",
+    "group": "East Europe",
+    "url": "https://liga.net/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://liga.net/"
+  },
+  {
+    "id": "source-37",
+    "domain": "kyivpost.com",
+    "name": "Kyiv Post",
+    "country": "Ukraine",
+    "group": "East Europe",
+    "url": "https://www.kyivpost.com/all-news",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-37"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.kyivpost.com/all-news"
   },
   {
     "id": "source-46",
+    "domain": "azatutyun.am",
     "name": "Armenia Liberty",
+    "country": "Armenia",
     "group": "South Caucasus",
-    "url": "https://www.azatutyun.am/z/1089"
+    "url": "https://www.azatutyun.am/z/1089",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-46"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.azatutyun.am/z/1089"
   },
   {
     "id": "source-47",
+    "domain": "pan.am",
     "name": "PAN",
+    "country": "Armenia",
     "group": "South Caucasus",
-    "url": "https://www.pan.am/en/newsfeed"
+    "url": "https://www.pan.am/en/newsfeed",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-47"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.pan.am/en/"
   },
   {
     "id": "source-48",
+    "domain": "armenpress.am",
     "name": "Armenpress",
+    "country": "Armenia",
     "group": "South Caucasus",
-    "url": "https://armenpress.am/en/articles"
+    "url": "https://armenpress.am/en/articles",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-48"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://armenpress.am/en/articles"
   },
   {
     "id": "source-49",
+    "domain": "panorama.am",
     "name": "Panorama",
+    "country": "Armenia",
     "group": "South Caucasus",
-    "url": "https://www.panorama.am/en/news/"
-  },
-  {
-    "id": "source-50",
-    "name": "News.am",
-    "group": "South Caucasus",
-    "url": "https://news.am/eng/news/"
-  },
-  {
-    "id": "source-51",
-    "name": "Arminfo",
-    "group": "South Caucasus",
-    "url": "https://arminfo.info/allnews.php?lang=3"
-  },
-  {
-    "id": "source-52",
-    "name": "ARKA",
-    "group": "South Caucasus",
-    "url": "https://arka.am/en/news/"
+    "url": "https://www.panorama.am/en/news/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-49"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.panorama.am/en/news/"
   },
   {
     "id": "source-53",
+    "domain": "civilnet.am",
     "name": "Civinet",
+    "country": "Armenia",
     "group": "South Caucasus",
-    "url": "https://www.civilnet.am/en/"
+    "url": "https://www.civilnet.am/en/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-53"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.civilnet.am/en/"
+  },
+  {
+    "id": "source-50",
+    "domain": "news.am",
+    "name": "News.am",
+    "country": "Armenia",
+    "group": "South Caucasus",
+    "url": "https://news.am/eng/news/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-50"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://news.am/en"
+  },
+  {
+    "id": "source-51",
+    "domain": "arminfo.info",
+    "name": "Arminfo",
+    "country": "Armenia",
+    "group": "South Caucasus",
+    "url": "https://arminfo.info/allnews.php?lang=3",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-51"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://arminfo.info/allnews.php?lang=3"
+  },
+  {
+    "id": "source-52",
+    "domain": "arka.am",
+    "name": "ARKA",
+    "country": "Armenia",
+    "group": "South Caucasus",
+    "url": "https://arka.am/en/news/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-52"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://arka.am/en/"
   },
   {
     "id": "source-54",
+    "domain": "hetq.am",
     "name": "Hetq",
+    "country": "Armenia",
     "group": "South Caucasus",
-    "url": "https://hetq.am/en/articles/"
+    "url": "https://hetq.am/en/articles/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-54"
+    ],
+    "feedUrls": [
+      "https://hetq.am/en/rss"
+    ],
+    "listingUrl": "https://hetq.am/en/articles/"
   },
   {
-    "id": "source-55",
-    "name": "APA",
+    "id": "source-gas-aysor-am",
+    "domain": "aysor.am",
+    "name": "Aysor",
+    "country": "Armenia",
     "group": "South Caucasus",
-    "url": "https://en.apa.az/all-news"
+    "url": "https://aysor.am/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://aysor.am/"
+  },
+  {
+    "id": "source-gas-armradio-am",
+    "domain": "armradio.am",
+    "name": "Public Radio Armenia",
+    "country": "Armenia",
+    "group": "South Caucasus",
+    "url": "https://armradio.am/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://armradio.am/"
   },
   {
     "id": "source-56",
+    "domain": "trend.az",
     "name": "Trend",
+    "country": "Azerbaijan",
     "group": "South Caucasus",
-    "url": "https://www.trend.az/azerbaijan/"
+    "url": "https://www.trend.az/azerbaijan/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-56",
+      "source-67"
+    ],
+    "feedUrls": [
+      "https://en.trend.az/rss"
+    ],
+    "listingUrl": "https://www.trend.az/azerbaijan/"
   },
   {
-    "id": "source-57",
-    "name": "Azertag",
+    "id": "source-55",
+    "domain": "apa.az",
+    "name": "APA",
+    "country": "Azerbaijan",
     "group": "South Caucasus",
-    "url": "https://azertag.az/en/son-xeberler"
+    "url": "https://en.apa.az/all-news",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-55"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://en.apa.az/all-news"
   },
   {
     "id": "source-58",
+    "domain": "azernews.az",
     "name": "Azernews",
+    "country": "Azerbaijan",
     "group": "South Caucasus",
-    "url": "https://www.azernews.az/latest/"
+    "url": "https://www.azernews.az/latest/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-58"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.azernews.az/latest/"
+  },
+  {
+    "id": "source-57",
+    "domain": "azertag.az",
+    "name": "Azertag",
+    "country": "Azerbaijan",
+    "group": "South Caucasus",
+    "url": "https://azertag.az/en/son-xeberler",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-57"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://azertag.az/en/son-xeberler"
   },
   {
     "id": "source-59",
+    "domain": "news.az",
     "name": "News.az",
+    "country": "Azerbaijan",
     "group": "South Caucasus",
-    "url": "https://news.az/news/latest"
+    "url": "https://news.az/news/latest",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-59"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://news.az/news/latest"
   },
   {
     "id": "source-60",
+    "domain": "report.az",
     "name": "Report.az",
+    "country": "Azerbaijan",
     "group": "South Caucasus",
-    "url": "https://report.az/en/"
+    "url": "https://report.az/en/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-60"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://report.az/en/"
+  },
+  {
+    "id": "source-gas-today-az",
+    "domain": "today.az",
+    "name": "Today az",
+    "country": "Azerbaijan",
+    "group": "South Caucasus",
+    "url": "https://today.az/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://today.az/"
   },
   {
     "id": "source-61",
+    "domain": "civil.ge",
     "name": "Civil.ge",
+    "country": "Georgia",
     "group": "South Caucasus",
-    "url": "https://civil.ge/archives/category/news"
+    "url": "https://civil.ge/archives/category/news",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-61"
+    ],
+    "feedUrls": [
+      "https://civil.ge/feed/",
+      "https://civil.ge/eng/rss"
+    ],
+    "listingUrl": "https://civil.ge/"
   },
   {
-    "id": "source-62",
-    "name": "1TV.ge",
+    "id": "source-gas-dfwatch-net",
+    "domain": "dfwatch.net",
+    "name": "DFWatch",
+    "country": "Georgia",
     "group": "South Caucasus",
-    "url": "https://1tv.ge/lang/en?s=&post_type=news"
+    "url": "https://dfwatch.net/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://dfwatch.net/"
   },
   {
     "id": "source-63",
-    "name": "IPN.ge",
+    "domain": "interpressnews.ge",
+    "name": "IPN",
+    "country": "Georgia",
     "group": "South Caucasus",
-    "url": "https://www.interpressnews.ge/en/latestnews"
+    "url": "https://www.interpressnews.ge/en/latestnews",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-63"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.interpressnews.ge/en/latestnews"
   },
   {
-    "id": "source-64",
-    "name": "GT",
+    "id": "source-62",
+    "domain": "1tv.ge",
+    "name": "1TV",
+    "country": "Georgia",
     "group": "South Caucasus",
-    "url": "https://georgiatoday.ge/category/news/"
-  },
-  {
-    "id": "source-65",
-    "name": "OC Media",
-    "group": "South Caucasus",
-    "url": "https://oc-media.org/"
+    "url": "https://1tv.ge/lang/en?s=&post_type=news",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-62"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://1tv.ge/lang/en/"
   },
   {
     "id": "source-66",
+    "domain": "jam-news.net",
     "name": "JAMnews",
+    "country": "Georgia",
     "group": "South Caucasus",
-    "url": "https://jam-news.net/"
+    "url": "https://jam-news.net/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-66"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://jam-news.net/"
   },
   {
-    "id": "source-67",
-    "name": "Trend",
-    "group": "Central Asia",
-    "url": "https://www.trend.az/casia/"
+    "id": "source-65",
+    "domain": "oc-media.org",
+    "name": "OC Media",
+    "country": "Georgia",
+    "group": "South Caucasus",
+    "url": "https://oc-media.org/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-65"
+    ],
+    "feedUrls": [
+      "https://oc-media.org/feed/"
+    ],
+    "listingUrl": "https://oc-media.org/news/"
   },
   {
-    "id": "source-68",
-    "name": "TCA",
-    "group": "Central Asia",
-    "url": "https://timesca.com/category/local-politics/"
+    "id": "source-64",
+    "domain": "georgiatoday.ge",
+    "name": "GT",
+    "country": "Georgia",
+    "group": "South Caucasus",
+    "url": "https://georgiatoday.ge/category/news/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-64"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://georgiatoday.ge/"
   },
   {
-    "id": "source-69",
-    "name": "Tengri",
-    "group": "Central Asia",
-    "url": "https://en.tengrinews.kz/"
+    "id": "source-gas-agenda-ge",
+    "domain": "agenda.ge",
+    "name": "Agenda ge",
+    "country": "Georgia",
+    "group": "South Caucasus",
+    "url": "https://agenda.ge/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://agenda.ge/"
   },
   {
     "id": "source-70",
+    "domain": "kaztag.kz",
     "name": "KazTAG",
+    "country": "Kazakhstan",
     "group": "Central Asia",
-    "url": "https://kaztag.kz/en/news/"
+    "url": "https://kaztag.kz/en/news/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-70"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://kaztag.kz/en/"
   },
   {
     "id": "source-71",
+    "domain": "qazinform.com",
     "name": "Kazinform",
+    "country": "Kazakhstan",
     "group": "Central Asia",
-    "url": "https://qazinform.com/lenta"
+    "url": "https://qazinform.com/lenta",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-71"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://qazinform.com/lenta"
   },
   {
     "id": "source-72",
+    "domain": "interfax.kz",
     "name": "Interfax.kz",
+    "country": "Kazakhstan",
     "group": "Central Asia",
-    "url": "https://interfax.kz/?lang=eng&int_id=21"
+    "url": "https://interfax.kz/?lang=eng&int_id=21",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-72"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://interfax.kz/?lang=eng&int_id=21"
   },
   {
     "id": "source-73",
+    "domain": "astanatimes.com",
     "name": "Astana Times",
+    "country": "Kazakhstan",
     "group": "Central Asia",
-    "url": "https://astanatimes.com/"
+    "url": "https://astanatimes.com/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-73"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://astanatimes.com/"
+  },
+  {
+    "id": "source-gas-vlast-kz",
+    "domain": "vlast.kz",
+    "name": "Vlast",
+    "country": "Kazakhstan",
+    "group": "Central Asia",
+    "url": "https://vlast.kz/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://vlast.kz/"
+  },
+  {
+    "id": "source-69",
+    "domain": "tengrinews.kz",
+    "name": "Tengri",
+    "country": "Kazakhstan",
+    "group": "Central Asia",
+    "url": "https://en.tengrinews.kz/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-69"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://en.tengrinews.kz/"
+  },
+  {
+    "id": "source-gas-uralskweek-kz",
+    "domain": "uralskweek.kz",
+    "name": "Uralsk Week",
+    "country": "Kazakhstan",
+    "group": "Central Asia",
+    "url": "https://uralskweek.kz/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://uralskweek.kz/"
+  },
+  {
+    "id": "source-gas-kz-kursiv-media",
+    "domain": "kz.kursiv.media",
+    "name": "Kursiv",
+    "country": "Kazakhstan",
+    "group": "Central Asia",
+    "url": "https://kz.kursiv.media/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [
+      "https://kz.kursiv.media/en/feed/"
+    ],
+    "listingUrl": "https://kz.kursiv.media/"
   },
   {
     "id": "source-74",
+    "domain": "24.kg",
     "name": "24.kg",
+    "country": "Kyrgyzstan",
     "group": "Central Asia",
-    "url": "https://24.kg/english/"
-  },
-  {
-    "id": "source-75",
-    "name": "Kabar",
-    "group": "Central Asia",
-    "url": "https://en.kabar.kg/news/"
+    "url": "https://24.kg/english/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-74"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://24.kg/english/"
   },
   {
     "id": "source-76",
+    "domain": "akipress.com",
     "name": "AKIpress",
+    "country": "Kyrgyzstan",
     "group": "Central Asia",
-    "url": "https://akipress.com/allnews/"
+    "url": "https://akipress.com/allnews/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-76"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://akipress.com/allnews/"
+  },
+  {
+    "id": "source-gas-kabar-kg",
+    "domain": "kabar.kg",
+    "name": "Kabar",
+    "country": "Kyrgyzstan",
+    "group": "Central Asia",
+    "url": "https://kabar.kg/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://kabar.kg/"
+  },
+  {
+    "id": "source-gas-kloop-kg",
+    "domain": "kloop.kg",
+    "name": "Kloop",
+    "country": "Kyrgyzstan",
+    "group": "Central Asia",
+    "url": "https://kloop.kg/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://kloop.kg/"
+  },
+  {
+    "id": "source-gas-khovar-tj",
+    "domain": "khovar.tj",
+    "name": "Khovar",
+    "country": "Tajikistan",
+    "group": "Central Asia",
+    "url": "https://khovar.tj/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://khovar.tj/"
+  },
+  {
+    "id": "source-gas-asiaplus-news",
+    "domain": "asiaplus.news",
+    "name": "Asia Plus",
+    "country": "Tajikistan",
+    "group": "Central Asia",
+    "url": "https://asiaplus.news/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://asiaplus.news/en/"
   },
   {
     "id": "source-77",
+    "domain": "asiaplustj.info",
     "name": "Asia-Plus",
+    "country": "Tajikistan",
     "group": "Central Asia",
-    "url": "https://asiaplustj.info/en/news/all"
+    "url": "https://asiaplustj.info/en/news/all",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-77"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://asiaplustj.info/en/news/all"
+  },
+  {
+    "id": "source-gas-avesta-tj",
+    "domain": "avesta.tj",
+    "name": "Avesta",
+    "country": "Tajikistan",
+    "group": "Central Asia",
+    "url": "https://avesta.tj/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://avesta.tj/"
+  },
+  {
+    "id": "source-gas-orient-tm",
+    "domain": "orient.tm",
+    "name": "Orient",
+    "country": "Turkmenistan",
+    "group": "Central Asia",
+    "url": "https://orient.tm/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://orient.tm/en"
+  },
+  {
+    "id": "source-gas-turkmenportal-com",
+    "domain": "turkmenportal.com",
+    "name": "Turkmenportal",
+    "country": "Turkmenistan",
+    "group": "Central Asia",
+    "url": "https://turkmenportal.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://turkmenportal.com/"
+  },
+  {
+    "id": "source-gas-turkmenistan-gov-tm",
+    "domain": "turkmenistan.gov.tm",
+    "name": "Turkmenistan government",
+    "country": "Turkmenistan",
+    "group": "Central Asia",
+    "url": "https://turkmenistan.gov.tm/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://turkmenistan.gov.tm/"
+  },
+  {
+    "id": "source-gas-tdh-gov-tm",
+    "domain": "tdh.gov.tm",
+    "name": "TDH",
+    "country": "Turkmenistan",
+    "group": "Central Asia",
+    "url": "https://tdh.gov.tm/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://tdh.gov.tm/"
+  },
+  {
+    "id": "source-gas-turkmen-news",
+    "domain": "turkmen.news",
+    "name": "Turkmen news",
+    "country": "Turkmenistan",
+    "group": "Central Asia",
+    "url": "https://turkmen.news/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://turkmen.news/"
+  },
+  {
+    "id": "source-gas-hronikatm-com",
+    "domain": "hronikatm.com",
+    "name": "Chronicles Turkmenistan",
+    "country": "Turkmenistan",
+    "group": "Central Asia",
+    "url": "https://hronikatm.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://hronikatm.com/"
+  },
+  {
+    "id": "source-gas-uza-uz",
+    "domain": "uza.uz",
+    "name": "UzA",
+    "country": "Uzbekistan",
+    "group": "Central Asia",
+    "url": "https://uza.uz/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://uza.uz/"
   },
   {
     "id": "source-78",
+    "domain": "kun.uz",
     "name": "Kun.uz",
+    "country": "Uzbekistan",
     "group": "Central Asia",
-    "url": "https://kun.uz/en/news/list"
-  },
-  {
-    "id": "source-79",
-    "name": "RFE/RL",
-    "group": "Miscl",
-    "url": "https://www.rferl.org/latest-news"
-  },
-  {
-    "id": "source-80",
-    "name": "DW",
-    "group": "Miscl",
-    "url": "https://www.dw.com/en/top-stories/s-9097"
-  },
-  {
-    "id": "source-81",
-    "name": "Politico.eu",
-    "group": "Miscl",
-    "url": "https://www.politico.eu/latest/"
-  },
-  {
-    "id": "source-82",
-    "name": "Euronews",
-    "group": "Miscl",
-    "url": "https://www.euronews.com/just-in"
-  },
-  {
-    "id": "source-83",
-    "name": "BBC",
-    "group": "Miscl",
-    "url": "https://www.bbc.com/news"
-  },
-  {
-    "id": "source-84",
-    "name": "Bloomberg",
-    "group": "Miscl",
-    "url": "https://www.bnnbloomberg.ca/business/politics/"
-  },
-  {
-    "id": "source-85",
-    "name": "AP",
-    "group": "Miscl",
-    "url": "https://apnews.com/world-news"
-  },
-  {
-    "id": "source-86",
-    "name": "dpa",
-    "group": "Miscl",
-    "url": "https://nordot.app/-/units/601684660556563553"
-  },
-  {
-    "id": "source-87",
-    "name": "dpa",
-    "group": "Miscl",
-    "url": "https://www.dpa-international.com/politics/"
-  },
-  {
-    "id": "source-88",
-    "name": "BTA",
-    "group": "Miscl",
-    "url": "https://www.bta.bg/en/news/bulgaria"
-  },
-  {
-    "id": "source-89",
-    "name": "Radio Prague",
-    "group": "Miscl",
-    "url": "https://english.radio.cz/news"
-  },
-  {
-    "id": "source-90",
-    "name": "ERR",
-    "group": "Miscl",
-    "url": "https://news.err.ee/k/news"
-  },
-  {
-    "id": "source-91",
-    "name": "Yle",
-    "group": "Miscl",
-    "url": "https://yle.fi/news/tuoreimmat"
-  },
-  {
-    "id": "source-92",
-    "name": "RFI",
-    "group": "Miscl",
-    "url": "https://www.rfi.fr/en/live-news/"
-  },
-  {
-    "id": "source-93",
-    "name": "ANSA",
-    "group": "Miscl",
-    "url": "https://www.ansa.it/english/"
-  },
-  {
-    "id": "source-94",
-    "name": "LSM",
-    "group": "Miscl",
-    "url": "https://eng.lsm.lv/archive/"
-  },
-  {
-    "id": "source-95",
-    "name": "LRT",
-    "group": "Miscl",
-    "url": "https://www.lrt.lt/en/news-in-english"
-  },
-  {
-    "id": "source-96",
-    "name": "Polskie Radio",
-    "group": "Miscl",
-    "url": "https://www.polskieradio.pl/395/7784"
-  },
-  {
-    "id": "source-97",
-    "name": "TASS",
-    "group": "Miscl",
-    "url": "https://tass.com/politics"
-  },
-  {
-    "id": "source-98",
-    "name": "Izvestia",
-    "group": "Miscl",
-    "url": "https://iz.ru/rubric/mir"
-  },
-  {
-    "id": "source-99",
-    "name": "Sputnik",
-    "group": "Miscl",
-    "url": "https://sputnikglobe.com/russia/"
-  },
-  {
-    "id": "source-100",
-    "name": "Fox",
-    "group": "Miscl",
-    "url": "https://www.foxnews.com/us"
-  },
-  {
-    "id": "source-101",
-    "name": "CNN",
-    "group": "Miscl",
-    "url": "https://edition.cnn.com/us"
-  },
-  {
-    "id": "source-102",
-    "name": "Xinhua",
-    "group": "Miscl",
-    "url": "https://english.news.cn/list/china-chinaworld.htm"
-  },
-  {
-    "id": "source-103",
-    "name": "Yonhap",
-    "group": "Miscl",
-    "url": "https://en.yna.co.kr/news"
-  },
-  {
-    "id": "source-104",
-    "name": "AsiaOne",
-    "group": "Miscl",
-    "url": "https://www.asiaone.com/lite"
-  },
-  {
-    "id": "source-105",
-    "name": "RFA",
-    "group": "Miscl",
-    "url": "https://www.rfa.org/english/"
-  },
-  {
-    "id": "source-106",
-    "name": "Guardian",
-    "group": "Miscl",
-    "url": "https://www.theguardian.com/world"
-  },
-  {
-    "id": "source-107",
-    "name": "Novinite",
-    "group": "Miscl",
-    "url": "https://www.novinite.com/"
-  },
-  {
-    "id": "source-108",
-    "name": "Romania Insider",
-    "group": "Miscl",
-    "url": "https://www.romania-insider.com/"
-  },
-  {
-    "id": "source-109",
-    "name": "Cyprus Mail",
-    "group": "Miscl",
-    "url": "https://cyprus-mail.com/"
-  },
-  {
-    "id": "source-110",
-    "name": "NFP",
-    "group": "Miscl",
-    "url": "https://notesfrompoland.com/"
-  },
-  {
-    "id": "source-111",
-    "name": "Baltic Times",
-    "group": "Miscl",
-    "url": "https://www.baltictimes.com/"
-  },
-  {
-    "id": "source-112",
-    "name": "NewsinEnglish.no",
-    "group": "Miscl",
-    "url": "https://www.newsinenglish.no/"
-  },
-  {
-    "id": "source-113",
-    "name": "Copenhagen Post",
-    "group": "Miscl",
-    "url": "https://cphpost.dk/"
-  },
-  {
-    "id": "source-114",
-    "name": "Local.se",
-    "group": "Miscl",
-    "url": "https://www.thelocal.se/"
-  },
-  {
-    "id": "source-115",
-    "name": "Moscow Times",
-    "group": "Miscl",
-    "url": "https://www.themoscowtimes.com/"
-  },
-  {
-    "id": "source-116",
-    "name": "Meduza",
-    "group": "Miscl",
-    "url": "https://meduza.io/en"
-  },
-  {
-    "id": "source-117",
-    "name": "Rudaw",
-    "group": "Miscl",
-    "url": "https://www.rudaw.net/english"
-  },
-  {
-    "id": "source-118",
-    "name": "Kurdistan 24",
-    "group": "Miscl",
-    "url": "https://www.kurdistan24.net/en"
-  },
-  {
-    "id": "source-119",
-    "name": "Iran International",
-    "group": "Miscl",
-    "url": "https://www.iranintl.com/en"
-  },
-  {
-    "id": "source-120",
-    "name": "TOI",
-    "group": "Miscl",
-    "url": "https://www.timesofisrael.com/"
-  },
-  {
-    "id": "source-121",
-    "name": "L'Orient Today",
-    "group": "Miscl",
-    "url": "https://today.lorientlejour.com/"
-  },
-  {
-    "id": "source-122",
-    "name": "Al Jazeera",
-    "group": "Miscl",
-    "url": "https://www.aljazeera.com/news/"
-  },
-  {
-    "id": "source-123",
-    "name": "Dawn",
-    "group": "Miscl",
-    "url": "https://www.dawn.com/"
-  },
-  {
-    "id": "source-124",
-    "name": "Montsame",
-    "group": "Miscl",
-    "url": "https://montsame.mn/en",
-    "listingUrl": "https://montsame.mn/en/more/302"
-  },
-  {
-    "id": "source-125",
-    "name": "Korea Herald",
-    "group": "Miscl",
-    "url": "https://www.koreaherald.com/"
-  },
-  {
-    "id": "source-126",
-    "name": "CBC",
-    "group": "Miscl",
-    "url": "https://www.cbc.ca/news/politics"
-  },
-  {
-    "id": "source-127",
-    "name": "Local.fr",
-    "group": "Miscl",
-    "url": "https://www.thelocal.fr/"
-  },
-  {
-    "id": "source-128",
-    "name": "Local.de",
-    "group": "Miscl",
-    "url": "https://www.thelocal.de/"
-  },
-  {
-    "id": "source-129",
-    "name": "Local.es",
-    "group": "Miscl",
-    "url": "https://www.thelocal.es/"
-  },
-  {
-    "id": "source-130",
-    "name": "Catalan News",
-    "group": "Miscl",
-    "url": "https://www.catalannews.com/politics"
-  },
-  {
-    "id": "source-131",
-    "name": "NL Times",
-    "group": "Miscl",
-    "url": "https://nltimes.nl/"
-  },
-  {
-    "id": "source-132",
-    "name": "Dutch News",
-    "group": "Miscl",
-    "url": "https://www.dutchnews.nl/?list"
-  },
-  {
-    "id": "source-133",
-    "name": "Belga",
-    "group": "Miscl",
-    "url": "https://www.belganewsagency.eu/"
-  },
-  {
-    "id": "source-134",
-    "name": "VRT",
-    "group": "Miscl",
-    "url": "https://www.vrt.be/vrtnws/en"
-  },
-  {
-    "id": "source-135",
-    "name": "Swissinfo",
-    "group": "Miscl",
-    "url": "https://www.swissinfo.ch/eng"
-  },
-  {
-    "id": "source-136",
-    "name": "Local.ch",
-    "group": "Miscl",
-    "url": "https://www.thelocal.ch/"
-  },
-  {
-    "id": "source-137",
-    "name": "Local.at",
-    "group": "Miscl",
-    "url": "https://www.thelocal.at/"
-  },
-  {
-    "id": "source-138",
-    "name": "Vindobona",
-    "group": "Miscl",
-    "url": "https://www.vindobona.org/"
-  },
-  {
-    "id": "source-139",
-    "name": "The Journal",
-    "group": "Miscl",
-    "url": "https://www.thejournal.ie/"
-  },
-  {
-    "id": "source-140",
-    "name": "itv",
-    "group": "Miscl",
-    "url": "https://www.itv.com/news"
-  },
-  {
-    "id": "source-141",
-    "name": "4 News",
-    "group": "Miscl",
-    "url": "https://www.channel4.com/news"
-  },
-  {
-    "id": "source-142",
-    "name": "Iceland Review",
-    "group": "Miscl",
-    "url": "https://www.icelandreview.com/"
-  },
-  {
-    "id": "source-143",
-    "name": "Tovima",
-    "group": "Miscl",
-    "url": "https://www.tovima.com/"
-  },
-  {
-    "id": "source-144",
-    "name": "DNH",
-    "group": "Miscl",
-    "url": "https://dailynewshungary.com/"
-  },
-  {
-    "id": "source-145",
-    "name": "Malta Independent",
-    "group": "Miscl",
-    "url": "https://www.independent.com.mt/"
-  },
-  {
-    "id": "source-146",
-    "name": "Portugal News",
-    "group": "Miscl",
-    "url": "https://www.theportugalnews.com/"
-  },
-  {
-    "id": "source-147",
-    "name": "Turkish Minute",
-    "group": "Miscl",
-    "url": "https://turkishminute.com/category/national/"
-  },
-  {
-    "id": "source-148",
-    "name": "Daily Sabah",
-    "group": "Miscl",
-    "url": "https://www.dailysabah.com/"
-  },
-  {
-    "id": "source-149",
-    "name": "AA",
-    "group": "Miscl",
-    "url": "https://www.aa.com.tr/en"
-  },
-  {
-    "id": "source-150",
-    "name": "Vatican News",
-    "group": "Miscl",
-    "url": "https://www.vaticannews.va/en.html"
-  },
-  {
-    "id": "source-151",
-    "name": "Croatia Week",
-    "group": "Miscl",
-    "url": "https://www.croatiaweek.com/category/news-3/"
-  },
-  {
-    "id": "source-152",
-    "name": "Slovenia Times",
-    "group": "Miscl",
-    "url": "https://sloveniatimes.com/c/latest-news"
+    "url": "https://kun.uz/en/news/list",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-78"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://kun.uz/en/news/list"
+  },
+  {
+    "id": "source-gas-gazeta-uz",
+    "domain": "gazeta.uz",
+    "name": "Gazeta uz",
+    "country": "Uzbekistan",
+    "group": "Central Asia",
+    "url": "https://gazeta.uz/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://www.gazeta.uz/en/"
+  },
+  {
+    "id": "source-gas-uzdaily-uz",
+    "domain": "uzdaily.uz",
+    "name": "UzDaily",
+    "country": "Uzbekistan",
+    "group": "Central Asia",
+    "url": "https://uzdaily.uz/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [
+      "https://uzdaily.uz/en/rss"
+    ],
+    "listingUrl": "https://www.uzdaily.uz/en/"
+  },
+  {
+    "id": "source-gas-anhor-uz",
+    "domain": "anhor.uz",
+    "name": "Anhor",
+    "country": "Uzbekistan",
+    "group": "Central Asia",
+    "url": "https://anhor.uz/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://anhor.uz/"
+  },
+  {
+    "id": "source-gas-podrobno-uz",
+    "domain": "podrobno.uz",
+    "name": "Podrobno",
+    "country": "Uzbekistan",
+    "group": "Central Asia",
+    "url": "https://podrobno.uz/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://podrobno.uz/"
+  },
+  {
+    "id": "source-gas-tashkenttimes-uz",
+    "domain": "tashkenttimes.uz",
+    "name": "Tashkent Times",
+    "country": "Uzbekistan",
+    "group": "Central Asia",
+    "url": "https://tashkenttimes.uz/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://tashkenttimes.uz/"
   },
   {
     "id": "source-153",
+    "domain": "reuters.com",
     "name": "Reuters",
+    "country": "International",
     "group": "Miscl",
-    "url": "https://www.reuters.com/world/"
+    "url": "https://www.reuters.com/world/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-153"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.reuters.com/world/"
   },
   {
-    "id": "source-154",
-    "name": "NPR",
+    "id": "source-85",
+    "domain": "apnews.com",
+    "name": "AP",
+    "country": "International",
     "group": "Miscl",
-    "url": "https://www.npr.org/sections/world/"
+    "url": "https://apnews.com/world-news",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-85"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://apnews.com/world-news"
   },
   {
-    "id": "source-155",
-    "name": "PBS",
+    "id": "source-gas-france24-com",
+    "domain": "france24.com",
+    "name": "France 24",
+    "country": "International",
     "group": "Miscl",
-    "url": "https://www.pbs.org/newshour/world"
+    "url": "https://france24.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://www.france24.com/en/"
   },
   {
-    "id": "source-156",
-    "name": "CBS",
+    "id": "source-83",
+    "domain": "bbc.com",
+    "name": "BBC",
+    "country": "International",
     "group": "Miscl",
-    "url": "https://www.cbsnews.com/world/"
+    "url": "https://www.bbc.com/news",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-83"
+    ],
+    "feedUrls": [
+      "https://feeds.bbci.co.uk/news/world/rss.xml"
+    ],
+    "listingUrl": "https://www.bbc.com/news"
   },
   {
-    "id": "source-157",
-    "name": "Axios",
+    "id": "source-gas-bbc-co-uk",
+    "domain": "bbc.co.uk",
+    "name": "BBC",
+    "country": "International",
     "group": "Miscl",
-    "url": "https://www.axios.com/world"
+    "url": "https://bbc.co.uk/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://bbc.co.uk/"
   },
   {
-    "id": "source-158",
-    "name": "The Hill",
+    "id": "source-101",
+    "domain": "cnn.com",
+    "name": "CNN",
+    "country": "International",
     "group": "Miscl",
-    "url": "https://thehill.com/policy/international/"
+    "url": "https://edition.cnn.com/us",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-101"
+    ],
+    "feedUrls": [
+      "https://rss.cnn.com/rss/edition_world.rss"
+    ],
+    "listingUrl": "https://edition.cnn.com/us"
   },
   {
-    "id": "source-159",
-    "name": "NBC",
+    "id": "source-gas-news-sky-com",
+    "domain": "news.sky.com",
+    "name": "Sky News",
+    "country": "International",
     "group": "Miscl",
-    "url": "https://www.nbcnews.com/world"
+    "url": "https://news.sky.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://news.sky.com/"
   },
   {
-    "id": "source-160",
-    "name": "USA Today",
+    "id": "source-122",
+    "domain": "aljazeera.com",
+    "name": "Al Jazeera",
+    "country": "International",
     "group": "Miscl",
-    "url": "https://www.usatoday.com/news/world/"
+    "url": "https://www.aljazeera.com/news/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-122"
+    ],
+    "feedUrls": [
+      "https://www.aljazeera.com/xml/rss/all.xml"
+    ],
+    "listingUrl": "https://www.aljazeera.com/news/"
   },
   {
-    "id": "source-161",
-    "name": "Defense News",
+    "id": "source-80",
+    "domain": "dw.com",
+    "name": "DW",
+    "country": "International",
     "group": "Miscl",
-    "url": "https://www.defensenews.com/"
+    "url": "https://www.dw.com/en/top-stories/s-9097",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-80"
+    ],
+    "feedUrls": [
+      "https://rss.dw.com/rdf/rss-en-all"
+    ],
+    "listingUrl": "https://www.dw.com/en/top-stories/s-9097"
   },
   {
-    "id": "source-162",
-    "name": "Breaking Defense",
+    "id": "source-106",
+    "domain": "theguardian.com",
+    "name": "Guardian",
+    "country": "International",
     "group": "Miscl",
-    "url": "https://breakingdefense.com/"
+    "url": "https://www.theguardian.com/world",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-106"
+    ],
+    "feedUrls": [
+      "https://www.theguardian.com/world/rss"
+    ],
+    "listingUrl": "https://www.theguardian.com/world"
   },
   {
-    "id": "source-163",
-    "name": "Stars and Stripes",
+    "id": "source-gas-nytimes-com",
+    "domain": "nytimes.com",
+    "name": "New York Times",
+    "country": "International",
     "group": "Miscl",
-    "url": "https://www.stripes.com/"
+    "url": "https://nytimes.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://nytimes.com/"
   },
   {
-    "id": "source-164",
-    "name": "Military Times",
+    "id": "source-gas-washingtonpost-com",
+    "domain": "washingtonpost.com",
+    "name": "Washington Post",
+    "country": "International",
     "group": "Miscl",
-    "url": "https://www.militarytimes.com/news/"
+    "url": "https://washingtonpost.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [
+      "https://feeds.washingtonpost.com/rss/world"
+    ],
+    "listingUrl": "https://washingtonpost.com/"
   },
   {
-    "id": "source-165",
-    "name": "VOA",
+    "id": "source-gas-wsj-com",
+    "domain": "wsj.com",
+    "name": "Wall Street Journal",
+    "country": "International",
     "group": "Miscl",
-    "url": "https://www.voanews.com/"
+    "url": "https://wsj.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://wsj.com/"
   },
   {
-    "id": "source-166",
-    "name": "Defense One",
+    "id": "source-82",
+    "domain": "euronews.com",
+    "name": "Euronews",
+    "country": "International",
     "group": "Miscl",
-    "url": "https://www.defenseone.com/"
+    "url": "https://www.euronews.com/just-in",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-82"
+    ],
+    "feedUrls": [
+      "https://www.euronews.com/rss?level=theme&name=news"
+    ],
+    "listingUrl": "https://www.euronews.com/"
   },
   {
-    "id": "source-167",
-    "name": "FP",
+    "id": "source-81",
+    "domain": "politico.eu",
+    "name": "Politico.eu",
+    "country": "International",
     "group": "Miscl",
-    "url": "https://foreignpolicy.com/category/latest/"
+    "url": "https://www.politico.eu/latest/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-81"
+    ],
+    "feedUrls": [
+      "https://www.politico.eu/feed/"
+    ],
+    "listingUrl": "https://www.politico.eu/latest/"
   },
   {
-    "id": "source-168",
-    "name": "C-Span",
+    "id": "source-gas-bloomberg-com",
+    "domain": "bloomberg.com",
+    "name": "Bloomberg",
+    "country": "International",
     "group": "Miscl",
-    "url": "https://www.c-span.org/news/"
+    "url": "https://bloomberg.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://bloomberg.com/"
   },
   {
-    "id": "source-169",
-    "name": "Tolo",
+    "id": "source-149",
+    "domain": "aa.com.tr",
+    "name": "AA",
+    "country": "International",
     "group": "Miscl",
-    "url": "https://www.tolonews.com/afghanistan"
+    "url": "https://www.aa.com.tr/en",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-149"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.aa.com.tr/en"
   },
   {
-    "id": "source-170",
-    "name": "Khaama",
+    "id": "source-93",
+    "domain": "ansa.it",
+    "name": "ANSA",
+    "country": "International",
     "group": "Miscl",
-    "url": "https://www.khaama.com/category/afghanistan/"
+    "url": "https://www.ansa.it/english/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-93"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.ansa.it/english/"
+  },
+  {
+    "id": "source-gas-err-ee",
+    "domain": "err.ee",
+    "name": "ERR",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://err.ee/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://err.ee/"
+  },
+  {
+    "id": "source-91",
+    "domain": "yle.fi",
+    "name": "Yle",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://yle.fi/news/tuoreimmat",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-91"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://yle.fi/news"
+  },
+  {
+    "id": "source-94",
+    "domain": "lsm.lv",
+    "name": "LSM",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://eng.lsm.lv/archive/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-94"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://eng.lsm.lv/archive/"
+  },
+  {
+    "id": "source-95",
+    "domain": "lrt.lt",
+    "name": "LRT",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://www.lrt.lt/en/news-in-english",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-95"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.lrt.lt/en/news-in-english"
+  },
+  {
+    "id": "source-gas-bns-lt",
+    "domain": "bns.lt",
+    "name": "BNS",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://bns.lt/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://bns.lt/"
+  },
+  {
+    "id": "source-gas-delfi-lt",
+    "domain": "delfi.lt",
+    "name": "Delfi",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://delfi.lt/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://delfi.lt/"
+  },
+  {
+    "id": "source-gas-tvpworld-com",
+    "domain": "tvpworld.com",
+    "name": "TVP World",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://tvpworld.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://tvpworld.com/"
+  },
+  {
+    "id": "source-89",
+    "domain": "english.radio.cz",
+    "name": "Radio Prague",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://english.radio.cz/news",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-89"
+    ],
+    "feedUrls": [
+      "https://english.radio.cz/rss"
+    ],
+    "listingUrl": "https://english.radio.cz/news"
+  },
+  {
+    "id": "source-gas-hurriyetdailynews-com",
+    "domain": "hurriyetdailynews.com",
+    "name": "Hurriyet Daily News",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://hurriyetdailynews.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [
+      "https://www.hurriyetdailynews.com/rss"
+    ],
+    "listingUrl": "https://hurriyetdailynews.com/"
+  },
+  {
+    "id": "source-148",
+    "domain": "dailysabah.com",
+    "name": "Daily Sabah",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://www.dailysabah.com/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-148"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.dailysabah.com/"
+  },
+  {
+    "id": "source-gas-middleeastmonitor-com",
+    "domain": "middleeastmonitor.com",
+    "name": "Middle East Monitor",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://middleeastmonitor.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://middleeastmonitor.com/"
+  },
+  {
+    "id": "source-gas-yonhapnews-co-kr",
+    "domain": "yonhapnews.co.kr",
+    "name": "Yonhap",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://yonhapnews.co.kr/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://yonhapnews.co.kr/"
+  },
+  {
+    "id": "source-97",
+    "domain": "tass.com",
+    "name": "TASS",
+    "country": "Russia",
+    "group": "Miscl",
+    "url": "https://tass.com/politics",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-97"
+    ],
+    "feedUrls": [
+      "https://tass.com/rss/v2.xml"
+    ],
+    "listingUrl": "https://tass.com/politics"
+  },
+  {
+    "id": "source-gas-interfax-com",
+    "domain": "interfax.com",
+    "name": "Interfax",
+    "country": "Russia",
+    "group": "Miscl",
+    "url": "https://interfax.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://interfax.com/"
+  },
+  {
+    "id": "source-116",
+    "domain": "meduza.io",
+    "name": "Meduza",
+    "country": "Russia",
+    "group": "Miscl",
+    "url": "https://meduza.io/en",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-116"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://meduza.io/en"
+  },
+  {
+    "id": "source-115",
+    "domain": "themoscowtimes.com",
+    "name": "Moscow Times",
+    "country": "Russia",
+    "group": "Miscl",
+    "url": "https://www.themoscowtimes.com/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-115"
+    ],
+    "feedUrls": [
+      "https://www.themoscowtimes.com/rss/news"
+    ],
+    "listingUrl": "https://www.themoscowtimes.com/"
+  },
+  {
+    "id": "source-gas-novayagazeta-eu",
+    "domain": "novayagazeta.eu",
+    "name": "Novaya Gazeta Europe",
+    "country": "Russia",
+    "group": "Miscl",
+    "url": "https://novayagazeta.eu/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://novayagazeta.eu/"
+  },
+  {
+    "id": "source-gas-theins-ru",
+    "domain": "theins.ru",
+    "name": "The Insider",
+    "country": "Russia",
+    "group": "Miscl",
+    "url": "https://theins.ru/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://theins.ru/"
+  },
+  {
+    "id": "source-gas-istories-media",
+    "domain": "istories.media",
+    "name": "iStories",
+    "country": "Russia",
+    "group": "Miscl",
+    "url": "https://istories.media/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://istories.media/"
+  },
+  {
+    "id": "source-98",
+    "domain": "iz.ru",
+    "name": "Izvestia",
+    "country": "Russia",
+    "group": "Miscl",
+    "url": "https://iz.ru/rubric/mir",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-98"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://iz.ru/rubric/mir"
   },
   {
     "id": "source-171",
+    "domain": "pajhwok.com",
     "name": "Pajhwok",
+    "country": "Afghanistan",
     "group": "Miscl",
-    "url": "https://pajhwok.com/"
+    "url": "https://pajhwok.com/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-171"
+    ],
+    "feedUrls": [
+      "https://pajhwok.com/feed"
+    ],
+    "listingUrl": "https://pajhwok.com/"
+  },
+  {
+    "id": "source-170",
+    "domain": "khaama.com",
+    "name": "Khaama",
+    "country": "Afghanistan",
+    "group": "Miscl",
+    "url": "https://www.khaama.com/category/afghanistan/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-170"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.khaama.com/category/afghanistan/"
+  },
+  {
+    "id": "source-gas-thekabultimes-com",
+    "domain": "thekabultimes.com",
+    "name": "Kabul Times",
+    "country": "Afghanistan",
+    "group": "Miscl",
+    "url": "https://thekabultimes.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://thekabultimes.com/"
+  },
+  {
+    "id": "source-2",
+    "domain": "balkaninsight.com",
+    "name": "BIRN",
+    "country": "Regional",
+    "group": "South Eastern Europe",
+    "url": "https://balkaninsight.com/all-the-news-from-the-balkans/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-2"
+    ],
+    "feedUrls": [
+      "https://balkaninsight.com/feed/"
+    ],
+    "listingUrl": "https://balkaninsight.com/all-the-news-from-the-balkans/"
+  },
+  {
+    "id": "source-1",
+    "domain": "dtt-net.com",
+    "name": "DTT",
+    "country": "Regional",
+    "group": "South Eastern Europe",
+    "url": "https://dtt-net.com/category/w-balkan-news/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-1"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://dtt-net.com/"
+  },
+  {
+    "id": "source-3",
+    "domain": "europeanwesternbalkans.com",
+    "name": "EWB",
+    "country": "Regional",
+    "group": "South Eastern Europe",
+    "url": "https://europeanwesternbalkans.com/latest/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-3"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://europeanwesternbalkans.com/"
+  },
+  {
+    "id": "source-gas-intellinews-com",
+    "domain": "intellinews.com",
+    "name": "IntelliNews",
+    "country": "Regional",
+    "group": "Miscl",
+    "url": "https://intellinews.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://intellinews.com/"
+  },
+  {
+    "id": "source-68",
+    "domain": "timesca.com",
+    "name": "TCA",
+    "country": "Regional",
+    "group": "Central Asia",
+    "url": "https://timesca.com/category/local-politics/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-68"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://timesca.com/"
+  },
+  {
+    "id": "source-79",
+    "domain": "rferl.org",
+    "name": "RFE/RL",
+    "country": "Regional",
+    "group": "Miscl",
+    "url": "https://www.rferl.org/latest-news",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-79"
+    ],
+    "feedUrls": [
+      "https://www.rferl.org/rss/"
+    ],
+    "listingUrl": "https://www.rferl.org/latest-news"
+  },
+  {
+    "id": "source-gas-fergana-agency",
+    "domain": "fergana.agency",
+    "name": "Fergana",
+    "country": "Regional",
+    "group": "Miscl",
+    "url": "https://fergana.agency/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://fergana.agency/"
+  },
+  {
+    "id": "source-gas-eurasianet-org",
+    "domain": "eurasianet.org",
+    "name": "Eurasianet",
+    "country": "Regional",
+    "group": "Miscl",
+    "url": "https://eurasianet.org/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://eurasianet.org/"
+  },
+  {
+    "id": "source-gas-osce-org",
+    "domain": "osce.org",
+    "name": "OSCE",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://osce.org/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://osce.org/"
+  },
+  {
+    "id": "source-gas-nato-int",
+    "domain": "nato.int",
+    "name": "NATO",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://nato.int/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://nato.int/"
+  },
+  {
+    "id": "source-gas-consilium-europa-eu",
+    "domain": "consilium.europa.eu",
+    "name": "European Council",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://consilium.europa.eu/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://consilium.europa.eu/"
+  },
+  {
+    "id": "source-gas-eeas-europa-eu",
+    "domain": "eeas.europa.eu",
+    "name": "EEAS",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://eeas.europa.eu/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://eeas.europa.eu/"
+  },
+  {
+    "id": "source-gas-ec-europa-eu",
+    "domain": "ec.europa.eu",
+    "name": "European Commission",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://ec.europa.eu/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://ec.europa.eu/"
+  },
+  {
+    "id": "source-gas-un-org",
+    "domain": "un.org",
+    "name": "United Nations",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://un.org/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://un.org/"
+  },
+  {
+    "id": "source-gas-ohchr-org",
+    "domain": "ohchr.org",
+    "name": "OHCHR",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://ohchr.org/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://ohchr.org/"
+  },
+  {
+    "id": "source-gas-iaea-org",
+    "domain": "iaea.org",
+    "name": "IAEA",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://iaea.org/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://iaea.org/"
+  },
+  {
+    "id": "source-gas-unhcr-org",
+    "domain": "unhcr.org",
+    "name": "UNHCR",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://unhcr.org/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://unhcr.org/"
+  },
+  {
+    "id": "source-gas-iom-int",
+    "domain": "iom.int",
+    "name": "IOM",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://iom.int/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://iom.int/"
+  },
+  {
+    "id": "source-gas-imf-org",
+    "domain": "imf.org",
+    "name": "IMF",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://imf.org/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://imf.org/"
+  },
+  {
+    "id": "source-gas-worldbank-org",
+    "domain": "worldbank.org",
+    "name": "World Bank",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://worldbank.org/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://worldbank.org/"
+  },
+  {
+    "id": "source-gas-ebrd-com",
+    "domain": "ebrd.com",
+    "name": "EBRD",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://ebrd.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://ebrd.com/"
+  },
+  {
+    "id": "source-gas-iea-org",
+    "domain": "iea.org",
+    "name": "IEA",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://iea.org/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://iea.org/"
+  },
+  {
+    "id": "source-gas-president-gov-by",
+    "domain": "president.gov.by",
+    "name": "Belarus Presidency",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://president.gov.by/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://president.gov.by/"
+  },
+  {
+    "id": "source-gas-government-by",
+    "domain": "government.by",
+    "name": "Belarus government",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://government.by/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://government.by/"
+  },
+  {
+    "id": "source-gas-mfa-gov-by",
+    "domain": "mfa.gov.by",
+    "name": "Belarus MFA",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://mfa.gov.by/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://mfa.gov.by/"
+  },
+  {
+    "id": "source-gas-mil-by",
+    "domain": "mil.by",
+    "name": "Belarus defence",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://mil.by/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://mil.by/"
+  },
+  {
+    "id": "source-gas-gpk-gov-by",
+    "domain": "gpk.gov.by",
+    "name": "Belarus border",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://gpk.gov.by/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://gpk.gov.by/"
+  },
+  {
+    "id": "source-gas-kgb-by",
+    "domain": "kgb.by",
+    "name": "Belarus KGB",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://kgb.by/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://kgb.by/"
+  },
+  {
+    "id": "source-gas-nbrb-by",
+    "domain": "nbrb.by",
+    "name": "Belarus central bank",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://nbrb.by/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://nbrb.by/"
+  },
+  {
+    "id": "source-gas-presedinte-md",
+    "domain": "presedinte.md",
+    "name": "Moldova Presidency",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://presedinte.md/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://presedinte.md/"
+  },
+  {
+    "id": "source-gas-gov-md",
+    "domain": "gov.md",
+    "name": "Moldova government",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://gov.md/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://gov.md/"
+  },
+  {
+    "id": "source-gas-parlament-md",
+    "domain": "parlament.md",
+    "name": "Moldova Parliament",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://parlament.md/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://parlament.md/"
+  },
+  {
+    "id": "source-gas-mfa-gov-md",
+    "domain": "mfa.gov.md",
+    "name": "Moldova MFA",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://mfa.gov.md/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://mfa.gov.md/"
+  },
+  {
+    "id": "source-gas-army-md",
+    "domain": "army.md",
+    "name": "Moldova defence",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://army.md/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://army.md/"
+  },
+  {
+    "id": "source-gas-mai-gov-md",
+    "domain": "mai.gov.md",
+    "name": "Moldova interior",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://mai.gov.md/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://mai.gov.md/"
+  },
+  {
+    "id": "source-gas-border-gov-md",
+    "domain": "border.gov.md",
+    "name": "Moldova border",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://border.gov.md/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://border.gov.md/"
+  },
+  {
+    "id": "source-gas-bnm-md",
+    "domain": "bnm.md",
+    "name": "Moldova central bank",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://bnm.md/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://bnm.md/"
+  },
+  {
+    "id": "source-gas-president-gov-ua",
+    "domain": "president.gov.ua",
+    "name": "Ukraine Presidency",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://president.gov.ua/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://president.gov.ua/"
+  },
+  {
+    "id": "source-gas-kmu-gov-ua",
+    "domain": "kmu.gov.ua",
+    "name": "Ukraine government",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://kmu.gov.ua/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://kmu.gov.ua/"
+  },
+  {
+    "id": "source-gas-rada-gov-ua",
+    "domain": "rada.gov.ua",
+    "name": "Ukraine Parliament",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://rada.gov.ua/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://rada.gov.ua/"
+  },
+  {
+    "id": "source-gas-mfa-gov-ua",
+    "domain": "mfa.gov.ua",
+    "name": "Ukraine MFA",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://mfa.gov.ua/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://mfa.gov.ua/"
+  },
+  {
+    "id": "source-gas-mod-gov-ua",
+    "domain": "mod.gov.ua",
+    "name": "Ukraine defence",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://mod.gov.ua/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://mod.gov.ua/"
+  },
+  {
+    "id": "source-gas-dpsu-gov-ua",
+    "domain": "dpsu.gov.ua",
+    "name": "Ukraine border",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://dpsu.gov.ua/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://dpsu.gov.ua/"
+  },
+  {
+    "id": "source-gas-ssu-gov-ua",
+    "domain": "ssu.gov.ua",
+    "name": "Ukraine SBU",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://ssu.gov.ua/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://ssu.gov.ua/"
+  },
+  {
+    "id": "source-gas-bank-gov-ua",
+    "domain": "bank.gov.ua",
+    "name": "Ukraine central bank",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://bank.gov.ua/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://bank.gov.ua/"
+  },
+  {
+    "id": "source-gas-hina-hr",
+    "domain": "hina.hr",
+    "name": "Hina",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://hina.hr/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://hina.hr/"
+  },
+  {
+    "id": "source-88",
+    "domain": "bta.bg",
+    "name": "BTA",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://www.bta.bg/en/news/bulgaria",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-88"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.bta.bg/en/news/bulgaria"
+  },
+  {
+    "id": "source-gas-bgnes-com",
+    "domain": "bgnes.com",
+    "name": "BGNES",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://bgnes.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://bgnes.com/"
+  },
+  {
+    "id": "source-gas-ekathimerini-com",
+    "domain": "ekathimerini.com",
+    "name": "Ekathimerini",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://ekathimerini.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://www.ekathimerini.com/"
+  },
+  {
+    "id": "source-120",
+    "domain": "timesofisrael.com",
+    "name": "TOI",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://www.timesofisrael.com/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-120"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.timesofisrael.com/"
+  },
+  {
+    "id": "source-gas-arabnews-com",
+    "domain": "arabnews.com",
+    "name": "Arab News",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://arabnews.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://www.arabnews.com/"
+  },
+  {
+    "id": "source-75",
+    "domain": "en.kabar.kg",
+    "name": "Kabar",
+    "country": "Kyrgyzstan",
+    "group": "Central Asia",
+    "url": "https://en.kabar.kg/news/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-75"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://en.kabar.kg/"
+  },
+  {
+    "id": "source-gas-gov-uk",
+    "domain": "gov.uk",
+    "name": "GOV.UK",
+    "country": "Official",
+    "group": "Miscl",
+    "url": "https://gov.uk/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://gov.uk/"
   },
   {
     "id": "source-172",
+    "domain": "ariananews.af",
     "name": "Ariana",
+    "country": "Afghanistan",
     "group": "Miscl",
-    "url": "https://www.ariananews.af/category/latest-news/"
+    "url": "https://www.ariananews.af/category/latest-news/",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-172"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.ariananews.af/"
   },
   {
-    "id": "source-173",
+    "id": "source-gas-abc-net-au",
+    "domain": "abc.net.au",
+    "name": "ABC",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://abc.net.au/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://abc.net.au/"
+  },
+  {
+    "id": "source-90",
+    "domain": "news.err.ee",
+    "name": "ERR",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://news.err.ee/k/news",
+    "origins": [
+      "apps-script",
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-90"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://news.err.ee/"
+  },
+  {
+    "id": "source-gas-rte-ie",
+    "domain": "rte.ie",
+    "name": "RTE",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://rte.ie/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://www.rte.ie/news/"
+  },
+  {
+    "id": "source-gas-moldova1-md",
+    "domain": "moldova1.md",
+    "name": "Radio Moldova",
+    "country": "Moldova",
+    "group": "East Europe",
+    "url": "https://moldova1.md/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://moldova1.md/c/en/26"
+  },
+  {
+    "id": "source-gas-gulfnews-com",
+    "domain": "gulfnews.com",
+    "name": "Gulf News",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://gulfnews.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://gulfnews.com/"
+  },
+  {
+    "id": "source-gas-english-aawsat-com",
+    "domain": "english.aawsat.com",
+    "name": "Asharq Al-Awsat",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://english.aawsat.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://english.aawsat.com/"
+  },
+  {
+    "id": "source-gas-indopremier-com",
+    "domain": "indopremier.com",
+    "name": "IPOT News",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://indopremier.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://indopremier.com/"
+  },
+  {
+    "id": "source-gas-en-philenews-com",
+    "domain": "en.philenews.com",
+    "name": "Phileleftheros",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://en.philenews.com/",
+    "origins": [
+      "apps-script"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://en.philenews.com/"
+  },
+  {
+    "domain": "tiranatimes.com",
+    "name": "Tirana Times",
+    "country": "Albania",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-7"
+    ],
+    "feedUrls": [],
+    "group": "South Eastern Europe",
+    "url": "https://www.tiranatimes.com/",
+    "id": "source-7",
+    "listingUrl": "https://www.tiranatimes.com/"
+  },
+  {
+    "domain": "abcnews.al",
+    "name": "ABC.al",
+    "country": "Albania",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-24"
+    ],
+    "feedUrls": [],
+    "group": "South Eastern Europe",
+    "url": "https://abcnews.al/kategoria/english/",
+    "id": "source-24",
+    "listingUrl": "https://abcnews.al/kategoria/english/"
+  },
+  {
+    "domain": "euroradio.fm",
+    "name": "Euroradio",
+    "country": "Belarus",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-28"
+    ],
+    "feedUrls": [],
+    "group": "East Europe",
+    "url": "https://euroradio.fm/en/all-news",
+    "id": "source-28",
+    "listingUrl": "https://euroradio.fm/en/all-news"
+  },
+  {
+    "domain": "charter97.org",
+    "name": "Charter 97",
+    "country": "Belarus",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-29"
+    ],
+    "feedUrls": [],
+    "group": "East Europe",
+    "url": "https://charter97.org/en/news/",
+    "id": "source-29",
+    "listingUrl": "https://charter97.org/en/news/"
+  },
+  {
+    "domain": "hromadske.ua",
+    "name": "Hromadske",
+    "country": "Ukraine",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-38"
+    ],
+    "feedUrls": [],
+    "group": "East Europe",
+    "url": "https://hromadske.ua/en/news",
+    "id": "source-38",
+    "listingUrl": "https://hromadske.ua/en/news"
+  },
+  {
+    "domain": "nikvesti.com",
+    "name": "NikVesti",
+    "country": "Ukraine",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-40"
+    ],
+    "feedUrls": [],
+    "group": "East Europe",
+    "url": "https://nikvesti.com/en/news/archive/all",
+    "id": "source-40",
+    "listingUrl": "https://nikvesti.com/en/news/archive/all"
+  },
+  {
+    "domain": "khpg.org",
+    "name": "KHPG",
+    "country": "Ukraine",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-41"
+    ],
+    "feedUrls": [],
+    "group": "East Europe",
+    "url": "https://khpg.org/en/page_1",
+    "id": "source-41",
+    "listingUrl": "https://khpg.org/en/page_1"
+  },
+  {
+    "domain": "euromaidanpress.com",
+    "name": "Euromaidan",
+    "country": "Ukraine",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-44"
+    ],
+    "feedUrls": [],
+    "group": "East Europe",
+    "url": "https://euromaidanpress.com/",
+    "id": "source-44",
+    "listingUrl": "https://euromaidanpress.com/"
+  },
+  {
+    "domain": "tsn.ua",
+    "name": "TSN",
+    "country": "Ukraine",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-45"
+    ],
+    "feedUrls": [],
+    "group": "East Europe",
+    "url": "https://tsn.ua/en",
+    "id": "source-45",
+    "listingUrl": "https://tsn.ua/en"
+  },
+  {
+    "domain": "bnnbloomberg.ca",
+    "name": "Bloomberg",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-84"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.bnnbloomberg.ca/business/politics/",
+    "id": "source-84",
+    "listingUrl": "https://www.bnnbloomberg.ca/business/politics/"
+  },
+  {
+    "domain": "nordot.app",
+    "name": "dpa",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-86"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://nordot.app/-/units/601684660556563553",
+    "id": "source-86",
+    "listingUrl": "https://nordot.app/-/units/601684660556563553"
+  },
+  {
+    "domain": "dpa-international.com",
+    "name": "dpa",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-87"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.dpa-international.com/politics/",
+    "id": "source-87",
+    "listingUrl": "https://www.dpa-international.com/politics/"
+  },
+  {
+    "domain": "rfi.fr",
+    "name": "RFI",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-92"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.rfi.fr/en/live-news/",
+    "id": "source-92",
+    "listingUrl": "https://www.rfi.fr/en/live-news/"
+  },
+  {
+    "domain": "polskieradio.pl",
+    "name": "Polskie Radio",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-96"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.polskieradio.pl/395/7784",
+    "id": "source-96",
+    "listingUrl": "https://www.polskieradio.pl/395/7784"
+  },
+  {
+    "domain": "sputnikglobe.com",
+    "name": "Sputnik",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-99"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://sputnikglobe.com/russia/",
+    "id": "source-99",
+    "listingUrl": "https://sputnikglobe.com/russia/"
+  },
+  {
+    "domain": "foxnews.com",
+    "name": "Fox",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-100"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.foxnews.com/us",
+    "id": "source-100",
+    "listingUrl": "https://www.foxnews.com/us"
+  },
+  {
+    "domain": "english.news.cn",
+    "name": "Xinhua",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-102"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://english.news.cn/list/china-chinaworld.htm",
+    "id": "source-102",
+    "listingUrl": "https://english.news.cn/list/china-chinaworld.htm"
+  },
+  {
+    "domain": "en.yna.co.kr",
+    "name": "Yonhap",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-103"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://en.yna.co.kr/news",
+    "id": "source-103",
+    "listingUrl": "https://en.yna.co.kr/news"
+  },
+  {
+    "domain": "asiaone.com",
+    "name": "AsiaOne",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-104"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.asiaone.com/lite",
+    "id": "source-104",
+    "listingUrl": "https://www.asiaone.com/lite"
+  },
+  {
+    "domain": "rfa.org",
+    "name": "RFA",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-105"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.rfa.org/english/",
+    "id": "source-105",
+    "listingUrl": "https://www.rfa.org/english/"
+  },
+  {
+    "domain": "novinite.com",
+    "name": "Novinite",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-107"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.novinite.com/",
+    "id": "source-107",
+    "listingUrl": "https://www.novinite.com/"
+  },
+  {
+    "domain": "romania-insider.com",
+    "name": "Romania Insider",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-108"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.romania-insider.com/",
+    "id": "source-108",
+    "listingUrl": "https://www.romania-insider.com/"
+  },
+  {
+    "domain": "cyprus-mail.com",
+    "name": "Cyprus Mail",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-109"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://cyprus-mail.com/",
+    "id": "source-109",
+    "listingUrl": "https://cyprus-mail.com/"
+  },
+  {
+    "domain": "notesfrompoland.com",
+    "name": "NFP",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-110"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://notesfrompoland.com/",
+    "id": "source-110",
+    "listingUrl": "https://notesfrompoland.com/"
+  },
+  {
+    "domain": "baltictimes.com",
+    "name": "Baltic Times",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-111"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.baltictimes.com/",
+    "id": "source-111",
+    "listingUrl": "https://www.baltictimes.com/"
+  },
+  {
+    "domain": "newsinenglish.no",
+    "name": "NewsinEnglish.no",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-112"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.newsinenglish.no/",
+    "id": "source-112",
+    "listingUrl": "https://www.newsinenglish.no/"
+  },
+  {
+    "domain": "cphpost.dk",
+    "name": "Copenhagen Post",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-113"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://cphpost.dk/",
+    "id": "source-113",
+    "listingUrl": "https://cphpost.dk/"
+  },
+  {
+    "domain": "thelocal.se",
+    "name": "Local.se",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-114"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.thelocal.se/",
+    "id": "source-114",
+    "listingUrl": "https://www.thelocal.se/"
+  },
+  {
+    "domain": "rudaw.net",
+    "name": "Rudaw",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-117"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.rudaw.net/english",
+    "id": "source-117",
+    "listingUrl": "https://www.rudaw.net/english"
+  },
+  {
+    "domain": "kurdistan24.net",
+    "name": "Kurdistan 24",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-118"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.kurdistan24.net/en",
+    "id": "source-118",
+    "listingUrl": "https://www.kurdistan24.net/en"
+  },
+  {
+    "domain": "iranintl.com",
+    "name": "Iran International",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-119"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.iranintl.com/en",
+    "id": "source-119",
+    "listingUrl": "https://www.iranintl.com/en"
+  },
+  {
+    "domain": "today.lorientlejour.com",
+    "name": "L'Orient Today",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-121"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://today.lorientlejour.com/",
+    "id": "source-121",
+    "listingUrl": "https://today.lorientlejour.com/"
+  },
+  {
+    "domain": "dawn.com",
+    "name": "Dawn",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-123"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.dawn.com/",
+    "id": "source-123",
+    "listingUrl": "https://www.dawn.com/"
+  },
+  {
+    "domain": "montsame.mn",
+    "name": "Montsame",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-124"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://montsame.mn/en",
+    "listingUrl": "https://montsame.mn/en/more/302",
+    "id": "source-124"
+  },
+  {
+    "domain": "koreaherald.com",
+    "name": "Korea Herald",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-125"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.koreaherald.com/",
+    "id": "source-125",
+    "listingUrl": "https://www.koreaherald.com/"
+  },
+  {
+    "domain": "cbc.ca",
+    "name": "CBC",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-126"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.cbc.ca/news/politics",
+    "id": "source-126",
+    "listingUrl": "https://www.cbc.ca/news/politics"
+  },
+  {
+    "domain": "thelocal.fr",
+    "name": "Local.fr",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-127"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.thelocal.fr/",
+    "id": "source-127",
+    "listingUrl": "https://www.thelocal.fr/"
+  },
+  {
+    "domain": "thelocal.de",
+    "name": "Local.de",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-128"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.thelocal.de/",
+    "id": "source-128",
+    "listingUrl": "https://www.thelocal.de/"
+  },
+  {
+    "domain": "thelocal.es",
+    "name": "Local.es",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-129"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.thelocal.es/",
+    "id": "source-129",
+    "listingUrl": "https://www.thelocal.es/"
+  },
+  {
+    "domain": "catalannews.com",
+    "name": "Catalan News",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-130"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.catalannews.com/politics",
+    "id": "source-130",
+    "listingUrl": "https://www.catalannews.com/politics"
+  },
+  {
+    "domain": "nltimes.nl",
+    "name": "NL Times",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-131"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://nltimes.nl/",
+    "id": "source-131",
+    "listingUrl": "https://nltimes.nl/"
+  },
+  {
+    "domain": "dutchnews.nl",
+    "name": "Dutch News",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-132"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.dutchnews.nl/?list",
+    "id": "source-132",
+    "listingUrl": "https://www.dutchnews.nl/?list"
+  },
+  {
+    "domain": "belganewsagency.eu",
+    "name": "Belga",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-133"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.belganewsagency.eu/",
+    "id": "source-133",
+    "listingUrl": "https://www.belganewsagency.eu/"
+  },
+  {
+    "domain": "vrt.be",
+    "name": "VRT",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-134"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.vrt.be/vrtnws/en",
+    "id": "source-134",
+    "listingUrl": "https://www.vrt.be/vrtnws/en"
+  },
+  {
+    "domain": "swissinfo.ch",
+    "name": "Swissinfo",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-135"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.swissinfo.ch/eng",
+    "id": "source-135",
+    "listingUrl": "https://www.swissinfo.ch/eng"
+  },
+  {
+    "domain": "thelocal.ch",
+    "name": "Local.ch",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-136"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.thelocal.ch/",
+    "id": "source-136",
+    "listingUrl": "https://www.thelocal.ch/"
+  },
+  {
+    "domain": "thelocal.at",
+    "name": "Local.at",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-137"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.thelocal.at/",
+    "id": "source-137",
+    "listingUrl": "https://www.thelocal.at/"
+  },
+  {
+    "domain": "vindobona.org",
+    "name": "Vindobona",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-138"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.vindobona.org/",
+    "id": "source-138",
+    "listingUrl": "https://www.vindobona.org/"
+  },
+  {
+    "domain": "thejournal.ie",
+    "name": "The Journal",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-139"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.thejournal.ie/",
+    "id": "source-139",
+    "listingUrl": "https://www.thejournal.ie/"
+  },
+  {
+    "domain": "itv.com",
+    "name": "itv",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-140"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.itv.com/news",
+    "id": "source-140",
+    "listingUrl": "https://www.itv.com/news"
+  },
+  {
+    "domain": "channel4.com",
+    "name": "4 News",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-141"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.channel4.com/news",
+    "id": "source-141",
+    "listingUrl": "https://www.channel4.com/news"
+  },
+  {
+    "domain": "icelandreview.com",
+    "name": "Iceland Review",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-142"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.icelandreview.com/",
+    "id": "source-142",
+    "listingUrl": "https://www.icelandreview.com/"
+  },
+  {
+    "domain": "tovima.com",
+    "name": "Tovima",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-143"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.tovima.com/",
+    "id": "source-143",
+    "listingUrl": "https://www.tovima.com/"
+  },
+  {
+    "domain": "dailynewshungary.com",
+    "name": "DNH",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-144"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://dailynewshungary.com/",
+    "id": "source-144",
+    "listingUrl": "https://dailynewshungary.com/"
+  },
+  {
+    "domain": "independent.com.mt",
+    "name": "Malta Independent",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-145"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.independent.com.mt/",
+    "id": "source-145",
+    "listingUrl": "https://www.independent.com.mt/"
+  },
+  {
+    "domain": "theportugalnews.com",
+    "name": "Portugal News",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-146"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.theportugalnews.com/",
+    "id": "source-146",
+    "listingUrl": "https://www.theportugalnews.com/"
+  },
+  {
+    "domain": "turkishminute.com",
+    "name": "Turkish Minute",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-147"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://turkishminute.com/category/national/",
+    "id": "source-147",
+    "listingUrl": "https://turkishminute.com/category/national/"
+  },
+  {
+    "domain": "vaticannews.va",
+    "name": "Vatican News",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-150"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.vaticannews.va/en.html",
+    "id": "source-150",
+    "listingUrl": "https://www.vaticannews.va/en.html"
+  },
+  {
+    "domain": "croatiaweek.com",
+    "name": "Croatia Week",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-151"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.croatiaweek.com/category/news-3/",
+    "id": "source-151",
+    "listingUrl": "https://www.croatiaweek.com/category/news-3/"
+  },
+  {
+    "domain": "sloveniatimes.com",
+    "name": "Slovenia Times",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-152"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://sloveniatimes.com/c/latest-news",
+    "id": "source-152",
+    "listingUrl": "https://sloveniatimes.com/c/latest-news"
+  },
+  {
+    "domain": "npr.org",
+    "name": "NPR",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-154"
+    ],
+    "feedUrls": [
+      "https://feeds.npr.org/1004/rss.xml"
+    ],
+    "group": "Miscl",
+    "url": "https://www.npr.org/sections/world/",
+    "id": "source-154",
+    "listingUrl": "https://www.npr.org/sections/world/"
+  },
+  {
+    "domain": "pbs.org",
+    "name": "PBS",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-155"
+    ],
+    "feedUrls": [
+      "https://www.pbs.org/newshour/feeds/rss/world"
+    ],
+    "group": "Miscl",
+    "url": "https://www.pbs.org/newshour/world",
+    "id": "source-155",
+    "listingUrl": "https://www.pbs.org/newshour/world"
+  },
+  {
+    "domain": "cbsnews.com",
+    "name": "CBS",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-156"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.cbsnews.com/world/",
+    "id": "source-156",
+    "listingUrl": "https://www.cbsnews.com/world/"
+  },
+  {
+    "domain": "axios.com",
+    "name": "Axios",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-157"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.axios.com/world",
+    "id": "source-157",
+    "listingUrl": "https://www.axios.com/world"
+  },
+  {
+    "domain": "thehill.com",
+    "name": "The Hill",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-158"
+    ],
+    "feedUrls": [
+      "https://thehill.com/feed/"
+    ],
+    "group": "Miscl",
+    "url": "https://thehill.com/policy/international/",
+    "id": "source-158",
+    "listingUrl": "https://thehill.com/policy/international/"
+  },
+  {
+    "domain": "nbcnews.com",
+    "name": "NBC",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-159"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.nbcnews.com/world",
+    "id": "source-159",
+    "listingUrl": "https://www.nbcnews.com/world"
+  },
+  {
+    "domain": "usatoday.com",
+    "name": "USA Today",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-160"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.usatoday.com/news/world/",
+    "id": "source-160",
+    "listingUrl": "https://www.usatoday.com/news/world/"
+  },
+  {
+    "domain": "defensenews.com",
+    "name": "Defense News",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-161"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.defensenews.com/",
+    "id": "source-161",
+    "listingUrl": "https://www.defensenews.com/"
+  },
+  {
+    "domain": "breakingdefense.com",
+    "name": "Breaking Defense",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-162"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://breakingdefense.com/",
+    "id": "source-162",
+    "listingUrl": "https://breakingdefense.com/"
+  },
+  {
+    "domain": "stripes.com",
+    "name": "Stars and Stripes",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-163"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.stripes.com/",
+    "id": "source-163",
+    "listingUrl": "https://www.stripes.com/"
+  },
+  {
+    "domain": "militarytimes.com",
+    "name": "Military Times",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-164"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.militarytimes.com/news/",
+    "id": "source-164",
+    "listingUrl": "https://www.militarytimes.com/news/"
+  },
+  {
+    "domain": "voanews.com",
+    "name": "VOA",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-165"
+    ],
+    "feedUrls": [
+      "https://www.voanews.com/api/zy-pqye"
+    ],
+    "group": "Miscl",
+    "url": "https://www.voanews.com/",
+    "id": "source-165",
+    "listingUrl": "https://www.voanews.com/"
+  },
+  {
+    "domain": "defenseone.com",
+    "name": "Defense One",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-166"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.defenseone.com/",
+    "id": "source-166",
+    "listingUrl": "https://www.defenseone.com/"
+  },
+  {
+    "domain": "foreignpolicy.com",
+    "name": "FP",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-167"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://foreignpolicy.com/category/latest/",
+    "id": "source-167",
+    "listingUrl": "https://foreignpolicy.com/category/latest/"
+  },
+  {
+    "domain": "c-span.org",
+    "name": "C-Span",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-168"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.c-span.org/news/",
+    "id": "source-168",
+    "listingUrl": "https://www.c-span.org/news/"
+  },
+  {
+    "domain": "tolonews.com",
+    "name": "Tolo",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-169"
+    ],
+    "feedUrls": [],
+    "group": "Miscl",
+    "url": "https://www.tolonews.com/afghanistan",
+    "id": "source-169",
+    "listingUrl": "https://www.tolonews.com/afghanistan"
+  },
+  {
+    "domain": "internazionale.it",
     "name": "Internazionale",
+    "country": "International",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-173"
+    ],
+    "feedUrls": [],
     "group": "Miscl",
     "url": "https://www.internazionale.it/",
     "listingUrl": "https://www.internazionale.it/ultime-notizie-reuters",
     "articlePathPrefix": "/ultime-notizie-reuters/",
     "agencyName": "Reuters",
-    "verifyArticlePages": true
+    "verifyArticlePages": true,
+    "id": "source-173"
+  },
+  {
+    "id": "source-67",
+    "name": "Trend",
+    "group": "Central Asia",
+    "url": "https://www.trend.az/casia/",
+    "domain": "trend.az",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [
+      "source-67"
+    ],
+    "feedUrls": [],
+    "listingUrl": "https://www.trend.az/casia/"
   }
 ]

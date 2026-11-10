@@ -1,0 +1,37 @@
+name: Native collector test (no publication)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [feat/native-json-collector]
+    paths:
+      - .github/workflows/native-collector-check.yml
+
+permissions:
+  contents: write
+
+jobs:
+  one-publisher:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.5.0'
+          cache: npm
+      - run: npm ci
+      - name: Collect BBC only
+        run: |
+          set -o pipefail
+          DNU_TEST_DOMAIN=bbc.com npm run collect:daily 2>&1 | tee data/native-collector-check-status.txt
+      - name: Save result for review
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b native-check-${{ github.run_id }}
+          git add -f data/native-collector-check-status.txt
+          if [ -f data/native-test-edition.json ]; then git add -f data/native-test-edition.json; fi
+          git commit -m "Record one-publisher native collection check"
+          git push origin HEAD:native-check-${{ github.run_id }}

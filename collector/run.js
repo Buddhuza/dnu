@@ -1,0 +1,77 @@
+import { readFile, writeFile, rename } from 'node:fs/promises';
+import { load } from 'cheerio';
+import { listingCandidates_, parseItem_, extractPage_, baselineScore_, selectArticles_, topItems_, publicSummary_, feeds_, PUBLISHER_PAGES } from './rules.js';
+
+const root = new URL('../', import.meta.url);
+const registry = JSON.parse(await readFile(new URL('sources.json',root)));
+const end = new Date();
+const hours = new Intl.DateTimeFormat('en',{weekday:'short',timeZone:'Europe/Vienna'}).format(end)==='Mon' ? 72 : 24;
+const window = {end, start:new Date(+end-hours*3600000),hours};
+const routes = new Map();
+function route(source,url,kind,search=false) {
+  if(url && !routes.has(url)) routes.set(url,{...source,url,publisherDomain:source.domain,kind,search});
+}
+for(const source of registry){
+  for(const url of source.feedUrls || []) route(source,url,'rss');
+  route(source,source.listingUrl,'html');
+  route(source,source.url,'html');
+  route(source,'https://news.google.com/rss/search?hl=en-US&gl=US&ceid=US:en&q='+encodeURIComponent('site:'+source.domain+' when:'+hours+'h'),'rss',true);
+}
+for(const [url] of PUBLISHER_PAGES){
+  const host=new URL(url).hostname.replace(/^www\./,'');
+  const source=registry.find(s=>host===s.domain||host.endsWith('.'+s.domain));
+  if(source) route(source,url,'html');
+}
+for (const feed of feeds_(window,registry)) {
+  if (routes.has(feed.url)) continue;
+  const source = registry.find(s => s.domain === feed.publisherDomain || s.name === feed.name);
+  routes.set(feed.url, {...source, ...feed, kind:feed.kind === 'publisher' ? 'html' : 'rss'});
+}
+function xmlElement($, node){
+  return {getName:()=>node.name.split(':').pop(),getText:()=>$(node).text(),
+    getChildren:()=>$(node).children().toArray().map(child=>xmlElement($, child)),
+    getAttribute:name=>node.attribs[name] ? {getValue:()=>node.attribs[name]} : null};
+}
+function trustedPublisher(url) {
+  const parsed = new URL(url);
+  return ['https:', 'http:'].includes(parsed.protocol) && !parsed.username && !parsed.password && !parsed.port && registry.some(s => parsed.hostname === s.domain || parsed.hostname.endsWith('.' + s.domain));
+}
+async function request(url, publisherPage = false){
+  if (publisherPage && !trustedPublisher(url)) throw Error('Publisher domain outside catalogue');
+  const response=await fetch(url,{redirect:publisherPage?'error':'follow',signal:AbortSignal.timeout(10000),headers:{'User-Agent':'DNU news collector/1.0'}});
+  if(!response.ok) throw Error('HTTP '+response.status);
+  const chunks=[];let size=0;
+  for await(const chunk of response.body){size+=chunk.length;if(size>4000000)throw Error('Page exceeds size limit');chunks.push(chunk);}
+  return Buffer.concat(chunks).toString('utf8');
+}
+async function parallel(items,action){
+  const queue=[...items];await Promise.all(Array.from({length:12},async()=>{while(queue.length)await action(queue.shift());}));
+}
+const candidates=[],outcomes=[];
+const filter=process.env.DNU_TEST_DOMAIN;
+await parallel([...routes.values()].filter(f=>!filter||f.domain===filter),async feed=>{
+  let rows;
+  try {const raw=await request(feed.url);
+    if(feed.kind==='html')rows=listingCandidates_(raw,feed,window,registry);
+    else {const $=load(raw,{xmlMode:true});rows=$('item,entry').toArray().map(n=>parseItem_(xmlElement($,n),feed,window,registry)).filter(x=>x.id);}
+  }catch(error){outcomes.push({id:feed.id,url:feed.url,status:'failed',reason:error.message});return;}
+  candidates.push(...rows);outcomes.push({id:feed.id,url:feed.url,status:'checked',count:rows.length});
+});
+const unique=[...new Map(candidates.sort((a,b)=>a.id.localeCompare(b.id)).map(x=>[x.link,x])).values()];
+for(const item of unique)item.score=baselineScore_(item);
+await parallel(unique.filter(x=>x.score>0 && !x.link.startsWith('https://news.google.com/')).sort((a,b)=>b.score-a.score).slice(0,150),async item=>{
+  try {const page=extractPage_(await request(item.link,true),item.headline);if(page){item.published=page.published||item.published;item.articleBody=page.text||'';}}catch{/* Feed evidence remains available. */}
+});
+const selected=selectArticles_(unique.filter(x=>Date.parse(x.published)>=+window.start && Date.parse(x.published)<=+end));
+const leads=new Set(topItems_(selected).map(x=>x.id));
+const articles=selected.map(x=>{
+  const source=registry.find(s=>s.domain===x.sourceDomain);
+  const section=({'South Caucasus Region':'South Caucasus','Central Asia Region':'Central Asia',General:'Miscellaneous',International:'Miscellaneous'})[x.category]||x.category;
+  return {id:x.id,url:x.link,title:x.headline,summary:publicSummary_(x,leads.has(x.id))||x.description||'',sourceName:x.source,sourceId:source?.id||x.sourceDomain,publishedAt:x.published,sectionId:leads.has(x.id)?'Lead stories':section,subsection:x.country||'International',originSection:section,originCountry:x.country,section:leads.has(x.id)?'Lead stories':section,fromNativeCollector:true,reviewed:true,body:x.articleBody||''};
+});
+console.log(JSON.stringify({routes:outcomes.length,failed:outcomes.filter(x=>x.status==='failed').length,candidates:unique.length,selected:articles.length,firstFailure:outcomes.find(x=>x.status==='failed')?.reason}));
+if(!articles.length)throw Error('No qualifying articles. Previous edition retained.');
+const output=new URL(filter?'data/native-test-edition.json':process.argv.includes('--stage')?'data/native-pending.json':'data/prepared-update.json',root);
+const temporary=new URL(output.href+'.'+process.pid+'.tmp');
+await writeFile(temporary,JSON.stringify({nativeEdition:true,title:'DAILY NEWS UPDATE',checkedAt:end.toISOString(),windowStart:window.start.toISOString(),windowEnd:end.toISOString(),windowHours:hours,articles,sourceOutcomes:outcomes}));
+await rename(temporary,output);
