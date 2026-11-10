@@ -56,7 +56,7 @@ For a quick preview that does not clone or install the project, open the [static
 
 ## Test native collection without publishing
 
-Use **Actions → Native collector test (no publication)** on the integration branch for a BBC-only run followed by a full run. The status and JSON are saved on a `native-check-...` branch. On `main`, **Test daily native collection** can be run manually and uploads the completed JSON as an artifact. Neither workflow publishes the public site or sends email. The source route audit in the JSON distinguishes checked and failed routes; article bodies are present only for successful full-text extractions.
+Use **Actions → Native collector integration check (draft only)** on the integration branch for a BBC-only run followed by a full run. The status and JSON are saved on a `native-check-...` branch. On `main`, **Test daily native collection** can be run manually and uploads the completed JSON as an artifact. Neither workflow publishes the public site or sends email. The source route audit in the JSON distinguishes checked and failed routes; article bodies are present only for successful full-text extractions.
 
 ## Manage the website
 

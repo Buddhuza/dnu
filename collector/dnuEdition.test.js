@@ -44,3 +44,13 @@ test('native event deduplication keeps the international account of a repeated e
   assert.deepEqual(result.articles.map(article => article.id), ['international']);
   assert.equal(result.removed.length, 1);
 });
+
+test('routine traffic crashes do not appear under a regional outlet', () => {
+  const { articles, rejected } = adaptSelectedArticles([
+    item('At least 5 students killed, 21 injured in Cambodia bus crash', {
+      source: 'News.az', sourceDomain: 'news.az', country: 'Azerbaijan', category: 'South Caucasus Region'
+    })
+  ], new Set(), [...registry, { id: 'source-58', domain: 'news.az', name: 'News.az', country: 'Azerbaijan' }]);
+  assert.equal(articles.length, 0);
+  assert.equal(rejected.length, 1);
+});
