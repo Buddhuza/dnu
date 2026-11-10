@@ -1,0 +1,26 @@
+name: Open native collector pull request
+
+on:
+  push:
+    branches: [feat/native-json-collector]
+    paths:
+      - .github/workflows/open-native-collector-pr.yml
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  open:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Open review pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh pr view feat/native-json-collector >/dev/null 2>&1; then
+            gh pr view feat/native-json-collector --json url --jq .url
+          else
+            gh pr create --base main --head feat/native-json-collector --title 'Replace DNU scraper with native JSON collector' --body-file docs/native-collector-pr.md
+          fi
