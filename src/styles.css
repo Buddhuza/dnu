@@ -34,6 +34,12 @@
 .add-backdrop{position:fixed;inset:0;z-index:1300;display:grid;place-items:center;background:#102633a8;padding:16px}
 .add-dialog{width:min(100%,620px);max-height:min(90vh,850px);overflow:auto;background:var(--site-surface,#fff);color:var(--site-text,#182a36);border:1px solid #8ca7a4;border-radius:12px;box-shadow:0 20px 60px #071a2673;padding:24px}
 .add-article-dialog{background:var(--site-bg,#f4efe6)}
+.native-collection progress{display:block;width:100%;height:12px;accent-color:var(--site-section,#0070c0)}
+.native-collection p[role="status"]{font-weight:700}
+.scrape-live-status{position:fixed;right:16px;bottom:16px;z-index:1200;width:min(330px,calc(100vw - 32px));display:grid;gap:5px;text-align:left;padding:12px 14px;border:1px solid var(--site-primary,#123e47);border-radius:10px;background:var(--site-surface,#fff);color:var(--site-text,#182a36);box-shadow:0 8px 32px #071a2650}
+.scrape-live-status span{font-size:13px}
+.scrape-live-status progress{width:100%;height:8px;accent-color:var(--site-section,#0070c0)}
+.scrape-live-status small{color:var(--site-muted,#5e6a70)}
 .add-dialog-heading{display:flex;justify-content:space-between;align-items:start;gap:12px}
 .add-dialog-heading h2{font-size:calc(var(--site-body-size,18px) + 4px);margin:0}
 .add-dialog-heading button{border:0;background:transparent;color:inherit;font-size:28px;line-height:1;cursor:pointer}

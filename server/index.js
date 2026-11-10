@@ -6,7 +6,7 @@ import { createReportDocx } from './report.js';
 import { reportFilename } from '../src/reportFilename.js';
 import { publicArticleUrl } from './importArticle.js';
 import { readCompletedEdition, storedArticle, storedBody } from './nativeEdition.js';
-import { authorisedEditor, collectionStatus, startNativeCollection } from './nativeCollection.js';
+import { authorisedEditor, collectionStatusForClient, startNativeCollection } from './nativeCollection.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const sources = JSON.parse(readFileSync(join(root, 'sources.json'), 'utf8'));
@@ -40,11 +40,12 @@ app.get('/api/daily-update.docx', async (_req, res) => {
   } catch (error) { res.status(500).json({ error: 'Could not create daily update: ' + error.message }); }
 });
 
-app.get('/api/collection', (_req, res) => res.json(collectionStatus()));
+app.get('/api/collection', async (_req, res) => res.json(await collectionStatusForClient(root)));
 app.post('/api/collection', async (req, res) => {
   try {
     if (!await authorisedEditor(req.get('Authorization'))) return res.status(403).json({ error: 'Editor sign-in is required to start collection.' });
-    if (collectionStatus().state === 'running') return res.status(409).json(collectionStatus());
+    const current = await collectionStatusForClient(root);
+    if (current.state === 'running') return res.status(409).json(current);
     res.status(202).json(startNativeCollection({ cwd: root }));
   } catch (error) { res.status(503).json({ error: 'Could not verify editor: ' + error.message }); }
 });

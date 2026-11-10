@@ -7,6 +7,10 @@ data/collection-*-summary-fixes.json
 data/collection-*-recovery.json
 data/listings-*.json
 data/alternate-listings-*.json
+data/native-schedule-state.json
+data/native-schedule-state.*.tmp
+data/native-collection-progress.json
+data/native-collection-progress.*.tmp
 .env
 .env.*
 !.env.example

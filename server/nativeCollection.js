@@ -1,4 +1,6 @@
 import { spawn } from 'node:child_process';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { createClient } from '@supabase/supabase-js';
 import { editorEmail } from '../src/sharedEdition.js';
 import { readCompletedEdition } from './nativeEdition.js';
@@ -6,6 +8,17 @@ import { readCompletedEdition } from './nativeEdition.js';
 let status = { state: 'idle' };
 
 export function collectionStatus() { return status; }
+
+export async function collectionStatusForClient(cwd) {
+  try {
+    const saved = JSON.parse(await readFile(join(cwd, 'data/native-collection-progress.json'), 'utf8'));
+    if (status.state !== 'idle' && Date.parse(status.updatedAt || status.startedAt) > Date.parse(saved.updatedAt)) return status;
+    if (saved.state === 'running' && Date.now() - Date.parse(saved.updatedAt) > 90 * 60_000)
+      return { ...saved, state: 'failed', message: 'Collection stopped before completion. Run it again.' };
+    if (Date.parse(saved.startedAt) >= Date.parse(status.startedAt || 0)) return saved;
+  } catch { /* A new deployment may not have a collection status yet. */ }
+  return status;
+}
 
 export async function authorisedEditor(authorization) {
   const token = String(authorization || '').match(/^Bearer\s+(.+)$/i)?.[1];
@@ -27,15 +40,15 @@ export function startNativeCollection({ cwd, onComplete = () => {} }) {
   const collect = chunk => { output = (output + chunk.toString()).slice(-6000); };
   child.stdout.on('data', collect);
   child.stderr.on('data', collect);
-  child.on('error', error => { status = { state: 'failed', message: error.message }; });
+  child.on('error', error => { status = { ...status, state: 'failed', updatedAt: new Date().toISOString(), message: error.message }; });
   child.on('close', code => {
     if (code === 0) {
       try {
         const edition = readCompletedEdition();
-        status = { state: 'complete', checkedAt: edition.checkedAt, stories: edition.articles.length, message: `Draft ready: ${edition.articles.length} stories. Review before publishing.` };
+        status = { ...status, state: 'complete', updatedAt: new Date().toISOString(), checkedAt: edition.checkedAt, stories: edition.articles.length, message: `Draft ready: ${edition.articles.length} stories. Review before publishing.` };
         onComplete(edition);
-      } catch (error) { status = { state: 'failed', message: error.message }; }
-    } else status = { state: 'failed', message: `Collection failed; the previous edition is unchanged. ${output.slice(-500)}` };
+      } catch (error) { status = { ...status, state: 'failed', updatedAt: new Date().toISOString(), message: error.message }; }
+    } else status = { ...status, state: 'failed', updatedAt: new Date().toISOString(), message: `Collection failed; the previous edition is unchanged. ${output.slice(-500)}` };
   });
   return status;
 }

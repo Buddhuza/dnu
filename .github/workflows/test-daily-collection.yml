@@ -1,10 +1,17 @@
-name: Test daily native collection (no publication)
+name: Collect native DNU draft at 01:00 and 13:00 Vienna
 
 on:
+  schedule:
+    # Winter and summer UTC candidates; the Vienna-hour guard selects one.
+    - cron: '0 23,0,11,12 * * *'
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: native-draft-collection
+  cancel-in-progress: false
 
 jobs:
   collect:
@@ -12,16 +19,33 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+      - name: Check Vienna collection time
+        id: slot
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          if [ "$EVENT_NAME" = workflow_dispatch ] || node --input-type=module -e "import { isScheduledCollectionHour } from './collector/slots.js'; process.exit(isScheduledCollectionHour() ? 0 : 1)"; then
+            echo 'run=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'run=false' >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/setup-node@v4
+        if: steps.slot.outputs.run == 'true'
         with:
           node-version: '24.5.0'
           cache: npm
-      - run: npm ci
+      - if: steps.slot.outputs.run == 'true'
+        run: npm ci
       - name: Collect completed JSON from publishers
+        if: steps.slot.outputs.run == 'true'
         run: npm run collect:daily
       - name: Save draft and route audit
+        if: always() && steps.slot.outputs.run == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: native-daily-draft
-          path: data/prepared-update.json
+          path: |
+            data/prepared-update.json
+            data/native-collection-progress.json
+          if-no-files-found: warn
           retention-days: 7
