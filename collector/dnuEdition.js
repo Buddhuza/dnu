@@ -34,7 +34,7 @@ export function adaptSelectedArticles(selected, leads, registry) {
     const base = { id: item.id, url: item.link, title, summary, sourceName, sourceId: source?.id || item.sourceDomain };
     const headlineReason = excludedHeadlineReason(title, summary, item.link);
     const sourceReason = directGovernmentPublicationReason(base) || paywalledSourceReason(base);
-    const proposed = usActor.test(title) && /\b(?:Iran|impeach|defence|defense|Pentagon|war|sanction|strikes?)\b/i.test(title)
+    const proposed = usActor.test(title) && /\b(?:Iran|impeach|defence|defense|Pentagon|war|sanction|strikes?|Nvidia|FBI)\b/i.test(title)
       ? { sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' } : proposedPlacement(item);
     const placement = proposed && (proposed.sectionId !== 'Miscellaneous' || MISCELLANEOUS_COUNTRIES[proposed.subsection]?.includes(proposed.country))
       ? proposed : articlePlacement({}, title, summary);
@@ -47,6 +47,7 @@ export function adaptSelectedArticles(selected, leads, registry) {
       || /\bThe Citizens\b.{0,60}\bOthers\b/i.test(title)
       || /^You killed a person today\b/i.test(title)
       || /\bcrash(?:es)?\b.{0,40}\bmotorway\b/i.test(title)
+      || /\barchives?\s*-\s*page\s+\d+\b/i.test(title)
       || unrelatedRegional
       || /^(?:Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Monday),?\s+\d{1,2}\s+[A-Z][a-z]+\s+20\d{2}$/i.test(title);
     const reason = headlineReason || sourceReason || (/^(?:OHCHR)$/i.test(sourceName) ? 'Direct organisation publication' : '')
@@ -78,6 +79,7 @@ function eventKey(article) {
   if (/constitutional court/.test(title) && /media freedom|agsh|regulation to plenary/.test(title) && article.subsection === 'Albania') return 'albania-media-court';
   if (/kosovo/.test(title) && /train|rail/.test(title) && /strike|disrupt|without rail/.test(title)) return 'kosovo-rail-strike';
   if (/zhaparov|kyrgyz president/.test(title) && /csto/.test(title)) return 'kyrgyz-csto-visit';
+  if (/trump/.test(title) && /nvidia/.test(title) && /chinese spy/.test(title)) return 'trump-nvidia-spy';
   return '';
 }
 

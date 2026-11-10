@@ -20,7 +20,9 @@ export async function authorisedEditor(authorization) {
 export function startNativeCollection({ cwd, onComplete = () => {} }) {
   if (status.state === 'running') return status;
   status = { state: 'running', startedAt: new Date().toISOString(), message: 'Checking publisher sources…' };
-  const child = spawn(process.execPath, ['--use-env-proxy', 'collector/run.js'], { cwd, env: process.env, stdio: ['ignore', 'pipe', 'pipe'] });
+  const env = { ...process.env };
+  delete env.DNU_TEST_DOMAIN;
+  const child = spawn(process.execPath, ['--use-env-proxy', 'collector/run.js'], { cwd, env, stdio: ['ignore', 'pipe', 'pipe'] });
   let output = '';
   const collect = chunk => { output = (output + chunk.toString()).slice(-6000); };
   child.stdout.on('data', collect);

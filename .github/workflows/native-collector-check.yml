@@ -6,6 +6,7 @@ on:
     branches: [feat/native-json-collector]
     paths:
       - .github/workflows/native-collector-check.yml
+      - collector/dnuEdition.js
 
 permissions:
   contents: write

@@ -1,14 +1,7 @@
 name: Apply editorial remarks to current DNU
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/apply-editorial-remarks.yml
-      - src/sourcePolicy.js
-      - src/headlinePolicy.js
-      - src/sourceNames.js
-      - scripts/apply-editorial-remarks.mjs
+  workflow_dispatch:
 
 permissions:
   contents: write
