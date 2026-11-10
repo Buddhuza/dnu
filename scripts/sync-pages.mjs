@@ -1,4 +1,4 @@
-import { cpSync, existsSync, readdirSync } from 'node:fs';
+import { cpSync, existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -8,8 +8,18 @@ export function syncPagesBuild(buildDirectory, pagesWorktree) {
   if (source === target || !existsSync(join(source, 'index.html')) || !existsSync(join(source, 'article-bodies.json')) || !existsSync(join(target, '.git'))) {
     throw new Error('Pass a complete Pages build and an existing gh-pages worktree.');
   }
+  const previousSnapshot = existsSync(join(target, 'article-bodies.json'))
+    ? JSON.parse(readFileSync(join(target, 'article-bodies.json'), 'utf8')) : null;
   for (const name of readdirSync(source)) {
     cpSync(join(source, name), join(target, name), { recursive: true, force: true });
+  }
+  if (previousSnapshot?.articles) {
+    const currentPath = join(target, 'article-bodies.json');
+    const currentSnapshot = JSON.parse(readFileSync(currentPath, 'utf8'));
+    writeFileSync(currentPath, `${JSON.stringify({
+      ...currentSnapshot,
+      articles: { ...previousSnapshot.articles, ...currentSnapshot.articles }
+    })}\n`);
   }
 }
 

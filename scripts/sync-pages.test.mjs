@@ -22,3 +22,19 @@ test('Pages sync keeps hashed modules required by open browser sessions', () => 
     assert.equal(readFileSync(join(pages, 'assets', 'importClient-old.js'), 'utf8'), 'old module');
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
+
+test('Pages sync retains earlier public article bodies while adding the new edition', () => {
+  const root = mkdtempSync(join(tmpdir(), 'dnu-pages-bodies-'));
+  try {
+    const build = join(root, 'dist'), pages = join(root, 'pages');
+    mkdirSync(build); mkdirSync(pages);
+    writeFileSync(join(build, 'index.html'), 'new page');
+    writeFileSync(join(build, 'article-bodies.json'), JSON.stringify({ editionCheckedAt: 'new', articles: { new: { body: 'new body' } } }));
+    writeFileSync(join(pages, '.git'), 'gitdir: elsewhere');
+    writeFileSync(join(pages, 'article-bodies.json'), JSON.stringify({ editionCheckedAt: 'old', articles: { old: { body: 'old body' } } }));
+    syncPagesBuild(build, pages);
+    const snapshot = JSON.parse(readFileSync(join(pages, 'article-bodies.json'), 'utf8'));
+    assert.equal(snapshot.editionCheckedAt, 'new');
+    assert.deepEqual(Object.keys(snapshot.articles).sort(), ['new', 'old']);
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
