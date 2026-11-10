@@ -15,6 +15,9 @@ const forceRepublish = process.argv.includes('--force-republish');
 const publishAtArgument = process.argv.find(value => value.startsWith('--publish-at='));
 const publishAt = publishAtArgument ? Date.parse(publishAtArgument.slice('--publish-at='.length)) : null;
 if (publishAtArgument && !Number.isFinite(publishAt)) throw new Error('Invalid --publish-at timestamp.');
+const oneTimeDateArgument = process.argv.find(value => value.startsWith('--one-time-date='));
+const oneTimeDate = oneTimeDateArgument?.slice('--one-time-date='.length) || '';
+if (oneTimeDate && (!/^\d{4}-\d{2}-\d{2}$/.test(oneTimeDate) || !publishOnly || !Number.isFinite(publishAt))) throw new Error('One-time publication requires a date, --publish-only and --publish-at.');
 const sheetUrl = process.env.DNU_GOOGLE_SHEET_URL || DEFAULT_GOOGLE_SHEET_URL;
 const supabaseUrl = process.env.SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -116,7 +119,11 @@ async function sendOutlook(edition, settings, token) {
 
 requiredConfiguration();
 let { now, due } = todayAndDue();
-if (!dryRun && (!now.weekend || !publishOnly && now.hour < 7)) {
+if (oneTimeDate) {
+  if (now.date !== oneTimeDate) throw new Error(`One-time publication is only valid on ${oneTimeDate} in Vienna time.`);
+  due = publishAt;
+}
+if (!dryRun && (!now.weekend && !oneTimeDate || !publishOnly && now.hour < 7)) {
   console.log('No action: this workflow slot is outside the Saturday or Sunday publication window.');
   process.exit(0);
 }

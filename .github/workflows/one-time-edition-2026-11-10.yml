@@ -1,0 +1,45 @@
+name: One-time DNU update 10 November 11:40
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/one-time-edition-2026-11-10.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekend-dnu-edition
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SUPABASE_URL: https://epghsyajgspcywqqbfso.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      DNU_GOOGLE_SHEET_URL: ${{ vars.DNU_GOOGLE_SHEET_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - name: Publish today's completed worksheet at 11:40 Berlin time
+        run: |
+          set -o pipefail
+          node scripts/weekend-edition.mjs --publish-only --one-time-date=2026-11-10 --publish-at=2026-11-10T10:40:00.000Z 2>&1 | tee data/one-time-run-status.txt
+      - name: Save outcome
+        if: always()
+        run: |
+          if [ ! -f data/one-time-run-status.txt ]; then
+            printf 'The update step did not start. Check this workflow run in Actions.\n' > data/one-time-run-status.txt
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b one-time-run-${{ github.run_id }}
+          git add -f data/one-time-run-status.txt
+          git commit -m "Record one-time edition outcome"
+          git push origin HEAD:one-time-run-${{ github.run_id }}
