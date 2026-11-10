@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { adaptSelectedArticles } from './dnuEdition.js';
+import { adaptSelectedArticles, dedupeNativeEvents } from './dnuEdition.js';
 
 const registry = [{ id: 'source-83', domain: 'bbc.com', name: 'BBC' }];
 const item = (title, extras = {}) => ({
@@ -33,4 +33,14 @@ test('native adapter drops live blogs and direct OSCE publications', () => {
   assert.equal(articles.length, 0);
   assert.match(rejected[0].reason, /Live blogs/);
   assert.match(rejected[1].reason, /OSCE publication/);
+});
+
+test('native event deduplication keeps the international account of a repeated event', () => {
+  const stories = [
+    { id: 'regional', title: 'Hegseth faces impeachment effort over Iran war', sourceName: 'Gazeta Express', body: '', subsection: 'NORTH AMERICA' },
+    { id: 'international', title: 'US defence chief Hegseth faces impeachment push', sourceName: 'DW', body: 'A full article body.', subsection: 'NORTH AMERICA' }
+  ];
+  const result = dedupeNativeEvents(stories);
+  assert.deepEqual(result.articles.map(article => article.id), ['international']);
+  assert.equal(result.removed.length, 1);
 });

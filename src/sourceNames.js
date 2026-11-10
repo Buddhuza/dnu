@@ -34,7 +34,8 @@ const aliases = {
   'financial times': 'FT',
   'times of central asia': 'TCA',
   'https://aapnews.aap.com.au/': 'AAP',
-  'civil ge': 'Civil.ge'
+  'civil ge': 'Civil.ge',
+  'mina': 'MINA'
 };
 
 export function displaySourceName(name, source = {}) {

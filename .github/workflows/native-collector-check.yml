@@ -1,4 +1,4 @@
-name: Native collector test (no publication)
+name: Native collector integration check (draft only)
 
 on:
   workflow_dispatch:

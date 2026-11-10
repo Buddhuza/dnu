@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { currentDailyUpdate } from './daily.js';
+import { canonicalArticleUrl } from '../src/siteConfig.js';
 
 const editionPath = fileURLToPath(new URL('../data/prepared-update.json', import.meta.url));
 
@@ -11,7 +12,8 @@ export function readCompletedEdition(path = editionPath) {
 }
 
 export function storedArticle(edition, url) {
-  return edition.articles.find(article => article.url === url);
+  const key = canonicalArticleUrl(url);
+  return edition.articles.find(article => canonicalArticleUrl(article.url) === key);
 }
 
 export function storedBody(article) {
