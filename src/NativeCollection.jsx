@@ -45,7 +45,7 @@ export default function NativeCollection({ onEditionReady, draftMode, onReturn, 
     <p>Collect directly from publisher feeds and pages. The completed JSON is a draft until you publish it separately.</p>
     <button type="button" className="cms-primary" onClick={start} disabled={!sharedClient || ['running', 'unavailable', 'checking'].includes(status.state)}>Scrape now</button>
     <p role="status">{status.message || (status.state === 'idle' ? 'Ready to collect.' : status.state === 'checking' ? 'Checking collector…' : '')}</p>
-    {status.state === 'unavailable' && <p><a href="https://github.com/Buddhuza/dnu/actions/workflows/test-daily-collection.yml" target="_blank" rel="noopener noreferrer">Open manual collection job ↗</a></p>}
+    {status.state === 'unavailable' && <p><a href="https://github.com/Buddhuza/dnu/actions/workflows/test-daily-collection.yml" target="_blank" rel="noopener noreferrer">Open manual collection job ↗</a> Select the branch containing the native collector before running it.</p>}
     {status.state === 'running' && status.total > 0 && <><progress value={status.completed || 0} max={status.total} aria-label="Scraping progress"/><p>{status.completed || 0} of {status.total} {status.phase === 'routes' ? 'source routes checked' : status.phase === 'articles' ? 'article pages checked' : 'full texts checked'}{Number.isFinite(status.candidates) ? ` · ${status.candidates} candidates found` : ''}</p></>}
     {draftMode && <button type="button" onClick={onReturn}>Return to published update</button>}
   </section>;
