@@ -1,0 +1,15 @@
+NewsStatus is unavailable; verified that the 2026-11-10 dated worksheet remained unchanged across two reads.
+Worksheet 2026-11-10: 125 rows, 103 eligible, 4 automatically placed, 6 duplicates removed, 0 promoted to leads, 97 selected, 0 still unplaced, 0 blocked by placement policy, 22 otherwise rejected.
+Auto placement: row 12 The head of LVV's deputies reacts to Rashiq after he said that the Government is more willing to support the Association → South Eastern Europe / Serbia / Kosovo
+Auto placement: row 22 Turkey: Workers killed in Izmir steel plant blast → Miscellaneous / MIDDLE EAST / NORTH AFRICA / Türkiye
+Auto placement: row 24 LIVE FM on Abu Dhabi talks: Best possible outcome would be a ceasefire → Miscellaneous
+Auto placement: row 124 Spanish election revives Catalan independence drive → Miscellaneous / WESTERN / CENTRAL EUROPE / Spain
+Duplicate: BBC — Ukraine peace talks resume with 'some flexibility' by warring sides, US officials say → kept AP
+Duplicate: AP — Trump envoys aim to persuade Russia to include Europe in negotiations on ending war with Ukraine → kept Reuters
+Duplicate: Prishtina Insight — Kosovo Court Sentences Former Chief Prosecutor Following KALLXO Investigation → kept Prishtina Insight
+Duplicate: Moldpres — President at annual EU Enlargement Conference: Moldova aims to conclude EU accession negotiations by 2028 → kept Moldpres
+Duplicate: AA — Iraqi prime minister made unannounced visit to Tehran for talks on ending Iran-US war: Report → kept Al Jazeera
+Duplicate: Kazinform — COP31 climate summit to open in Türkiye's Antalya today → kept Kabar
+Edition prepared. Waiting until 2026-11-10T10:40:00.000Z to publish.
+Published the 2026-11-10 weekend edition with 97 stories.
+Email is not configured; the website edition was published without sending mail.
