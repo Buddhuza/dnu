@@ -1,0 +1,5 @@
+
+> dnu@1.0.0 collect:daily
+> node --use-env-proxy collector/run.js
+
+{"routes":3,"failed":0,"candidates":165,"selected":14}
