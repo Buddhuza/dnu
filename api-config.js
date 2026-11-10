@@ -1,3 +1,4 @@
-// Set this to the HTTPS URL of the deployed DNU Node API, without /api.
-// This public value can be updated on GitHub Pages after creating the service.
-window.DNU_API_URL = 'https://buddhuza-dnu-api.onrender.com';
+// GitHub Actions collects drafts; the editor loads completed JSON from GitHub Pages.
+// To use a separately deployed Node API instead, set its HTTPS URL and switch mode to 'node'.
+window.DNU_API_URL = '';
+window.DNU_COLLECTION_MODE = 'github';
