@@ -1,0 +1,11 @@
+
+> dnu@1.0.0 collect:daily
+> node --use-env-proxy collector/run.js
+
+{"routes":3,"failed":0,"candidates":166,"selected":6,"rejected":8,"bodies":3}
+
+> dnu@1.0.0 collect:daily
+> node --use-env-proxy collector/run.js
+
+{"routes":749,"failed":114,"candidates":15531,"selected":36,"rejected":89,"bodies":8,"firstFailure":"HTTP 403"}
+{"checkedAt":"2026-11-10T12:35:27.158Z","selected":36,"visible":36,"bodies":8,"failedRoutes":114,"wordBytes":47880,"spreadsheetBytes":4618}
