@@ -23,6 +23,10 @@ export async function githubCollectionStatus(fetchImpl = fetch) {
       if (state === 'complete') {
         const published = await fetchImpl(pagesFile('native-draft-status.json'), { cache: 'no-store' });
         const draft = published.ok ? await published.json() : null;
+        if (draft && run.event === 'schedule' && Number(draft.runId) !== Number(run.id)) return {
+          state: 'complete', checkedAt: draft.checkedAt, updatedAt: draft.checkedAt, runUrl: draft.runUrl,
+          message: `Latest completed GitHub draft: ${draft.stories} stories. A scheduled UTC check did not replace it.`
+        };
         if (!draft || Number(draft.runId) !== Number(run.id)) return {
           state: 'running', updatedAt: run.updated_at, runUrl: run.html_url,
           message: 'GitHub finished scraping; the review draft is being placed on the website…'

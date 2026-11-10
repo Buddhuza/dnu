@@ -13,3 +13,12 @@ test('the editor loads a completed GitHub JSON draft', async () => {
   assert.deepEqual(await fetchGithubDraft(async () => ({ ok: true, json: async () => draft })), draft);
   await assert.rejects(fetchGithubDraft(async () => ({ ok: false })), /No completed GitHub draft/);
 });
+
+test('a skipped daylight-saving candidate keeps the previous completed draft available', async () => {
+  const fetchImpl = async url => ({ ok: true, json: async () => String(url).includes('native-draft-status.json')
+    ? { runId: 41, checkedAt: '2026-11-10T13:00:00Z', stories: 39, runUrl: 'https://github.com/example/runs/41' }
+    : { workflow_runs: [{ id: 42, event: 'schedule', status: 'completed', conclusion: 'success', updated_at: '2026-11-10T14:00:00Z' }] } });
+  const status = await githubCollectionStatus(fetchImpl);
+  assert.equal(status.state, 'complete');
+  assert.match(status.message, /39 stories/);
+});
