@@ -1,0 +1,31 @@
+name: Deploy one-click DNU scrape trigger
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Store GitHub workflow token in Supabase
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          GITHUB_WORKFLOW_TOKEN: ${{ secrets.GITHUB_WORKFLOW_TOKEN }}
+        run: |
+          test -n "$SUPABASE_ACCESS_TOKEN" && test -n "$GITHUB_WORKFLOW_TOKEN"
+          secret_file="$(mktemp)"
+          chmod 600 "$secret_file"
+          printf 'GITHUB_WORKFLOW_TOKEN=%s\n' "$GITHUB_WORKFLOW_TOKEN" > "$secret_file"
+          supabase secrets set --project-ref epghsyajgspcywqqbfso --env-file "$secret_file"
+          rm -f "$secret_file"
+      - name: Deploy editor-only trigger
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: supabase functions deploy start-dnu-collection --project-ref epghsyajgspcywqqbfso

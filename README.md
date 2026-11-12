@@ -27,7 +27,19 @@ The attached Node collector is installed in `collector/`. The combined `sources.
 
 Run `DNU_TEST_DOMAIN=bbc.com npm run collect:daily` to test one publisher; its result is `data/native-test-edition.json`. Then run `npm run collect:daily` without the variable. The [GitHub collection workflow](https://github.com/Buddhuza/dnu/actions/workflows/test-daily-collection.yml) runs at 01:00 and 13:00 Europe/Vienna and supports **Run workflow** on `main`. It uploads the JSON as an artifact and places the completed draft at `native-draft.json` on GitHub Pages for the logged-in editor to review. This does not replace the shared Supabase edition. Scheduled jobs may start later than their nominal time on GitHub. The weekend workflow remains a manual draft check.
 
-The GitHub Pages dashboard uses the GitHub Actions collector by default. The editor's **Scrape** control opens the manual workflow and shows its status; **Load latest draft** previews the completed JSON. The public site continues to read the existing shared Supabase edition until the separate publication command is run. The optional Node server reads completed JSON on every `/api/daily-update` and `/api/daily-update.docx` request; its Collect endpoint requires a valid Supabase editor session.
+The GitHub Pages dashboard uses the GitHub Actions collector by default. The editor's **Scrape** control starts a collection through an editor-only Supabase Edge Function and shows its status; **Load latest draft** previews the completed JSON. The public site continues to read the existing shared Supabase edition until the separate publication command is run. The optional Node server reads completed JSON on every `/api/daily-update` and `/api/daily-update.docx` request; its Collect endpoint requires a valid Supabase editor session.
+
+### Enable one-click Scrape once
+
+The browser cannot hold a GitHub token safely. `supabase/functions/start-dnu-collection/index.ts` verifies the editor's Supabase login and uses a server-side token to start the existing GitHub workflow. To enable it:
+
+1. In GitHub, create a **fine-grained personal access token** for `Buddhuza/dnu` with **Actions: Read and write**. Set an expiration you can renew. Do not place the token in the website or this repository.
+2. In Supabase Account Settings, create a **personal access token** that can deploy functions to project `epghsyajgspcywqqbfso`.
+3. In the GitHub repository's **Settings → Secrets and variables → Actions**, add `GITHUB_WORKFLOW_TOKEN` (step 1) and `SUPABASE_ACCESS_TOKEN` (step 2) as repository secrets. Do not paste either token into chat.
+4. Run [Deploy one-click DNU scrape trigger](https://github.com/Buddhuza/dnu/actions/workflows/deploy-collection-trigger.yml) once on `main`. It stores the GitHub token in Supabase function secrets and deploys the function. The token is never included in the Pages build.
+5. Sign in to the dashboard and press **Scrape**. The dialog starts the GitHub collection and follows its status. Its GitHub link is only a fallback if the function is unavailable. A completed draft still requires review and separate publication.
+
+If the GitHub token expires, replace the repository secret and rerun the deployment workflow. The 01:00 and 13:00 Vienna schedule does not depend on this token.
 
 ### Optional: deploy the editor Scrape API on Render
 
@@ -61,7 +73,7 @@ NEWSRUN now invokes the native collector to create a draft JSON. Publication is 
 
 FEEDRUN now uses the same native collector; the separate direct-feed scraper is retired.
 
-For a quick preview that does not clone or install the project, open the [GitHub Pages dashboard](https://buddhuza.github.io/dnu/). Visitors see the current shared edition and exports. The logged-in editor can press **Scrape** to open GitHub Actions, run a collection on `main`, and load the completed draft for review. Manual Add remains available.
+For a quick preview that does not clone or install the project, open the [GitHub Pages dashboard](https://buddhuza.github.io/dnu/). Visitors see the current shared edition and exports. Once the one-time trigger setup above is complete, the logged-in editor can press **Scrape** to start GitHub collection directly and load the completed draft for review. Manual Add remains available.
 
 ## Test native collection without publishing
 

@@ -1,30 +1,53 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { sharedClient } from './sharedEdition.js';
 import { apiUrl } from './apiUrl.js';
-import { fetchGithubDraft, githubCollectionStatus, githubCollectionWorkflow } from './githubCollection.js';
+import { fetchGithubDraft, githubCollectionStatus, githubCollectionWorkflow, startGithubCollection } from './githubCollection.js';
 
-function GithubCollection({ onEditionReady, draftMode, onReturn }) {
+function GithubCollection({ onEditionReady, draftMode, onReturn, autoStart = false }) {
   const [status, setStatus] = useState({ state: 'checking', message: 'Checking GitHub collection…' });
   const [error, setError] = useState('');
+  const startedAutomatically = useRef(false);
+  const pending = useRef(null);
   useEffect(() => {
     let active = true;
-    const refresh = () => githubCollectionStatus().then(result => { if (active) setStatus(result); });
+    const refresh = async () => {
+      const result = await githubCollectionStatus();
+      if (!active) return;
+      if (pending.current && result.runId === pending.current.runId) return;
+      if (pending.current) pending.current = null;
+      setStatus(result);
+      if (autoStart && !startedAutomatically.current) {
+        startedAutomatically.current = true;
+        if (result.state !== 'running') start(result.runId);
+      }
+    };
     refresh();
     const timer = setInterval(refresh, 20_000);
     return () => { active = false; clearInterval(timer); };
-  }, []);
+  }, [autoStart]);
+  async function start(previousRunId = status.runId) {
+    setError('');
+    setStatus({ state: 'starting', message: 'Asking GitHub to start a fresh scrape…' });
+    try {
+      await startGithubCollection(sharedClient);
+      pending.current = { runId: previousRunId };
+      setStatus({ state: 'running', message: 'GitHub accepted the request. Waiting for the new run to appear…' });
+    } catch (failure) {
+      setError(failure.message);
+      setStatus({ state: 'failed', message: failure.message });
+    }
+  }
   async function loadDraft() {
     try { setError(''); await onEditionReady(await fetchGithubDraft()); }
     catch (failure) { setError(failure.message); }
   }
   return <section className="native-collection">
-    <p>GitHub collects the news without a separate server. The completed JSON is a draft until you publish it.</p>
-    <a className="cms-primary" href={githubCollectionWorkflow} target="_blank" rel="noopener noreferrer">Open GitHub scraper ↗</a>
-    <p>In GitHub, choose <strong>Run workflow</strong> on the <strong>main</strong> branch. Return here to load the finished draft.</p>
+    <p>Scrape publisher sites into a new review draft. The published update changes only when you publish the draft.</p>
+    <button type="button" className="cms-primary" onClick={() => start()} disabled={['checking', 'starting', 'running'].includes(status.state)}>Scrape now</button>
     <p role="status">{status.message}</p>
     {status.runUrl && <p><a href={status.runUrl} target="_blank" rel="noopener noreferrer">View latest run ↗</a></p>}
-    <button type="button" onClick={loadDraft}>Load latest draft</button>
-    {error && <p role="alert">{error}</p>}
+    <button type="button" onClick={loadDraft} disabled={status.state === 'starting' || status.state === 'running'}>Load latest draft</button>
+    {error && <><p role="alert">{error}</p><p><a href={githubCollectionWorkflow} target="_blank" rel="noopener noreferrer">Open GitHub collection ↗</a></p></>}
     {draftMode && <button type="button" onClick={onReturn}>Return to published update</button>}
   </section>;
 }
