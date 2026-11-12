@@ -47,7 +47,7 @@ function GithubCollection({ onEditionReady, draftMode, onReturn, autoStart = fal
     <p role="status">{status.message}</p>
     {status.runUrl && <p><a href={status.runUrl} target="_blank" rel="noopener noreferrer">View latest run ↗</a></p>}
     <button type="button" onClick={loadDraft} disabled={status.state === 'starting' || status.state === 'running'}>Load latest draft</button>
-    {error && <><p role="alert">{error}</p><p><a href={githubCollectionWorkflow} target="_blank" rel="noopener noreferrer">Open GitHub collection ↗</a></p></>}
+    {error && <><p role="alert">{error}</p><p><a href="https://github.com/Buddhuza/dnu#enable-one-click-scrape-once" target="_blank" rel="noopener noreferrer">One-time setup instructions ↗</a> · <a href={githubCollectionWorkflow} target="_blank" rel="noopener noreferrer">Open GitHub collection ↗</a></p></>}
     {draftMode && <button type="button" onClick={onReturn}>Return to published update</button>}
   </section>;
 }
