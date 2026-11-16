@@ -27,6 +27,17 @@ jobs:
         env:
           DNU_WORKFLOW_TOKEN: ${{ secrets.DNU_WORKFLOW_TOKEN }}
         run: test -n "$DNU_WORKFLOW_TOKEN"
+      - name: Verify Supabase token can access the DNU project
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          status=$(curl -sS -o "$RUNNER_TEMP/dnu-project-response" -w '%{http_code}' \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            https://api.supabase.com/v1/projects/epghsyajgspcywqqbfso)
+          if [ "$status" != 200 ]; then
+            echo "::error::Supabase access token cannot read the DNU project (HTTP $status)"
+            exit 1
+          fi
       - name: Store GitHub workflow token in Supabase
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
