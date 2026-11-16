@@ -1,4 +1,6 @@
-const githubRunsApi = 'https://api.github.com/repos/Buddhuza/dnu/actions/workflows/test-daily-collection.yml/runs?branch=main&per_page=1';
+import { estimatedRunSeconds } from './collectionProgress.js';
+
+const githubRunsApi = 'https://api.github.com/repos/Buddhuza/dnu/actions/workflows/test-daily-collection.yml/runs?branch=main&per_page=8';
 
 function userFacingError(message) {
   if (/github|supabase|workflow|function/i.test(message)) return 'Could not start scraping. Please check the scraper setup and try again.';
@@ -50,9 +52,11 @@ export async function githubCollectionStatus(fetchImpl = fetch) {
   try {
     const response = await fetchImpl(githubRunsApi, { cache: 'no-store', headers: { Accept: 'application/vnd.github+json' } });
     if (!response.ok) throw new Error(`GitHub status HTTP ${response.status}`);
-    const run = (await response.json()).workflow_runs?.[0];
+    const runs = (await response.json()).workflow_runs || [];
+    const run = runs[0];
     if (run) {
       const state = run.status === 'completed' ? run.conclusion === 'success' ? 'complete' : 'failed' : 'running';
+      const estimatedDurationSeconds = estimatedRunSeconds(runs.slice(1));
       if (state === 'complete') {
         const published = await fetchImpl(pagesFile('native-draft-status.json'), { cache: 'no-store' });
         const draft = published.ok ? await published.json() : null;
@@ -61,12 +65,12 @@ export async function githubCollectionStatus(fetchImpl = fetch) {
           message: `Latest completed draft: ${draft.stories} stories.`
         };
         if (!draft || Number(draft.runId) !== Number(run.id)) return {
-          state: 'running', runId: run.id, createdAt: run.created_at, updatedAt: run.updated_at, runUrl: run.html_url,
+          state: 'running', runId: run.id, createdAt: run.created_at, startedAt: run.run_started_at || run.created_at, estimatedDurationSeconds, updatedAt: run.updated_at, runUrl: run.html_url,
           message: 'Scraping finished; preparing the review draft…'
         };
       }
       return {
-        state, runId: run.id, checkedAt: run.updated_at, createdAt: run.created_at, updatedAt: run.updated_at, runUrl: run.html_url,
+        state, runId: run.id, checkedAt: run.updated_at, createdAt: run.created_at, startedAt: run.run_started_at || run.created_at, estimatedDurationSeconds, updatedAt: run.updated_at, runUrl: run.html_url,
         message: state === 'running' ? await runningMessage(run, fetchImpl) : state === 'complete' ? 'Scrape complete. Load the review draft.' : 'The latest scrape failed. Please try again.'
       };
     }

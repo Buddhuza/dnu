@@ -2,13 +2,45 @@ import React, { useEffect, useRef, useState } from 'react';
 import { sharedClient } from './sharedEdition.js';
 import { apiUrl } from './apiUrl.js';
 import { fetchGithubDraft, githubCollectionStatus, startGithubCollection } from './githubCollection.js';
+import { formatCountdown, progressEstimate } from './collectionProgress.js';
 
-function GithubCollection({ onEditionReady, draftMode, onReturn }) {
+function ProgressMeter({ status, now, showComplete }) {
+  if (status.state !== 'running' && !(showComplete && status.state === 'complete')) return null;
+  const estimate = progressEstimate(status, now);
+  if (!estimate) return null;
+  return <div className="native-progress">
+    <div className="native-progress-heading"><span>{status.state === 'complete' ? 'Scrape complete' : 'Estimated progress'}</span><strong>{estimate.percent}%</strong></div>
+    <progress value={estimate.percent} max="100" aria-label="Estimated scrape progress"/>
+    {status.state === 'running' && <p>Estimated time remaining: {formatCountdown(estimate.remainingSeconds)}{estimate.overrun ? ' · taking longer than usual' : ''}</p>}
+  </div>;
+}
+
+function DraftActions({ draftMode, onPublish, onReturn }) {
+  const [publishing, setPublishing] = useState(false);
+  const [message, setMessage] = useState('');
+  if (!draftMode && !message) return null;
+  async function publish() {
+    setPublishing(true);
+    setMessage('Publishing draft…');
+    try { await onPublish(); setMessage('Draft published for everyone.'); }
+    catch (failure) { setMessage(`Not published: ${failure.message}`); }
+    finally { setPublishing(false); }
+  }
+  return <div className="native-draft-actions">
+    {draftMode && <><p>This draft is saved in this browser. Publish it to make the stories stay on the shared site.</p><button type="button" className="cms-primary" onClick={publish} disabled={publishing}>Publish draft</button><button type="button" onClick={onReturn} disabled={publishing}>Return to published update</button></>}
+    {message && <p role={message.startsWith('Not published:') ? 'alert' : 'status'}>{message}</p>}
+  </div>;
+}
+
+function GithubCollection({ onEditionReady, draftMode, onPublish, onReturn }) {
   const [status, setStatus] = useState({ state: 'checking', message: 'Checking scrape status…' });
   const [error, setError] = useState('');
+  const [now, setNow] = useState(Date.now);
+  const [startedHere, setStartedHere] = useState(false);
   const pending = useRef(null);
   const requesting = useRef(false);
   const failedRequest = useRef(false);
+  useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(timer); }, []);
   useEffect(() => {
     let active = true;
     const refresh = async () => {
@@ -26,6 +58,7 @@ function GithubCollection({ onEditionReady, draftMode, onReturn }) {
     return () => { active = false; clearInterval(timer); };
   }, []);
   async function start(previousRunId = status.runId) {
+    setStartedHere(true);
     requesting.current = true;
     failedRequest.current = false;
     setError('');
@@ -33,7 +66,7 @@ function GithubCollection({ onEditionReady, draftMode, onReturn }) {
     try {
       await startGithubCollection(sharedClient);
       pending.current = { runId: previousRunId, startedAt: Date.now() };
-      setStatus({ state: 'running', message: 'Scrape requested. Waiting for collection to begin…' });
+      setStatus({ state: 'running', startedAt: new Date().toISOString(), estimatedDurationSeconds: status.estimatedDurationSeconds || 180, message: 'Scrape requested. Waiting for collection to begin…' });
     } catch (failure) {
       failedRequest.current = true;
       setError(failure.message);
@@ -50,15 +83,19 @@ function GithubCollection({ onEditionReady, draftMode, onReturn }) {
     <p>Scrape publisher sites into a new review draft. The published update changes only when you publish the draft.</p>
     <button type="button" className="cms-primary" onClick={() => start()} disabled={['starting', 'running'].includes(status.state)}>Scrape now</button>
     <p role="status">{status.message}</p>
+    <ProgressMeter status={status} now={now} showComplete={startedHere}/>
     <button type="button" onClick={loadDraft} disabled={status.state === 'starting' || status.state === 'running'}>Load latest draft</button>
     {error && <p role="alert">{error}</p>}
-    {draftMode && <button type="button" onClick={onReturn}>Return to published update</button>}
+    <DraftActions draftMode={draftMode} onPublish={onPublish} onReturn={onReturn}/>
   </section>;
 }
 
-function NodeCollection({ onEditionReady, draftMode, onReturn }) {
+function NodeCollection({ onEditionReady, draftMode, onPublish, onReturn }) {
   const [status, setStatus] = useState({ state: 'checking' });
+  const [now, setNow] = useState(Date.now);
+  const [startedHere, setStartedHere] = useState(false);
   const lastCompleted = useRef('');
+  useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(timer); }, []);
   useEffect(() => {
     let active = true;
     const refresh = async () => {
@@ -79,7 +116,8 @@ function NodeCollection({ onEditionReady, draftMode, onReturn }) {
     return () => { active = false; clearInterval(timer); };
   }, [onEditionReady]);
   async function start() {
-    setStatus({ state: 'running', message: 'Checking publisher sources…' });
+    setStartedHere(true);
+    setStatus({ state: 'running', startedAt: new Date().toISOString(), message: 'Checking publisher sources…' });
     try {
       const { data } = await sharedClient.auth.getSession();
       const token = data.session?.access_token;
@@ -94,8 +132,9 @@ function NodeCollection({ onEditionReady, draftMode, onReturn }) {
     <p>Collect directly from publisher feeds and pages. The completed JSON is a draft until you publish it separately.</p>
     <button type="button" className="cms-primary" onClick={start} disabled={!sharedClient || ['running', 'unavailable', 'checking'].includes(status.state)}>Scrape now</button>
     <p role="status">{status.message || (status.state === 'idle' ? 'Ready to collect.' : status.state === 'checking' ? 'Checking collector…' : '')}</p>
-    {status.state === 'running' && status.total > 0 && <><progress value={status.completed || 0} max={status.total} aria-label="Scraping progress"/><p>{status.completed || 0} of {status.total} {status.phase === 'routes' ? 'source routes checked' : status.phase === 'articles' ? 'article pages checked' : 'full texts checked'}{Number.isFinite(status.candidates) ? ` · ${status.candidates} candidates found` : ''}</p></>}
-    {draftMode && <button type="button" onClick={onReturn}>Return to published update</button>}
+    <ProgressMeter status={status} now={now} showComplete={startedHere}/>
+    {status.state === 'running' && status.total > 0 && <p>{status.completed || 0} of {status.total} {status.phase === 'routes' ? 'source routes checked' : status.phase === 'articles' ? 'article pages checked' : 'full texts checked'}{Number.isFinite(status.candidates) ? ` · ${status.candidates} candidates found` : ''}</p>}
+    <DraftActions draftMode={draftMode} onPublish={onPublish} onReturn={onReturn}/>
   </section>;
 }
 

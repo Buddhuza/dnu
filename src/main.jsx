@@ -33,6 +33,7 @@ import { reportHeadingLabel } from './reportLabels.js';
 import { useEscapeToClose } from './useEscapeToClose.js';
 import { apiUrl } from './apiUrl.js';
 import { fetchGithubDraft, githubCollectionStatus } from './githubCollection.js';
+import { clearNativeDraft, readNativeDraft, saveNativeDraft } from './nativeDraftCache.js';
 import './styles.css';
 
 const readStored = (key, fallback, legacyKey) => {
@@ -155,7 +156,7 @@ function App() {
       } catch { /* The separate collection server may not be deployed yet. */ }
     };
     refresh();
-    const timer = setInterval(refresh, githubCollectionMode ? 20_000 : 5000);
+    const timer = setInterval(refresh, githubCollectionMode ? 120_000 : 5000);
     return () => { active = false; clearInterval(timer); };
   }, [isEditor]);
 
@@ -205,6 +206,26 @@ function App() {
     });
     return () => data.subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (!isEditor) return;
+    const saved = readNativeDraft();
+    if (!saved) return;
+    setNativeDraftMode(true);
+    setDaily(saved.edition);
+    setSiteConfig(current => normalizeSiteConfig({ ...saved.settings, darkMode: current.darkMode }, saved.edition.articles));
+    setExcludedStoryIds(new Set(Array.isArray(saved.excludedStoryIds) ? saved.excludedStoryIds : []));
+    setCompiledAt(saved.compiledAt || saved.edition.checkedAt);
+    setImportedMode(saved.edition.importedFromSpreadsheet === true);
+    setStaticPreview(false);
+    setSaveStatus('Draft only · saved in this browser');
+  }, [isEditor]);
+
+  useEffect(() => {
+    if (!isEditor || !nativeDraftMode || !daily) return;
+    if (!saveNativeDraft({ edition: daily, settings: siteConfig, excludedStoryIds: [...excludedStoryIds], compiledAt }))
+      setSaveStatus('Draft only · browser storage unavailable');
+  }, [isEditor, nativeDraftMode, daily, siteConfig, excludedStoryIds, compiledAt]);
 
   useEffect(() => {
     if (sharedEnabled) return;
@@ -694,14 +715,38 @@ function App() {
     setDaily(edition);
     setSiteConfig(current => ({ ...extendSiteConfigForImportedPlacements(current, edition.articles), leadOrigins: { ...current.leadOrigins, ...(edition.leadOrigins || {}) } }));
     setCompiledAt(edition.checkedAt);
+    setImportedMode(edition.importedFromSpreadsheet === true);
     setStaticPreview(false);
-    setSaveStatus('Draft only · not published');
+    setSaveStatus('Draft only · saved in this browser');
   }, []);
-  const collectionPanel = <NativeCollection onEditionReady={loadNativeDraft} draftMode={nativeDraftMode} onReturn={() => window.location.reload()}/>;
+  const returnToPublished = () => { clearNativeDraft(); window.location.reload(); };
+  const publishNativeDraft = async () => {
+    if (!isEditor || !nativeDraftMode || !daily) throw new Error('No review draft is loaded.');
+    if (savingRef.current) throw new Error('Another save is in progress. Please try again.');
+    savingRef.current = true;
+    setSaveStatus('Publishing draft…');
+    const pending = pendingBodiesRef.current;
+    try {
+      const payload = sharedPayload(daily, siteConfig, excludedStoryIds, compiledAt);
+      const bodies = [...new Map([...(pending?.bodies || []), ...daily.articles.filter(item => item.url && item.body).map(item => ({ url: item.url, heading: item.title || '', body: item.body, translated: item.translated === true }))].map(item => [item.url, item])).values()];
+      const revision = await publishSharedEdition(sharedRevisionRef.current, payload, { replace: false, bodies });
+      sharedRevisionRef.current = revision;
+      savedPayloadRef.current = JSON.stringify(payload);
+      if (pendingBodiesRef.current === pending) pendingBodiesRef.current = null;
+      clearNativeDraft();
+      setNativeDraftMode(false);
+      setSaveStatus('Saved for everyone');
+      setToast('Draft published for everyone.');
+    } catch (failure) {
+      setSaveStatus(`Not published: ${failure.message}`);
+      throw failure;
+    } finally { savingRef.current = false; }
+  };
+  const collectionPanel = <NativeCollection onEditionReady={loadNativeDraft} draftMode={nativeDraftMode} onPublish={publishNativeDraft} onReturn={returnToPublished}/>;
 
   return <div className="app-shell" data-mode={siteConfig.darkMode ? 'dark' : 'light'} style={themeStyle}>
     <header className="topbar"><div className="brand-text"><strong>{siteConfig.brandName}</strong><small>{siteConfig.brandTagline}</small></div><span className="topbar-spacer"/><button className="mode-button" aria-pressed={siteConfig.darkMode} onClick={() => setSiteConfig(current => ({ ...current, darkMode: !current.darkMode }))}>{siteConfig.darkMode ? '☀ Light mode' : '☾ Dark mode'}</button><button className="mode-button login-button" type="button" onClick={async () => {
-      if (isEditor) { await sharedClient.auth.signOut(); setEditorUser(null); setManaging(false); setEditingStories(false); }
+      if (isEditor) { await sharedClient.auth.signOut(); setEditorUser(null); setManaging(false); setEditingStories(false); if (nativeDraftMode) window.location.reload(); }
       else setLoginOpen(true);
     }}>{isEditor ? 'Log out' : 'Log in'}</button>{managementEnabled && <button className="manage-button" onClick={() => { setManagerTab('Content'); setManaging(true); }}>⚙ Manage site</button>}{isEditor && saveStatus && <span className="shared-save-status" role="status">{saveStatus}</span>}</header>
     {sharedError && <div className="shared-warning" role="alert">{sharedError}</div>}
@@ -749,7 +794,7 @@ function App() {
     {isEditor && !scrapingOpen && (scrapeStatus?.state === 'running' || (scrapeStatus?.state === 'complete' && Date.now() - Date.parse(scrapeStatus.updatedAt) < 15 * 60_000)) && <button type="button" className="scrape-live-status" role="status" onClick={() => { if (githubCollectionMode && scrapeStatus.state === 'complete') fetchGithubDraft().then(loadNativeDraft).catch(error => setToast(error.message)); else if (scrapeStatus.state === 'complete') loadNativeDraft(); else setScrapingOpen(true); }}><strong>{scrapeStatus.state === 'complete' ? 'Scrape complete' : 'Scraping news'}</strong><span>{scrapeStatus.message}</span>{scrapeStatus.state === 'running' && scrapeStatus.total > 0 && <progress value={scrapeStatus.completed || 0} max={scrapeStatus.total} aria-label="Scraping progress"/>}<small>{scrapeStatus.state === 'complete' ? 'Review draft' : scrapeStatus.total > 0 ? `${scrapeStatus.completed || 0} of ${scrapeStatus.total}` : 'Open progress'}</small></button>}
     {spreadsheetResults && <div className="add-backdrop" onClick={() => setSpreadsheetResults(null)}><section className="add-dialog spreadsheet-results" role="dialog" aria-modal="true" aria-labelledby="spreadsheet-results-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="spreadsheet-results-title">Spreadsheet export results</h2><button type="button" aria-label="Close export results" onClick={() => setSpreadsheetResults(null)}>×</button></div><p>{spreadsheetResults.downloaded ? `Downloaded ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} visible full articles.` : `No spreadsheet downloaded. ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} articles available.`}</p>{spreadsheetResults.error && <p role="alert">{spreadsheetResults.error}</p>}{spreadsheetResults.failures.length > 0 && <><h3>{spreadsheetResults.failures.length} unavailable</h3><ul>{spreadsheetResults.failures.map((failure, index) => <li key={index}>{failure}</li>)}</ul></>}<div className="add-dialog-actions"><button type="button" onClick={() => setSpreadsheetResults(null)}>Close</button></div></section></div>}
     {managementEnabled && managing && <SiteManager initialTab={managerTab} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} includeText={includeText} setIncludeText={setIncludeText} excludeText={setExcludeText} setExcludeText={setExcludeText} applyScope={applyScope} onClose={() => setManaging(false)} onReset={() => setSiteConfig(defaultSiteConfig(daily?.articles ?? preparedUpdate.articles))}/>}
-    {isEditor && scrapingOpen && <div className="add-backdrop" onClick={() => setScrapingOpen(false)}><section className="add-dialog scrape-dialog" role="dialog" aria-modal="true" aria-labelledby="scrape-dialog-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="scrape-dialog-title">Scrape news</h2><button type="button" aria-label="Close scrape status" onClick={() => setScrapingOpen(false)}>×</button></div><NativeCollection onEditionReady={loadNativeDraft} draftMode={nativeDraftMode} onReturn={() => window.location.reload()}/></section></div>}
+    {isEditor && scrapingOpen && <div className="add-backdrop" onClick={() => setScrapingOpen(false)}><section className="add-dialog scrape-dialog" role="dialog" aria-modal="true" aria-labelledby="scrape-dialog-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="scrape-dialog-title">Scrape news</h2><button type="button" aria-label="Close scrape status" onClick={() => setScrapingOpen(false)}>×</button></div><NativeCollection onEditionReady={loadNativeDraft} draftMode={nativeDraftMode} onPublish={publishNativeDraft} onReturn={returnToPublished}/></section></div>}
     {isEditor && addingArticles && daily && <AddArticlesDialog sections={siteConfig.sections} sources={configuredSources} customCountries={siteConfig.customCountries} existingArticles={selectedArticles} remainingSlots={100 - siteConfig.customArticles.length} onAdd={async (article, placement, body) => { if (body?.body) { try { await storeArticleBodies([body]); } catch (error) { if (!sharedEnabled) throw error; } if (sharedEnabled) { const prior = pendingBodiesRef.current?.bodies || []; pendingBodiesRef.current = { replace: false, bodies: [...new Map([...prior, body].map(item => [item.url, item])).values()] }; } } setSiteConfig(current => addCustomArticleInConfig(current, article, placement)); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}
     {isEditor && importingSpreadsheet && <ImportSpreadsheetDialog sections={siteConfig.sections} customCountries={siteConfig.customCountries} existingArticles={[...archivedImportReference.articles, ...preparedUpdate.articles, ...(daily?.articles ?? [])]} sources={configuredSources} importedMode={importedMode} sharedMode={sharedEnabled} publishedEmpty={preparedUpdate.emptyPrepared === true} hasStories={Boolean((daily?.articles.length || 0) + (siteConfig.customArticles?.length || 0))} onImport={importSpreadsheet} onRestore={restorePublishedUpdate} onClear={clearCurrentUpdate} onClose={() => setImportingSpreadsheet(false)}/>}
     {isEditor && editingStories && storyToMove && <MoveStoryDialog story={storyToMove} sections={siteConfig.sections} articles={displayedArticles} customCountries={siteConfig.customCountries} onMove={moveStory} onClose={() => setMoveStoryId('')}/>}

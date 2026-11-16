@@ -36,6 +36,11 @@
 .add-article-dialog{background:var(--site-bg,#f4efe6)}
 .native-collection progress{display:block;width:100%;height:12px;accent-color:var(--site-section,#0070c0)}
 .native-collection p[role="status"]{font-weight:700}
+.native-progress{margin:14px 0;padding:12px;border:1px solid #a7bbba;border-radius:8px;background:var(--site-surface,#fff)}
+.native-progress-heading{display:flex;justify-content:space-between;gap:12px;margin-bottom:8px}
+.native-progress p{margin:8px 0 0;color:var(--site-muted,#5e6a70);font-size:14px}
+.native-draft-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:16px;padding-top:12px;border-top:1px solid #a7bbba}
+.native-draft-actions p{flex:1 0 100%;margin:0 0 4px}
 .native-collection a.cms-primary{text-decoration:none}
 .scrape-live-status{position:fixed;right:16px;bottom:16px;z-index:1200;width:min(330px,calc(100vw - 32px));display:grid;gap:5px;text-align:left;padding:12px 14px;border:1px solid var(--site-primary,#123e47);border-radius:10px;background:var(--site-surface,#fff);color:var(--site-text,#182a36);box-shadow:0 8px 32px #071a2650}
 .scrape-live-status span{font-size:13px}
