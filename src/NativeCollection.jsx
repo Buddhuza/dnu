@@ -1,40 +1,45 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { sharedClient } from './sharedEdition.js';
 import { apiUrl } from './apiUrl.js';
-import { fetchGithubDraft, githubCollectionStatus, githubCollectionWorkflow, startGithubCollection } from './githubCollection.js';
+import { fetchGithubDraft, githubCollectionStatus, startGithubCollection } from './githubCollection.js';
 
-function GithubCollection({ onEditionReady, draftMode, onReturn, autoStart = false }) {
-  const [status, setStatus] = useState({ state: 'checking', message: 'Checking GitHub collection…' });
+function GithubCollection({ onEditionReady, draftMode, onReturn }) {
+  const [status, setStatus] = useState({ state: 'checking', message: 'Checking scrape status…' });
   const [error, setError] = useState('');
-  const startedAutomatically = useRef(false);
   const pending = useRef(null);
+  const requesting = useRef(false);
+  const failedRequest = useRef(false);
   useEffect(() => {
     let active = true;
     const refresh = async () => {
       const result = await githubCollectionStatus();
-      if (!active) return;
-      if (pending.current && result.runId === pending.current.runId) return;
+      if (!active || requesting.current || failedRequest.current) return;
+      if (pending.current) {
+        const observedAt = Date.parse(result.createdAt || result.checkedAt || '');
+        if (result.state === 'idle' || result.runId === pending.current.runId || (Number.isFinite(observedAt) && observedAt < pending.current.startedAt - 5_000)) return;
+      }
       if (pending.current) pending.current = null;
       setStatus(result);
-      if (autoStart && !startedAutomatically.current) {
-        startedAutomatically.current = true;
-        if (result.state !== 'running') start(result.runId);
-      }
     };
     refresh();
     const timer = setInterval(refresh, 20_000);
     return () => { active = false; clearInterval(timer); };
-  }, [autoStart]);
+  }, []);
   async function start(previousRunId = status.runId) {
+    requesting.current = true;
+    failedRequest.current = false;
     setError('');
-    setStatus({ state: 'starting', message: 'Asking GitHub to start a fresh scrape…' });
+    setStatus({ state: 'starting', message: 'Starting a fresh scrape…' });
     try {
       await startGithubCollection(sharedClient);
-      pending.current = { runId: previousRunId };
-      setStatus({ state: 'running', message: 'GitHub accepted the request. Waiting for the new run to appear…' });
+      pending.current = { runId: previousRunId, startedAt: Date.now() };
+      setStatus({ state: 'running', message: 'Scrape requested. Waiting for collection to begin…' });
     } catch (failure) {
+      failedRequest.current = true;
       setError(failure.message);
-      setStatus({ state: 'failed', message: failure.message });
+      setStatus({ state: 'failed', message: 'Scrape could not start.' });
+    } finally {
+      requesting.current = false;
     }
   }
   async function loadDraft() {
@@ -43,19 +48,17 @@ function GithubCollection({ onEditionReady, draftMode, onReturn, autoStart = fal
   }
   return <section className="native-collection">
     <p>Scrape publisher sites into a new review draft. The published update changes only when you publish the draft.</p>
-    <button type="button" className="cms-primary" onClick={() => start()} disabled={['checking', 'starting', 'running'].includes(status.state)}>Scrape now</button>
+    <button type="button" className="cms-primary" onClick={() => start()} disabled={['starting', 'running'].includes(status.state)}>Scrape now</button>
     <p role="status">{status.message}</p>
-    {status.runUrl && <p><a href={status.runUrl} target="_blank" rel="noopener noreferrer">View latest run ↗</a></p>}
     <button type="button" onClick={loadDraft} disabled={status.state === 'starting' || status.state === 'running'}>Load latest draft</button>
-    {error && <><p role="alert">{error}</p><p><a href="https://github.com/Buddhuza/dnu#enable-one-click-scrape-once" target="_blank" rel="noopener noreferrer">One-time setup instructions ↗</a> · <a href={githubCollectionWorkflow} target="_blank" rel="noopener noreferrer">Open GitHub collection ↗</a></p></>}
+    {error && <p role="alert">{error}</p>}
     {draftMode && <button type="button" onClick={onReturn}>Return to published update</button>}
   </section>;
 }
 
-function NodeCollection({ onEditionReady, draftMode, onReturn, autoStart = false }) {
+function NodeCollection({ onEditionReady, draftMode, onReturn }) {
   const [status, setStatus] = useState({ state: 'checking' });
   const lastCompleted = useRef('');
-  const startedAutomatically = useRef(false);
   useEffect(() => {
     let active = true;
     const refresh = async () => {
@@ -65,20 +68,16 @@ function NodeCollection({ onEditionReady, draftMode, onReturn, autoStart = false
         const result = await response.json();
         if (!active) return;
         setStatus(result);
-        if (autoStart && !startedAutomatically.current) {
-          startedAutomatically.current = true;
-          if (result.state !== 'running') { await start(); return; }
-        }
         if (result.state === 'complete' && result.checkedAt !== lastCompleted.current) {
           lastCompleted.current = result.checkedAt;
           await onEditionReady();
         }
-      } catch { if (active) setStatus({ state: 'unavailable', message: 'The collection server is unavailable. You can run a draft collection in GitHub Actions.' }); }
+      } catch { if (active) setStatus({ state: 'unavailable', message: 'The scraper is unavailable. Please try again later.' }); }
     };
     refresh();
     const timer = setInterval(refresh, 5000);
     return () => { active = false; clearInterval(timer); };
-  }, [onEditionReady, autoStart]);
+  }, [onEditionReady]);
   async function start() {
     setStatus({ state: 'running', message: 'Checking publisher sources…' });
     try {
@@ -92,11 +91,9 @@ function NodeCollection({ onEditionReady, draftMode, onReturn, autoStart = false
     } catch (error) { setStatus({ state: 'failed', message: error.message }); }
   }
   return <section className="native-collection">
-    {!autoStart && <h2>Scrape daily edition</h2>}
     <p>Collect directly from publisher feeds and pages. The completed JSON is a draft until you publish it separately.</p>
     <button type="button" className="cms-primary" onClick={start} disabled={!sharedClient || ['running', 'unavailable', 'checking'].includes(status.state)}>Scrape now</button>
     <p role="status">{status.message || (status.state === 'idle' ? 'Ready to collect.' : status.state === 'checking' ? 'Checking collector…' : '')}</p>
-    {status.state === 'unavailable' && <p><a href="https://github.com/Buddhuza/dnu/actions/workflows/test-daily-collection.yml" target="_blank" rel="noopener noreferrer">Open manual collection job ↗</a> Select the branch containing the native collector before running it.</p>}
     {status.state === 'running' && status.total > 0 && <><progress value={status.completed || 0} max={status.total} aria-label="Scraping progress"/><p>{status.completed || 0} of {status.total} {status.phase === 'routes' ? 'source routes checked' : status.phase === 'articles' ? 'article pages checked' : 'full texts checked'}{Number.isFinite(status.candidates) ? ` · ${status.candidates} candidates found` : ''}</p></>}
     {draftMode && <button type="button" onClick={onReturn}>Return to published update</button>}
   </section>;

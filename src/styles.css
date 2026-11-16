@@ -365,6 +365,7 @@
   .daily-title-row .report-date{font-size:13px}
 }
 .import-spreadsheet-dialog{width:min(100%,680px);background:var(--site-bg,#f4efe6)}
+.scrape-dialog{background:var(--site-bg,#f4efe6)}
 .import-file-label{display:block;font-weight:800;margin:16px 0 7px}
 .import-google-controls{display:flex;gap:8px;align-items:stretch}
 .import-google-controls input{flex:1;min-width:0;padding:9px;border:1px solid #a7bbba;border-radius:6px;background:var(--site-surface,#fff);color:var(--site-text,#182a36);font:inherit;font-size:14px}

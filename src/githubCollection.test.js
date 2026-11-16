@@ -11,7 +11,7 @@ test('GitHub collection status distinguishes running and completed draft runs', 
 test('the editor loads a completed GitHub JSON draft', async () => {
   const draft = { checkedAt: '2026-11-10T13:00:00Z', articles: [{ id: 'story' }] };
   assert.deepEqual(await fetchGithubDraft(async () => ({ ok: true, json: async () => draft })), draft);
-  await assert.rejects(fetchGithubDraft(async () => ({ ok: false })), /No completed GitHub draft/);
+  await assert.rejects(fetchGithubDraft(async () => ({ ok: false })), /No completed review draft/);
 });
 
 test('a skipped daylight-saving candidate keeps the previous completed draft available', async () => {
@@ -34,10 +34,18 @@ test('one-click collection uses the signed-in editor function', async () => {
   await assert.rejects(startGithubCollection({ auth: { getSession: async () => ({ data: { session: null } }) } }), /Sign in/);
 });
 
-test('the editor sees a useful configuration error when the trigger is unavailable', async () => {
+test('the editor sees a useful error without backend details when the trigger is unavailable', async () => {
   const client = {
     auth: { getSession: async () => ({ data: { session: { access_token: 'editor-session' } } }) },
     functions: { invoke: async () => ({ error: { context: { json: async () => ({ error: 'Missing GitHub workflow token.' }) } } }) }
   };
-  await assert.rejects(startGithubCollection(client), /Missing GitHub workflow token/);
+  await assert.rejects(startGithubCollection(client), /Could not start scraping/);
+});
+
+test('the scrape status describes article collection progress without backend names', async () => {
+  const status = await githubCollectionStatus(async url => ({ ok: true, json: async () => String(url).includes('/jobs')
+    ? { jobs: [{ steps: [{ name: 'Collect completed JSON from publishers', status: 'in_progress' }] }] }
+    : { workflow_runs: [{ id: 42, status: 'in_progress', jobs_url: 'https://api.github.com/jobs', created_at: '2026-11-16T10:00:00Z' }] } }));
+  assert.equal(status.message, 'Checking source websites and extracting articles…');
+  assert.equal(status.createdAt, '2026-11-16T10:00:00Z');
 });
