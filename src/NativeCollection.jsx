@@ -7,7 +7,7 @@ function ActivityDots({ active }) {
   return active && <span className="native-activity-dots" aria-hidden="true"><span>.</span><span>.</span><span>.</span></span>;
 }
 
-function GithubCollection({ onPublish }) {
+function GithubCollection({ onPublish, onClear, hasStories }) {
   const [status, setStatus] = useState({ state: 'checking', message: 'Checking scrape status…' });
   const [error, setError] = useState('');
   const [publishing, setPublishing] = useState(false);
@@ -58,14 +58,16 @@ function GithubCollection({ onPublish }) {
   }
   const busy = publishing || ['checking', 'starting', 'running'].includes(status.state);
   return <section className="native-collection">
+    <p>Manually scrape publisher websites and publish the completed update.</p>
     <button type="button" className="cms-primary" onClick={() => start()} disabled={busy}>Scrape now</button>
     <p role="status">{publishing ? 'Publishing the latest draft' : status.message?.replace(/(?:…|\.\.\.)$/, '')}<ActivityDots active={busy}/></p>
-    <button type="button" onClick={publishDraft} disabled={busy}>Publish draft</button>
+    <button type="button" className="cms-primary" onClick={publishDraft} disabled={busy}>Publish draft</button>
+    {onClear && <button type="button" className="native-clear-stories" onClick={onClear} disabled={!hasStories || publishing}>Clear all stories</button>}
     {error && <p role="alert">{error}</p>}
   </section>;
 }
 
-function NodeCollection({ onPublish }) {
+function NodeCollection({ onPublish, onClear, hasStories }) {
   const [status, setStatus] = useState({ state: 'checking' });
   const [publishing, setPublishing] = useState(false);
   const [error, setError] = useState('');
@@ -108,10 +110,12 @@ function NodeCollection({ onPublish }) {
   }
   const busy = publishing || ['running', 'checking'].includes(status.state);
   return <section className="native-collection">
+    <p>Manually scrape publisher websites and publish the completed update.</p>
     <button type="button" className="cms-primary" onClick={start} disabled={!sharedClient || busy || status.state === 'unavailable'}>Scrape now</button>
     <p role="status">{(publishing ? 'Publishing the latest draft' : status.message || (status.state === 'idle' ? 'Ready to collect.' : status.state === 'checking' ? 'Checking collector…' : '')).replace(/(?:…|\.\.\.)$/, '')}<ActivityDots active={busy}/></p>
     {status.state === 'running' && status.total > 0 && <p>{status.completed || 0} of {status.total} {status.phase === 'routes' ? 'source routes checked' : status.phase === 'articles' ? 'article pages checked' : 'full texts checked'}{Number.isFinite(status.candidates) ? ` · ${status.candidates} candidates found` : ''}</p>}
-    <button type="button" onClick={publishDraft} disabled={busy || status.state !== 'complete'}>Publish draft</button>
+    <button type="button" className="cms-primary" onClick={publishDraft} disabled={busy || status.state !== 'complete'}>Publish draft</button>
+    {onClear && <button type="button" className="native-clear-stories" onClick={onClear} disabled={!hasStories || publishing}>Clear all stories</button>}
     {error && <p role="alert">{error}</p>}
   </section>;
 }
