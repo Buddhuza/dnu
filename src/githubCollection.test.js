@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { fetchGithubDraft, githubCollectionStatus, startGithubCollection } from './githubCollection.js';
+import { fetchGithubDraft, fetchGithubDraftStatus, githubCollectionStatus, startGithubCollection } from './githubCollection.js';
 
 test('GitHub collection status distinguishes running and completed draft runs', async () => {
   const respond = run => async url => ({ ok: true, json: async () => String(url).includes('native-draft-status.json') ? { runId: run.id } : { workflow_runs: [run] } });
@@ -12,6 +12,12 @@ test('the editor loads a completed GitHub JSON draft', async () => {
   const draft = { checkedAt: '2026-11-10T13:00:00Z', articles: [{ id: 'story' }] };
   assert.deepEqual(await fetchGithubDraft(async () => ({ ok: true, json: async () => draft })), draft);
   await assert.rejects(fetchGithubDraft(async () => ({ ok: false })), /No completed review draft/);
+});
+
+test('latest scrape metadata supplies its finish time and story count', async () => {
+  const draft = { runId: 42, checkedAt: '2026-11-16T13:00:00Z', finishedAt: '2026-11-16T13:08:00Z', stories: 81 };
+  assert.deepEqual(await fetchGithubDraftStatus(async () => ({ ok: true, json: async () => draft })), draft);
+  assert.equal(await fetchGithubDraftStatus(async () => ({ ok: false })), null);
 });
 
 test('a skipped daylight-saving candidate keeps the previous completed draft available', async () => {

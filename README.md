@@ -27,7 +27,7 @@ The attached Node collector is installed in `collector/`. The combined `sources.
 
 Run `DNU_TEST_DOMAIN=bbc.com npm run collect:daily` to test one publisher; its result is `data/native-test-edition.json`. Then run `npm run collect:daily` without the variable. The [GitHub collection workflow](https://github.com/Buddhuza/dnu/actions/workflows/test-daily-collection.yml) runs at 01:00 and 13:00 Europe/Vienna and supports **Run workflow** on `main`. It uploads the JSON as an artifact and places the completed draft at `native-draft.json` on GitHub Pages for the logged-in editor to review. This does not replace the shared Supabase edition. Scheduled jobs may start later than their nominal time on GitHub. The weekend workflow remains a manual draft check.
 
-The GitHub Pages dashboard uses the GitHub Actions collector by default. The editor's **Scrape** control opens a status dialog without starting collection; **Scrape now** in that dialog starts a collection through an editor-only Supabase Edge Function. The dialog shows the current collection stage with animated dots. **Publish draft** loads the latest completed JSON and writes it and available full article bodies to the shared Supabase site in one action. The public site continues to read the existing shared edition until the editor publishes. The optional Node server reads completed JSON on every `/api/daily-update` and `/api/daily-update.docx` request; its Collect endpoint requires a valid Supabase editor session.
+The GitHub Pages dashboard uses the GitHub Actions collector by default. The editor's **Scrape** control opens a status dialog without starting collection. **Publish** loads the latest completed JSON and writes it and available full article bodies to the shared Supabase site in one action. The dialog shows when that scrape finished in Vienna time. Its separate **Scrape** button starts a new collection through an editor-only Supabase Edge Function; progress text appears at the bottom of the dialog with animated dots. The public site continues to read the existing shared edition until the editor publishes. The optional Node server reads completed JSON on every `/api/daily-update` and `/api/daily-update.docx` request; its Collect endpoint requires a valid Supabase editor session.
 
 ### Enable one-click Scrape once
 
@@ -37,7 +37,7 @@ The browser cannot hold a GitHub token safely. `supabase/functions/start-dnu-col
 2. In Supabase Account Settings, create a **personal access token** that can deploy functions to project `epghsyajgspcywqqbfso`.
 3. In the GitHub repository's **Settings → Secrets and variables → Actions**, add `DNU_WORKFLOW_TOKEN` (step 1) and `SUPABASE_ACCESS_TOKEN` (step 2) as repository secrets. GitHub reserves names beginning with `GITHUB_`; the deployment workflow stores `DNU_WORKFLOW_TOKEN` in Supabase as `GITHUB_WORKFLOW_TOKEN` automatically. Do not paste either token into chat.
 4. Run [Deploy one-click DNU scrape trigger](https://github.com/Buddhuza/dnu/actions/workflows/deploy-collection-trigger.yml) once on `main`. It stores the GitHub token in Supabase function secrets and deploys the function. The token is never included in the Pages build.
-5. Sign in to the dashboard, press **Scrape** to open the dialog, and press **Scrape now** to start collection. When it finishes, press **Publish draft** to load and publish the completed edition for everyone.
+5. Sign in to the dashboard, open the scrape dialog, and press **Publish** to publish the latest completed edition for everyone. Press the dialog's **Scrape** button first if you need a newer edition.
 
 If the GitHub token expires, replace the repository secret and rerun the deployment workflow. The 01:00 and 13:00 Vienna schedule does not depend on this token.
 
@@ -73,7 +73,7 @@ NEWSRUN now invokes the native collector to create a draft JSON. Publication is 
 
 FEEDRUN now uses the same native collector; the separate direct-feed scraper is retired.
 
-For a quick preview that does not clone or install the project, open the [GitHub Pages dashboard](https://buddhuza.github.io/dnu/). Visitors see the current shared edition and exports. Once the one-time trigger setup above is complete, the logged-in editor can open **Scrape**, press **Scrape now**, and load the completed draft for review. Manual Add remains available.
+For a quick preview that does not clone or install the project, open the [GitHub Pages dashboard](https://buddhuza.github.io/dnu/). Visitors see the current shared edition and exports. Once the one-time trigger setup above is complete, the logged-in editor can open the scrape dialog, press **Scrape** to collect a new draft, then press **Publish**. Manual Add remains available.
 
 ## Test native collection without publishing
 

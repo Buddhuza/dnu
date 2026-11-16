@@ -32,6 +32,14 @@ export async function fetchGithubDraft(fetchImpl = fetch) {
   return draft;
 }
 
+export async function fetchGithubDraftStatus(fetchImpl = fetch) {
+  const response = await fetchImpl(pagesFile('native-draft-status.json'), { cache: 'no-store' });
+  if (!response.ok) return null;
+  const status = await response.json();
+  return Number.isFinite(Number(status.runId)) && Number.isFinite(Date.parse(status.finishedAt || status.checkedAt))
+    ? status : null;
+}
+
 export async function startGithubCollection(client) {
   if (!client) throw new Error('Sign in as the editor first.');
   const { data: sessionData, error: sessionError } = await client.auth.getSession();
