@@ -66,6 +66,13 @@
 .add-dialog form label{display:block;font-weight:800;margin:18px 0 8px}
 .add-dialog textarea,.add-dialog input{box-sizing:border-box;width:100%;border:1px solid #a7bbba;border-radius:8px;background:var(--site-surface,#fff);color:var(--site-text,#182a36);font:inherit;line-height:1.5;padding:12px}
 .add-dialog textarea{resize:vertical}
+.add-article-dialog{padding:20px}
+.add-article-dialog form>label{margin:11px 0 5px}
+.add-article-dialog form>input,.add-article-dialog form>textarea,.add-article-dialog .add-url-tools input{padding:8px 10px;line-height:1.35}
+.add-article-dialog form>select{box-sizing:border-box;width:100%;min-height:42px;padding:8px 10px;border:1px solid #a7bbba;border-radius:8px;background:var(--site-surface,#fff);color:var(--site-text,#182a36);font:inherit}
+.add-article-dialog .add-url-notice{margin-top:5px}
+.add-article-dialog .add-drafts{margin-top:14px;gap:10px}
+.add-article-dialog .add-draft{padding:12px}
 .add-url-tools{display:flex;align-items:stretch;gap:8px}
 .add-url-tools input{min-width:0;flex:1}
 .add-url-tools button{flex:none;border:1px solid var(--site-primary,#123e47);border-radius:8px;padding:0 14px;background:var(--site-primary,#123e47);color:#fff;font:700 calc(var(--site-body-size,18px) - 2px) var(--site-font,'DM Sans',sans-serif);cursor:pointer}
