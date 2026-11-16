@@ -35,7 +35,7 @@ The browser cannot hold a GitHub token safely. `supabase/functions/start-dnu-col
 
 1. In GitHub, create a **fine-grained personal access token** for `Buddhuza/dnu` with **Actions: Read and write**. Set an expiration you can renew. Do not place the token in the website or this repository.
 2. In Supabase Account Settings, create a **personal access token** that can deploy functions to project `epghsyajgspcywqqbfso`.
-3. In the GitHub repository's **Settings → Secrets and variables → Actions**, add `GITHUB_WORKFLOW_TOKEN` (step 1) and `SUPABASE_ACCESS_TOKEN` (step 2) as repository secrets. Do not paste either token into chat.
+3. In the GitHub repository's **Settings → Secrets and variables → Actions**, add `DNU_WORKFLOW_TOKEN` (step 1) and `SUPABASE_ACCESS_TOKEN` (step 2) as repository secrets. GitHub reserves names beginning with `GITHUB_`; the deployment workflow stores `DNU_WORKFLOW_TOKEN` in Supabase as `GITHUB_WORKFLOW_TOKEN` automatically. Do not paste either token into chat.
 4. Run [Deploy one-click DNU scrape trigger](https://github.com/Buddhuza/dnu/actions/workflows/deploy-collection-trigger.yml) once on `main`. It stores the GitHub token in Supabase function secrets and deploys the function. The token is never included in the Pages build.
 5. Sign in to the dashboard and press **Scrape**. The dialog starts the GitHub collection and follows its status. Its GitHub link is only a fallback if the function is unavailable. A completed draft still requires review and separate publication.
 
