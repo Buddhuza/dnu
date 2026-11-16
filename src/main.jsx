@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import preparedUpdate from '../data/prepared-update.json';
 import archivedImportReference from '../data/daily-update-2026-10-24.json';
@@ -32,8 +32,8 @@ import { createSpreadsheet, spreadsheetRow } from './spreadsheetExport.js';
 import { reportHeadingLabel } from './reportLabels.js';
 import { useEscapeToClose } from './useEscapeToClose.js';
 import { apiUrl } from './apiUrl.js';
-import { fetchGithubDraft, githubCollectionStatus } from './githubCollection.js';
-import { clearNativeDraft, readNativeDraft, saveNativeDraft } from './nativeDraftCache.js';
+import { githubCollectionStatus } from './githubCollection.js';
+import { clearNativeDraft } from './nativeDraftCache.js';
 import './styles.css';
 
 const readStored = (key, fallback, legacyKey) => {
@@ -87,7 +87,6 @@ function App() {
   const [sharedReady, setSharedReady] = useState(!sharedEnabled);
   const [sharedError, setSharedError] = useState('');
   const [saveStatus, setSaveStatus] = useState('');
-  const [nativeDraftMode, setNativeDraftMode] = useState(false);
   const sharedRevisionRef = useRef(0);
   const savedPayloadRef = useRef('');
   const pendingBodiesRef = useRef(null);
@@ -208,26 +207,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!isEditor) return;
-    const saved = readNativeDraft();
-    if (!saved) return;
-    setNativeDraftMode(true);
-    setDaily(saved.edition);
-    setSiteConfig(current => normalizeSiteConfig({ ...saved.settings, darkMode: current.darkMode }, saved.edition.articles));
-    setExcludedStoryIds(new Set(Array.isArray(saved.excludedStoryIds) ? saved.excludedStoryIds : []));
-    setCompiledAt(saved.compiledAt || saved.edition.checkedAt);
-    setImportedMode(saved.edition.importedFromSpreadsheet === true);
-    setStaticPreview(false);
-    setSaveStatus('Draft only · saved in this browser');
-  }, [isEditor]);
-
-  useEffect(() => {
-    if (!isEditor || !nativeDraftMode || !daily) return;
-    if (!saveNativeDraft({ edition: daily, settings: siteConfig, excludedStoryIds: [...excludedStoryIds], compiledAt }))
-      setSaveStatus('Draft only · browser storage unavailable');
-  }, [isEditor, nativeDraftMode, daily, siteConfig, excludedStoryIds, compiledAt]);
-
-  useEffect(() => {
     if (sharedEnabled) return;
     const refresh = () => {
       if (importedModeRef.current) return;
@@ -254,7 +233,7 @@ function App() {
   useEffect(() => { if (!sharedEnabled && importedModeRef.current && daily?.importedFromSpreadsheet) localStorage.setItem(importedUpdateKey, JSON.stringify(daily)); }, [daily]);
   useEffect(() => { localStorage.setItem('dnu-headline-only-v1', JSON.stringify(headlineOnly)); }, [headlineOnly]);
   useEffect(() => {
-    if (!sharedClient || !editorUser || !sharedReady || !daily || editingStories || nativeDraftMode) return;
+    if (!sharedClient || !editorUser || !sharedReady || !daily || editingStories) return;
     const payload = sharedPayload(daily, siteConfig, excludedStoryIds, compiledAt);
     const fingerprint = JSON.stringify(payload);
     if (fingerprint === savedPayloadRef.current && !pendingBodiesRef.current) return;
@@ -292,7 +271,7 @@ function App() {
       }
     }, 800);
     return () => clearTimeout(timer);
-  }, [editorUser, sharedReady, daily, siteConfig, excludedStoryIds, compiledAt, editingStories, nativeDraftMode, syncTick]);
+  }, [editorUser, sharedReady, daily, siteConfig, excludedStoryIds, compiledAt, editingStories, syncTick]);
   useLayoutEffect(() => {
     const position = pendingReadingPositionRef.current;
     if (!position) return;
@@ -629,7 +608,7 @@ function App() {
   const updateControls = () => daily && <div className="daily-downloads">
     {isEditor && <button className="daily-action daily-edit" type="button" aria-label="Add articles" title="Add article URLs" onClick={() => setAddingArticles(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M4 12h16"/></svg></button>}
     {isEditor && <button className="daily-action daily-edit" type="button" aria-label="Import spreadsheet" title={editingStories ? 'Save edits before importing a spreadsheet' : 'Import stories from an Excel or CSV file'} disabled={editingStories} onClick={() => setImportingSpreadsheet(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v16H3zM3 9h18M3 14h11M10 9v11M16 9v5m2 2v5m-3-3 3 3 3-3"/></svg></button>}
-    {isEditor && <button className="daily-action daily-edit" type="button" aria-label="Scrape news now" title={editingStories ? 'Save edits before scraping' : githubCollectionMode ? 'Run the GitHub news scraper and review its draft' : 'Scrape publisher sites now and review the draft'} disabled={editingStories} onClick={() => setScrapingOpen(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.8 9a7 7 0 0 1 12-2L20 12M4 12l2.2 5a7 7 0 0 0 12-2"/></svg></button>}
+    {isEditor && <button className="daily-action daily-edit" type="button" aria-label="Open scrape news" title={editingStories ? 'Save edits before scraping' : 'Open the news scraper'} disabled={editingStories} onClick={() => setScrapingOpen(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.8 9a7 7 0 0 1 12-2L20 12M4 12l2.2 5a7 7 0 0 0 12-2"/></svg></button>}
     {isEditor && <button className="daily-action daily-edit" type="button" aria-label={editingStories ? 'Save edits' : 'Edit update'} title={editingStories ? 'Save text and story changes' : 'Edit text and stories'} aria-pressed={editingStories} disabled={!displayedArticles.length && !editingStories} onClick={toggleStoryEditing}><svg viewBox="0 0 24 24" aria-hidden="true">{editingStories ? <path d="m4 12 5 5L20 6"/> : <><path d="m4 20 4.2-.9L19 8.3 15.7 5 4.9 15.8 4 20Z"/><path d="m13.9 6.8 3.3 3.3"/></>}</svg></button>}
     <button className={`daily-action daily-edit ${headlineOnly ? 'is-active' : ''}`} type="button" aria-label={headlineOnly ? 'Show full view' : 'Show compressed view'} title={editingStories ? 'Save edits before switching views' : headlineOnly ? 'Show full view with summaries' : 'Show compressed view without summaries'} aria-pressed={headlineOnly} disabled={editingStories} onClick={() => { rememberReadingPosition(); setHeadlineOnly(current => !current); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16"/>{!headlineOnly && <path d="M4 15h16"/>}</svg></button>
     <button className="daily-action daily-download" type="button" aria-label="Download update" title={editingStories ? 'Save edits before downloading' : headlineOnly ? 'Download compressed Word update' : 'Download Word update with summaries'} disabled={!selectedArticles.length || editingStories} onClick={downloadManagedDocx}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 17v3h16v-3"/></svg></button>
@@ -704,37 +683,28 @@ function App() {
     const hit = dropAtPoint(event.clientX, event.clientY, drag.storyId);
     if (hit) relocateStory(drag.storyId, hit.destination);
   };
-  const loadNativeDraft = useCallback(async providedEdition => {
-    let edition = providedEdition?.articles ? providedEdition : null;
-    if (!edition) {
-      const response = await fetch(apiUrl('/api/daily-update'), { cache: 'no-store' });
-      if (!response.ok) return;
-      edition = await response.json();
-    }
-    setNativeDraftMode(true);
-    setDaily(edition);
-    setSiteConfig(current => ({ ...extendSiteConfigForImportedPlacements(current, edition.articles), leadOrigins: { ...current.leadOrigins, ...(edition.leadOrigins || {}) } }));
-    setCompiledAt(edition.checkedAt);
-    setImportedMode(edition.importedFromSpreadsheet === true);
-    setStaticPreview(false);
-    setSaveStatus('Draft only · saved in this browser');
-  }, []);
-  const returnToPublished = () => { clearNativeDraft(); window.location.reload(); };
-  const publishNativeDraft = async () => {
-    if (!isEditor || !nativeDraftMode || !daily) throw new Error('No review draft is loaded.');
+  const publishNativeDraft = async edition => {
+    if (!isEditor) throw new Error('Sign in as the editor first.');
+    if (!Array.isArray(edition?.articles) || !edition.checkedAt) throw new Error('The completed draft is incomplete.');
     if (savingRef.current) throw new Error('Another save is in progress. Please try again.');
     savingRef.current = true;
     setSaveStatus('Publishing draft…');
     const pending = pendingBodiesRef.current;
     try {
-      const payload = sharedPayload(daily, siteConfig, excludedStoryIds, compiledAt);
-      const bodies = [...new Map([...(pending?.bodies || []), ...daily.articles.filter(item => item.url && item.body).map(item => ({ url: item.url, heading: item.title || '', body: item.body, translated: item.translated === true }))].map(item => [item.url, item])).values()];
+      const nextSiteConfig = { ...extendSiteConfigForImportedPlacements(siteConfig, edition.articles), leadOrigins: { ...siteConfig.leadOrigins, ...(edition.leadOrigins || {}) } };
+      const payload = sharedPayload(edition, nextSiteConfig, excludedStoryIds, edition.checkedAt);
+      const bodies = [...new Map([...(pending?.bodies || []), ...edition.articles.filter(item => item.url && item.body).map(item => ({ url: item.url, heading: item.title || '', body: item.body, translated: item.translated === true }))].map(item => [item.url, item])).values()];
       const revision = await publishSharedEdition(sharedRevisionRef.current, payload, { replace: false, bodies });
       sharedRevisionRef.current = revision;
       savedPayloadRef.current = JSON.stringify(payload);
       if (pendingBodiesRef.current === pending) pendingBodiesRef.current = null;
+      setDaily(edition);
+      setSiteConfig(nextSiteConfig);
+      setCompiledAt(edition.checkedAt);
+      setImportedMode(edition.importedFromSpreadsheet === true);
+      setStaticPreview(false);
+      setScrapingOpen(false);
       clearNativeDraft();
-      setNativeDraftMode(false);
       setSaveStatus('Saved for everyone');
       setToast('Draft published for everyone.');
     } catch (failure) {
@@ -742,11 +712,11 @@ function App() {
       throw failure;
     } finally { savingRef.current = false; }
   };
-  const collectionPanel = <NativeCollection onEditionReady={loadNativeDraft} draftMode={nativeDraftMode} onPublish={publishNativeDraft} onReturn={returnToPublished}/>;
+  const collectionPanel = <NativeCollection onPublish={publishNativeDraft}/>;
 
   return <div className="app-shell" data-mode={siteConfig.darkMode ? 'dark' : 'light'} style={themeStyle}>
     <header className="topbar"><div className="brand-text"><strong>{siteConfig.brandName}</strong><small>{siteConfig.brandTagline}</small></div><span className="topbar-spacer"/><button className="mode-button" aria-pressed={siteConfig.darkMode} onClick={() => setSiteConfig(current => ({ ...current, darkMode: !current.darkMode }))}>{siteConfig.darkMode ? '☀ Light mode' : '☾ Dark mode'}</button><button className="mode-button login-button" type="button" onClick={async () => {
-      if (isEditor) { await sharedClient.auth.signOut(); setEditorUser(null); setManaging(false); setEditingStories(false); if (nativeDraftMode) window.location.reload(); }
+      if (isEditor) { await sharedClient.auth.signOut(); setEditorUser(null); setManaging(false); setEditingStories(false); }
       else setLoginOpen(true);
     }}>{isEditor ? 'Log out' : 'Log in'}</button>{managementEnabled && <button className="manage-button" onClick={() => { setManagerTab('Content'); setManaging(true); }}>⚙ Manage site</button>}{isEditor && saveStatus && <span className="shared-save-status" role="status">{saveStatus}</span>}</header>
     {sharedError && <div className="shared-warning" role="alert">{sharedError}</div>}
@@ -791,10 +761,10 @@ function App() {
 
       </main>
     </div>{toast && <div className={`toast ${toast.startsWith('Not published:') ? 'toast-error' : toast.includes('Publishing for everyone…') ? 'toast-pending' : ''}`} role={toast.startsWith('Not published:') ? 'alert' : 'status'} onClick={() => setToast('')}>{toast} ×</div>}
-    {isEditor && !scrapingOpen && (scrapeStatus?.state === 'running' || (scrapeStatus?.state === 'complete' && Date.now() - Date.parse(scrapeStatus.updatedAt) < 15 * 60_000)) && <button type="button" className="scrape-live-status" role="status" onClick={() => { if (githubCollectionMode && scrapeStatus.state === 'complete') fetchGithubDraft().then(loadNativeDraft).catch(error => setToast(error.message)); else if (scrapeStatus.state === 'complete') loadNativeDraft(); else setScrapingOpen(true); }}><strong>{scrapeStatus.state === 'complete' ? 'Scrape complete' : 'Scraping news'}</strong><span>{scrapeStatus.message}</span>{scrapeStatus.state === 'running' && scrapeStatus.total > 0 && <progress value={scrapeStatus.completed || 0} max={scrapeStatus.total} aria-label="Scraping progress"/>}<small>{scrapeStatus.state === 'complete' ? 'Review draft' : scrapeStatus.total > 0 ? `${scrapeStatus.completed || 0} of ${scrapeStatus.total}` : 'Open progress'}</small></button>}
+    {isEditor && !scrapingOpen && (scrapeStatus?.state === 'running' || (scrapeStatus?.state === 'complete' && Date.now() - Date.parse(scrapeStatus.updatedAt) < 15 * 60_000)) && <button type="button" className="scrape-live-status" role="status" onClick={() => setScrapingOpen(true)}><strong>{scrapeStatus.state === 'complete' ? 'Scrape complete' : 'Scraping news'}</strong><span>{scrapeStatus.message}</span><small>{scrapeStatus.state === 'complete' ? 'Publish draft' : 'Open progress'}</small></button>}
     {spreadsheetResults && <div className="add-backdrop" onClick={() => setSpreadsheetResults(null)}><section className="add-dialog spreadsheet-results" role="dialog" aria-modal="true" aria-labelledby="spreadsheet-results-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="spreadsheet-results-title">Spreadsheet export results</h2><button type="button" aria-label="Close export results" onClick={() => setSpreadsheetResults(null)}>×</button></div><p>{spreadsheetResults.downloaded ? `Downloaded ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} visible full articles.` : `No spreadsheet downloaded. ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} articles available.`}</p>{spreadsheetResults.error && <p role="alert">{spreadsheetResults.error}</p>}{spreadsheetResults.failures.length > 0 && <><h3>{spreadsheetResults.failures.length} unavailable</h3><ul>{spreadsheetResults.failures.map((failure, index) => <li key={index}>{failure}</li>)}</ul></>}<div className="add-dialog-actions"><button type="button" onClick={() => setSpreadsheetResults(null)}>Close</button></div></section></div>}
     {managementEnabled && managing && <SiteManager initialTab={managerTab} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} includeText={includeText} setIncludeText={setIncludeText} excludeText={setExcludeText} setExcludeText={setExcludeText} applyScope={applyScope} onClose={() => setManaging(false)} onReset={() => setSiteConfig(defaultSiteConfig(daily?.articles ?? preparedUpdate.articles))}/>}
-    {isEditor && scrapingOpen && <div className="add-backdrop" onClick={() => setScrapingOpen(false)}><section className="add-dialog scrape-dialog" role="dialog" aria-modal="true" aria-labelledby="scrape-dialog-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="scrape-dialog-title">Scrape news</h2><button type="button" aria-label="Close scrape status" onClick={() => setScrapingOpen(false)}>×</button></div><NativeCollection onEditionReady={loadNativeDraft} draftMode={nativeDraftMode} onPublish={publishNativeDraft} onReturn={returnToPublished}/></section></div>}
+    {isEditor && scrapingOpen && <div className="add-backdrop" onClick={() => setScrapingOpen(false)}><section className="add-dialog scrape-dialog" role="dialog" aria-modal="true" aria-labelledby="scrape-dialog-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="scrape-dialog-title">Scrape news</h2><button type="button" aria-label="Close scrape status" onClick={() => setScrapingOpen(false)}>×</button></div><NativeCollection onPublish={publishNativeDraft}/></section></div>}
     {isEditor && addingArticles && daily && <AddArticlesDialog sections={siteConfig.sections} sources={configuredSources} customCountries={siteConfig.customCountries} existingArticles={selectedArticles} remainingSlots={100 - siteConfig.customArticles.length} onAdd={async (article, placement, body) => { if (body?.body) { try { await storeArticleBodies([body]); } catch (error) { if (!sharedEnabled) throw error; } if (sharedEnabled) { const prior = pendingBodiesRef.current?.bodies || []; pendingBodiesRef.current = { replace: false, bodies: [...new Map([...prior, body].map(item => [item.url, item])).values()] }; } } setSiteConfig(current => addCustomArticleInConfig(current, article, placement)); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}
     {isEditor && importingSpreadsheet && <ImportSpreadsheetDialog sections={siteConfig.sections} customCountries={siteConfig.customCountries} existingArticles={[...archivedImportReference.articles, ...preparedUpdate.articles, ...(daily?.articles ?? [])]} sources={configuredSources} importedMode={importedMode} sharedMode={sharedEnabled} publishedEmpty={preparedUpdate.emptyPrepared === true} hasStories={Boolean((daily?.articles.length || 0) + (siteConfig.customArticles?.length || 0))} onImport={importSpreadsheet} onRestore={restorePublishedUpdate} onClear={clearCurrentUpdate} onClose={() => setImportingSpreadsheet(false)}/>}
     {isEditor && editingStories && storyToMove && <MoveStoryDialog story={storyToMove} sections={siteConfig.sections} articles={displayedArticles} customCountries={siteConfig.customCountries} onMove={moveStory} onClose={() => setMoveStoryId('')}/>}

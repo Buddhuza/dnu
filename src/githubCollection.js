@@ -1,6 +1,4 @@
-import { estimatedRunSeconds } from './collectionProgress.js';
-
-const githubRunsApi = 'https://api.github.com/repos/Buddhuza/dnu/actions/workflows/test-daily-collection.yml/runs?branch=main&per_page=8';
+const githubRunsApi = 'https://api.github.com/repos/Buddhuza/dnu/actions/workflows/test-daily-collection.yml/runs?branch=main&per_page=1';
 
 function userFacingError(message) {
   if (/github|supabase|workflow|function/i.test(message)) return 'Could not start scraping. Please check the scraper setup and try again.';
@@ -16,7 +14,7 @@ async function runningMessage(run, fetchImpl) {
     const steps = (await response.json()).jobs?.flatMap(job => job.steps || []) || [];
     const active = steps.find(step => step.status === 'in_progress')?.name || '';
     if (/collect completed json/i.test(active)) return 'Checking source websites and extracting articles…';
-    if (/save draft|make completed draft/i.test(active)) return 'Preparing the review draft…';
+    if (/save draft|make completed draft/i.test(active)) return 'Preparing the completed draft…';
     if (active) return 'Preparing the scrape…';
   } catch { /* Step details may be temporarily unavailable. */ }
   return 'Checking source websites and articles…';
@@ -56,7 +54,6 @@ export async function githubCollectionStatus(fetchImpl = fetch) {
     const run = runs[0];
     if (run) {
       const state = run.status === 'completed' ? run.conclusion === 'success' ? 'complete' : 'failed' : 'running';
-      const estimatedDurationSeconds = estimatedRunSeconds(runs.slice(1));
       if (state === 'complete') {
         const published = await fetchImpl(pagesFile('native-draft-status.json'), { cache: 'no-store' });
         const draft = published.ok ? await published.json() : null;
@@ -65,13 +62,13 @@ export async function githubCollectionStatus(fetchImpl = fetch) {
           message: `Latest completed draft: ${draft.stories} stories.`
         };
         if (!draft || Number(draft.runId) !== Number(run.id)) return {
-          state: 'running', runId: run.id, createdAt: run.created_at, startedAt: run.run_started_at || run.created_at, estimatedDurationSeconds, updatedAt: run.updated_at, runUrl: run.html_url,
-          message: 'Scraping finished; preparing the review draft…'
+          state: 'running', runId: run.id, createdAt: run.created_at, startedAt: run.run_started_at || run.created_at, updatedAt: run.updated_at, runUrl: run.html_url,
+          message: 'Scraping finished; preparing the completed draft…'
         };
       }
       return {
-        state, runId: run.id, checkedAt: run.updated_at, createdAt: run.created_at, startedAt: run.run_started_at || run.created_at, estimatedDurationSeconds, updatedAt: run.updated_at, runUrl: run.html_url,
-        message: state === 'running' ? await runningMessage(run, fetchImpl) : state === 'complete' ? 'Scrape complete. Load the review draft.' : 'The latest scrape failed. Please try again.'
+        state, runId: run.id, checkedAt: run.updated_at, createdAt: run.created_at, startedAt: run.run_started_at || run.created_at, updatedAt: run.updated_at, runUrl: run.html_url,
+        message: state === 'running' ? await runningMessage(run, fetchImpl) : state === 'complete' ? 'Scrape complete. The draft is ready to publish.' : 'The latest scrape failed. Please try again.'
       };
     }
   } catch { /* A completed Pages draft remains available if GitHub's API is rate limited. */ }

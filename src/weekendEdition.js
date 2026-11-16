@@ -13,9 +13,10 @@ export function internationalSource(article) {
 function leadHeading(article) {
   if (article.sectionId === 'Lead stories') return article.subsection;
   if (article.sectionId === 'Miscellaneous') {
-    if (article.subsection === 'MIDDLE EAST / NORTH AFRICA') return 'Middle East';
-    if (article.subsection === 'INTERNATIONAL ORGANISATIONS') return article.country === 'OSCE' ? 'OSCE' : '';
-    return article.country || '';
+    if (article.subsection === 'MIDDLE EAST / NORTH AFRICA' && article.country !== 'Saudi Arabia' &&
+      /\b(?:Iran|Israel|Gaza|Palestin\w*|Lebanon|Syria|Yemen|Houthi\w*|Hormuz)\b/i.test(`${article.title || ''} ${article.summary || ''}`) &&
+      /\b(?:war|strike\w*|attack\w*|ceasefire|hostage\w*|military|missile\w*|drone\w*|nuclear|invasion|troops?|airstrike\w*|bomb\w*)\b/i.test(article.title || '')) return 'Middle East';
+    return '';
   }
   return regionalSections.has(article.sectionId) ? article.subsection || article.sectionId : '';
 }

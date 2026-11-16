@@ -41,6 +41,19 @@ test('Middle East lead candidates share one lead heading, while repeated agency 
   assert.equal(sameAgency.promoted.length, 0);
 });
 
+test('a widely covered Australian attack stays under Australia', () => {
+  const base = { publishedAt: '2026-11-16T09:00:00Z', title: 'Australian MP Helen Haines leaves hospital after losing both legs in alleged car attack', sectionId: 'Miscellaneous', subsection: 'SOUTH PACIFIC', country: 'Australia' };
+  const result = selectWeekendStories([
+    { ...base, id: 'one', sourceName: 'Reuters', url: 'https://reuters.com/a' },
+    { ...base, id: 'two', sourceName: 'AP', url: 'https://apnews.com/a' },
+    { ...base, id: 'three', sourceName: 'AFP', url: 'https://afp.com/a' }
+  ]);
+  assert.equal(result.articles.length, 1);
+  assert.equal(result.articles[0].sectionId, 'Miscellaneous');
+  assert.equal(result.articles[0].country, 'Australia');
+  assert.equal(result.promoted.length, 0);
+});
+
 test('Vienna schedule handles summer and winter UTC offsets', () => {
   assert.deepEqual(viennaSchedule(new Date('2026-07-04T05:00:00Z')), { date: '2026-07-04', hour: 7, minute: 0, weekend: true });
   assert.deepEqual(viennaSchedule(new Date('2026-11-07T06:00:00Z')), { date: '2026-11-07', hour: 7, minute: 0, weekend: true });
