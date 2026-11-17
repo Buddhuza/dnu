@@ -6,6 +6,7 @@ import { articlePlacement } from '../server/importArticle.js';
 import { conciseDnuSummary } from './conciseSummary.js';
 import { reviewedImportedSummary } from './reviewedImportedSummaries.js';
 import { cleanHeadlinePrefix } from './headlineText.js';
+import { normaliseContributor } from './storyAttribution.js';
 
 export const THEME_PRESETS = {
   forest: { name: 'Forest', primary: '#123e47', accent: '#bce081', background: '#f4efe6', surface: '#fdfaf4', text: '#182a36', section: '#0070c0', font: 'DM Sans' },
@@ -110,7 +111,9 @@ export function normalizeSiteConfig(input, articles = []) {
         subsection: legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : edit.sectionId === 'Lead stories' && edit.subsection === 'Middle East / North Africa' ? 'Middle East' : clean(edit.subsection, '', 100),
         country: clean(edit.country, '', 100),
         sectionId: legacyOrganisations ? 'Miscellaneous' : sectionIds.has(edit.sectionId) ? edit.sectionId : '',
-        hidden: edit.hidden === true
+        hidden: edit.hidden === true,
+        editedBy: normaliseContributor(edit.editedBy),
+        editedAt: Number.isFinite(Date.parse(edit.editedAt)) ? new Date(edit.editedAt).toISOString() : ''
       };
     }
   }
@@ -121,7 +124,7 @@ export function normalizeSiteConfig(input, articles = []) {
     const legacyOrganisations = item.sectionId === 'International organisations';
     return [{
       id: clean(item.id, `manual-${url}`, 500), url,
-      sourceId: 'manual', ingestMethod: 'add', sourceName: clean(item.sourceName, 'Manual entry', 100),
+      sourceId: 'manual', ingestMethod: ['add', 'import', 'scrape', 'feedrun'].includes(item.ingestMethod) ? item.ingestMethod : 'add', sourceName: clean(item.sourceName, 'Manual entry', 100),
       title, summary: clean(item.summary, '', 1200),
       translated: item.translated === true,
       manualOverride: item.manualOverride === true,
@@ -131,7 +134,10 @@ export function normalizeSiteConfig(input, articles = []) {
       sectionId: legacyOrganisations ? 'Miscellaneous' : sectionIds.has(item.sectionId) ? item.sectionId : sections[0]?.id || 'Miscellaneous',
       subsection: legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : item.sectionId === 'Lead stories' && item.subsection === 'Middle East / North Africa' ? 'Middle East' : clean(item.subsection, '', 100),
       country: clean(item.country, '', 100),
-      hidden: item.hidden === true, reviewed: true
+      hidden: item.hidden === true, reviewed: true,
+      addedBy: normaliseContributor(item.addedBy),
+      editedBy: normaliseContributor(item.editedBy),
+      editedAt: Number.isFinite(Date.parse(item.editedAt)) ? new Date(item.editedAt).toISOString() : ''
     }];
   });
   const customSources = (Array.isArray(input.customSources) ? input.customSources : []).slice(0, 100).flatMap(item => {
@@ -207,6 +213,8 @@ export function displaySiteContent(articles, config, excludedIds = new Set(), ke
       summary: edit?.summaryEdited ? edit.summary : edit?.summary?.trim() || article.summary,
       sourceName: displaySourceName(edit?.sourceName?.trim() || article.sourceName, article),
       publishedAt: edit?.publishedAt || article.publishedAt,
+      editedBy: edit?.editedBy || article.editedBy || null,
+      editedAt: edit?.editedAt || article.editedAt || '',
       section: sectionById.get(sectionId)?.name || sectionId,
       sectionId,
       subsection: edit?.sectionId ? edit.subsection : edit?.subsection || (legacyOrganisations ? 'INTERNATIONAL ORGANISATIONS' : article.subsection),

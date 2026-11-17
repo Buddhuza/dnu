@@ -27,9 +27,17 @@ export async function authorisedEditor(authorization) {
   const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const key = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
   if (!token || !url || !key) return false;
-  const client = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+  const client = createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+    global: { headers: { Authorization: `Bearer ${token}` } }
+  });
   const { data, error } = await client.auth.getUser(token);
-  return !error && data.user?.email?.toLowerCase() === editorEmail;
+  if (error || !data.user) return false;
+  const { data: profile, error: profileError } = await client.from('dnu_editors')
+    .select('active').eq('user_id', data.user.id).maybeSingle();
+  return profileError?.code === 'PGRST205'
+    ? data.user.email?.toLowerCase() === editorEmail
+    : !profileError && profile?.active === true;
 }
 
 export function startNativeCollection({ cwd, onComplete = () => {} }) {

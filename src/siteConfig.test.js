@@ -115,6 +115,23 @@ test('an edited article date survives saved settings and appears in the public s
   assert.equal(displaySiteContent(stories, restored)[0].publishedAt, '2026-11-07T10:00:00.000Z');
 });
 
+test('editor attribution and import origin survive shared settings normalisation', () => {
+  const owner = { id: 'owner-id', name: 'Buddhuza', role: 'owner' };
+  const colleague = { id: 'editor-id', name: 'Colleague', role: 'editor' };
+  const config = defaultSiteConfig(articles);
+  config.articleEdits.a = { editedBy: colleague, editedAt: '2026-11-17T12:00:00Z' };
+  config.customArticles = [{
+    id: 'manual-imported', url: 'https://example.com/imported', title: 'Imported story',
+    sourceName: 'Agency', sectionId: 'Europe', subsection: 'Poland',
+    publishedAt: '2026-11-17T11:00:00Z', ingestMethod: 'import', addedBy: owner
+  }];
+  const restored = normalizeSiteConfig(JSON.parse(JSON.stringify(config)), articles);
+  const displayed = displaySiteContent(articles, restored);
+  assert.deepEqual(displayed.find(item => item.id === 'a').editedBy, colleague);
+  assert.equal(displayed.find(item => item.id === 'manual-imported').ingestMethod, 'import');
+  assert.deepEqual(displayed.find(item => item.id === 'manual-imported').addedBy, owner);
+});
+
 test('old text-only edits restore the original country and subsection', () => {
   const stories = [{ id: 'italy', section: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Italy', title: 'Original', sourceName: 'Agency' }];
   const config = normalizeSiteConfig({ ...defaultSiteConfig(stories), articleEdits: { italy: { title: 'Edited', summary: '', summaryEdited: true, sourceName: 'New agency', sectionId: '', subsection: '', country: '' } } }, stories);

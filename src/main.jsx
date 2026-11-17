@@ -20,13 +20,14 @@ import { parseEditedArticleDate } from './articleDateEdit.js';
 import { reportStoryText } from './reportText.js';
 import { duplicateGroups, duplicateGroupHue } from './storyDuplicates.js';
 import { storyOrigin } from './storyOrigin.js';
+import { contributorFromUser, contributorHue, storyAttributionStyle, storySourceLabel } from './storyAttribution.js';
 import { disclaimerFirst, disclaimerSecond } from './disclaimer.js';
 import { countCoveredCountries } from './collectionSummary.js';
 import { formatViennaDateTime } from './viennaTime.js';
 import { emailSubject, emailUpdateHtml, emailUpdateText } from './emailUpdate.js';
 import { loadFullArticle } from './articleBodyClient.js';
 import { getStoredArticleBody, storeArticleBodies } from './articleBodyStore.js';
-import { editorEmail, loadSharedBody, loadSharedEdition, publishSharedEdition, sharedClient, sharedPayload } from './sharedEdition.js';
+import { loadEditorProfile, loadSharedBody, loadSharedEdition, publishSharedEdition, sharedClient, sharedPayload } from './sharedEdition.js';
 import { emptyEdition } from './emptyEdition.js';
 import { createSpreadsheet, spreadsheetRow } from './spreadsheetExport.js';
 import { reportHeadingLabel } from './reportLabels.js';
@@ -66,6 +67,15 @@ const compactSectionLabels = {
   'Central Asia': 'CA',
   Miscellaneous: 'MISCL'
 };
+
+function StoryBadges({ article }) {
+  if (!article.addedBy && !article.editedBy) return null;
+  const badge = (person, label) => person && <span key={label} className="story-contributor-badge" style={{ '--story-hue': contributorHue(person) }}>{label} {person.name}</span>;
+  return <div className="story-contributors">
+    {badge(article.addedBy, `Added via ${storySourceLabel(storyOrigin(article))} by`)}
+    {badge(article.editedBy, 'Edited by')}
+  </div>;
+}
 
 function scrollReportTo(target, gap) {
   const scroller = target.closest('.daily-scroll');
@@ -142,6 +152,7 @@ function App() {
     return normalizeSiteConfig({ ...stored, fontSize: shouldIncrease ? 18 : stored.fontSize }, preparedUpdate.articles);
   });
   const isEditor = Boolean(editorUser && sharedReady);
+  const contributor = contributorFromUser(editorUser);
   const managementEnabled = isEditor;
 
   useEffect(() => { fetch(apiUrl('/api/config')).then(r => { if (!r.ok) throw new Error('API unavailable'); return r.json(); }).then(setConfig).catch(() => setConfig({ sources: preparedSources, firecrawlConfigured: false })); }, []);
@@ -213,14 +224,20 @@ function App() {
 
   useEffect(() => {
     if (!sharedClient) return;
-    sharedClient.auth.getUser().then(({ data, error }) => {
-      if (!error && data.user?.email?.toLowerCase() === editorEmail) setEditorUser(data.user);
-    });
+    let active = true;
+    const refreshEditor = async user => {
+      if (!user) { if (active) setEditorUser(null); return; }
+      try {
+        const profile = await loadEditorProfile(user);
+        if (active) setEditorUser(profile ? { ...user, editorProfile: profile } : null);
+      } catch { if (active) setEditorUser(null); }
+    };
+    sharedClient.auth.getUser().then(({ data, error }) => { if (!error) refreshEditor(data.user); });
     const { data } = sharedClient.auth.onAuthStateChange((event, session) => {
       if (event === 'TOKEN_REFRESHED') return;
-      setEditorUser(session?.user?.email?.toLowerCase() === editorEmail ? session.user : null);
+      setTimeout(() => refreshEditor(session?.user), 0);
     });
-    return () => data.subscription.unsubscribe();
+    return () => { active = false; data.subscription.unsubscribe(); };
   }, []);
 
   useEffect(() => {
@@ -249,6 +266,33 @@ function App() {
   useEffect(() => { if (!sharedEnabled) localStorage.setItem('dnu-excluded-story-ids-v1', JSON.stringify([...excludedStoryIds])); }, [excludedStoryIds]);
   useEffect(() => { if (!sharedEnabled && importedModeRef.current && daily?.importedFromSpreadsheet) localStorage.setItem(importedUpdateKey, JSON.stringify(daily)); }, [daily]);
   useEffect(() => { localStorage.setItem('dnu-headline-only-v1', JSON.stringify(headlineOnly)); }, [headlineOnly]);
+  useEffect(() => {
+    if (!isEditor || editingStories || !daily) return;
+    let cancelled = false;
+    const refresh = async () => {
+      if (savingRef.current || pendingBodiesRef.current ||
+          JSON.stringify(sharedPayload(daily, siteConfig, excludedStoryIds, compiledAt)) !== savedPayloadRef.current) return;
+      try {
+        const record = await loadSharedEdition();
+        if (cancelled || Number(record.revision) <= sharedRevisionRef.current) return;
+        const edition = record.edition?.articles ? record.edition : preparedUpdate;
+        const settings = record.settings?.sections ? record.settings : publishedSiteConfig;
+        const excluded = new Set(Array.isArray(record.excluded_story_ids) ? record.excluded_story_ids : []);
+        const date = record.edition?.articles ? record.compiled_at : edition.checkedAt;
+        const normalized = normalizeSiteConfig({ ...settings, darkMode: siteConfig.darkMode }, edition.articles);
+        sharedRevisionRef.current = Number(record.revision);
+        savedPayloadRef.current = JSON.stringify(sharedPayload(edition, normalized, excluded, date));
+        setDaily(edition);
+        setSiteConfig(normalized);
+        setExcludedStoryIds(excluded);
+        setCompiledAt(date);
+        setImportedMode(edition.importedFromSpreadsheet === true);
+        setSaveStatus('Updated from another editor');
+      } catch { /* The current edition remains available during a brief network outage. */ }
+    };
+    const timer = setInterval(refresh, 20_000);
+    return () => { cancelled = true; clearInterval(timer); };
+  }, [isEditor, editingStories, daily, siteConfig, excludedStoryIds, compiledAt]);
   useEffect(() => {
     if (!sharedClient || !editorUser || !sharedReady || !daily || editingStories) return;
     const payload = sharedPayload(daily, siteConfig, excludedStoryIds, compiledAt);
@@ -374,7 +418,8 @@ function App() {
     const importedAt = new Date().toISOString();
     const currentArticles = [...(daily?.articles || []), ...(siteConfig.customArticles || [])];
     const existingKeys = new Set(currentArticles.map(article => canonicalArticleUrl(article.url)));
-    const newArticles = result.articles.filter(article => !existingKeys.has(canonicalArticleUrl(article.url)));
+    const newArticles = result.articles.filter(article => !existingKeys.has(canonicalArticleUrl(article.url)))
+      .map(article => ({ ...article, addedBy: contributor }));
     const mergedArticles = mergeImportedArticles(daily?.articles || [], newArticles);
     const addedCount = mergedArticles.length - (daily?.articles?.length || 0);
     const dates = mergedArticles.map(article => Date.parse(article.publishedAt)).filter(Number.isFinite);
@@ -554,6 +599,11 @@ function App() {
       sourceName: story.querySelector('[data-edit-field="sourceName"]')?.innerText.trim() || '',
       publishedAt: parseEditedArticleDate(dateField?.innerText, dateField?.getAttribute('datetime'))
     }];
+  }).filter(([id, draft]) => {
+    const current = displayedArticles.find(item => item.id === id);
+    return !current || draft.title !== reportStoryText(current, headlineOnly).headline ||
+      draft.summary !== reportStoryText(current).summary || draft.sourceName !== current.sourceName ||
+      Date.parse(draft.publishedAt) !== Date.parse(current.publishedAt);
   }));
   const validStoryDrafts = drafts => {
     if (Object.values(drafts).some(draft => !draft.title || !draft.sourceName)) {
@@ -570,9 +620,12 @@ function App() {
     ...current,
     articleEdits: Object.fromEntries([...Object.entries(current.articleEdits), ...Object.entries(drafts)
       .filter(([id]) => !(current.customArticles.some(item => item.id === id)))
-      .map(([id, draft]) => [id, { ...(current.articleEdits[id] || {}), title: draft.title.trim(), summary: draft.summary.trim(), summaryEdited: true, sourceName: draft.sourceName.trim(), publishedAt: draft.publishedAt }])]),
-    customArticles: current.customArticles.map(item => drafts[item.id] ? { ...item, title: drafts[item.id].title, summary: drafts[item.id].summary, sourceName: drafts[item.id].sourceName, publishedAt: drafts[item.id].publishedAt } : item)
+      .map(([id, draft]) => [id, { ...(current.articleEdits[id] || {}), title: draft.title.trim(), summary: draft.summary.trim(), summaryEdited: true, sourceName: draft.sourceName.trim(), publishedAt: draft.publishedAt, editedBy: contributor, editedAt: new Date().toISOString() }])]),
+    customArticles: current.customArticles.map(item => drafts[item.id] ? { ...item, title: drafts[item.id].title, summary: drafts[item.id].summary, sourceName: drafts[item.id].sourceName, publishedAt: drafts[item.id].publishedAt, editedBy: contributor, editedAt: new Date().toISOString() } : item)
   });
+  const markStoryEdited = (config, id) => config.customArticles.some(item => item.id === id)
+    ? { ...config, customArticles: config.customArticles.map(item => item.id === id ? { ...item, editedBy: contributor, editedAt: new Date().toISOString() } : item) }
+    : { ...config, articleEdits: { ...config.articleEdits, [id]: { ...(config.articleEdits[id] || {}), editedBy: contributor, editedAt: new Date().toISOString() } } };
   const rememberReadingPosition = () => {
     const scroller = document.querySelector('.daily-scroll');
     if (!scroller) return;
@@ -602,7 +655,11 @@ function App() {
   const relocateStory = (storyId, destination) => {
     const drafts = readStoryDrafts();
     if (!validStoryDrafts(drafts)) return false;
-    setSiteConfig(current => moveArticleInConfig(applyStoryDrafts(current, drafts), daily?.articles ?? [], storyId, destination, excludedStoryIds));
+    setSiteConfig(current => {
+      const base = applyStoryDrafts(current, drafts);
+      const moved = moveArticleInConfig(base, daily?.articles ?? [], storyId, destination, excludedStoryIds);
+      return moved === base ? base : markStoryEdited(moved, storyId);
+    });
     setCompiledAt(new Date().toISOString());
     return true;
   };
@@ -610,7 +667,11 @@ function App() {
   const toggleLeadStory = storyId => {
     const drafts = readStoryDrafts();
     if (!validStoryDrafts(drafts)) return;
-    setSiteConfig(current => toggleLeadStoryInConfig(applyStoryDrafts(current, drafts), daily?.articles ?? [], storyId, excludedStoryIds));
+    setSiteConfig(current => {
+      const base = applyStoryDrafts(current, drafts);
+      const moved = toggleLeadStoryInConfig(base, daily?.articles ?? [], storyId, excludedStoryIds);
+      return moved === base ? base : markStoryEdited(moved, storyId);
+    });
     setCompiledAt(new Date().toISOString());
   };
   const deleteStory = storyId => {
@@ -710,8 +771,8 @@ function App() {
     setSaveStatus('Publishing draft…');
     const pending = pendingBodiesRef.current;
     try {
-      const incoming = latestCollectionArticles(edition);
-      const update = appendScrapedEdition(daily || {}, edition, (siteConfig.customArticles || []).map(item => item.url));
+      const incoming = latestCollectionArticles(edition).map(item => ({ ...item, addedBy: contributor, ingestMethod: item.ingestMethod || 'scrape' }));
+      const update = appendScrapedEdition(daily || {}, { ...edition, articles: incoming }, (siteConfig.customArticles || []).map(item => item.url));
       const added = update.articles.length - (daily?.articles?.length || 0);
       const nextSiteConfig = { ...extendSiteConfigForImportedPlacements(siteConfig, incoming), leadOrigins: { ...siteConfig.leadOrigins, ...(edition.leadOrigins || {}) } };
       const payload = sharedPayload(update, nextSiteConfig, excludedStoryIds, edition.checkedAt);
@@ -770,7 +831,7 @@ function App() {
                       <button type="button" className={`story-star-button ${item.sectionId === 'Lead stories' ? 'is-lead' : ''}`} aria-label={`${item.sectionId === 'Lead stories' ? 'Remove from' : 'Add to'} lead stories: ${item.title}`} aria-pressed={item.sectionId === 'Lead stories'} title={item.sectionId === 'Lead stories' ? 'Return to original country' : 'Make lead story'} onClick={() => toggleLeadStory(item.id)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg></button>
                       <button type="button" className="story-delete-button" aria-label={`Delete story: ${item.title}`} title="Delete story from the update" onClick={() => deleteStory(item.id)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v6m4-6v6"/></svg></button>
                     </div>}
-                    <div className="daily-story-content">{editingStories ? <p className={`daily-story-inline-edit origin-${storyOrigin(item)}`} title={`Story source: ${storyOrigin(item) === "other" ? "unknown source" : storyOrigin(item)}`}><span className="story-origin-highlight"><strong contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit headline" data-edit-field="title" onKeyDown={keepStoryTextInline}>{reportStoryText(item, headlineOnly).headline}</strong>{' '}<span contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit summary" data-edit-field="summary" data-placeholder="Add summary" onKeyDown={keepStoryTextInline}>{reportStoryText(item).summary}</span>{' '}(<span contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit agency" data-edit-field="sourceName" onKeyDown={keepStoryTextInline}>{item.sourceName}</span>){' '}<time className="daily-story-date" dateTime={item.publishedAt || ''} contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit article date" data-edit-field="publishedAt" data-placeholder="14 Oct 26" onKeyDown={keepStoryTextInline}>{Number.isFinite(Date.parse(item.publishedAt)) ? reportShortDateLabel(item.publishedAt) : ''}</time></span></p> : <p><strong>{highlightSearch(reportStoryText(item, headlineOnly).headline)}</strong>{!headlineOnly && item.summary && <> {highlightSearch(reportStoryText(item).summary)}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{highlightSearch(item.sourceName)}</a>){Number.isFinite(Date.parse(item.publishedAt)) && <> <time className="daily-story-date" dateTime={item.publishedAt}>{highlightSearch(reportShortDateLabel(item.publishedAt))}</time></>}</p>}{duplicateMatches.has(item.id) && <span className="story-duplicate-flag" style={{ '--duplicate-hue': duplicateGroupHue(duplicateMatches.get(item.id).number) }} title={duplicateMatches.get(item.id).matches.map(other => `${other.sourceName}: ${other.title}`).join('\n')}>Possible duplicate · Group {duplicateMatches.get(item.id).number} · {duplicateMatches.get(item.id).matches.map(other => other.sourceName).join(', ')}</span>}</div>
+                    <div className="daily-story-content">{editingStories ? <><p className="daily-story-inline-edit" style={storyAttributionStyle(item, storyOrigin(item))}><span className="story-origin-highlight"><strong contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit headline" data-edit-field="title" onKeyDown={keepStoryTextInline}>{reportStoryText(item, headlineOnly).headline}</strong>{' '}<span contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit summary" data-edit-field="summary" data-placeholder="Add summary" onKeyDown={keepStoryTextInline}>{reportStoryText(item).summary}</span>{' '}(<span contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit agency" data-edit-field="sourceName" onKeyDown={keepStoryTextInline}>{item.sourceName}</span>){' '}<time className="daily-story-date" dateTime={item.publishedAt || ''} contentEditable suppressContentEditableWarning role="textbox" aria-label="Edit article date" data-edit-field="publishedAt" data-placeholder="14 Oct 26" onKeyDown={keepStoryTextInline}>{Number.isFinite(Date.parse(item.publishedAt)) ? reportShortDateLabel(item.publishedAt) : ''}</time></span></p><StoryBadges article={item}/></> : <p><strong>{highlightSearch(reportStoryText(item, headlineOnly).headline)}</strong>{!headlineOnly && item.summary && <> {highlightSearch(reportStoryText(item).summary)}</>} (<a href={item.url} target="_blank" rel="noopener noreferrer">{highlightSearch(item.sourceName)}</a>){Number.isFinite(Date.parse(item.publishedAt)) && <> <time className="daily-story-date" dateTime={item.publishedAt}>{highlightSearch(reportShortDateLabel(item.publishedAt))}</time></>}</p>}{duplicateMatches.has(item.id) && <span className="story-duplicate-flag" style={{ '--duplicate-hue': duplicateGroupHue(duplicateMatches.get(item.id).number) }} title={duplicateMatches.get(item.id).matches.map(other => `${other.sourceName}: ${other.title}`).join('\n')}>Possible duplicate · Group {duplicateMatches.get(item.id).number} · {duplicateMatches.get(item.id).matches.map(other => other.sourceName).join(', ')}</span>}</div>
                   </article>
                 </React.Fragment>)}
               </div>)}
@@ -789,7 +850,7 @@ function App() {
     {spreadsheetResults && <div className="add-backdrop" onClick={() => setSpreadsheetResults(null)}><section className="add-dialog spreadsheet-results" role="dialog" aria-modal="true" aria-labelledby="spreadsheet-results-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="spreadsheet-results-title">Spreadsheet export results</h2><button type="button" aria-label="Close export results" onClick={() => setSpreadsheetResults(null)}>×</button></div><p>{spreadsheetResults.downloaded ? `Downloaded ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} visible full articles.` : `No spreadsheet downloaded. ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} articles available.`}</p>{spreadsheetResults.error && <p role="alert">{spreadsheetResults.error}</p>}{spreadsheetResults.failures.length > 0 && <><h3>{spreadsheetResults.failures.length} unavailable</h3><ul>{spreadsheetResults.failures.map((failure, index) => <li key={index}>{failure}</li>)}</ul></>}<div className="add-dialog-actions"><button type="button" onClick={() => setSpreadsheetResults(null)}>Close</button></div></section></div>}
     {managementEnabled && managing && <SiteManager initialTab={managerTab} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} includeText={includeText} setIncludeText={setIncludeText} excludeText={setExcludeText} setExcludeText={setExcludeText} applyScope={applyScope} onClose={() => setManaging(false)} onReset={() => setSiteConfig(defaultSiteConfig(daily?.articles ?? preparedUpdate.articles))}/>}
     {isEditor && scrapingOpen && <div className="add-backdrop" onClick={closeScrapeDialog}><section className="add-dialog scrape-dialog" role="dialog" aria-modal="true" aria-labelledby="scrape-dialog-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="scrape-dialog-title">Scrape news</h2><button type="button" aria-label="Close scrape status" onClick={closeScrapeDialog}>×</button></div><NativeCollection onPublish={publishNativeDraft} onClear={clearCurrentUpdate} hasStories={Boolean((daily?.articles.length || 0) + (siteConfig.customArticles?.length || 0))}/></section></div>}
-    {isEditor && addingArticles && daily && <AddArticlesDialog sections={siteConfig.sections} sources={configuredSources} customCountries={siteConfig.customCountries} existingArticles={selectedArticles} remainingSlots={100 - siteConfig.customArticles.length} onAdd={async (article, placement, body) => { if (body?.body) { try { await storeArticleBodies([body]); } catch (error) { if (!sharedEnabled) throw error; } if (sharedEnabled) { const prior = pendingBodiesRef.current?.bodies || []; pendingBodiesRef.current = { replace: false, bodies: [...new Map([...prior, body].map(item => [item.url, item])).values()] }; } } setSiteConfig(current => addCustomArticleInConfig(current, article, placement)); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}
+    {isEditor && addingArticles && daily && <AddArticlesDialog sections={siteConfig.sections} sources={configuredSources} customCountries={siteConfig.customCountries} existingArticles={selectedArticles} remainingSlots={100 - siteConfig.customArticles.length} onAdd={async (article, placement, body) => { if (body?.body) { try { await storeArticleBodies([body]); } catch (error) { if (!sharedEnabled) throw error; } if (sharedEnabled) { const prior = pendingBodiesRef.current?.bodies || []; pendingBodiesRef.current = { replace: false, bodies: [...new Map([...prior, body].map(item => [item.url, item])).values()] }; } } setSiteConfig(current => addCustomArticleInConfig(current, { ...article, addedBy: contributor }, placement)); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}
     {isEditor && importingSpreadsheet && <ImportSpreadsheetDialog sections={siteConfig.sections} customCountries={siteConfig.customCountries} existingArticles={[...archivedImportReference.articles, ...preparedUpdate.articles, ...(daily?.articles ?? [])]} sources={configuredSources} importedMode={importedMode} sharedMode={sharedEnabled} publishedEmpty={preparedUpdate.emptyPrepared === true} hasStories={Boolean((daily?.articles.length || 0) + (siteConfig.customArticles?.length || 0))} onImport={importSpreadsheet} onRestore={restorePublishedUpdate} onClear={clearCurrentUpdate} onClose={() => setImportingSpreadsheet(false)}/>}
     {isEditor && editingStories && storyToMove && <MoveStoryDialog story={storyToMove} sections={siteConfig.sections} articles={displayedArticles} customCountries={siteConfig.customCountries} onMove={moveStory} onClose={() => setMoveStoryId('')}/>}
     {loginOpen && <EditorLoginDialog onLogin={user => { setEditorUser(user); setLoginOpen(false); }} onClose={() => setLoginOpen(false)}/>}

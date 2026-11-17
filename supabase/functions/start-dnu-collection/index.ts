@@ -36,8 +36,13 @@ Deno.serve(async request => {
     });
     if (!userResponse.ok) return reply(401, { error: 'Your editor session has expired. Sign in again.' });
     const user = await userResponse.json();
-    if (String(user.email || '').toLowerCase() !== 'buddhuza@gmail.com')
-      return reply(403, { error: 'Only the DNU editor can start a collection.' });
+    const editorResponse = await fetch(`${supabaseUrl}/rest/v1/dnu_editors?user_id=eq.${encodeURIComponent(user.id)}&select=active`, {
+      headers: { authorization: `Bearer ${jwt}`, apikey: supabaseKey }
+    });
+    const activeEditor = editorResponse.ok && (await editorResponse.json())?.[0]?.active === true;
+    const legacyOwner = editorResponse.status === 404 && String(user.email || '').toLowerCase() === 'buddhuza@gmail.com';
+    if (!activeEditor && !legacyOwner)
+      return reply(403, { error: 'Only an active DNU editor can start a collection.' });
 
     const runsResponse = await fetch(`${workflowApi}/runs?branch=main&per_page=1`, { headers: githubHeaders(githubToken) });
     if (!runsResponse.ok) return reply(502, { error: 'GitHub could not check the current collection status.' });

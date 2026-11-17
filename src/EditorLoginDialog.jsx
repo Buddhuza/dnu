@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { editorEmail, sharedClient } from './sharedEdition.js';
+import { loadEditorProfile, sharedClient } from './sharedEdition.js';
 import { useEscapeToClose } from './useEscapeToClose.js';
 
 export default function EditorLoginDialog({ onLogin, onClose }) {
-  const [email, setEmail] = useState(editorEmail);
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -17,12 +17,13 @@ export default function EditorLoginDialog({ onLogin, onClose }) {
     try {
       const { data, error: failure } = await sharedClient.auth.signInWithPassword({ email: email.trim(), password });
       if (failure) throw failure;
-      if (data.user?.email?.toLowerCase() !== editorEmail) {
+      const profile = await loadEditorProfile(data.user);
+      if (!profile) {
         await sharedClient.auth.signOut();
         throw new Error('This account cannot edit the DNU.');
       }
       setPassword('');
-      onLogin(data.user);
+      onLogin({ ...data.user, editorProfile: profile });
     } catch (failure) { setError(failure.message || 'Could not sign in.'); }
     finally { setBusy(false); }
   }

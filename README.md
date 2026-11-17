@@ -6,11 +6,11 @@ The versioned [DNU rulebook](public/dnu-rules.md) is the single editable Markdow
 
 ## Shared public site and editor login
 
-The shared edition uses Supabase Auth and Postgres while GitHub Pages serves the website. Visitors can browse, switch views, search, download, email and export. Only the signed-in editor can add, import, edit or manage the site. The editor's changes are saved to the shared edition; public browsers load it immediately on opening and poll for changes every 20 seconds. Dark mode remains a personal browser setting. Native collection requires the Node server or an offline GitHub Actions run. Collection creates a draft JSON and does not automatically publish to Supabase.
+The shared edition uses Supabase Auth and Postgres while GitHub Pages serves the website. Visitors can browse, switch views, search, download, email and export. Signed-in members of `dnu_editors` can add, import, edit or manage the site. Their changes are saved to the same shared edition; public browsers load it immediately on opening and poll for changes every 20 seconds. Dark mode remains a personal browser setting. Native collection requires the Node server or an offline GitHub Actions run. Collection creates a draft JSON and does not automatically publish to Supabase.
 
 To activate shared editing for a new Supabase project:
 
-1. Create a Supabase project. In **SQL Editor**, run [supabase/schema.sql](supabase/schema.sql). The SQL creates a public-read edition and body store, and a publishing function restricted to the DNU editor email.
+1. Create a Supabase project. In **SQL Editor**, run [supabase/schema.sql](supabase/schema.sql). The SQL creates a public-read edition and body store, an editor membership table, and a publishing function restricted to active members.
 2. In **Authentication → Users**, create the editor account for the authorised email. Set a fresh password there. Do not put any password in `.env`, GitHub, SQL or chat transcripts used as setup files.
 3. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` from the project's API settings for the website build. Copy [.env.example](.env.example) to an ignored `.env.production.local` for a local build. The anon/publishable key is allowed in browser code; never use a service-role key in a `VITE_` variable.
 4. Build and publish GitHub Pages with those two variables. Open the public website in one browser and log in from another. Import a sheet or edit a story, wait for **Saved for everyone**, then confirm the public browser updates. A first login before any import shows the bundled prepared edition.
@@ -20,6 +20,15 @@ If an import says **Not published: DELETE requires a WHERE clause**, rerun the l
 After reviewing a native draft, set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` only in the publication process, then run `npm run publish:shared`. This copies the prepared edition and available JSON full bodies to the shared database. The service-role key must never be used in a website build.
 
 The GitHub Pages deployment is configured for shared editing. Publishing-function changes in `supabase/schema.sql` must also be run in the Supabase SQL Editor; updating the repository alone does not change the live database.
+
+### Add individual editors to the existing project
+
+1. In the project's **SQL Editor**, run [supabase/multi-editor.sql](supabase/multi-editor.sql) once. This adds the editor membership table, registers Buddhuza as the owner, and updates the shared publishing function. The original owner can still log in before this migration, but colleagues need it.
+2. In **Authentication → Users**, create each colleague with their own email and temporary password. Have them change that password after their first login. Do not share the owner password.
+3. In **SQL Editor**, run an insert like the example at the bottom of `multi-editor.sql`, replacing the email and display name. Repeat for each colleague. Removing access later means setting `active = false` in `public.dnu_editors`; it does not remove published stories.
+4. Redeploy the `start-dnu-collection` Edge Function using the existing [deployment workflow](https://github.com/Buddhuza/dnu/actions/workflows/deploy-collection-trigger.yml) on `main` so new members can use **Scrape**. If the optional Node server is deployed, redeploy it too. Both check the same membership table.
+
+Editors use their individual Supabase credentials to work on the shared edition. In edit mode, the story text has a subtle colour keyed to the person who last edited it, or the person who added it if it has not been edited. Buddhuza is purple; other editors get stable distinct colours. Add, Import and Scrape use different strengths of that colour, and small labels name the contributors. Older stories with no saved attribution stay neutral. Attribution is stored with the published update, but the labels are visible only in edit mode. If two people save from stale copies, the later save is rejected by the edition revision check; reload the shared edition before retrying.
 
 ## Native collector
 

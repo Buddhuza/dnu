@@ -8,6 +8,19 @@ export const sharedClient = url && key ? createClient(url, key, {
 
 export const editorEmail = 'buddhuza@gmail.com';
 
+export async function loadEditorProfile(user) {
+  if (!sharedClient || !user?.id) return null;
+  const { data, error } = await sharedClient.from('dnu_editors')
+    .select('user_id,display_name,role,active').eq('user_id', user.id).maybeSingle();
+  if (error) {
+    // Keep the original editor usable until the one-time SQL migration runs.
+    if (['PGRST205', '42P01'].includes(error.code) && user.email?.toLowerCase() === editorEmail)
+      return { user_id: user.id, display_name: 'Buddhuza', role: 'owner', active: true };
+    throw error;
+  }
+  return data?.active === true ? data : null;
+}
+
 export function sharedSettings(settings) {
   const { darkMode, ...published } = settings;
   return published;

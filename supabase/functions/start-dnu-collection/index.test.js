@@ -9,12 +9,14 @@ test('the scrape trigger verifies the editor before dispatching the fixed GitHub
   let handler;
   let dispatches = 0;
   let editorEmail = 'reader@example.com';
+  let activeEditor = false;
   globalThis.Deno = {
     env: { get: key => ({ SUPABASE_URL: 'https://project.supabase.co', SUPABASE_ANON_KEY: 'public-key', GITHUB_WORKFLOW_TOKEN: 'private-token' })[key] },
     serve: callback => { handler = callback; }
   };
   globalThis.fetch = async (url, options) => {
-    if (String(url).endsWith('/auth/v1/user')) return Response.json({ email: editorEmail });
+    if (String(url).endsWith('/auth/v1/user')) return Response.json({ id: 'editor-id', email: editorEmail });
+    if (String(url).includes('/rest/v1/dnu_editors')) return Response.json(activeEditor ? [{ active: true }] : []);
     if (String(url).endsWith('/runs?branch=main&per_page=1')) return Response.json({ workflow_runs: [] });
     if (String(url).endsWith('/dispatches')) {
       dispatches += 1;
@@ -33,7 +35,8 @@ test('the scrape trigger verifies the editor before dispatching the fixed GitHub
     });
     assert.equal((await handler(request())).status, 403);
     assert.equal(dispatches, 0);
-    editorEmail = 'buddhuza@gmail.com';
+    editorEmail = 'colleague@example.com';
+    activeEditor = true;
     const response = await handler(request());
     assert.equal(response.status, 202);
     assert.equal((await response.json()).started, true);
