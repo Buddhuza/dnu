@@ -34,6 +34,18 @@ export function latestCollectionArticles(edition = {}) {
   return (edition.articles || []).filter(article => urls.has(canonicalArticleUrl(article.url)));
 }
 
+export function appendScrapedEdition(existing = {}, scraped = {}, additionalUrls = []) {
+  const incoming = latestCollectionArticles(scraped);
+  const merged = appendEditionStories(existing, { ...scraped, articles: incoming }, additionalUrls);
+  return {
+    ...merged,
+    emptyPrepared: merged.articles.length === 0,
+    importedFromSpreadsheet: false,
+    importedFileName: '',
+    latestCollectionArticleUrls: incoming.map(article => article.url)
+  };
+}
+
 export function removeStoryFromEdition(edition, storyId) {
   if (!edition) return edition;
   return { ...edition, articles: (edition.articles || []).filter(article => article.id !== storyId) };

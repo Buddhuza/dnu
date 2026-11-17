@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mergeImportedArticles, appendEditionStories, latestCollectionArticles, removeStoryFromEdition, removeStoryFromConfig } from './editionActions.js';
+import { mergeImportedArticles, appendEditionStories, appendScrapedEdition, latestCollectionArticles, removeStoryFromEdition, removeStoryFromConfig } from './editionActions.js';
 
 test('an import adds new URLs and keeps matching existing stories untouched', () => {
   const existing = [
@@ -30,13 +30,29 @@ test('a later FEEDRUN appends stories and keeps the older edition and coverage s
   assert.equal(merged.latestCollectionWindowStart, fresh.windowStart);
 });
 
+test('publishing a scrape retains earlier imports and manual additions', () => {
+  const existing = { importedFromSpreadsheet: true, importedFileName: 'morning.xlsx', articles: [
+    { id: 'imported', url: 'https://example.com/imported', title: 'Editor headline' }
+  ] };
+  const scraped = { checkedAt: '2026-11-17T12:00:00Z', articles: [
+    { id: 'repeat', url: 'https://example.com/imported?utm_source=feed', title: 'Scraped headline' },
+    { id: 'manual-repeat', url: 'https://example.com/manual' },
+    { id: 'new', url: 'https://example.com/new' }
+  ] };
+  const result = appendScrapedEdition(existing, scraped, ['https://example.com/manual']);
+  assert.deepEqual(result.articles.map(article => article.id), ['imported', 'new']);
+  assert.equal(result.articles[0].title, 'Editor headline');
+  assert.equal(result.importedFromSpreadsheet, false);
+  assert.equal(result.emptyPrepared, false);
+});
+
 test('publishing after Clear all stories does not resurrect older bundled stories', () => {
   const bundled = { articles: [
     { id: 'old', url: 'https://example.com/old' },
     { id: 'new', url: 'https://example.com/new' }
   ], latestCollectionArticleUrls: ['https://example.com/new'] };
   const clearedSharedEdition = { articles: [] };
-  const result = appendEditionStories(clearedSharedEdition, { ...bundled, articles: latestCollectionArticles(bundled) });
+  const result = appendScrapedEdition(clearedSharedEdition, bundled);
   assert.deepEqual(result.articles.map(article => article.id), ['new']);
 });
 

@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import { createArticleCache } from '../server/articleCache.js';
 import { extractArticleBody } from '../server/articleBody.js';
 import { articleJson } from '../src/articleTranslation.js';
-import { appendEditionStories, latestCollectionArticles } from '../src/editionActions.js';
+import { appendScrapedEdition, latestCollectionArticles } from '../src/editionActions.js';
 import { extendSiteConfigForImportedPlacements, normalizeSiteConfig } from '../src/siteConfig.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -33,7 +33,7 @@ for (let attempt = 0; attempt < 3; attempt++) {
     .select('revision,edition,settings,excluded_story_ids').eq('id', 'main').single();
   if (readError) throw readError;
   const customUrls = (state.settings?.customArticles || []).map(article => article.url);
-  const update = appendEditionStories(state.edition?.articles ? state.edition : {}, { ...edition, articles: incoming.map(({ body, ...article }) => article) }, customUrls);
+  const update = appendScrapedEdition(state.edition?.articles ? state.edition : {}, { ...edition, articles: incoming.map(({ body, ...article }) => article) }, customUrls);
   const settings = extendSiteConfigForImportedPlacements(normalizeSiteConfig(state.settings, update.articles), update.articles);
   settings.leadOrigins = { ...settings.leadOrigins, ...(edition.leadOrigins || {}) };
   const { data, error } = await client.from('dnu_state').update({
