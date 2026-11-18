@@ -42,8 +42,8 @@ export async function authorisedEditor(authorization) {
 
 export function startNativeCollection({ cwd, onComplete = () => {} }) {
   if (status.state === 'running') return status;
-  status = { state: 'running', startedAt: new Date().toISOString(), message: 'Checking publisher sources…' };
-  const env = { ...process.env };
+  status = { state: 'running', trigger: 'manual', startedAt: new Date().toISOString(), message: 'Checking publisher sources…' };
+  const env = { ...process.env, DNU_COLLECTION_TRIGGER: 'manual' };
   delete env.DNU_TEST_DOMAIN;
   const child = spawn(process.execPath, ['--use-env-proxy', 'collector/run.js'], { cwd, env, stdio: ['ignore', 'pipe', 'pipe'] });
   let output = '';

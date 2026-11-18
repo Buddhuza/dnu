@@ -40,6 +40,10 @@ export async function fetchGithubDraftStatus(fetchImpl = fetch) {
     ? status : null;
 }
 
+function runTrigger(event) {
+  return event === 'workflow_dispatch' ? 'manual' : ['schedule', 'push'].includes(event) ? 'automatic' : null;
+}
+
 export async function startGithubCollection(client) {
   if (!client) throw new Error('Sign in as the editor first.');
   const { data: sessionData, error: sessionError } = await client.auth.getSession();
@@ -62,11 +66,12 @@ export async function githubCollectionStatus(fetchImpl = fetch) {
     const run = runs[0];
     if (run) {
       const state = run.status === 'completed' ? run.conclusion === 'success' ? 'complete' : 'failed' : 'running';
+      let draft = null;
       if (state === 'complete') {
         const published = await fetchImpl(pagesFile('native-draft-status.json'), { cache: 'no-store' });
-        const draft = published.ok ? await published.json() : null;
+        draft = published.ok ? await published.json() : null;
         if (draft && run.event === 'schedule' && Number(draft.runId) !== Number(run.id)) return {
-          state: 'complete', runId: Number(draft.runId), checkedAt: draft.checkedAt, createdAt: draft.checkedAt, updatedAt: draft.checkedAt, runUrl: draft.runUrl,
+          state: 'complete', runId: Number(draft.runId), checkedAt: draft.checkedAt, createdAt: draft.checkedAt, updatedAt: draft.checkedAt, runUrl: draft.runUrl, trigger: draft.trigger || null,
           message: `Latest completed draft: ${draft.stories} stories.`
         };
         if (!draft || Number(draft.runId) !== Number(run.id)) return {
@@ -76,6 +81,7 @@ export async function githubCollectionStatus(fetchImpl = fetch) {
       }
       return {
         state, runId: run.id, checkedAt: run.updated_at, createdAt: run.created_at, startedAt: run.run_started_at || run.created_at, updatedAt: run.updated_at, runUrl: run.html_url,
+        trigger: draft?.trigger || runTrigger(run.event),
         message: state === 'running' ? await runningMessage(run, fetchImpl) : state === 'complete' ? 'Scrape complete. The draft is ready to publish.' : 'The latest scrape failed. Please try again.'
       };
     }
@@ -84,7 +90,7 @@ export async function githubCollectionStatus(fetchImpl = fetch) {
     const response = await fetchImpl(pagesFile('native-draft-status.json'), { cache: 'no-store' });
     if (response.ok) {
       const status = await response.json();
-      return { state: 'complete', runId: Number(status.runId), checkedAt: status.checkedAt, createdAt: status.checkedAt, updatedAt: status.checkedAt, message: `Latest completed draft: ${status.stories} stories.`, runUrl: status.runUrl };
+      return { state: 'complete', runId: Number(status.runId), checkedAt: status.checkedAt, createdAt: status.checkedAt, updatedAt: status.checkedAt, message: `Latest completed draft: ${status.stories} stories.`, runUrl: status.runUrl, trigger: status.trigger || null };
     }
   } catch { /* The first run may not have produced a draft yet. */ }
   return { state: 'idle', message: 'Ready to scrape.' };

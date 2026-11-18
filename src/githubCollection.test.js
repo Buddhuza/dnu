@@ -15,9 +15,18 @@ test('the editor loads a completed GitHub JSON draft', async () => {
 });
 
 test('latest scrape metadata supplies its finish time and story count', async () => {
-  const draft = { runId: 42, checkedAt: '2026-11-16T13:00:00Z', finishedAt: '2026-11-16T13:08:00Z', stories: 81 };
+  const draft = { runId: 42, checkedAt: '2026-11-16T13:00:00Z', finishedAt: '2026-11-16T13:08:00Z', stories: 81, trigger: 'automatic' };
   assert.deepEqual(await fetchGithubDraftStatus(async () => ({ ok: true, json: async () => draft })), draft);
   assert.equal(await fetchGithubDraftStatus(async () => ({ ok: false })), null);
+});
+
+test('latest completed scrape retains manual or automatic origin', async () => {
+  for (const [event, trigger] of [['workflow_dispatch', 'manual'], ['schedule', 'automatic']]) {
+    const fetchImpl = async url => ({ ok: true, json: async () => String(url).includes('native-draft-status.json')
+      ? { runId: 42, checkedAt: '2026-11-16T13:00:00Z', stories: 81, trigger }
+      : { workflow_runs: [{ id: 42, event, status: 'completed', conclusion: 'success', updated_at: '2026-11-16T13:08:00Z' }] } });
+    assert.equal((await githubCollectionStatus(fetchImpl)).trigger, trigger);
+  }
 });
 
 test('a skipped daylight-saving candidate keeps the previous completed draft available', async () => {

@@ -9,9 +9,10 @@ import { collectionDataPath, ensureCollectionData } from '../server/dataDirector
 const root = new URL('../', import.meta.url);
 ensureCollectionData();
 const startedAt = new Date().toISOString();
+const trigger = process.env.DNU_COLLECTION_TRIGGER === 'manual' ? 'manual' : 'automatic';
 const progressFile = collectionDataPath('native-collection-progress.json');
 function progress(state, phase, message, completed = 0, total = 0, details = {}) {
-  const update = { state, phase, message, startedAt, updatedAt: new Date().toISOString(), completed, total, ...details };
+  const update = { state, phase, message, startedAt, updatedAt: new Date().toISOString(), completed, total, trigger, ...details };
   const temporary = collectionDataPath(`native-collection-progress.${process.pid}.tmp`);
   writeFileSync(temporary, JSON.stringify(update));
   renameSync(temporary, progressFile);

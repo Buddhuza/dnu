@@ -9,6 +9,7 @@ const runId = Number(process.env.GITHUB_RUN_ID);
 if (!Number.isInteger(runId) || runId <= 0) throw new Error('A GitHub Actions run ID is required.');
 const status = {
   runId, checkedAt: edition.checkedAt, finishedAt: new Date().toISOString(), stories: edition.articles.length,
+  trigger: process.env.GITHUB_EVENT_NAME === 'workflow_dispatch' ? 'manual' : 'automatic',
   bodies: edition.articles.filter(article => String(article.body || '').trim()).length,
   failedRoutes: (edition.sourceOutcomes || []).filter(outcome => outcome.status === 'failed').length,
   runUrl: `https://github.com/Buddhuza/dnu/actions/runs/${runId}`

@@ -13,6 +13,10 @@ function scrapedStoryCount(value) {
   return Number.isInteger(count) && count >= 0 ? ` with ${count} ${count === 1 ? 'story' : 'stories'}` : '';
 }
 
+function scrapeKind(trigger) {
+  return trigger === 'manual' ? 'manual ' : trigger === 'automatic' ? 'automatic ' : '';
+}
+
 function GithubCollection({ onPublish, onClear, hasStories }) {
   const [status, setStatus] = useState({ state: 'checking', message: 'Checking scrape status…' });
   const [latestDraft, setLatestDraft] = useState(null);
@@ -67,10 +71,11 @@ function GithubCollection({ onPublish, onClear, hasStories }) {
   const busy = publishing || ['checking', 'starting', 'running'].includes(status.state);
   const finishedAt = latestDraft?.finishedAt || (latestDraft?.runId === status.runId && status.state === 'complete' ? status.updatedAt : '') || latestDraft?.checkedAt;
   const finishedLabel = formatViennaCompactDateTime(finishedAt);
+  const latestTrigger = latestDraft?.trigger || (latestDraft?.runId === status.runId ? status.trigger : null);
   const statusMessage = publishing ? 'Publishing the latest scrape' : status.state === 'complete' && latestDraft
     ? `Latest completed draft: ${latestDraft.stories} stories.` : status.message;
   return <section className="native-collection">
-    <p className="native-publish-description">{finishedLabel ? <>Publish the latest scrape, completed <time dateTime={finishedAt}>{finishedLabel}</time>{scrapedStoryCount(latestDraft?.stories)}.</> : 'Publish the latest completed scrape.'}</p>
+    <p className="native-publish-description">{finishedLabel ? <>Publish the latest {scrapeKind(latestTrigger)}scrape, completed <time dateTime={finishedAt}>{finishedLabel}</time>{scrapedStoryCount(latestDraft?.stories)}.</> : 'Publish the latest completed scrape.'}</p>
     <button type="button" className="cms-primary" onClick={publishDraft} disabled={busy}>Publish</button>
     <p className="native-scrape-description">Scrape manually if you need a newer update.</p>
     <button type="button" className="native-secondary" onClick={() => start()} disabled={busy}>Scrape</button>
@@ -125,7 +130,7 @@ function NodeCollection({ onPublish, onClear, hasStories }) {
   const finishedAt = status.finishedAt || status.updatedAt || status.checkedAt;
   const finishedLabel = status.state === 'complete' ? formatViennaCompactDateTime(finishedAt) : '';
   return <section className="native-collection">
-    <p className="native-publish-description">{finishedLabel ? <>Publish the latest scrape, completed <time dateTime={finishedAt}>{finishedLabel}</time>{scrapedStoryCount(status.stories)}.</> : 'Publish the latest completed scrape.'}</p>
+    <p className="native-publish-description">{finishedLabel ? <>Publish the latest {scrapeKind(status.trigger)}scrape, completed <time dateTime={finishedAt}>{finishedLabel}</time>{scrapedStoryCount(status.stories)}.</> : 'Publish the latest completed scrape.'}</p>
     <button type="button" className="cms-primary" onClick={publishDraft} disabled={busy || status.state !== 'complete'}>Publish</button>
     <p className="native-scrape-description">Scrape manually if you need a newer update.</p>
     <button type="button" className="native-secondary" onClick={start} disabled={!sharedClient || busy || status.state === 'unavailable'}>Scrape</button>
