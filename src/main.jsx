@@ -26,6 +26,7 @@ import { disclaimerFirst, disclaimerSecond } from './disclaimer.js';
 import { countCoveredCountries } from './collectionSummary.js';
 import { formatViennaDateTime } from './viennaTime.js';
 import { emailSubject, emailUpdateHtml, emailUpdateText } from './emailUpdate.js';
+import { waitForGmailDelivery } from './gmailDelivery.js';
 import { loadFullArticle } from './articleBodyClient.js';
 import { getStoredArticleBody, storeArticleBodies } from './articleBodyStore.js';
 import { loadEditorProfile, loadSharedBody, loadSharedEdition, publishSharedEdition, sharedClient, sharedPayload } from './sharedEdition.js';
@@ -96,6 +97,7 @@ function App() {
   const [importedMode, setImportedMode] = useState(() => !sharedEnabled && Boolean(readStored(importedUpdateKey, null)?.importedFromSpreadsheet));
   const [editorUser, setEditorUser] = useState(null);
   const [loginOpen, setLoginOpen] = useState(false);
+  const [sendingGmail, setSendingGmail] = useState(false);
   const [sharedReady, setSharedReady] = useState(!sharedEnabled);
   const [sharedError, setSharedError] = useState('');
   const [saveStatus, setSaveStatus] = useState('');
@@ -550,6 +552,32 @@ function App() {
     }
   }
 
+  async function sendPublishedGmail() {
+    if (!managementEnabled || sendingGmail) return;
+    if (savingRef.current || pendingBodiesRef.current ||
+        JSON.stringify(sharedPayload(daily, siteConfig, excludedStoryIds, compiledAt)) !== savedPayloadRef.current) {
+      setToast('Wait for “Saved for everyone” before sending the published update.');
+      return;
+    }
+    setSendingGmail(true);
+    try {
+      const { data, error } = await sharedClient.functions.invoke('send-dnu-email', {
+        method: 'POST', body: { expectedRevision: sharedRevisionRef.current, headlineOnly }
+      });
+      if (error || !data?.queued || !data.requestId) {
+        let message = data?.error;
+        try { message ||= (await error?.context?.json())?.error; } catch { /* A network error has no JSON body. */ }
+        throw new Error(message || 'Could not queue the Gmail message. Check the email setup.');
+      }
+      setToast('The published update is queued for Gmail delivery to the two recipients.');
+      const delivery = await waitForGmailDelivery(data.requestId);
+      setToast(delivery === 'sent' ? 'Gmail sent the published update to both recipients.'
+        : delivery === 'failed' ? 'Gmail delivery failed. The message was not sent.'
+        : 'Email was queued, but delivery could not be confirmed. Check the Gmail Sent folder.');
+    } catch (failure) { setToast(failure.message || 'Could not send the update.'); }
+    finally { setSendingGmail(false); }
+  }
+
   async function exportSpreadsheet() {
     if (exportingSheet || !selectedArticles.length) return;
     setExportingSheet(true);
@@ -695,6 +723,7 @@ function App() {
     <button className={`daily-action daily-edit ${headlineOnly ? 'is-active' : ''}`} type="button" aria-label={headlineOnly ? 'Show full view' : 'Show compressed view'} title={editingStories ? 'Save edits before switching views' : headlineOnly ? 'Show full view with summaries' : 'Show compressed view without summaries'} aria-pressed={headlineOnly} disabled={editingStories} onClick={() => { rememberReadingPosition(); setHeadlineOnly(current => !current); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16"/>{!headlineOnly && <path d="M4 15h16"/>}</svg></button>
     <button className="daily-action daily-download" type="button" aria-label="Download update" title={editingStories ? 'Save edits before downloading' : headlineOnly ? 'Download compressed Word update' : 'Download Word update with summaries'} disabled={!selectedArticles.length || editingStories} onClick={downloadManagedDocx}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 17v3h16v-3"/></svg></button>
     <button className="daily-action daily-edit" type="button" aria-label="Email update" title={editingStories ? 'Save edits before emailing' : 'Copy formatted update and open your email app; paste into the message body'} disabled={!selectedArticles.length || editingStories} onClick={emailManagedUpdate}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5h18v13H3z"/><path d="m3 6 9 7 9-7"/></svg></button>
+    {managementEnabled && <button className="daily-action daily-edit" type="button" aria-label="Send published update by Gmail" title="Send the published update from sitroom.github@gmail.com to the two recipients" disabled={!selectedArticles.length || editingStories || sendingGmail} onClick={sendPublishedGmail}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 18-8-8 18-2.5-7.5L3 11Z"/><path d="M10.5 13.5 21 3"/></svg></button>}
     <button className="daily-action daily-edit" type="button" aria-label="Export spreadsheet" title={editingStories ? 'Save edits before exporting' : 'Export visible full articles to spreadsheet'} disabled={!selectedArticles.length || editingStories || exportingSheet} onClick={exportSpreadsheet}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 9h18M3 14h18M10 9v11M16 9v11"/></svg></button>
     <button className="daily-action daily-edit daily-search-toggle" type="button" aria-label="Search update" title="Search within the update" aria-expanded={updateSearchOpen} onClick={() => setUpdateSearchOpen(current => !current)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"/><path d="m16 16 5 5"/></svg></button>
   </div>;

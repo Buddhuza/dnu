@@ -7,6 +7,7 @@ on:
     paths:
       - .github/workflows/deploy-collection-trigger.yml
       - supabase/functions/start-dnu-collection/index.ts
+      - supabase/functions/send-dnu-email/index.ts
 
 permissions:
   contents: read
@@ -59,3 +60,7 @@ jobs:
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: npx --yes supabase@2.58.0 functions deploy start-dnu-collection --project-ref epghsyajgspcywqqbfso
+      - name: Deploy owner-only Gmail trigger
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: npx --yes supabase@2.58.0 functions deploy send-dnu-email --project-ref epghsyajgspcywqqbfso

@@ -1,0 +1,53 @@
+name: Send published DNU through Gmail
+run-name: Send DNU ${{ inputs.request_id }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_revision:
+        description: Published edition revision to send
+        required: true
+        type: string
+      headline_only:
+        description: Send the compressed view
+        required: true
+        type: boolean
+        default: false
+      request_id:
+        description: Request identifier for delivery status
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: send-published-dnu-gmail
+  cancel-in-progress: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.5.0'
+          cache: npm
+      - run: npm ci
+      - name: Verify delivery credentials
+        env:
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          DNU_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.DNU_SUPABASE_PUBLISHABLE_KEY }}
+        run: test -n "$GMAIL_APP_PASSWORD" && test -n "$DNU_SUPABASE_PUBLISHABLE_KEY"
+      - name: Render the published edition
+        env:
+          DNU_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.DNU_SUPABASE_PUBLISHABLE_KEY }}
+          EXPECTED_REVISION: ${{ inputs.expected_revision }}
+          HEADLINE_ONLY: ${{ inputs.headline_only }}
+        run: node scripts/build-gmail-message.mjs "$EXPECTED_REVISION" "$HEADLINE_ONLY" "$RUNNER_TEMP/dnu-gmail-message.json"
+      - name: Send from the situation room Gmail account
+        env:
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: python3 scripts/send-dnu-gmail.py "$RUNNER_TEMP/dnu-gmail-message.json"
