@@ -3,9 +3,13 @@ run-name: Send DNU ${{ inputs.request_id || github.run_id }}
 
 on:
   schedule:
-    # 21:30 Vienna in summer and winter; the slot guard selects one.
+    # 21:30 Vienna in summer and winter, with two backup slots.
     - cron: '30 19 * * *'
+    - cron: '40 19 * * *'
+    - cron: '50 19 * * *'
     - cron: '30 20 * * *'
+    - cron: '40 20 * * *'
+    - cron: '50 20 * * *'
   workflow_dispatch:
     inputs:
       expected_revision:
@@ -24,6 +28,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: send-published-dnu-gmail
@@ -35,39 +40,34 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Check scheduled Vienna slot
-        id: slot
+      - name: Check Vienna slot and earlier delivery
+        id: delivery
         env:
-          EVENT_NAME: ${{ github.event_name }}
+          GITHUB_TOKEN: ${{ github.token }}
           CRON_SCHEDULE: ${{ github.event.schedule }}
-        run: |
-          if [ "$EVENT_NAME" != schedule ] || node --input-type=module -e "import { isScheduledGmailCandidate } from './scripts/scheduled-gmail.js'; process.exit(isScheduledGmailCandidate(process.env.CRON_SCHEDULE) ? 0 : 1)"; then
-            echo 'run=true' >> "$GITHUB_OUTPUT"
-          else
-            echo 'run=false' >> "$GITHUB_OUTPUT"
-          fi
+        run: node scripts/should-send-scheduled-gmail.mjs >> "$GITHUB_OUTPUT"
       - uses: actions/setup-node@v4
-        if: steps.slot.outputs.run == 'true'
+        if: steps.delivery.outputs.send == 'true'
         with:
           node-version: '24.5.0'
           cache: npm
-      - if: steps.slot.outputs.run == 'true'
+      - if: steps.delivery.outputs.send == 'true'
         run: npm ci
       - name: Verify delivery credentials
-        if: steps.slot.outputs.run == 'true'
+        if: steps.delivery.outputs.send == 'true'
         env:
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           DNU_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.DNU_SUPABASE_PUBLISHABLE_KEY }}
         run: test -n "$GMAIL_APP_PASSWORD" && test -n "$DNU_SUPABASE_PUBLISHABLE_KEY"
       - name: Render the published edition
-        if: steps.slot.outputs.run == 'true'
+        if: steps.delivery.outputs.send == 'true'
         env:
           DNU_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.DNU_SUPABASE_PUBLISHABLE_KEY }}
           EXPECTED_REVISION: ${{ github.event_name == 'schedule' && 'latest' || inputs.expected_revision }}
           HEADLINE_ONLY: ${{ inputs.headline_only || 'false' }}
         run: node scripts/build-gmail-message.mjs "$EXPECTED_REVISION" "$HEADLINE_ONLY" "$RUNNER_TEMP/dnu-gmail-message.json"
       - name: Send from the situation room Gmail account
-        if: steps.slot.outputs.run == 'true'
+        if: steps.delivery.outputs.send == 'true'
         env:
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
         run: python3 scripts/send-dnu-gmail.py "$RUNNER_TEMP/dnu-gmail-message.json"
