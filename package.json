@@ -13,6 +13,7 @@
     "collect:daily": "node --use-env-proxy collector/run.js",
     "schedule": "node collector/schedule.js",
     "publish:shared": "node scripts/publish-shared-update.mjs",
+    "editors:create": "node scripts/create-editor-accounts.mjs",
     "start": "NODE_USE_ENV_PROXY=1 node server/index.js",
     "test": "node --test"
   },

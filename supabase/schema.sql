@@ -21,6 +21,7 @@ create table if not exists public.dnu_bodies (
 
 create table if not exists public.dnu_editors (
   user_id uuid primary key references auth.users(id) on delete cascade,
+  username text unique check (username ~ '^[a-z][a-z0-9_]{2,31}$'),
   display_name text not null check (length(display_name) between 1 and 80),
   role text not null default 'editor' check (role in ('owner', 'editor')),
   active boolean not null default true,
@@ -33,10 +34,10 @@ grant select on public.dnu_editors to authenticated;
 drop policy if exists "Editors can read their own profile" on public.dnu_editors;
 create policy "Editors can read their own profile"
   on public.dnu_editors for select to authenticated using (user_id = auth.uid());
-insert into public.dnu_editors (user_id, display_name, role)
-select id, 'Buddhuza', 'owner' from auth.users
+insert into public.dnu_editors (user_id, username, display_name, role)
+select id, 'lkhubulava', 'lkhubulava', 'owner' from auth.users
 where lower(email) = 'buddhuza@gmail.com'
-on conflict (user_id) do update set role = 'owner', active = true;
+on conflict (user_id) do update set username = 'lkhubulava', display_name = 'lkhubulava', role = 'owner', active = true;
 
 alter table public.dnu_state enable row level security;
 alter table public.dnu_bodies enable row level security;
@@ -64,15 +65,23 @@ returns bigint
 language plpgsql security definer set search_path = public, pg_temp
 as $$
 declare next_revision bigint;
+declare editor_role text;
 begin
-  if auth.role() <> 'authenticated' or not exists (
-    select 1 from public.dnu_editors where user_id = auth.uid() and active = true
-  ) then
+  select role into editor_role from public.dnu_editors where user_id = auth.uid() and active = true;
+  if auth.role() <> 'authenticated' or editor_role is null then
     raise exception 'Only an active DNU editor may publish an update' using errcode = '42501';
   end if;
   if jsonb_typeof(p_update) <> 'object' or jsonb_typeof(p_settings) <> 'object'
      or jsonb_typeof(p_excluded_story_ids) <> 'array' or jsonb_typeof(p_bodies) <> 'array' then
     raise exception 'Invalid DNU update data';
+  end if;
+  if editor_role <> 'owner' and exists (
+    select 1 from public.dnu_state where id = 'main'
+      and (settings - array['sections','articleEdits','articleOrder','leadOrigins','customCountries','customArticles']::text[])
+        is distinct from
+        (p_settings - array['sections','articleEdits','articleOrder','leadOrigins','customCountries','customArticles']::text[])
+  ) then
+    raise exception 'Only the owner may change site settings' using errcode = '42501';
   end if;
 
   update public.dnu_state

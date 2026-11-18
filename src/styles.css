@@ -447,8 +447,9 @@
 .toast.toast-error{background:#8b302c}
 @media(max-width:800px){
   .topbar{grid-template-columns:minmax(0,1fr) auto auto}
-  .topbar .mode-button:not(.login-button){grid-column:2;grid-row:1}
+  .topbar .mode-button:not(.login-button):not(.account-button){grid-column:2;grid-row:1}
   .topbar .login-button{grid-column:3;grid-row:1}
-  .topbar .manage-button{grid-column:1/-1;grid-row:2}
+  .topbar .account-button{grid-column:2;grid-row:2}
+  .topbar .manage-button{grid-column:3;grid-row:2}
   .topbar .shared-save-status{grid-column:1/-1;grid-row:3;justify-self:end}
 }

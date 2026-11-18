@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { editorAccounts, usernameForEmail } from './editorAccounts.js';
 
 const url = import.meta.env?.VITE_SUPABASE_URL;
 const key = import.meta.env?.VITE_SUPABASE_ANON_KEY;
@@ -6,7 +7,7 @@ export const sharedClient = url && key ? createClient(url, key, {
   auth: { storageKey: 'dnu-editor-session', persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
 }) : null;
 
-export const editorEmail = 'buddhuza@gmail.com';
+export const editorEmail = editorAccounts.lkhubulava.email;
 
 export async function loadEditorProfile(user) {
   if (!sharedClient || !user?.id) return null;
@@ -15,10 +16,10 @@ export async function loadEditorProfile(user) {
   if (error) {
     // Keep the original editor usable until the one-time SQL migration runs.
     if (['PGRST205', '42P01'].includes(error.code) && user.email?.toLowerCase() === editorEmail)
-      return { user_id: user.id, display_name: 'Buddhuza', role: 'owner', active: true };
+      return { user_id: user.id, username: 'lkhubulava', display_name: 'lkhubulava', role: 'owner', active: true };
     throw error;
   }
-  return data?.active === true ? data : null;
+  return data?.active === true ? { ...data, username: usernameForEmail(user.email) } : null;
 }
 
 export function sharedSettings(settings) {

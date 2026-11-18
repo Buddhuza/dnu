@@ -9,6 +9,7 @@ import NativeCollection from './NativeCollection.jsx';
 import AddArticlesDialog from './AddArticlesDialog.jsx';
 import ImportSpreadsheetDialog from './ImportSpreadsheetDialog.jsx';
 import EditorLoginDialog from './EditorLoginDialog.jsx';
+import EditorAccountDialog from './EditorAccountDialog.jsx';
 import MoveStoryDialog from './MoveStoryDialog.jsx';
 import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig, toggleLeadStoryInConfig, addCustomArticleInConfig, extendSiteConfigForImportedPlacements, canonicalArticleUrl } from './siteConfig.js';
 import { appendScrapedEdition, latestCollectionArticles, mergeImportedArticles, removeStoryFromEdition, removeStoryFromConfig } from './editionActions.js';
@@ -135,6 +136,7 @@ function App() {
   const pendingReadingPositionRef = useRef(null);
   const [addingArticles, setAddingArticles] = useState(false);
   const [importingSpreadsheet, setImportingSpreadsheet] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const [updateSearchOpen, setUpdateSearchOpen] = useState(false);
   const [updateSearchText, setUpdateSearchText] = useState('');
   const [activeSearchResult, setActiveSearchResult] = useState(0);
@@ -153,7 +155,7 @@ function App() {
   });
   const isEditor = Boolean(editorUser && sharedReady);
   const contributor = contributorFromUser(editorUser);
-  const managementEnabled = isEditor;
+  const managementEnabled = isEditor && editorUser.editorProfile.role === 'owner';
 
   useEffect(() => { fetch(apiUrl('/api/config')).then(r => { if (!r.ok) throw new Error('API unavailable'); return r.json(); }).then(setConfig).catch(() => setConfig({ sources: preparedSources, firecrawlConfigured: false })); }, []);
 
@@ -801,9 +803,9 @@ function App() {
 
   return <div className="app-shell" data-mode={siteConfig.darkMode ? 'dark' : 'light'} style={themeStyle}>
     <header className="topbar"><div className="brand-text"><strong>{siteConfig.brandName}</strong><small>{siteConfig.brandTagline}</small></div><span className="topbar-spacer"/><button className="mode-button" aria-pressed={siteConfig.darkMode} onClick={() => setSiteConfig(current => ({ ...current, darkMode: !current.darkMode }))}>{siteConfig.darkMode ? '☀ Light mode' : '☾ Dark mode'}</button><button className="mode-button login-button" type="button" onClick={async () => {
-      if (isEditor) { await sharedClient.auth.signOut(); setEditorUser(null); setManaging(false); setEditingStories(false); }
+      if (isEditor) { await sharedClient.auth.signOut(); setEditorUser(null); setManaging(false); setEditingStories(false); setAccountOpen(false); }
       else setLoginOpen(true);
-    }}>{isEditor ? 'Log out' : 'Log in'}</button>{managementEnabled && <button className="manage-button" onClick={() => { setManagerTab('Content'); setManaging(true); }}>⚙ Manage site</button>}{isEditor && saveStatus && <span className="shared-save-status" role="status">{saveStatus}</span>}</header>
+    }}>{isEditor ? 'Log out' : 'Log in'}</button>{isEditor && <button className="mode-button account-button" type="button" onClick={() => setAccountOpen(true)}>Account</button>}{managementEnabled && <button className="manage-button" onClick={() => { setManagerTab('Content'); setManaging(true); }}>⚙ Manage site</button>}{isEditor && saveStatus && <span className="shared-save-status" role="status">{saveStatus}</span>}</header>
     {sharedError && <div className="shared-warning" role="alert">{sharedError}</div>}
     <div className={`workspace ${siteConfig.showSources ? '' : 'no-sidebar'}`}>
       {siteConfig.showSources && <aside className="sidebar">
@@ -854,6 +856,7 @@ function App() {
     {isEditor && importingSpreadsheet && <ImportSpreadsheetDialog sections={siteConfig.sections} customCountries={siteConfig.customCountries} existingArticles={[...archivedImportReference.articles, ...preparedUpdate.articles, ...(daily?.articles ?? [])]} sources={configuredSources} importedMode={importedMode} sharedMode={sharedEnabled} publishedEmpty={preparedUpdate.emptyPrepared === true} hasStories={Boolean((daily?.articles.length || 0) + (siteConfig.customArticles?.length || 0))} onImport={importSpreadsheet} onRestore={restorePublishedUpdate} onClear={clearCurrentUpdate} onClose={() => setImportingSpreadsheet(false)}/>}
     {isEditor && editingStories && storyToMove && <MoveStoryDialog story={storyToMove} sections={siteConfig.sections} articles={displayedArticles} customCountries={siteConfig.customCountries} onMove={moveStory} onClose={() => setMoveStoryId('')}/>}
     {loginOpen && <EditorLoginDialog onLogin={user => { setEditorUser(user); setLoginOpen(false); }} onClose={() => setLoginOpen(false)}/>}
+    {isEditor && accountOpen && <EditorAccountDialog profile={editorUser.editorProfile} onClose={() => setAccountOpen(false)}/>}
   </div>;
 }
 
