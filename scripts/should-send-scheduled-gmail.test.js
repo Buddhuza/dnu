@@ -39,3 +39,11 @@ test('a timed push can back up a missing schedule but skips an earlier send', as
   assert.equal(await shouldSendScheduledGmail({ ...base, eventName: 'push', now: new Date('2026-11-18T23:35:30Z'), fetchImpl }), false);
   assert.equal(await shouldSendScheduledGmail({ ...base, eventName: 'push', now: new Date('2026-11-18T23:30:00Z'), fetchImpl }), false);
 });
+
+test('Supabase scheduled dispatch checks prior delivery while manual sends remain direct', async () => {
+  const fetchImpl = async url => Response.json(String(url).endsWith('/jobs?per_page=30')
+    ? { jobs: [{ steps: [{ name: 'Send from the situation room Gmail account', conclusion: 'success' }] }] }
+    : { workflow_runs: [{ id: 2, event: 'workflow_dispatch', display_title: 'Send DNU auto-2026-11-19', conclusion: 'success', created_at: '2026-11-18T23:35:00Z' }] });
+  assert.equal(await shouldSendScheduledGmail({ ...base, eventName: 'workflow_dispatch', scheduledDelivery: true, fetchImpl }), false);
+  assert.equal(await shouldSendScheduledGmail({ ...base, eventName: 'workflow_dispatch', scheduledDelivery: false, fetchImpl }), true);
+});
