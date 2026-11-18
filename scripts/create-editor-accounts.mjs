@@ -35,10 +35,13 @@ for (const [username, account] of accounts) {
     if (error) throw new Error(`${username}: ${error.message}. If Supabase rejects the temporary password, use a longer one permitted by the project's password policy.`);
     user = data.user;
     created = true;
+  } else {
+    const { error } = await admin.auth.admin.updateUserById(user.id, { password: temporaryPassword });
+    if (error) throw new Error(`${username}: could not set the requested temporary password: ${error.message}`);
   }
   const { error } = await admin.from('dnu_editors').upsert({
     user_id: user.id, username, display_name: account.name, role: 'editor', active: true
   }, { onConflict: 'user_id' });
   if (error) throw new Error(`${username}: account ${created ? 'created' : 'found'}, but editor access could not be saved: ${error.message}`);
-  console.log(`${username}: ${created ? 'created' : 'already existed; existing password unchanged'} and editor access enabled`);
+  console.log(`${username}: ${created ? 'created' : 'existing account updated'}; temporary password set and editor access enabled`);
 }
