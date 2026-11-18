@@ -13,14 +13,15 @@ async function githubJson(url, token, fetchImpl) {
 }
 
 export async function shouldSendScheduledGmail({ eventName, cron, token, runId, now = new Date(), fetchImpl = fetch }) {
-  if (eventName !== 'schedule') return true;
-  if (!isScheduledGmailCandidate(cron, now)) return false;
-  if (/^35\s/.test(cron)) return true;
+  if (eventName === 'workflow_dispatch') return true;
+  if (eventName === 'schedule' && !isScheduledGmailCandidate(cron, now)) return false;
+  if (eventName === 'push' && !/^00:(35|4\d|5\d)$/.test(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Vienna', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(now))) return false;
+  if (!['schedule', 'push'].includes(eventName)) return false;
   if (!token) throw new Error('GitHub Actions token is required to check earlier deliveries.');
-  const date = scheduledGmailUtcDate(cron, now).toISOString().slice(0, 10);
-  const runs = await githubJson(`${workflowApi}/workflows/send-dnu-gmail.yml/runs?event=schedule&per_page=30`, token, fetchImpl);
+  const date = (eventName === 'schedule' ? scheduledGmailUtcDate(cron, now) : now).toISOString().slice(0, 10);
+  const runs = await githubJson(`${workflowApi}/workflows/send-dnu-gmail.yml/runs?per_page=50`, token, fetchImpl);
   for (const run of runs.workflow_runs || []) {
-    if (String(run.id) === String(runId) || run.conclusion !== 'success' || !run.created_at?.startsWith(date)) continue;
+    if (String(run.id) === String(runId) || !['schedule', 'push'].includes(run.event) || run.conclusion !== 'success' || !run.created_at?.startsWith(date)) continue;
     const jobs = await githubJson(`${workflowApi}/runs/${run.id}/jobs?per_page=30`, token, fetchImpl);
     if ((jobs.jobs || []).some(job => (job.steps || []).some(step =>
       step.name === 'Send from the situation room Gmail account' && step.conclusion === 'success'))) return false;
