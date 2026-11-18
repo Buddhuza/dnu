@@ -3,13 +3,13 @@ run-name: Send DNU ${{ inputs.request_id || github.run_id }}
 
 on:
   schedule:
-    # 21:30 Vienna in summer and winter, with two backup slots.
-    - cron: '30 19 * * *'
-    - cron: '40 19 * * *'
-    - cron: '50 19 * * *'
-    - cron: '30 20 * * *'
-    - cron: '40 20 * * *'
-    - cron: '50 20 * * *'
+    # 00:35 Vienna in summer and winter, with two backup slots.
+    - cron: '35 22 * * *'
+    - cron: '45 22 * * *'
+    - cron: '55 22 * * *'
+    - cron: '35 23 * * *'
+    - cron: '45 23 * * *'
+    - cron: '55 23 * * *'
   workflow_dispatch:
     inputs:
       expected_revision:

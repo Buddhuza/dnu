@@ -1,4 +1,4 @@
-import { isScheduledGmailCandidate } from './scheduled-gmail.js';
+import { isScheduledGmailCandidate, scheduledGmailUtcDate } from './scheduled-gmail.js';
 
 const workflowApi = 'https://api.github.com/repos/Buddhuza/dnu/actions';
 const headers = token => ({
@@ -15,9 +15,9 @@ async function githubJson(url, token, fetchImpl) {
 export async function shouldSendScheduledGmail({ eventName, cron, token, runId, now = new Date(), fetchImpl = fetch }) {
   if (eventName !== 'schedule') return true;
   if (!isScheduledGmailCandidate(cron, now)) return false;
-  if (/^30\s/.test(cron)) return true;
+  if (/^35\s/.test(cron)) return true;
   if (!token) throw new Error('GitHub Actions token is required to check earlier deliveries.');
-  const date = now.toISOString().slice(0, 10);
+  const date = scheduledGmailUtcDate(cron, now).toISOString().slice(0, 10);
   const runs = await githubJson(`${workflowApi}/workflows/send-dnu-gmail.yml/runs?event=schedule&per_page=30`, token, fetchImpl);
   for (const run of runs.workflow_runs || []) {
     if (String(run.id) === String(runId) || run.conclusion !== 'success' || !run.created_at?.startsWith(date)) continue;
