@@ -16,6 +16,7 @@ const state = {
 test('Gmail message contains only the visible published update and inline logo', () => {
   const full = gmailMessageFromState(state, 7, false);
   assert.equal(full.articleCount, 1);
+  assert.match(full.subject, /^\[TEST\] OSCE SITROOM DAILY NEWS UPDATE/);
   assert.deepEqual(full.recipients, ['buddhuza@gmail.com', 'ayabushady@gmail.com']);
   assert.match(full.html, /cid:dnu-osce-logo/);
   assert.match(full.html, /Delegates met in Vienna/);

@@ -1,7 +1,11 @@
 name: Send published DNU through Gmail
-run-name: Send DNU ${{ inputs.request_id }}
+run-name: Send DNU ${{ inputs.request_id || github.run_id }}
 
 on:
+  schedule:
+    # 21:30 Vienna in summer and winter; the slot guard selects one.
+    - cron: '30 19 * * *'
+    - cron: '30 20 * * *'
   workflow_dispatch:
     inputs:
       expected_revision:
@@ -31,23 +35,39 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - name: Check scheduled Vienna slot
+        id: slot
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          CRON_SCHEDULE: ${{ github.event.schedule }}
+        run: |
+          if [ "$EVENT_NAME" != schedule ] || node --input-type=module -e "import { isScheduledGmailCandidate } from './scripts/scheduled-gmail.js'; process.exit(isScheduledGmailCandidate(process.env.CRON_SCHEDULE) ? 0 : 1)"; then
+            echo 'run=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'run=false' >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/setup-node@v4
+        if: steps.slot.outputs.run == 'true'
         with:
           node-version: '24.5.0'
           cache: npm
-      - run: npm ci
+      - if: steps.slot.outputs.run == 'true'
+        run: npm ci
       - name: Verify delivery credentials
+        if: steps.slot.outputs.run == 'true'
         env:
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           DNU_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.DNU_SUPABASE_PUBLISHABLE_KEY }}
         run: test -n "$GMAIL_APP_PASSWORD" && test -n "$DNU_SUPABASE_PUBLISHABLE_KEY"
       - name: Render the published edition
+        if: steps.slot.outputs.run == 'true'
         env:
           DNU_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.DNU_SUPABASE_PUBLISHABLE_KEY }}
-          EXPECTED_REVISION: ${{ inputs.expected_revision }}
-          HEADLINE_ONLY: ${{ inputs.headline_only }}
+          EXPECTED_REVISION: ${{ github.event_name == 'schedule' && 'latest' || inputs.expected_revision }}
+          HEADLINE_ONLY: ${{ inputs.headline_only || 'false' }}
         run: node scripts/build-gmail-message.mjs "$EXPECTED_REVISION" "$HEADLINE_ONLY" "$RUNNER_TEMP/dnu-gmail-message.json"
       - name: Send from the situation room Gmail account
+        if: steps.slot.outputs.run == 'true'
         env:
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
         run: python3 scripts/send-dnu-gmail.py "$RUNNER_TEMP/dnu-gmail-message.json"
