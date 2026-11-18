@@ -22,6 +22,7 @@ export function gmailMessageFromState(state, expectedRevision, headlineOnly = fa
   return {
     revision: expectedRevision,
     articleCount: articles.length,
+    recipients: settings.gmailRecipients,
     subject: emailSubject(content.compiledAt),
     html: emailUpdateHtml(content),
     text: emailUpdateText(content)

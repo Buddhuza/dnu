@@ -32,7 +32,7 @@ Editors log in with their short usernames and individual passwords. The four col
 
 ### Send the published update through Gmail
 
-The owner-only paper-plane button beside **Email** sends the published, visible DNU from `sitroom.github@gmail.com` to `buddhuza@gmail.com` and `ayabushady@gmail.com`. It uses the current full or compressed view, the same rich HTML layout as the existing Email/Word report, and the inline OSCE logo. It waits for **Saved for everyone** and checks the published revision before delivery. The browser cannot change the sender, recipients or message body. The existing envelope button still copies the report and opens a draft in the default email application.
+The owner-only paper-plane button beside **Email** sends the published, visible DNU from `sitroom.github@gmail.com` to the saved recipients. The list initially contains `buddhuza@gmail.com` and `ayabushady@gmail.com`. The owner can edit it under **Manage site → Email**; enter one address per line and press **Save recipients**. Wait for **Saved for everyone** before sending. The send workflow reads the current list and published edition together, and refuses to send if the edition changes after the click. The message uses the current full or compressed view, the same rich HTML layout as the existing Email/Word report, and the inline OSCE logo. The sender and message body are fixed. The existing envelope button still copies the report and opens a draft in the default email application.
 
 To activate the paper-plane button:
 

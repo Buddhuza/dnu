@@ -16,12 +16,18 @@ const state = {
 test('Gmail message contains only the visible published update and inline logo', () => {
   const full = gmailMessageFromState(state, 7, false);
   assert.equal(full.articleCount, 1);
+  assert.deepEqual(full.recipients, ['buddhuza@gmail.com', 'ayabushady@gmail.com']);
   assert.match(full.html, /cid:dnu-osce-logo/);
   assert.match(full.html, /Delegates met in Vienna/);
   assert.doesNotMatch(full.html, /Old talks end/);
   const compressed = gmailMessageFromState(state, 7, true);
   assert.doesNotMatch(compressed.html, /Delegates met in Vienna/);
   assert.equal(compressed.subject, full.subject);
+});
+
+test('Gmail renders the latest saved recipient list from the published state', () => {
+  const edited = { ...state, settings: { ...state.settings, gmailRecipients: ['editor@example.com'] } };
+  assert.deepEqual(gmailMessageFromState(edited, 7).recipients, ['editor@example.com']);
 });
 
 test('Gmail refuses an edition changed since the button was pressed', () => {

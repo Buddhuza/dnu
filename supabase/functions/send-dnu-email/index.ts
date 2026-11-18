@@ -1,5 +1,5 @@
 // The site never receives Gmail credentials. This function verifies the owner
-// and queues the fixed-recipient delivery workflow.
+// and queues delivery to the recipients stored with the published edition.
 const workflowApi = 'https://api.github.com/repos/Buddhuza/dnu/actions/workflows/send-dnu-gmail.yml';
 const allowedOrigins = new Set(['https://buddhuza.github.io', 'http://localhost:5173', 'http://127.0.0.1:5173']);
 
@@ -51,7 +51,7 @@ Deno.serve(async request => {
       body: JSON.stringify({ ref: 'main', inputs: { expected_revision: String(revision), headline_only: String(input.headlineOnly), request_id: requestId } })
     });
     if (!dispatch.ok) return reply(502, { error: 'Could not queue the email. Check delivery setup.' });
-    return reply(202, { queued: true, requestId, message: 'Email queued for the two recipients.' });
+    return reply(202, { queued: true, requestId, message: 'Email queued for the saved recipients.' });
   } catch (error) {
     console.error('DNU email dispatch failed', error);
     return reply(502, { error: 'Could not reach the email delivery service.' });

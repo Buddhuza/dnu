@@ -7,6 +7,7 @@ import { conciseDnuSummary } from './conciseSummary.js';
 import { reviewedImportedSummary } from './reviewedImportedSummaries.js';
 import { cleanHeadlinePrefix } from './headlineText.js';
 import { normaliseContributor } from './storyAttribution.js';
+import { defaultGmailRecipients, normalizedGmailRecipients } from './gmailRecipients.js';
 
 export const THEME_PRESETS = {
   forest: { name: 'Forest', primary: '#123e47', accent: '#bce081', background: '#f4efe6', surface: '#fdfaf4', text: '#182a36', section: '#0070c0', font: 'DM Sans' },
@@ -42,6 +43,7 @@ const defaults = {
   customCountries: {},
   customArticles: [],
   customSources: [],
+  gmailRecipients: defaultGmailRecipients,
   sourceListingOverrides: {},
   hiddenSourceIds: []
 };
@@ -183,6 +185,7 @@ export function normalizeSiteConfig(input, articles = []) {
     theme, darkTheme, sections, articleEdits, leadOrigins,
     articleOrder: [...new Set((Array.isArray(input.articleOrder) ? input.articleOrder : []).filter(id => typeof id === 'string' && id.length <= 500))].slice(0, 1000),
     customArticles, customSources, sourceListingOverrides, customCountries,
+    gmailRecipients: normalizedGmailRecipients(input.gmailRecipients),
     hiddenSourceIds: (Array.isArray(input.hiddenSourceIds) ? input.hiddenSourceIds : []).filter(id => typeof id === 'string').slice(0, 500)
   };
 }
