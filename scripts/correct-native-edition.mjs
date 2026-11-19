@@ -7,6 +7,9 @@ if (!url || !key) throw new Error('Shared edition publishing credentials are mis
 const client = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
 const { data: state, error } = await client.from('dnu_state').select('revision,edition,settings').eq('id', 'main').single();
 if (error) throw error;
+console.log(JSON.stringify({ currentEdition: { revision: state.revision, checkedAt: state.edition?.checkedAt || null,
+  nativeEdition: state.edition?.nativeEdition || false, stories: state.edition?.articles?.length || 0,
+  reviewedIdsPresent: state.edition?.articles?.filter(article => ['5c436006', '7673b6cf', 'e8f664ab', 'f6dbe806'].includes(article.id)).map(article => article.id) || [] } }));
 const result = correctNativeEdition(state.edition, state.settings);
 const { data: saved, error: saveError } = await client.from('dnu_state')
   .update({ edition: result.edition, settings: result.settings, revision: Number(state.revision) + 1, updated_at: new Date().toISOString() })
