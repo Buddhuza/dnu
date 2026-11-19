@@ -1,0 +1,10 @@
+file:///home/runner/work/dnu/dnu/src/nativeEditorialCorrections.js:24
+    throw new Error('The shared edition is not the reviewed 19 November draft; no correction was published.');
+          ^
+
+Error: The shared edition is not the reviewed 19 November draft; no correction was published.
+    at correctNativeEdition (file:///home/runner/work/dnu/dnu/src/nativeEditorialCorrections.js:24:11)
+    at file:///home/runner/work/dnu/dnu/scripts/correct-native-edition.mjs:10:16
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+Node.js v22.23.5
