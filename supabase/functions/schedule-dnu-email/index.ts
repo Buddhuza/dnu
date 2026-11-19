@@ -22,7 +22,7 @@ Deno.serve(async request => {
     return reply(401, { error: 'Unauthorised scheduler.' });
 
   const now = Object.fromEntries(clock.formatToParts(new Date()).map(part => [part.type, part.value]));
-  if (now.hour !== '00' || !['35', '45', '55'].includes(now.minute))
+  if (now.hour !== '13' || !['30', '40', '50'].includes(now.minute))
     return reply(200, { skipped: true, reason: 'Outside the Vienna email slots.' });
   const supabaseUrl = Deno.env.get('SUPABASE_URL');
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');

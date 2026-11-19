@@ -6,7 +6,7 @@ import { transform } from 'esbuild';
 test('scheduled email requires its secret and queues the published revision in the Vienna slot', async () => {
   const original = { Deno: globalThis.Deno, fetch: globalThis.fetch, Date: globalThis.Date };
   let handler, dispatches = 0;
-  globalThis.Date = class extends Date { constructor(...args) { super(...(args.length ? args : ['2026-11-18T23:35:00Z'])); } };
+  globalThis.Date = class extends Date { constructor(...args) { super(...(args.length ? args : ['2026-11-19T12:30:00Z'])); } };
   globalThis.Deno = {
     env: { get: key => ({ DNU_SCHEDULE_TOKEN: 'private-scheduler', SUPABASE_URL: 'https://project.supabase.co',
       SUPABASE_SERVICE_ROLE_KEY: 'service-key', GITHUB_WORKFLOW_TOKEN: 'github-token' })[key] },

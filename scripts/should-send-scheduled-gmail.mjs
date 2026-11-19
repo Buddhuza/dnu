@@ -15,7 +15,7 @@ async function githubJson(url, token, fetchImpl) {
 export async function shouldSendScheduledGmail({ eventName, cron, token, runId, scheduledDelivery = false, now = new Date(), fetchImpl = fetch }) {
   if (eventName === 'workflow_dispatch' && !scheduledDelivery) return true;
   if (eventName === 'schedule' && !isScheduledGmailCandidate(cron, now)) return false;
-  if (eventName === 'push' && !/^00:(35|4\d|5\d)$/.test(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Vienna', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(now))) return false;
+  if (eventName === 'push' && !/^13:(3\d|4\d|5\d)$/.test(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Vienna', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(now))) return false;
   if (!['schedule', 'push', 'workflow_dispatch'].includes(eventName)) return false;
   if (!token) throw new Error('GitHub Actions token is required to check earlier deliveries.');
   const date = (eventName === 'schedule' ? scheduledGmailUtcDate(cron, now) : now).toISOString().slice(0, 10);

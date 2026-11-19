@@ -7,13 +7,13 @@ on:
     paths:
       - .github/dnu-email-trigger.txt
   schedule:
-    # 00:35 Vienna in summer and winter, with two backup slots.
-    - cron: '35 22 * * *'
-    - cron: '45 22 * * *'
-    - cron: '55 22 * * *'
-    - cron: '35 23 * * *'
-    - cron: '45 23 * * *'
-    - cron: '55 23 * * *'
+    # 13:30 Vienna in summer and winter, with two backup slots.
+    - cron: '30 11 * * *'
+    - cron: '40 11 * * *'
+    - cron: '50 11 * * *'
+    - cron: '30 12 * * *'
+    - cron: '40 12 * * *'
+    - cron: '50 12 * * *'
   workflow_dispatch:
     inputs:
       expected_revision:

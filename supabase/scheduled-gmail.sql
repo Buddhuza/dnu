@@ -1,5 +1,5 @@
 -- The DNU scheduler token must already exist in vault.decrypted_secrets.
--- Cron runs in UTC. The Edge Function accepts only 00:35, 00:45 or 00:55 Vienna time.
+-- Cron runs in UTC. The Edge Function accepts only 13:30, 13:40 or 13:50 Vienna time.
 create extension if not exists pg_cron with schema pg_catalog;
 create extension if not exists pg_net with schema extensions;
 
@@ -11,7 +11,9 @@ begin
 end;
 $$;
 
-select cron.schedule('dnu-email-2235', '35 22 * * *', $job$
+select cron.unschedule(jobid) from cron.job where jobname in ('dnu-email-2235', 'dnu-email-2245', 'dnu-email-2255', 'dnu-email-2335', 'dnu-email-2345', 'dnu-email-2355');
+
+select cron.schedule('dnu-email-1130', '30 11 * * *', $job$
   select net.http_post(
     url := 'https://epghsyajgspcywqqbfso.supabase.co/functions/v1/schedule-dnu-email',
     headers := jsonb_build_object('Content-Type', 'application/json', 'x-dnu-schedule-token',
@@ -19,7 +21,7 @@ select cron.schedule('dnu-email-2235', '35 22 * * *', $job$
     body := '{}'::jsonb
   );
 $job$);
-select cron.schedule('dnu-email-2245', '45 22 * * *', $job$
+select cron.schedule('dnu-email-1140', '40 11 * * *', $job$
   select net.http_post(
     url := 'https://epghsyajgspcywqqbfso.supabase.co/functions/v1/schedule-dnu-email',
     headers := jsonb_build_object('Content-Type', 'application/json', 'x-dnu-schedule-token',
@@ -27,7 +29,7 @@ select cron.schedule('dnu-email-2245', '45 22 * * *', $job$
     body := '{}'::jsonb
   );
 $job$);
-select cron.schedule('dnu-email-2255', '55 22 * * *', $job$
+select cron.schedule('dnu-email-1150', '50 11 * * *', $job$
   select net.http_post(
     url := 'https://epghsyajgspcywqqbfso.supabase.co/functions/v1/schedule-dnu-email',
     headers := jsonb_build_object('Content-Type', 'application/json', 'x-dnu-schedule-token',
@@ -35,7 +37,7 @@ select cron.schedule('dnu-email-2255', '55 22 * * *', $job$
     body := '{}'::jsonb
   );
 $job$);
-select cron.schedule('dnu-email-2335', '35 23 * * *', $job$
+select cron.schedule('dnu-email-1230', '30 12 * * *', $job$
   select net.http_post(
     url := 'https://epghsyajgspcywqqbfso.supabase.co/functions/v1/schedule-dnu-email',
     headers := jsonb_build_object('Content-Type', 'application/json', 'x-dnu-schedule-token',
@@ -43,7 +45,7 @@ select cron.schedule('dnu-email-2335', '35 23 * * *', $job$
     body := '{}'::jsonb
   );
 $job$);
-select cron.schedule('dnu-email-2345', '45 23 * * *', $job$
+select cron.schedule('dnu-email-1240', '40 12 * * *', $job$
   select net.http_post(
     url := 'https://epghsyajgspcywqqbfso.supabase.co/functions/v1/schedule-dnu-email',
     headers := jsonb_build_object('Content-Type', 'application/json', 'x-dnu-schedule-token',
@@ -51,7 +53,7 @@ select cron.schedule('dnu-email-2345', '45 23 * * *', $job$
     body := '{}'::jsonb
   );
 $job$);
-select cron.schedule('dnu-email-2355', '55 23 * * *', $job$
+select cron.schedule('dnu-email-1250', '50 12 * * *', $job$
   select net.http_post(
     url := 'https://epghsyajgspcywqqbfso.supabase.co/functions/v1/schedule-dnu-email',
     headers := jsonb_build_object('Content-Type', 'application/json', 'x-dnu-schedule-token',
