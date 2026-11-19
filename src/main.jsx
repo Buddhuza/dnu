@@ -11,6 +11,7 @@ import ImportSpreadsheetDialog from './ImportSpreadsheetDialog.jsx';
 import EditorLoginDialog from './EditorLoginDialog.jsx';
 import EditorAccountDialog from './EditorAccountDialog.jsx';
 import MoveStoryDialog from './MoveStoryDialog.jsx';
+import SendGmailDialog from './SendGmailDialog.jsx';
 import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig, toggleLeadStoryInConfig, addCustomArticleInConfig, extendSiteConfigForImportedPlacements, canonicalArticleUrl } from './siteConfig.js';
 import { appendScrapedEdition, latestCollectionArticles, mergeImportedArticles, removeStoryFromEdition, removeStoryFromConfig } from './editionActions.js';
 import { orderedSubsections, leadRegionalHeadings } from './newsSections.js';
@@ -98,6 +99,7 @@ function App() {
   const [editorUser, setEditorUser] = useState(null);
   const [loginOpen, setLoginOpen] = useState(false);
   const [sendingGmail, setSendingGmail] = useState(false);
+  const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [sharedReady, setSharedReady] = useState(!sharedEnabled);
   const [sharedError, setSharedError] = useState('');
   const [saveStatus, setSaveStatus] = useState('');
@@ -552,30 +554,55 @@ function App() {
     }
   }
 
-  async function sendPublishedGmail() {
-    if (!managementEnabled || sendingGmail) return;
+  async function saveGmailRecipients(recipients) {
+    if (!managementEnabled || !daily) throw new Error('Sign in as the owner first.');
     if (savingRef.current || pendingBodiesRef.current ||
         JSON.stringify(sharedPayload(daily, siteConfig, excludedStoryIds, compiledAt)) !== savedPayloadRef.current) {
-      setToast('Wait for “Saved for everyone” before sending the published update.');
-      return;
+      throw new Error('Wait for “Saved for everyone” before changing recipients or sending.');
     }
+    if (JSON.stringify(recipients) === JSON.stringify(siteConfig.gmailRecipients)) return sharedRevisionRef.current;
+    savingRef.current = true;
+    setSaveStatus('Saving recipients…');
+    try {
+      const nextConfig = { ...siteConfig, gmailRecipients: recipients };
+      const payload = sharedPayload(daily, nextConfig, excludedStoryIds, compiledAt);
+      const revision = await publishSharedEdition(sharedRevisionRef.current, payload);
+      sharedRevisionRef.current = revision;
+      savedPayloadRef.current = JSON.stringify(payload);
+      setSiteConfig(nextConfig);
+      setSaveStatus('Saved for everyone');
+      return revision;
+    } catch (failure) {
+      setSaveStatus(`Not published: ${failure.message}`);
+      throw failure;
+    } finally { savingRef.current = false; }
+  }
+
+  async function sendPublishedGmail(recipients) {
+    if (!managementEnabled || sendingGmail) throw new Error('Email delivery is already in progress.');
     setSendingGmail(true);
     try {
+      const revision = await saveGmailRecipients(recipients);
       const { data, error } = await sharedClient.functions.invoke('send-dnu-email', {
-        method: 'POST', body: { expectedRevision: sharedRevisionRef.current, headlineOnly }
+        method: 'POST', body: { expectedRevision: revision, headlineOnly }
       });
       if (error || !data?.queued || !data.requestId) {
         let message = data?.error;
         try { message ||= (await error?.context?.json())?.error; } catch { /* A network error has no JSON body. */ }
         throw new Error(message || 'Could not queue the Gmail message. Check the email setup.');
       }
-      setToast(`The published update is queued for Gmail delivery to ${siteConfig.gmailRecipients.length} recipient${siteConfig.gmailRecipients.length === 1 ? '' : 's'}.`);
-      const delivery = await waitForGmailDelivery(data.requestId);
-      setToast(delivery === 'sent' ? 'Gmail sent the published update to the saved recipients.'
-        : delivery === 'failed' ? 'Gmail delivery failed. The message was not sent.'
-        : 'Email was queued, but delivery could not be confirmed. Check the Gmail Sent folder.');
-    } catch (failure) { setToast(failure.message || 'Could not send the update.'); }
-    finally { setSendingGmail(false); }
+      setToast(`The published update is queued for Gmail delivery to ${recipients.length} recipient${recipients.length === 1 ? '' : 's'}.`);
+      void waitForGmailDelivery(data.requestId).then(delivery => {
+        setToast(delivery === 'sent' ? 'Gmail sent the published update to the saved recipients.'
+          : delivery === 'failed' ? 'Gmail delivery failed. The message was not sent.'
+          : 'Email was queued, but delivery could not be confirmed. Check the Gmail Sent folder.');
+      }).catch(() => setToast('Email was queued, but delivery could not be confirmed. Check the Gmail Sent folder.'))
+        .finally(() => setSendingGmail(false));
+    } catch (failure) {
+      setToast(failure.message || 'Could not send the update.');
+      setSendingGmail(false);
+      throw failure;
+    }
   }
 
   async function exportSpreadsheet() {
@@ -723,7 +750,7 @@ function App() {
     <button className={`daily-action daily-edit ${headlineOnly ? 'is-active' : ''}`} type="button" aria-label={headlineOnly ? 'Show full view' : 'Show compressed view'} title={editingStories ? 'Save edits before switching views' : headlineOnly ? 'Show full view with summaries' : 'Show compressed view without summaries'} aria-pressed={headlineOnly} disabled={editingStories} onClick={() => { rememberReadingPosition(); setHeadlineOnly(current => !current); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16"/>{!headlineOnly && <path d="M4 15h16"/>}</svg></button>
     <button className="daily-action daily-download" type="button" aria-label="Download update" title={editingStories ? 'Save edits before downloading' : headlineOnly ? 'Download compressed Word update' : 'Download Word update with summaries'} disabled={!selectedArticles.length || editingStories} onClick={downloadManagedDocx}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 17v3h16v-3"/></svg></button>
     <button className="daily-action daily-edit" type="button" aria-label="Email update" title={editingStories ? 'Save edits before emailing' : 'Copy formatted update and open your email app; paste into the message body'} disabled={!selectedArticles.length || editingStories} onClick={emailManagedUpdate}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5h18v13H3z"/><path d="m3 6 9 7 9-7"/></svg></button>
-    {managementEnabled && <button className="daily-action daily-edit" type="button" aria-label="Send published update by Gmail" title="Send from sitroom.github@gmail.com to the saved recipients; edit the list in Manage site → Email" disabled={!selectedArticles.length || editingStories || sendingGmail} onClick={sendPublishedGmail}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 18-8-8 18-2.5-7.5L3 11Z"/><path d="M10.5 13.5 21 3"/></svg></button>}
+    {managementEnabled && <button className="daily-action daily-edit" type="button" aria-label="Send published update by Gmail" title="Preview recipients and send from OSCE SitRoom" disabled={!selectedArticles.length || editingStories || sendingGmail} onClick={() => setSendDialogOpen(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 18-8-8 18-2.5-7.5L3 11Z"/><path d="M10.5 13.5 21 3"/></svg></button>}
     <button className="daily-action daily-edit" type="button" aria-label="Export spreadsheet" title={editingStories ? 'Save edits before exporting' : 'Export visible full articles to spreadsheet'} disabled={!selectedArticles.length || editingStories || exportingSheet} onClick={exportSpreadsheet}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 9h18M3 14h18M10 9v11M16 9v11"/></svg></button>
     <button className="daily-action daily-edit daily-search-toggle" type="button" aria-label="Search update" title="Search within the update" aria-expanded={updateSearchOpen} onClick={() => setUpdateSearchOpen(current => !current)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"/><path d="m16 16 5 5"/></svg></button>
   </div>;
@@ -880,6 +907,7 @@ function App() {
     {isEditor && showScrapeNotice(scrapeStatus, { dialogOpen: scrapingOpen, dismissedRunId: dismissedScrapeRunId, now: scrapeNoticeClock }) && <button type="button" className="scrape-live-status" role="status" onClick={() => { dismissCompletedScrape(); setScrapingOpen(true); }}><strong>{scrapeStatus.state === 'complete' ? 'Scrape complete' : 'Scraping news'}</strong><span>{scrapeStatus.message}</span><small>{scrapeStatus.state === 'complete' ? 'Publish draft' : 'Open progress'}</small></button>}
     {spreadsheetResults && <div className="add-backdrop" onClick={() => setSpreadsheetResults(null)}><section className="add-dialog spreadsheet-results" role="dialog" aria-modal="true" aria-labelledby="spreadsheet-results-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="spreadsheet-results-title">Spreadsheet export results</h2><button type="button" aria-label="Close export results" onClick={() => setSpreadsheetResults(null)}>×</button></div><p>{spreadsheetResults.downloaded ? `Downloaded ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} visible full articles.` : `No spreadsheet downloaded. ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} articles available.`}</p>{spreadsheetResults.error && <p role="alert">{spreadsheetResults.error}</p>}{spreadsheetResults.failures.length > 0 && <><h3>{spreadsheetResults.failures.length} unavailable</h3><ul>{spreadsheetResults.failures.map((failure, index) => <li key={index}>{failure}</li>)}</ul></>}<div className="add-dialog-actions"><button type="button" onClick={() => setSpreadsheetResults(null)}>Close</button></div></section></div>}
     {managementEnabled && managing && <SiteManager initialTab={managerTab} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} includeText={includeText} setIncludeText={setIncludeText} excludeText={setExcludeText} setExcludeText={setExcludeText} applyScope={applyScope} onClose={() => setManaging(false)} onReset={() => setSiteConfig(current => ({ ...defaultSiteConfig(daily?.articles ?? preparedUpdate.articles), gmailRecipients: current.gmailRecipients }))}/>}
+    {managementEnabled && sendDialogOpen && <SendGmailDialog recipients={siteConfig.gmailRecipients} subject={`[TEST] ${emailSubject(compiledAt)}`} articleCount={selectedArticles.length} onSave={saveGmailRecipients} onSend={sendPublishedGmail} onClose={() => setSendDialogOpen(false)}/>}
     {isEditor && scrapingOpen && <div className="add-backdrop" onClick={closeScrapeDialog}><section className="add-dialog scrape-dialog" role="dialog" aria-modal="true" aria-labelledby="scrape-dialog-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="scrape-dialog-title">Scrape news</h2><button type="button" aria-label="Close scrape status" onClick={closeScrapeDialog}>×</button></div><NativeCollection onPublish={publishNativeDraft} onClear={clearCurrentUpdate} hasStories={Boolean((daily?.articles.length || 0) + (siteConfig.customArticles?.length || 0))}/></section></div>}
     {isEditor && addingArticles && daily && <AddArticlesDialog sections={siteConfig.sections} sources={configuredSources} customCountries={siteConfig.customCountries} existingArticles={selectedArticles} remainingSlots={100 - siteConfig.customArticles.length} onAdd={async (article, placement, body) => { if (body?.body) { try { await storeArticleBodies([body]); } catch (error) { if (!sharedEnabled) throw error; } if (sharedEnabled) { const prior = pendingBodiesRef.current?.bodies || []; pendingBodiesRef.current = { replace: false, bodies: [...new Map([...prior, body].map(item => [item.url, item])).values()] }; } } setSiteConfig(current => addCustomArticleInConfig(current, { ...article, addedBy: contributor }, placement)); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}
     {isEditor && importingSpreadsheet && <ImportSpreadsheetDialog sections={siteConfig.sections} customCountries={siteConfig.customCountries} existingArticles={[...archivedImportReference.articles, ...preparedUpdate.articles, ...(daily?.articles ?? [])]} sources={configuredSources} importedMode={importedMode} sharedMode={sharedEnabled} publishedEmpty={preparedUpdate.emptyPrepared === true} hasStories={Boolean((daily?.articles.length || 0) + (siteConfig.customArticles?.length || 0))} onImport={importSpreadsheet} onRestore={restorePublishedUpdate} onClear={clearCurrentUpdate} onClose={() => setImportingSpreadsheet(false)}/>}

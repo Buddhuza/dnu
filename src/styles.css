@@ -66,6 +66,8 @@
 .add-dialog form label{display:block;font-weight:800;margin:18px 0 8px}
 .add-dialog textarea,.add-dialog input{box-sizing:border-box;width:100%;border:1px solid #a7bbba;border-radius:8px;background:var(--site-surface,#fff);color:var(--site-text,#182a36);font:inherit;line-height:1.5;padding:12px}
 .add-dialog textarea{resize:vertical}
+.send-gmail-dialog>label{display:block;font-weight:800;margin:18px 0 8px}
+.send-gmail-dialog .send-gmail-hint{font-size:calc(var(--site-body-size,18px) - 2px);opacity:.8}
 .add-article-dialog{padding:20px}
 .add-article-dialog form>label{margin:11px 0 5px}
 .add-article-dialog form>input,.add-article-dialog form>textarea,.add-article-dialog .add-url-tools input{padding:8px 10px;line-height:1.35}
