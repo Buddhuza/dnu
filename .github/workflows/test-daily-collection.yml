@@ -24,6 +24,8 @@ jobs:
   collect:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    outputs:
+      ran: ${{ steps.slot.outputs.run }}
     steps:
       - uses: actions/checkout@v4
       - name: Check Vienna collection time
@@ -76,3 +78,23 @@ jobs:
             sleep $((attempt * 3))
           done
           exit 1
+
+  report:
+    if: always() && (needs.collect.outputs.ran == 'true' || needs.collect.result == 'failure' || needs.collect.result == 'cancelled')
+    needs: collect
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download collection results if available
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: native-daily-draft
+          path: report-data
+      - name: Email scrape report
+        env:
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          DNU_SCRAPE_RESULT: ${{ needs.collect.result }}
+          DNU_SCRAPE_KIND: daily
+        run: python3 scripts/send-collection-report.py report-data
