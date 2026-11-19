@@ -74,6 +74,10 @@ export async function createReportDocxFromTemplate(templateBytes, { title, windo
   paragraphs.push(disclaimerParagraphs());
   let documentXml = await zip.file('word/document.xml').async('string');
   documentXml = documentXml.replace(/Organization for Security and Co-operation in Europe/g, 'Organisation for Security and Co-operation in Europe');
+  documentXml = documentXml.replace(/<w:p\b[^>]*>[\s\S]*?<\/w:p>/g, paragraph => {
+    const text = [...paragraph.matchAll(/<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>/g)].map(match => match[1]).join('');
+    return text.trim() === 'Operations Service' ? '' : paragraph;
+  });
   documentXml = documentXml.replace('{{TITLE}}', escapeXml(title?.trim() || defaultTitle()));
   documentXml = documentXml.replace(/<w:sectPr\b/, `${paragraphs.join('')}<w:sectPr`);
   zip.file('word/document.xml', documentXml);

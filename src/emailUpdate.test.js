@@ -15,12 +15,14 @@ test('formatted email follows Word headings, source links, and disclaimer', () =
   assert.match(html, /Organisation for Security and Co-operation in Europe/);
   assert.doesNotMatch(html, /Organization for Security and Co-operation in Europe/);
   assert.match(emailUpdateText(options), /Organisation for Security and Co-operation in Europe/);
+  assert.doesNotMatch(html, /Operations Service/);
+  assert.doesNotMatch(emailUpdateText(options), /Operations Service/);
   assert.match(html, /16 October 2026/);
   assert.match(emailUpdateText(options), /16 October 2026/);
   assert.match(html, /WESTERN \/ CENTRAL EUROPE/);
   assert.match(html, /margin:7pt 0 0pt;[^>]*>WESTERN \/ CENTRAL EUROPE/);
-  assert.match(html, /margin:7pt 0 2pt;[^>]*>FRANCE/);
-  assert.match(html, /background-color:#d9e2f3[^>]*>FRANCE/);
+  assert.match(html, /<h4 style="[^\"]*margin:7pt 0 2pt;padding:0"><span style="background-color:#d9e2f3">FRANCE<\/span><\/h4>/);
+  assert.doesNotMatch(html, /<h4 style="[^\"]*background-color:/);
   assert.match(html, /href="https:\/\/example.com\/story\?a=1&amp;b=2"/);
   assert.match(html, /<strong>EU leaders discuss security talks\.<\/strong> Ministers agreed to meet in Paris\./);
   assert.match(html, /Disclaimer:/);

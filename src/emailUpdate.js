@@ -13,7 +13,7 @@ export function emailSubject(compiledAt) {
 
 export function emailUpdateHtml({ title = 'DAILY NEWS UPDATE', compiledAt, articles, headlineOnly = false, logoUrl = '' }) {
   const logo = logoUrl ? `<img src="${escapeHtml(logoUrl)}" alt="OSCE" width="122" height="38" style="display:block;width:122px;height:38px;margin:0 auto 9pt">` : '';
-  const paragraphs = [`<div style="font-family:Calibri,Arial,sans-serif;color:#000;max-width:640px;background:#fff"><div style="text-align:center">${logo}<p style="font-size:16pt;margin:0 0 2pt">Organisation for Security and Co-operation in Europe</p><p style="font-size:14pt;margin:0 0 2pt">Conflict Prevention Centre</p><p style="font-size:14pt;margin:0 0 2pt">Operations Service</p><p style="font-size:18pt;margin:0 0 13pt">Situation / Communications Room</p><h1 style="font-size:20pt;color:#000;margin:0 0 5pt">${escapeHtml(title)}</h1><p style="font-size:12pt;margin:0 0 14pt">${escapeHtml(reportEndDateLabel(compiledAt))}</p></div>`];
+  const paragraphs = [`<div style="font-family:Calibri,Arial,sans-serif;color:#000;max-width:640px;background:#fff"><div style="text-align:center">${logo}<p style="font-size:16pt;margin:0 0 2pt">Organisation for Security and Co-operation in Europe</p><p style="font-size:14pt;margin:0 0 2pt">Conflict Prevention Centre</p><p style="font-size:18pt;margin:0 0 13pt">Situation / Communications Room</p><h1 style="font-size:20pt;color:#000;margin:0 0 5pt">${escapeHtml(title)}</h1><p style="font-size:12pt;margin:0 0 14pt">${escapeHtml(reportEndDateLabel(compiledAt))}</p></div>`];
   let section = '', subsection = '', country = '';
   for (const article of articles) {
     const nextSection = article.section || 'Miscellaneous';
@@ -38,7 +38,7 @@ export function emailUpdateHtml({ title = 'DAILY NEWS UPDATE', compiledAt, artic
       const afterTopic = section === 'Miscellaneous' && !country && Boolean(subsection);
       country = article.country;
       const before = afterTopic ? (headlineOnly ? '5pt' : '7pt') : (headlineOnly ? '10pt' : '13pt');
-      paragraphs.push(`<h4 style="font-size:12pt;color:#0070c0;background-color:#d9e2f3;margin:${before} 0 2pt;padding:2pt 3pt">${escapeHtml(reportHeadingLabel(country).toUpperCase())}</h4>`);
+      paragraphs.push(`<h4 style="font-size:12pt;color:#0070c0;line-height:14pt;mso-line-height-rule:exactly;margin:${before} 0 2pt;padding:0"><span style="background-color:#d9e2f3">${escapeHtml(reportHeadingLabel(country).toUpperCase())}</span></h4>`);
     }
     const { headline, summary } = reportStoryText(article, headlineOnly);
     const detail = !headlineOnly && summary ? ` ${escapeHtml(summary)}` : '';
@@ -49,7 +49,7 @@ export function emailUpdateHtml({ title = 'DAILY NEWS UPDATE', compiledAt, artic
 }
 
 export function emailUpdateText({ title = 'DAILY NEWS UPDATE', compiledAt, articles, headlineOnly = false }) {
-  const lines = ['OSCE', 'Organisation for Security and Co-operation in Europe', 'Conflict Prevention Centre', 'Operations Service', 'Situation / Communications Room', '', title, reportEndDateLabel(compiledAt), ''];
+  const lines = ['OSCE', 'Organisation for Security and Co-operation in Europe', 'Conflict Prevention Centre', 'Situation / Communications Room', '', title, reportEndDateLabel(compiledAt), ''];
   let section = '', subsection = '', country = '';
   for (const article of articles) {
     const nextSection = article.section || 'Miscellaneous';

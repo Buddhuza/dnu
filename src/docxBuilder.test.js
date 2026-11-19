@@ -18,6 +18,7 @@ test('browser report download creates a readable Word file with country headings
   assert.ok(output instanceof Uint8Array);
   const zip = await JSZip.loadAsync(output);
   const document = await zip.file('word/document.xml').async('string');
+  assert.doesNotMatch(document, /Operations/);
   assert.match(document, /BELGIUM/);
   assert.match(document.split('MIDDLE EAST')[0].split('<w:p>').at(-1), /<w:shd[^>]*w:fill="D9E2F3"/);
   assert.match(document, /9 October 2026/);
