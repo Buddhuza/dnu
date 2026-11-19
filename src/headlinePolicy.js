@@ -7,11 +7,15 @@ export function excludedHeadlineReason(value, summary = '', url = '') {
   const detail = `${headline} ${summary}`;
   if (/\blive\s*:/i.test(headline) || /^live(?:\s+updates?)?\s*[:|–-]/i.test(headline) || /\/(?:liveblog|live-blog|live-updates)(?:\/|$)/i.test(String(url))) return 'Live blogs are excluded';
   if (/^why\b/i.test(headline)) return 'Why headlines are excluded';
+  if (/^what\b/i.test(headline)) return 'What explainer headlines are excluded';
   if (/^how\b/i.test(headline)) return 'Explainer headlines are excluded';
   if (/^interview\b/i.test(headline)) return 'Interview headlines are excluded';
   if (headline.includes('?')) return 'Question headlines are excluded';
   if (/\bMehriban Aliyeva\b/i.test(detail)) return 'Mehriban Aliyeva stories are excluded';
   if (/^(?:analysis|opinion|commentary|editorial|feature|in depth|explainer)\b/i.test(headline)) return 'Analysis, opinion and feature headlines are excluded';
+  if (/^analyst\b/i.test(headline) || /\s[–—-]\s*expert\b/i.test(headline) || /\b(?:memoir|UFC event|parts ways with coach)\b/i.test(headline)) return 'Analysis, memoir or sports rather than current political or security news';
+  if (/\bHaiti\b/i.test(headline) || /\bIndonesia police arrest\b/i.test(headline)) return 'Outside the DNU geography';
+  if (/\b(?:Albanian woman asks Putin face to face|Crishock on the Attack on the Priest|member of the Skaljar clan was killed|suspected fuel smuggler fighting extradition|Man protests on roof of Spanish embassy)\b/i.test(headline)) return 'Routine incident or reaction outside the political and security brief';
   if (/^Energy Efficiency in the Western Balkans: Building Markets and Creating Jobs$/i.test(headline) || /^CESEC: Europe is spending enormous sums on high energy costs$/i.test(headline)) return 'Analytical article without a specific news development';
   if (/^With Change of Power, Serbia Can Reinvigorate EU Accession Bid\b/i.test(headline) || /^Attempts to find resolution for Israel['’]s new government and Ukraine['’]s war\b/i.test(headline)) return 'Opinion or analysis rather than a specific news development';
   if (/\bHow a university boom fuels exploitation and human trafficking\b/i.test(headline)) return 'Explainer rather than a specific news development';

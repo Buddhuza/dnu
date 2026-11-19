@@ -226,6 +226,7 @@ export function displaySiteContent(articles, config, excludedIds = new Set(), ke
     if (displayed.sectionId === 'Miscellaneous' && displayed.subsection === 'OCEANIA' && ['Australia', 'New Zealand'].includes(displayed.country)) displayed.subsection = 'SOUTH PACIFIC';
     displayed.title = cleanHeadlinePrefix(displayed.title);
     if (article.fromSpreadsheet && !edit?.summaryEdited) displayed.summary = reviewedImportedSummary(displayed.title, displayed.publishedAt) || conciseDnuSummary(displayed.summary, displayed.title);
+    else if (article.fromNativeCollector && !edit?.summaryEdited) displayed.summary = conciseDnuSummary(displayed.summary, displayed.title);
     if (article.fromSpreadsheet && isBelarusPrisonerStory(displayed.title)) {
       displayed.sectionId = 'Eastern Europe';
       displayed.section = sectionById.get(displayed.sectionId)?.name || displayed.sectionId;

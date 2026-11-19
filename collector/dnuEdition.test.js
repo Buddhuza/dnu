@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { adaptSelectedArticles, dedupeNativeEvents } from './dnuEdition.js';
+import { adaptSelectedArticles, dedupeNativeEvents, limitBelarusStateAgency } from './dnuEdition.js';
 
 const registry = [{ id: 'source-83', domain: 'bbc.com', name: 'BBC' }];
 const item = (title, extras = {}) => ({
@@ -60,4 +60,42 @@ test('native adapter strips a publisher teaser and relative timestamp from a hea
     category: 'Eastern Europe', country: 'Ukraine'
   })], new Set(), registry);
   assert.equal(articles[0].title, 'UK to provide Ukraine with 1,000 long-range strike drones');
+});
+
+test('native placement follows the event, not the publisher home', () => {
+  const cases = [
+    ['China’s Xi urges US and Russia to join forces to safeguard world peace', 'Al Jazeera', 'aljazeera.com', 'NORTH EAST ASIA', 'China'],
+    ['Alleged Russian agent arrested for spying on Silicon Valley tech firm', 'Euronews', 'euronews.com', 'NORTH AMERICA', 'United States'],
+    ['Asylum minister reaffirms Syria is safe despite Council of State ruling', 'NL Times', 'nltimes.nl', 'WESTERN / CENTRAL EUROPE', 'Netherlands']
+  ];
+  const sources = cases.map(([, name, domain], index) => ({ id: `source-${200 + index}`, name, domain }));
+  const { articles, rejected } = adaptSelectedArticles(cases.map(([title, name, domain]) => item(title, {
+    source: name, sourceDomain: domain, link: `https://${domain}/article`, category: 'South Caucasus Region', country: 'Azerbaijan'
+  })), new Set(), [...registry, ...sources]);
+  assert.deepEqual(rejected, []);
+  assert.deepEqual(articles.map(article => [article.subsection, article.country]), cases.map(([, , , subsection, country]) => [subsection, country]));
+});
+
+test('local sources do not place foreign events under their home countries', () => {
+  const sources = [
+    ['News.az', 'news.az', 'Azerbaijan', 'Haiti police report 34 gang suspects killed in capital raid'],
+    ['Radio Moldova', 'radiomoldova.md', 'Moldova', 'Putin warns of painful response after third Crimea bridge strike'],
+    ['Gazeta Express', 'gazetaexpress.com', 'Serbia / Kosovo', 'Xi calls for a world without nuclear weapons in meeting with Trump and Putin']
+  ];
+  const registryWithSources = sources.map(([name, domain, country], index) => ({ id: `source-${220 + index}`, name, domain, country }));
+  const { articles, rejected } = adaptSelectedArticles(sources.map(([titleName, domain, country, title]) => item(title, {
+    source: titleName, sourceDomain: domain, link: `https://${domain}/article`, category: 'South Caucasus Region', country
+  })), new Set(), [...registry, ...registryWithSources]);
+  assert.equal(articles.length, 0);
+  assert.equal(rejected.length, 3);
+});
+
+test('Belarus state agency coverage is limited within one edition', () => {
+  const result = limitBelarusStateAgency([
+    { id: 'a', sourceName: 'BelTA', sectionId: 'Eastern Europe', subsection: 'Belarus' },
+    { id: 'b', sourceName: 'BelTA', sectionId: 'Eastern Europe', subsection: 'Belarus' },
+    { id: 'c', sourceName: 'Euroradio', sectionId: 'Eastern Europe', subsection: 'Belarus' }
+  ]);
+  assert.deepEqual(result.articles.map(article => article.id), ['a', 'c']);
+  assert.deepEqual(result.removed.map(article => article.id), ['b']);
 });

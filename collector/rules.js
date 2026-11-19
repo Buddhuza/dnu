@@ -1,10 +1,12 @@
+import { conciseDnuSummary } from '../src/conciseSummary.js';
+
 var NEWS = {
   TIMEZONE: 'Europe/Vienna', CUT_OFF_HOUR: 8, CUT_OFF_MINUTE: 0,
   MAX_EXECUTION_MS: 180000, MAX_CANDIDATES: 480, AI_BATCH_SIZE: 12,
   INTERNATIONAL_POOL_SHARE: 0.40, INTERNATIONAL_SELECTION_SHARE: 0.40,
   AI_ENABLED: true, MODEL: 'gemini-2.5-flash-lite', TEMPERATURE: 0.1,
   MAX_FEEDS: 200, MAX_PER_SOURCE_FEED: 20, MAX_ARTICLE_FETCHES: 150,
-  RESERVE_ARTICLES: 36, MIN_EVIDENCE_WORDS: 35, SUMMARY_WORDS: 65, TOP_SUMMARY_WORDS: 55, SUMMARY_SENTENCES: 2, GOOGLE_RPC_ENABLED: true,
+  RESERVE_ARTICLES: 36, MIN_EVIDENCE_WORDS: 35, SUMMARY_WORDS: 22, TOP_SUMMARY_WORDS: 22, SUMMARY_SENTENCES: 1, GOOGLE_RPC_ENABLED: true,
   EMAIL_BODY_BUDGET: 180000, AI_SUMMARIES: true, TOP_REQUIRE_SUMMARY: false, MIN_AUTO_TEXT_RATIO: 0.60, MIN_AUTO_MODEL_RATIO: 0.80,
   MIN_SCORE: 50, MAX_TOTAL: 125, TOP_STORIES: 5,
   DESK_LIMITS: {'South Eastern Europe':26,'Eastern Europe':29,
@@ -374,7 +376,7 @@ function descriptionEvidence_(title,description,isSearch){var t=newsCleanEvidenc
  return descriptionEvidence_Prior13_(title,t,isSearch);
 }
 
-function publicSummary_(it,top){var candidates=[it.summary,it.articleBody,it.description];if(it.contentStatus==='headline_only'&&!it.articleBody)return '';for(var i=0;i<candidates.length;i++){var text=descriptionEvidence_(it.headline,candidates[i]||'',false);if(i===0&&/;extractive_summary_selected/.test(it.aiStatus||'')){var trusted=newsCleanEvidence_(it.summary);if(trusted.length>=20&&tokens_(trusted).length>=3)text=trusted;}if(!text)continue;var h=cleanText_(it.headline),tail=text.slice(h.length);if(text.toLowerCase().startsWith(h.toLowerCase())&&/^\s+[A-Z]/.test(tail)&&tokens_(tail).length>=8)text=tail.trim();var summary=compactSummary_(text,top?NEWS.TOP_SUMMARY_WORDS:NEWS.SUMMARY_WORDS);if(summary)return summary;}return '';}
+function publicSummary_(it,top){var candidates=[it.articleBody,it.summary,it.description];if(it.contentStatus==='headline_only'&&!it.articleBody)return '';for(var i=0;i<candidates.length;i++){var raw=String(candidates[i]||'');if(i===0)raw=raw.split(/\n\s*\n/)[0];var text=descriptionEvidence_(it.headline,raw,false);if(i===1&&/;extractive_summary_selected/.test(it.aiStatus||'')){var trusted=newsCleanEvidence_(it.summary);if(trusted.length>=20&&tokens_(trusted).length>=3)text=trusted;}if(!text)continue;var h=cleanText_(it.headline),tail=text.slice(h.length);if(text.toLowerCase().startsWith(h.toLowerCase())&&/^\s+[A-Z]/.test(tail)&&tokens_(tail).length>=8)text=tail.trim();var summary=conciseDnuSummary(text,it.headline);if(summary)return summary;}return '';}
 
 function evidenceWords_(it){var t=descriptionEvidence_(it.headline,it.articleBody||it.description||'',false);return t?t.split(/\s+/).filter(Boolean).length:0;}
 

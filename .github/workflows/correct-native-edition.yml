@@ -1,0 +1,40 @@
+name: Correct current native edition
+
+on:
+  push:
+    branches: [main]
+    paths: [data/native-editorial-trigger.txt]
+
+permissions:
+  contents: write
+
+jobs:
+  correct:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SUPABASE_URL: https://epghsyajgspcywqqbfso.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - name: Correct shared edition
+        id: correction
+        run: |
+          set -o pipefail
+          node scripts/correct-native-edition.mjs 2>&1 | tee native-editorial-status.txt
+      - name: Save outcome for verification
+        if: always()
+        run: |
+          if [ ! -f native-editorial-status.txt ]; then
+            printf 'Correction did not complete; inspect workflow run.\n' > native-editorial-status.txt
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b native-editorial-${{ github.run_id }}
+          git add -f native-editorial-status.txt
+          git commit -m "Record native editorial correction outcome"
+          git push origin HEAD:native-editorial-${{ github.run_id }}

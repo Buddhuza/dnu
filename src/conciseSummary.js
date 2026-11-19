@@ -18,17 +18,20 @@ export function conciseDnuSummary(value, headline = '') {
   const newTerms = sentence => meaningful(sentence).filter(word => !headlineWords.has(word)).length;
   for (const sentence of sentences) {
     const candidate = cleaned(sentence);
-    if (words(candidate).length >= 7 && words(candidate).length <= 25 && newTerms(candidate) >= 3 && !candidate.endsWith('?')) return candidate;
+    if (words(candidate).length >= 7 && words(candidate).length <= 22 && newTerms(candidate) >= 3 && !candidate.endsWith('?')
+      && !/\b(?:described|discussed|highlighted)\b.{0,50}$/i.test(candidate)) return candidate;
   }
   for (const sentence of sentences) {
     const candidate = cleaned(sentence)
       .replace(/,\s+(?:after|before|while|which|including|as well as)\b.*$/i, '')
       .replace(/\s+in an interview\b.*$/i, '')
-      .replace(/\s+with each passing day\b/i, '');
-    if (words(candidate).length >= 7 && words(candidate).length <= 30 && newTerms(candidate) >= 2) return candidate;
+      .replace(/\s+with each passing day\b/i, '')
+      .replace(/,\s+(?:prompting|leading|sparking)\b.*$/i, '');
+    if (words(candidate).length >= 7 && words(candidate).length <= 22 && newTerms(candidate) >= 2
+      && !/\b(?:described|discussed|highlighted)\b.{0,50}$/i.test(candidate)) return candidate;
   }
   const commissionFunding = original.match(/^(The European Commission) has responded to .+?, but has offered (no new funding[^.]+)[.]/i);
-  if (commissionFunding) return `${commissionFunding[1]} has offered ${commissionFunding[2]}`;
+  if (commissionFunding && words(`${commissionFunding[1]} has offered ${commissionFunding[2]}`).length <= 22) return `${commissionFunding[1]} has offered ${commissionFunding[2]}`;
   const first = cleaned(sentences[0] || original);
-  return words(first).length <= 30 ? first : original;
+  return words(first).length <= 22 && newTerms(first) >= 2 ? first : '';
 }

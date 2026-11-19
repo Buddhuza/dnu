@@ -45,6 +45,11 @@ const countryMentions = [
   ['Uzbekistan', /\b(?:Uzbekistan|Uzbek|Tashkent|Mirziyoyev)\b/i]
 ];
 
+export function mentionsCountry(text, country) {
+  const name = country === 'Kosovo' ? 'Serbia / Kosovo' : country === 'Bosnia' ? 'Bosnia and Herzegovina' : country;
+  return countryMentions.find(([label]) => label === name)?.[1].test(String(text || '')) || false;
+}
+
 const countrySection = new Map([
   ...['Albania', 'Bosnia and Herzegovina', 'Montenegro', 'North Macedonia', 'Serbia', 'Serbia / Kosovo'].map(country => [country, 'South Eastern Europe']),
   ...['Belarus', 'Moldova', 'Moldova / Transdniestria', 'Ukraine'].map(country => [country, 'Eastern Europe']),

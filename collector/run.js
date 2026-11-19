@@ -2,7 +2,7 @@ import { readFile, writeFile, rename } from 'node:fs/promises';
 import { writeFileSync, renameSync } from 'node:fs';
 import { load } from 'cheerio';
 import { listingCandidates_, parseItem_, extractPage_, baselineScore_, selectArticles_, publicSummary_, feeds_, PUBLISHER_PAGES } from './rules.js';
-import { adaptSelectedArticles, dedupeNativeEvents } from './dnuEdition.js';
+import { adaptSelectedArticles, dedupeNativeEvents, limitBelarusStateAgency } from './dnuEdition.js';
 import { selectWeekendStories, ensureUkraineWarLeads } from '../src/weekendEdition.js';
 import { collectionDataPath, ensureCollectionData } from '../server/dataDirectory.js';
 
@@ -108,9 +108,11 @@ for (const item of verifiedSelected) item.publicSummary = publicSummary_(item, l
 const adapted = adaptSelectedArticles(verifiedSelected, leads, registry);
 const reviewed = selectWeekendStories(adapted.articles);
 const finalSelection = dedupeNativeEvents(reviewed.articles);
-const leadSelection = ensureUkraineWarLeads(finalSelection.articles, reviewed.leadOrigins);
+const balancedSelection = limitBelarusStateAgency(finalSelection.articles);
+const leadSelection = ensureUkraineWarLeads(balancedSelection.articles, reviewed.leadOrigins);
 const articles = leadSelection.articles;
-const rejected = [...adapted.rejected, ...[...reviewed.removed, ...finalSelection.removed].map(item => ({ id: item.article.id, title: item.article.title, reason: 'Duplicate development; kept ' + item.preferred.sourceName }))];
+const rejected = [...adapted.rejected, ...[...reviewed.removed, ...finalSelection.removed].map(item => ({ id: item.article.id, title: item.article.title, reason: 'Duplicate development; kept ' + item.preferred.sourceName })),
+  ...balancedSelection.removed.map(article => ({ id: article.id, title: article.title, reason: 'Limit on Belarus state agency coverage' }))];
 console.log(JSON.stringify({routes:outcomes.length,failed:outcomes.filter(x=>x.status==='failed').length,candidates:unique.length,selected:articles.length,rejected:rejected.length,bodies:articles.filter(x=>x.body).length,firstFailure:outcomes.find(x=>x.status==='failed')?.reason}));
 if(!articles.length){progress('failed','selection','No qualifying articles. Previous edition retained.');throw Error('No qualifying articles. Previous edition retained.');}
 const output=collectionDataPath(filter?'native-test-edition.json':process.argv.includes('--stage')?'native-pending.json':'prepared-update.json');

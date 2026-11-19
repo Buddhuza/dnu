@@ -1,9 +1,11 @@
 import { NEWS_SECTIONS, MISCELLANEOUS_COUNTRIES } from '../src/newsSections.js';
 import { articlePlacement } from '../server/importArticle.js';
-import { blockedPlacementReason, directGovernmentPublicationReason, paywalledSourceReason } from '../src/sourcePolicy.js';
+import { blockedPlacementReason, directGovernmentPublicationReason, isInternationalOutlet, paywalledSourceReason } from '../src/sourcePolicy.js';
 import { excludedHeadlineReason } from '../src/headlinePolicy.js';
 import { displaySourceName } from '../src/sourceNames.js';
 import { stripFeedTeaser } from '../src/feedHeadline.js';
+import { conciseDnuSummary } from '../src/conciseSummary.js';
+import { mentionsCountry, sourceHomeCountry } from '../src/storyPlacement.js';
 
 const regional = new Set(NEWS_SECTIONS.slice(1, 5).map(section => section.id));
 const categoryNames = { 'South Caucasus Region': 'South Caucasus', 'Central Asia Region': 'Central Asia' };
@@ -26,6 +28,16 @@ function proposedPlacement(item) {
   return region ? { sectionId: 'Miscellaneous', subsection: region, country } : null;
 }
 
+function principalHeadlinePlacement(title, sourceName) {
+  if (/^(?:China['’]s\s+)?Xi\b/i.test(title)) return { sectionId: 'Miscellaneous', subsection: 'NORTH EAST ASIA', country: 'China' };
+  if (/\bSilicon Valley\b/i.test(title) && /\b(?:spy|spying|agent|arrest)\b/i.test(title))
+    return { sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' };
+  if (/\bCrimea(?:n)? Bridge\b/i.test(title)) return { sectionId: 'Miscellaneous', subsection: 'RUSSIA / EURASIA', country: 'Russia' };
+  if (/^(?:Dutch|Netherlands)\b/i.test(title) || /^Asylum minister\b/i.test(title) && /^NL Times$/i.test(sourceName))
+    return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Netherlands' };
+  return null;
+}
+
 export function adaptSelectedArticles(selected, leads, registry) {
   const articles = [], rejected = [];
   for (const item of selected) {
@@ -37,11 +49,16 @@ export function adaptSelectedArticles(selected, leads, registry) {
     const headlineReason = excludedHeadlineReason(title, summary, item.link);
     const sourceReason = directGovernmentPublicationReason(base) || paywalledSourceReason(base);
     const proposed = usActor.test(title) && /\b(?:Iran|impeach|defence|defense|Pentagon|war|sanction|strikes?|Nvidia|FBI)\b/i.test(title)
-      ? { sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' } : proposedPlacement(item);
+      ? { sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' }
+      : principalHeadlinePlacement(title, sourceName) || articlePlacement({}, title, '') || proposedPlacement(item);
     const placement = proposed && (proposed.sectionId !== 'Miscellaneous' || MISCELLANEOUS_COUNTRIES[proposed.subsection]?.includes(proposed.country))
       ? proposed : articlePlacement({}, title, summary);
     const unrelatedRegional = source?.country === 'Azerbaijan' && /\b(?:IRGC|Netanyahu|Tanzania|Sri Lanka)\b/i.test(title) && !/\b(?:Azerbaijan|Azerbaijani|Baku|Aliyev)\b/i.test(title)
       || source?.country === 'Kyrgyzstan' && /\b(?:Leningrad|Kirishi)\b/i.test(title);
+    const home = sourceHomeCountry(base) || (source?.country !== 'International' ? source?.country : '');
+    const subjectCountry = placement?.country || placement?.subsection || '';
+    const unrelatedHome = home && subjectCountry && home !== subjectCountry && !(home === 'Kosovo' && subjectCountry === 'Serbia / Kosovo')
+      && !isInternationalOutlet(base) && !mentionsCountry(`${title} ${summary}`, home);
     const malformed = routineOrMalformed.test(title) || title.length > 180 || title.split(/\s+/).length < 4
       || /^(?:LIVE|WATCH|Podcast)\b/i.test(title)
       || /\|\s*(?:First Thing|Podcast)\s*$/i.test(title)
@@ -55,12 +72,13 @@ export function adaptSelectedArticles(selected, leads, registry) {
     const reason = headlineReason || sourceReason || (/^(?:OHCHR)$/i.test(sourceName) ? 'Direct organisation publication' : '')
       || (!source ? 'Publisher is not in the configured catalogue' : '')
       || (malformed ? 'Routine, incomplete or malformed headline outside the DNU brief' : '')
+      || (unrelatedHome ? 'Local outlet reports an event outside its home country without a local subject' : '')
       || (!placement ? 'No DNU heading could be identified' : blockedPlacementReason(base, placement));
     if (reason) { rejected.push({ id: item.id, title, reason }); continue; }
     const lead = leads.has(item.id);
     const body = String(item.articleBody || '').trim();
     articles.push({
-      ...base, summary: String(item.publicSummary || '').trim(), publishedAt: item.published,
+      ...base, summary: conciseDnuSummary(item.publicSummary || '', title), publishedAt: item.published,
       timeSource: item.pageVerified ? 'page' : 'feed',
       sectionId: lead ? 'Lead stories' : placement.sectionId,
       section: lead ? 'Lead stories' : placement.sectionId,
@@ -72,6 +90,18 @@ export function adaptSelectedArticles(selected, leads, registry) {
     });
   }
   return { articles, rejected };
+}
+
+export function limitBelarusStateAgency(articles) {
+  let beltaStories = 0;
+  const kept = [], removed = [];
+  for (const article of articles) {
+    if (/^BelTA$/i.test(article.sourceName || '') && article.sectionId === 'Eastern Europe' && article.subsection === 'Belarus') {
+      if (++beltaStories > 1) { removed.push(article); continue; }
+    }
+    kept.push(article);
+  }
+  return { articles: kept, removed };
 }
 
 function eventKey(article) {
