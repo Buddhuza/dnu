@@ -3,7 +3,7 @@ import { writeFileSync, renameSync } from 'node:fs';
 import { load } from 'cheerio';
 import { listingCandidates_, parseItem_, extractPage_, baselineScore_, selectArticles_, publicSummary_, feeds_, PUBLISHER_PAGES } from './rules.js';
 import { adaptSelectedArticles, dedupeNativeEvents } from './dnuEdition.js';
-import { selectWeekendStories } from '../src/weekendEdition.js';
+import { selectWeekendStories, ensureUkraineWarLeads } from '../src/weekendEdition.js';
 import { collectionDataPath, ensureCollectionData } from '../server/dataDirectory.js';
 
 const root = new URL('../', import.meta.url);
@@ -108,12 +108,13 @@ for (const item of verifiedSelected) item.publicSummary = publicSummary_(item, l
 const adapted = adaptSelectedArticles(verifiedSelected, leads, registry);
 const reviewed = selectWeekendStories(adapted.articles);
 const finalSelection = dedupeNativeEvents(reviewed.articles);
-const articles = finalSelection.articles;
+const leadSelection = ensureUkraineWarLeads(finalSelection.articles, reviewed.leadOrigins);
+const articles = leadSelection.articles;
 const rejected = [...adapted.rejected, ...[...reviewed.removed, ...finalSelection.removed].map(item => ({ id: item.article.id, title: item.article.title, reason: 'Duplicate development; kept ' + item.preferred.sourceName }))];
 console.log(JSON.stringify({routes:outcomes.length,failed:outcomes.filter(x=>x.status==='failed').length,candidates:unique.length,selected:articles.length,rejected:rejected.length,bodies:articles.filter(x=>x.body).length,firstFailure:outcomes.find(x=>x.status==='failed')?.reason}));
 if(!articles.length){progress('failed','selection','No qualifying articles. Previous edition retained.');throw Error('No qualifying articles. Previous edition retained.');}
 const output=collectionDataPath(filter?'native-test-edition.json':process.argv.includes('--stage')?'native-pending.json':'prepared-update.json');
 const temporary=output+'.'+process.pid+'.tmp';
-await writeFile(temporary,JSON.stringify({nativeEdition:true,title:'DAILY NEWS UPDATE',checkedAt:end.toISOString(),windowStart:window.start.toISOString(),windowEnd:end.toISOString(),windowHours:hours,articles,sourceOutcomes:outcomes,bodyOutcomes,editorialRejections:rejected,leadOrigins:reviewed.leadOrigins}));
+await writeFile(temporary,JSON.stringify({nativeEdition:true,title:'DAILY NEWS UPDATE',checkedAt:end.toISOString(),windowStart:window.start.toISOString(),windowEnd:end.toISOString(),windowHours:hours,articles,sourceOutcomes:outcomes,bodyOutcomes,editorialRejections:rejected,leadOrigins:leadSelection.leadOrigins}));
 await rename(temporary,output);
 progress('complete','complete',`Draft ready: ${articles.length} stories; ${articles.filter(x=>x.body).length} full bodies. Review before publishing.`,articles.length,articles.length,{stories:articles.length,bodies:articles.filter(x=>x.body).length,checkedAt:end.toISOString()});

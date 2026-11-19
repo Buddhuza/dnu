@@ -15,6 +15,7 @@ import SendGmailDialog from './SendGmailDialog.jsx';
 import { defaultSiteConfig, normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig, toggleLeadStoryInConfig, addCustomArticleInConfig, extendSiteConfigForImportedPlacements, canonicalArticleUrl } from './siteConfig.js';
 import { appendScrapedEdition, latestCollectionArticles, mergeImportedArticles, removeStoryFromEdition, removeStoryFromConfig } from './editionActions.js';
 import { orderedSubsections, leadRegionalHeadings } from './newsSections.js';
+import { ensureUkraineWarLeads } from './weekendEdition.js';
 import { createReportDocxFromTemplate } from './docxBuilder.js';
 import { reportFilename } from './reportFilename.js';
 import { reportEndDateLabel, reportShortDateLabel } from './reportDate.js';
@@ -829,10 +830,11 @@ function App() {
     setSaveStatus('Publishing draft…');
     const pending = pendingBodiesRef.current;
     try {
-      const incoming = latestCollectionArticles(edition).map(item => ({ ...item, addedBy: contributor, ingestMethod: item.ingestMethod || 'scrape' }));
-      const update = appendScrapedEdition(daily || {}, { ...edition, articles: incoming }, (siteConfig.customArticles || []).map(item => item.url));
+      const leadSelection = ensureUkraineWarLeads(latestCollectionArticles(edition), edition.leadOrigins);
+      const incoming = leadSelection.articles.map(item => ({ ...item, addedBy: contributor, ingestMethod: item.ingestMethod || 'scrape' }));
+      const update = appendScrapedEdition(daily || {}, { ...edition, articles: incoming, leadOrigins: leadSelection.leadOrigins }, (siteConfig.customArticles || []).map(item => item.url));
       const added = update.articles.length - (daily?.articles?.length || 0);
-      const nextSiteConfig = { ...extendSiteConfigForImportedPlacements(siteConfig, incoming), leadOrigins: { ...siteConfig.leadOrigins, ...(edition.leadOrigins || {}) } };
+      const nextSiteConfig = { ...extendSiteConfigForImportedPlacements(siteConfig, incoming), leadOrigins: { ...siteConfig.leadOrigins, ...leadSelection.leadOrigins } };
       const payload = sharedPayload(update, nextSiteConfig, excludedStoryIds, edition.checkedAt);
       const bodies = [...new Map([...(pending?.bodies || []), ...incoming.filter(item => item.url && item.body).map(item => ({ url: item.url, heading: item.title || '', body: item.body, translated: item.translated === true }))].map(item => [item.url, item])).values()];
       const revision = await publishSharedEdition(sharedRevisionRef.current, payload, { replace: false, bodies });

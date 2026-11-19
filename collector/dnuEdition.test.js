@@ -54,3 +54,10 @@ test('routine traffic crashes do not appear under a regional outlet', () => {
   assert.equal(articles.length, 0);
   assert.equal(rejected.length, 1);
 });
+
+test('native adapter strips a publisher teaser and relative timestamp from a headline', () => {
+  const { articles } = adaptSelectedArticles([item('UK to provide Ukraine with 1,000 long-range strike drones The prime minister made the announcement at a meeting in Berlin. 2 hrs ago UK', {
+    category: 'Eastern Europe', country: 'Ukraine'
+  })], new Set(), registry);
+  assert.equal(articles[0].title, 'UK to provide Ukraine with 1,000 long-range strike drones');
+});

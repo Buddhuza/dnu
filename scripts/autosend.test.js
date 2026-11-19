@@ -26,3 +26,14 @@ test('autosend rejects a missing or mismatched latest scrape before clearing any
   assert.throws(() => autosendEdition(draft, { ...status, checkedAt: '2026-11-18T00:00:00Z' }, {}), /not changed/);
   assert.throws(() => autosendEdition({ ...draft, articles: [] }, status, {}), /not changed/);
 });
+
+test('autosend promotes two suitable Ukraine stories from an older draft with no leads', () => {
+  const ukraine = { sectionId: 'Eastern Europe', section: 'Eastern Europe', subsection: 'Ukraine', country: '', publishedAt: draft.checkedAt, sourceName: 'Reuters' };
+  const updated = { ...draft, articles: [
+    { ...ukraine, id: 'talks', title: 'Russia agrees security guarantees for Ukraine', url: 'https://reuters.com/talks' },
+    { ...ukraine, id: 'strike', title: 'Russian missile strikes hit Kyiv', url: 'https://reuters.com/strike' }
+  ] };
+  const result = autosendEdition(updated, { ...status, stories: 2 }, {});
+  assert.equal(result.edition.articles.filter(article => article.sectionId === 'Lead stories').length, 2);
+  assert.deepEqual(Object.keys(result.settings.leadOrigins), ['talks', 'strike']);
+});

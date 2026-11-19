@@ -20,6 +20,7 @@ test('scheduled email requires its secret and queues the published revision in t
       assert.equal(inputs.expected_revision, '9');
       assert.equal(inputs.request_id, 'auto-2026-11-19');
       assert.equal(inputs.scheduled_delivery, 'true');
+      assert.equal(inputs.headline_only, 'true');
       return new Response(null, { status: 204 });
     }
     throw new Error(`Unexpected request: ${url}`);

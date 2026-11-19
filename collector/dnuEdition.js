@@ -3,6 +3,7 @@ import { articlePlacement } from '../server/importArticle.js';
 import { blockedPlacementReason, directGovernmentPublicationReason, paywalledSourceReason } from '../src/sourcePolicy.js';
 import { excludedHeadlineReason } from '../src/headlinePolicy.js';
 import { displaySourceName } from '../src/sourceNames.js';
+import { stripFeedTeaser } from '../src/feedHeadline.js';
 
 const regional = new Set(NEWS_SECTIONS.slice(1, 5).map(section => section.id));
 const categoryNames = { 'South Caucasus Region': 'South Caucasus', 'Central Asia Region': 'Central Asia' };
@@ -12,8 +13,9 @@ const headlineArtefact = /^(?:\W*\d{1,2}:\d{2}\s+\d{1,2}[./]\d{1,2}[./]20\d{2}\s
 const usActor = /^(?:US[:\s]|U\.S\.[:\s]|Trump\b|Rubio\b|Hegseth\b|Pentagon\b|House\b|Republican\b|Congress(?:man|woman)?\b|Massie\b)/i;
 
 function cleanedHeadline(value) {
-  return String(value || '').trim().replace(headlineArtefact, '')
+  const headline = String(value || '').trim().replace(headlineArtefact, '')
     .replace(/\s+\d{1,2}:\d{2}\s+\d{1,2}\s+[A-Z][a-z]+\s+20\d{2}$/, '').trim();
+  return stripFeedTeaser(headline);
 }
 
 function proposedPlacement(item) {

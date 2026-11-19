@@ -1,5 +1,6 @@
 import { sameNewsEvent } from './storyDuplicates.js';
 import { NEWS_SECTIONS } from './newsSections.js';
+import { stripFeedTeaser } from './feedHeadline.js';
 
 const international = new Set(['reuters', 'ap', 'associated press', 'afp', 'bbc', 'dw', 'dpa', 'politico.eu', 'euronews', 'bloomberg', 'financial times', 'ft', 'the guardian', 'al jazeera', 'rfe/rl', 'voa', 'pbs', 'cnn']);
 const regionalSections = new Set(NEWS_SECTIONS.slice(1, 5).map(section => section.id));
@@ -8,6 +9,39 @@ const agencyKey = name => ({ 'associated press': 'ap', 'politico europe': 'polit
 
 export function internationalSource(article) {
   return international.has(String(article.sourceName || '').trim().toLowerCase());
+}
+
+function ukraineWarLeadScore(article) {
+  if (!internationalSource(article) || article.sectionId !== 'Eastern Europe' || article.subsection !== 'Ukraine') return 0;
+  const title = stripFeedTeaser(article.title);
+  if (/\b\d+\s+(?:minutes?|mins?|hours?|hrs?|days?)\s+ago\b/i.test(title)) return 0;
+  if (!/\b(?:Ukraine|Ukrainian|Kyiv|Odesa|Russia|Russian|Putin|Zelensk\w*)\b/i.test(title)) return 0;
+  const majorDevelopment = /\b(?:ceasefire|peace (?:deal|agreement|talks)|security guarantees|negotiat\w*|strike\w*|attack\w*|airstrike\w*|missile\w*|drone\w*|offensive|frontline|troops?|weapon\w*|air defen[cs]e|military aid|sanction\w*)\b/i;
+  if (!majorDevelopment.test(title)) return 0;
+  return (/(?:ceasefire|peace (?:deal|agreement)|security guarantees|strike\w*|attack\w*|airstrike\w*|missile\w*|offensive)/i.test(title) ? 5 : 0)
+    + (/(?:drone\w*|weapon\w*|air defen[cs]e|military aid|troops?)/i.test(title) ? 4 : 0)
+    + (/(?:peace talks|negotiat\w*|talks? with Russia)/i.test(title) ? 2 : 0)
+    + (article.body ? 1 : 0) + 1;
+}
+
+export function ensureUkraineWarLeads(articles, existingOrigins = {}) {
+  const selected = articles.filter(article => article.sectionId === 'Lead stories' && article.subsection === 'Ukraine');
+  const candidates = articles.map((article, index) => ({ article, index, score: ukraineWarLeadScore(article) }))
+    .filter(candidate => candidate.score > 0)
+    .sort((left, right) => right.score - left.score || left.index - right.index);
+  const visibleIds = new Set(articles.map(article => article.id));
+  const promoted = [], origins = Object.fromEntries(Object.entries(existingOrigins || {}).filter(([id]) => visibleIds.has(id)));
+  for (const { article } of candidates) {
+    if (selected.length >= 2) break;
+    if (selected.some(other => sameNewsEvent(article, other))) continue;
+    selected.push(article);
+    promoted.push(article);
+    origins[article.id] = { sectionId: article.sectionId, subsection: article.subsection || '', country: article.country || '' };
+  }
+  const ids = new Set(promoted.map(article => article.id));
+  return { articles: articles.map(article => ids.has(article.id)
+    ? { ...article, title: stripFeedTeaser(article.title), sectionId: 'Lead stories', section: 'Lead stories', subsection: 'Ukraine', country: '' }
+    : article), leadOrigins: origins, promoted };
 }
 
 function leadHeading(article) {
@@ -41,7 +75,10 @@ export function selectWeekendStories(articles) {
     leadOrigins[article.id] = origin;
     return { ...article, sectionId: 'Lead stories', section: 'Lead stories', subsection: heading, country: '' };
   });
-  return { articles: selected, removed, promoted, leadOrigins };
+  const ukraineLeads = ensureUkraineWarLeads(selected, leadOrigins);
+  return { articles: ukraineLeads.articles, removed,
+    promoted: [...promoted, ...ukraineLeads.promoted.map(article => ({ article, heading: 'Ukraine', sourceCount: sources.get(article.id)?.size || 1 }))],
+    leadOrigins: ukraineLeads.leadOrigins };
 }
 
 export function viennaSchedule(now = new Date()) {

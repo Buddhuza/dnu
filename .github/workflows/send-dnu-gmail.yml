@@ -74,7 +74,7 @@ jobs:
         env:
           DNU_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.DNU_SUPABASE_PUBLISHABLE_KEY }}
           EXPECTED_REVISION: ${{ github.event_name != 'workflow_dispatch' && 'latest' || inputs.expected_revision }}
-          HEADLINE_ONLY: ${{ inputs.headline_only || 'false' }}
+          HEADLINE_ONLY: ${{ github.event_name != 'workflow_dispatch' && 'true' || inputs.scheduled_delivery && 'true' || inputs.headline_only && 'true' || 'false' }}
         run: node scripts/build-gmail-message.mjs "$EXPECTED_REVISION" "$HEADLINE_ONLY" "$RUNNER_TEMP/dnu-gmail-message.json"
       - name: Send from the situation room Gmail account
         if: steps.delivery.outputs.send == 'true'

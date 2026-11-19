@@ -44,7 +44,7 @@ Deno.serve(async request => {
       headers: { authorization: `Bearer ${githubToken}`, accept: 'application/vnd.github+json',
         'x-github-api-version': '2022-11-28', 'content-type': 'application/json' },
       body: JSON.stringify({ ref: 'main', inputs: { expected_revision: String(published.revision),
-        headline_only: 'false', request_id: `auto-${date}`, scheduled_delivery: 'true' } })
+        headline_only: 'true', request_id: `auto-${date}`, scheduled_delivery: 'true' } })
     });
     if (!dispatch.ok) return reply(502, { error: `Could not queue Gmail delivery (HTTP ${dispatch.status}).` });
     return reply(202, { queued: true, date });

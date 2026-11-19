@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { selectWeekendStories, viennaSchedule, weekendSheetReadiness } from './weekendEdition.js';
+import { ensureUkraineWarLeads, selectWeekendStories, viennaSchedule, weekendSheetReadiness } from './weekendEdition.js';
 
 test('weekend duplicates retain the international agency account', () => {
   const local = { id: 'local', sourceName: 'Tirana Times', title: 'Albania PM resigns after corruption protests in Tirana', publishedAt: '2026-11-07T08:00:00Z' };
@@ -52,6 +52,41 @@ test('a widely covered Australian attack stays under Australia', () => {
   assert.equal(result.articles[0].sectionId, 'Miscellaneous');
   assert.equal(result.articles[0].country, 'Australia');
   assert.equal(result.promoted.length, 0);
+});
+
+test('automatic editions place two distinct Ukraine war developments in leads', () => {
+  const base = { sectionId: 'Eastern Europe', section: 'Eastern Europe', subsection: 'Ukraine', country: '', publishedAt: '2026-11-19T09:00:00Z' };
+  const stories = [
+    { ...base, id: 'diplomacy', title: 'Russia agrees security guarantees for Ukraine after peace talks', sourceName: 'Reuters', url: 'https://reuters.com/ukraine-talks' },
+    { ...base, id: 'attack', title: 'Russian missile strikes hit Kyiv overnight', sourceName: 'BBC', url: 'https://bbc.com/kyiv-strikes' },
+    { ...base, id: 'local', title: 'Ukraine deploys new drones on frontline', sourceName: 'Ukrinform', url: 'https://ukrinform.net/drones' },
+    { ...base, id: 'domestic', title: 'Ukraine parliament approves new budget', sourceName: 'AP', url: 'https://apnews.com/budget' }
+  ];
+  const result = ensureUkraineWarLeads(stories);
+  assert.deepEqual(result.articles.filter(article => article.sectionId === 'Lead stories').map(article => article.id), ['diplomacy', 'attack']);
+  assert.deepEqual(result.leadOrigins.attack, { sectionId: 'Eastern Europe', subsection: 'Ukraine', country: '' });
+  assert.equal(result.articles.find(article => article.id === 'local').sectionId, 'Eastern Europe');
+  assert.equal(result.articles.find(article => article.id === 'domestic').sectionId, 'Eastern Europe');
+  assert.equal(ensureUkraineWarLeads(result.articles, result.leadOrigins).promoted.length, 0);
+});
+
+test('Ukraine lead promotion does not invent a second lead or promote repeated coverage', () => {
+  const base = { sectionId: 'Eastern Europe', section: 'Eastern Europe', subsection: 'Ukraine', country: '', publishedAt: '2026-11-19T09:00:00Z' };
+  const result = ensureUkraineWarLeads([
+    { ...base, id: 'first', title: 'Russian missile strikes hit Kyiv overnight', sourceName: 'Reuters', url: 'https://reuters.com/a' },
+    { ...base, id: 'duplicate', title: 'Russian missile strikes hit Kyiv overnight', sourceName: 'AP', url: 'https://apnews.com/a' }
+  ]);
+  assert.equal(result.promoted.length, 1);
+});
+
+test('lead promotion cleans a publisher teaser already present in a completed draft', () => {
+  const result = ensureUkraineWarLeads([{
+    id: 'feed-fragment', sectionId: 'Eastern Europe', section: 'Eastern Europe', subsection: 'Ukraine', country: '',
+    title: 'UK to provide Ukraine with 1,000 long-range strike drones The prime minister made the announcement in Berlin. 2 hrs ago UK',
+    sourceName: 'BBC', url: 'https://bbc.com/fragment'
+  }]);
+  assert.equal(result.articles[0].sectionId, 'Lead stories');
+  assert.equal(result.articles[0].title, 'UK to provide Ukraine with 1,000 long-range strike drones');
 });
 
 test('Vienna schedule handles summer and winter UTC offsets', () => {

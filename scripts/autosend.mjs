@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import { latestCollectionArticles } from '../src/editionActions.js';
 import { extendSiteConfigForImportedPlacements, normalizeSiteConfig } from '../src/siteConfig.js';
 import { gmailMessageFromState } from './build-gmail-message.mjs';
+import { ensureUkraineWarLeads } from '../src/weekendEdition.js';
 
 const supabaseUrl = 'https://epghsyajgspcywqqbfso.supabase.co';
 
@@ -12,14 +13,15 @@ export function autosendEdition(draft, status, settings) {
   if (draft?.nativeEdition !== true || !draft.checkedAt || !Array.isArray(draft.articles) || !draft.articles.length ||
       status?.checkedAt !== draft.checkedAt || status?.stories !== draft.articles.length || !Number.isSafeInteger(status?.runId))
     throw new Error('The latest completed scrape is missing or does not match its status. The shared update was not changed.');
-  const incoming = latestCollectionArticles(draft);
+  const leadSelection = ensureUkraineWarLeads(latestCollectionArticles(draft), draft.leadOrigins);
+  const incoming = leadSelection.articles;
   if (!incoming.length) throw new Error('The latest scrape has no stories to publish. The shared update was not changed.');
   const articles = incoming.map(({ body, ...article }) => article);
-  const edition = { ...draft, articles, emptyPrepared: false, importedFromSpreadsheet: false,
+  const edition = { ...draft, articles, leadOrigins: leadSelection.leadOrigins, emptyPrepared: false, importedFromSpreadsheet: false,
     importedFileName: '', latestCollectionArticleUrls: articles.map(article => article.url) };
   const nextSettings = extendSiteConfigForImportedPlacements(normalizeSiteConfig({
     ...settings, version: 1, showUpdate: true, customArticles: [], articleEdits: {}, articleOrder: [],
-    leadOrigins: { ...(draft.leadOrigins || {}) }
+    leadOrigins: leadSelection.leadOrigins
   }, articles), articles);
   const bodies = incoming.filter(article => article.url && String(article.body || '').trim()).map(article => ({
     url: article.url, heading: article.originalHeadline || article.title || '', body: article.body,
@@ -57,7 +59,7 @@ export async function autosend(draft, status, client) {
   if (saveError) throw saveError;
   if (!saved) throw new Error('Another editor changed the update. No email was sent; run autosend again.');
   const message = gmailMessageFromState({ revision: Number(saved.revision), edition: next.edition,
-    settings: next.settings, excluded_story_ids: [], compiled_at: draft.checkedAt }, Number(saved.revision), false);
+    settings: next.settings, excluded_story_ids: [], compiled_at: draft.checkedAt }, Number(saved.revision), true);
   return { message, storyCount: next.edition.articles.length, cachedBodies: next.bodies.length };
 }
 
