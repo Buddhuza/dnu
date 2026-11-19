@@ -15,7 +15,7 @@ async function githubJson(url, token, fetchImpl) {
 export async function shouldSendScheduledGmail({ eventName, cron, token, runId, scheduledDelivery = false, now = new Date(), fetchImpl = fetch }) {
   if (eventName === 'workflow_dispatch' && !scheduledDelivery) return true;
   if (eventName === 'schedule' && !isScheduledGmailCandidate(cron, now)) return false;
-  if (eventName === 'push' && !/^(13:5\d|14:[01]\d)$/.test(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Vienna', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(now))) return false;
+  if (eventName === 'push' && !/^16:[012]\d$/.test(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Vienna', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(now))) return false;
   if (!['schedule', 'push', 'workflow_dispatch'].includes(eventName)) return false;
   if (!token) throw new Error('GitHub Actions token is required to check earlier deliveries.');
   const date = (eventName === 'schedule' ? scheduledGmailUtcDate(cron, now) : now).toISOString().slice(0, 10);
@@ -24,7 +24,7 @@ export async function shouldSendScheduledGmail({ eventName, cron, token, runId, 
     const autoDispatch = run.event === 'workflow_dispatch' && /^Send DNU auto-\d{4}-\d{2}-\d{2}$/.test(run.display_title || '');
     if (String(run.id) === String(runId) || !(['schedule', 'push'].includes(run.event) || autoDispatch) || run.conclusion !== 'success' || !run.created_at?.startsWith(date)) continue;
     const sentTime = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Vienna', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(run.created_at));
-    if (!/^(13:5\d|14:[01]\d)$/.test(sentTime)) continue;
+    if (!/^16:[012]\d$/.test(sentTime)) continue;
     const jobs = await githubJson(`${workflowApi}/runs/${run.id}/jobs?per_page=30`, token, fetchImpl);
     if ((jobs.jobs || []).some(job => (job.steps || []).some(step =>
       step.name === 'Send from the situation room Gmail account' && step.conclusion === 'success'))) return false;
