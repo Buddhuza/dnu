@@ -107,7 +107,9 @@ async function sendOutlook(edition, settings, token) {
   const message = {
     subject: emailSubject(edition.checkedAt),
     body: { contentType: 'HTML', content: emailUpdateHtml({ title: settings.updateTitle || edition.title, compiledAt: edition.checkedAt, articles, logoUrl: 'cid:dnu-osce-logo' }) },
-    toRecipients: recipients.map(address => ({ emailAddress: { address } })),
+    toRecipients: [{ emailAddress: { address: 'sitcen-at@osce.org' } }],
+    bccRecipients: recipients.filter(address => address.toLowerCase() !== 'sitcen-at@osce.org')
+      .map(address => ({ emailAddress: { address } })),
     attachments: [{ '@odata.type': '#microsoft.graph.fileAttachment', name: 'osce-logo.png', contentType: 'image/png', contentBytes: logo, isInline: true, contentId: 'dnu-osce-logo' }]
   };
   const response = await fetch(`https://graph.microsoft.com/v1.0/users/${encodeURIComponent(sender)}/sendMail`, {

@@ -46,9 +46,13 @@ try {
     $outlook = New-Object -ComObject Outlook.Application
     $mail = $outlook.CreateItem(0)
     $mail.Subject = [string]$message.subject
+    $toAddress = 'sitcen-at@osce.org'
+    $toRecipient = $mail.Recipients.Add($toAddress)
+    $toRecipient.Type = 1
     foreach ($address in $recipients) {
+        if ($address.Trim() -ieq $toAddress) { continue }
         $recipient = $mail.Recipients.Add($address.Trim())
-        $recipient.Type = 1
+        $recipient.Type = 3
     }
     if (-not $mail.Recipients.ResolveAll()) { throw 'Outlook could not resolve one or more mailing lists. No message was sent.' }
 

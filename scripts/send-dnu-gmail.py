@@ -10,6 +10,7 @@ from pathlib import Path
 
 SENDER = "sitroom.github@gmail.com"
 SENDER_NAME = "OSCE SitRoom"
+TO_ADDRESS = "sitcen-at@osce.org"
 
 
 def validated_recipients(data):
@@ -24,7 +25,10 @@ def validated_recipients(data):
 def build_message(data, logo, recipients):
     message = EmailMessage()
     message["From"] = formataddr((SENDER_NAME, SENDER))
-    message["To"] = ", ".join(recipients)
+    message["To"] = TO_ADDRESS
+    bcc = [address for address in recipients if address.casefold() != TO_ADDRESS.casefold()]
+    if bcc:
+        message["Bcc"] = ", ".join(bcc)
     message["Subject"] = data["subject"]
     message.set_content(data["text"])
     message.add_alternative(data["html"], subtype="html")
@@ -44,12 +48,13 @@ def main():
     if not data.get("articleCount"):
         raise SystemExit("The message has no articles; no email was sent.")
     recipients = validated_recipients(data)
+    bcc = tuple(address for address in recipients if address.casefold() != TO_ADDRESS.casefold())
     logo = Path(__file__).resolve().parents[1] / "public" / "osce-logo.png"
     message = build_message(data, logo, recipients)
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=30) as smtp:
         smtp.login(SENDER, password)
-        smtp.send_message(message, from_addr=SENDER, to_addrs=recipients)
-    print(f"Gmail accepted the published DNU for {len(recipients)} recipients.")
+        smtp.send_message(message, from_addr=SENDER, to_addrs=(TO_ADDRESS, *bcc))
+    print(f"Gmail accepted the published DNU for {TO_ADDRESS} and {len(bcc)} BCC recipients.")
 
 
 if __name__ == "__main__":
