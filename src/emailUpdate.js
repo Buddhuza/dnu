@@ -6,6 +6,11 @@ import { reportHeadingLabel } from './reportLabels.js';
 
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 
+function highlightedHeading(value, before, fontSize) {
+  return `<p style="font-size:1pt;line-height:1pt;mso-line-height-rule:exactly;margin:0 0 ${before};padding:0">&nbsp;</p>` +
+    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse"><tr><td bgcolor="#d9e2f3" style="background-color:#d9e2f3;color:#0070c0;font-family:Calibri,Arial,sans-serif;font-size:${fontSize}pt;line-height:${fontSize + 1}pt;mso-line-height-rule:exactly;font-weight:bold;padding:0">${escapeHtml(reportHeadingLabel(value).toUpperCase())}</td></tr></table>`;
+}
+
 export function emailSubject(compiledAt) {
   const date = reportEndDateLabel(compiledAt);
   return `OSCE SITROOM DAILY NEWS UPDATE, ${date.replace(/^(\d)\s/, '0$1 ')}`;
@@ -29,16 +34,17 @@ export function emailUpdateHtml({ title = 'DAILY NEWS UPDATE', compiledAt, artic
       const firstAfterSection = !subsection;
       subsection = article.subsection;
       country = '';
-      const highlight = section === 'Miscellaneous' ? '' : 'background-color:#d9e2f3;';
       const before = firstAfterSection ? (headlineOnly ? '5pt' : '7pt') : (headlineOnly ? '10pt' : '13pt');
       const compactAfter = section === 'Miscellaneous' || (article.sectionId === 'Lead stories' || section === 'Lead stories') && subsection === 'Middle East';
-      paragraphs.push(`<h3 style="font-size:13pt;color:#0070c0;${highlight}margin:${before} 0 ${compactAfter ? '0pt' : '2pt'};padding:2pt 3pt">${escapeHtml(reportHeadingLabel(subsection).toUpperCase())}</h3>`);
+      paragraphs.push(section === 'Miscellaneous'
+        ? `<h3 style="font-size:13pt;color:#0070c0;margin:${before} 0 ${compactAfter ? '0pt' : '2pt'};padding:0">${escapeHtml(reportHeadingLabel(subsection).toUpperCase())}</h3>`
+        : highlightedHeading(subsection, before, 13));
     }
     if (article.country && article.country !== country) {
       const afterTopic = section === 'Miscellaneous' && !country && Boolean(subsection);
       country = article.country;
       const before = afterTopic ? (headlineOnly ? '5pt' : '7pt') : (headlineOnly ? '10pt' : '13pt');
-      paragraphs.push(`<h4 style="font-size:12pt;color:#0070c0;line-height:14pt;mso-line-height-rule:exactly;margin:${before} 0 2pt;padding:0"><span style="background-color:#d9e2f3">${escapeHtml(reportHeadingLabel(country).toUpperCase())}</span></h4>`);
+      paragraphs.push(highlightedHeading(country, before, 12));
     }
     const { headline, summary } = reportStoryText(article, headlineOnly);
     const detail = !headlineOnly && summary ? ` ${escapeHtml(summary)}` : '';

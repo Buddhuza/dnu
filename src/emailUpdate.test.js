@@ -21,8 +21,8 @@ test('formatted email follows Word headings, source links, and disclaimer', () =
   assert.match(emailUpdateText(options), /16 October 2026/);
   assert.match(html, /WESTERN \/ CENTRAL EUROPE/);
   assert.match(html, /margin:7pt 0 0pt;[^>]*>WESTERN \/ CENTRAL EUROPE/);
-  assert.match(html, /<h4 style="[^\"]*margin:7pt 0 2pt;padding:0"><span style="background-color:#d9e2f3">FRANCE<\/span><\/h4>/);
-  assert.doesNotMatch(html, /<h4 style="[^\"]*background-color:/);
+  assert.match(html, /<p style="font-size:1pt;line-height:1pt;[^\"]*margin:0 0 7pt;[^\"]*">&nbsp;<\/p><table[^>]*><tr><td bgcolor="#d9e2f3"[^>]*font-size:12pt;line-height:13pt;[^>]*>FRANCE<\/td><\/tr><\/table>/);
+  assert.doesNotMatch(html, /<h[34] style="[^\"]*background-color:/);
   assert.match(html, /href="https:\/\/example.com\/story\?a=1&amp;b=2"/);
   assert.match(html, /<strong>EU leaders discuss security talks\.<\/strong> Ministers agreed to meet in Paris\./);
   assert.match(html, /Disclaimer:/);
@@ -30,4 +30,14 @@ test('formatted email follows Word headings, source links, and disclaimer', () =
   assert.doesNotMatch(emailUpdateText({ ...options, headlineOnly: true }), /Ministers agreed to meet/);
   assert.match(emailUpdateHtml({ ...options, headlineOnly: true }), /<strong>EU leaders discuss security talks<\/strong> \(<a/);
   assert.match(emailUpdateText({ ...options, headlineOnly: true }), /EU leaders discuss security talks \(Example News:/);
+});
+
+test('regional country highlights have tight Outlook table rows with spacing outside the color', () => {
+  const html = emailUpdateHtml({ ...options, articles: [
+    { ...article, section: 'South Caucasus', subsection: 'Armenia', country: '' },
+    { ...article, section: 'South Caucasus', subsection: 'Georgia', country: '', title: 'Second story' }
+  ] });
+  assert.match(html, /<p style="font-size:1pt;line-height:1pt;[^\"]*margin:0 0 7pt;[^\"]*">&nbsp;<\/p><table[^>]*><tr><td bgcolor="#d9e2f3"[^>]*font-size:13pt;line-height:14pt;[^>]*>ARMENIA<\/td><\/tr><\/table>/);
+  assert.match(html, /<p style="font-size:1pt;line-height:1pt;[^\"]*margin:0 0 13pt;[^\"]*">&nbsp;<\/p><table[^>]*><tr><td bgcolor="#d9e2f3"[^>]*>GEORGIA<\/td><\/tr><\/table>/);
+  assert.doesNotMatch(html, /<h3 style="[^\"]*background-color:/);
 });
