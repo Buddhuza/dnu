@@ -5,9 +5,13 @@ import os
 import smtplib
 import sys
 from email.message import EmailMessage
+from email.utils import formataddr
 from pathlib import Path
 
 SENDER = "sitroom.github@gmail.com"
+SENDER_NAME = "OSCE SitRoom"
+
+
 def validated_recipients(data):
     recipients = data.get("recipients", [])
     if not isinstance(recipients, list) or not 1 <= len(recipients) <= 30:
@@ -19,7 +23,7 @@ def validated_recipients(data):
 
 def build_message(data, logo, recipients):
     message = EmailMessage()
-    message["From"] = SENDER
+    message["From"] = formataddr((SENDER_NAME, SENDER))
     message["To"] = ", ".join(recipients)
     message["Subject"] = data["subject"]
     message.set_content(data["text"])
