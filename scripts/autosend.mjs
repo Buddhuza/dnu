@@ -15,11 +15,11 @@ export function autosendEdition(draft, status, settings, requiredDate = '') {
     throw new Error('The latest completed scrape is missing or does not match its status. The shared update was not changed.');
   if (requiredDate) {
     const parts = Object.fromEntries(new Intl.DateTimeFormat('en-GB', {
-      timeZone: 'Europe/Vienna', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hourCycle: 'h23'
+      timeZone: 'Europe/Vienna', year: 'numeric', month: '2-digit', day: '2-digit'
     }).formatToParts(new Date(draft.checkedAt)).map(part => [part.type, part.value]));
     const collectedDate = `${parts.year}-${parts.month}-${parts.day}`;
-    if (collectedDate < requiredDate.slice(0, 10) || collectedDate === requiredDate.slice(0, 10) && Number(parts.hour) < 1)
-      throw new Error(`The latest scrape is older than the ${requiredDate.slice(0, 10)} Vienna morning. No shared stories were cleared or emailed; AUTOSEND will retry.`);
+    if (collectedDate < requiredDate.slice(0, 10))
+      throw new Error(`The latest scrape is older than ${requiredDate.slice(0, 10)} in Vienna. No shared stories were cleared or emailed; AUTOSEND will retry.`);
   }
   const leadSelection = ensureUkraineWarLeads(latestCollectionArticles(draft), draft.leadOrigins);
   const incoming = leadSelection.articles;

@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const branch = 'refs/heads/autosend-status';
-const outcomeNames = ['credentials', 'draft', 'publish', 'email'];
+const outcomeNames = ['credentials', 'draft', 'freshness', 'scrape', 'publish', 'email'];
 
 export function buildAutosendStatus(env, draftStatus, now = new Date()) {
   const steps = Object.fromEntries(outcomeNames.map(name => [name, env[`AUTOSEND_${name.toUpperCase()}_OUTCOME`] || 'unknown']));

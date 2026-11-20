@@ -31,7 +31,7 @@ concurrency:
 jobs:
   autosend:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 75
     steps:
       - id: checkout
         uses: actions/checkout@v4
@@ -66,8 +66,44 @@ jobs:
         if: steps.due.outputs.run == 'true'
         run: |
           git fetch origin gh-pages
-          git show FETCH_HEAD:native-draft.json > "$RUNNER_TEMP/native-draft.json"
-          git show FETCH_HEAD:native-draft-status.json > "$RUNNER_TEMP/native-draft-status.json"
+          git show FETCH_HEAD:native-draft.json > "$RUNNER_TEMP/native-draft.json" || true
+          git show FETCH_HEAD:native-draft-status.json > "$RUNNER_TEMP/native-draft-status.json" || true
+      - id: freshness
+        name: Check whether the latest scrape is from today in Vienna
+        if: steps.due.outputs.run == 'true'
+        run: node scripts/autosend-freshness.mjs "$RUNNER_TEMP/native-draft.json" "$RUNNER_TEMP/native-draft-status.json"
+      - id: scrape
+        name: Scrape publishers when today's draft is unavailable
+        if: steps.due.outputs.run == 'true' && steps.freshness.outputs.scrape_needed == 'true'
+        env:
+          DNU_COLLECTION_TRIGGER: automatic
+        run: npm run collect:daily
+      - name: Save today's scrape and its log on the website
+        if: steps.due.outputs.run == 'true' && steps.freshness.outputs.scrape_needed == 'true'
+        env:
+          DNU_COLLECTION_TRIGGER: automatic
+          DNU_COLLECTION_RESULT: success
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin gh-pages:refs/remotes/origin/gh-pages
+            git worktree add --detach "$RUNNER_TEMP/dnu-autosend-pages" origin/gh-pages
+            cp data/prepared-update.json "$RUNNER_TEMP/dnu-autosend-pages/native-draft.json"
+            node scripts/write-native-draft-status.mjs data/prepared-update.json "$RUNNER_TEMP/dnu-autosend-pages/native-draft-status.json"
+            node scripts/write-native-collection-log.mjs data "$RUNNER_TEMP/dnu-autosend-pages/native-collection-log.json"
+            git -C "$RUNNER_TEMP/dnu-autosend-pages" add native-draft.json native-draft-status.json native-collection-log.json
+            git -C "$RUNNER_TEMP/dnu-autosend-pages" commit -m "Save AUTOSEND scrape ${{ github.run_id }}"
+            if git -C "$RUNNER_TEMP/dnu-autosend-pages" push origin HEAD:gh-pages; then
+              cp "$RUNNER_TEMP/dnu-autosend-pages/native-draft.json" "$RUNNER_TEMP/native-draft.json"
+              cp "$RUNNER_TEMP/dnu-autosend-pages/native-draft-status.json" "$RUNNER_TEMP/native-draft-status.json"
+              exit 0
+            fi
+            git worktree remove --force "$RUNNER_TEMP/dnu-autosend-pages"
+            sleep $((attempt * 3))
+          done
+          exit 1
       - id: publish
         name: Clear old stories and publish the latest scrape
         if: steps.due.outputs.run == 'true'
@@ -82,12 +118,42 @@ jobs:
         env:
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
         run: python3 scripts/send-dnu-gmail.py "$RUNNER_TEMP/dnu-gmail-message.json"
+      - name: Record a failed AUTOSEND scrape in the site log
+        if: ${{ always() && steps.scrape.outcome == 'failure' }}
+        env:
+          DNU_COLLECTION_TRIGGER: automatic
+          DNU_COLLECTION_RESULT: failure
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin gh-pages:refs/remotes/origin/gh-pages
+            git worktree add --detach "$RUNNER_TEMP/dnu-autosend-failure-pages" origin/gh-pages
+            node scripts/write-native-collection-log.mjs data "$RUNNER_TEMP/dnu-autosend-failure-pages/native-collection-log.json"
+            git -C "$RUNNER_TEMP/dnu-autosend-failure-pages" add native-collection-log.json
+            git -C "$RUNNER_TEMP/dnu-autosend-failure-pages" commit -m "Record failed AUTOSEND scrape ${{ github.run_id }}"
+            if git -C "$RUNNER_TEMP/dnu-autosend-failure-pages" push origin HEAD:gh-pages; then exit 0; fi
+            git worktree remove --force "$RUNNER_TEMP/dnu-autosend-failure-pages"
+            sleep $((attempt * 3))
+          done
+          exit 1
+      - name: Email owner a report for the scrape started by AUTOSEND
+        if: ${{ always() && steps.scrape.outcome != 'skipped' && steps.scrape.outcome != '' }}
+        env:
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          DNU_SCRAPE_RESULT: ${{ steps.scrape.outcome }}
+          DNU_SCRAPE_KIND: autosend
+          DNU_SCRAPE_PUBLISHED: ${{ steps.publish.outcome == 'success' && 'true' || 'false' }}
+        run: python3 scripts/send-collection-report.py data
       - name: Record the outcome for independent verification
         if: ${{ always() && steps.checkout.outcome == 'success' && steps.due.outputs.run == 'true' }}
         env:
           AUTOSEND_SCHEDULED_DATE: ${{ steps.due.outputs.scheduled_date }}
           AUTOSEND_CREDENTIALS_OUTCOME: ${{ steps.credentials.outcome }}
           AUTOSEND_DRAFT_OUTCOME: ${{ steps.draft.outcome }}
+          AUTOSEND_FRESHNESS_OUTCOME: ${{ steps.freshness.outcome }}
+          AUTOSEND_SCRAPE_OUTCOME: ${{ steps.scrape.outcome }}
           AUTOSEND_PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
           AUTOSEND_EMAIL_OUTCOME: ${{ steps.email.outcome }}
         run: node scripts/write-autosend-status.mjs "$RUNNER_TEMP/native-draft-status.json"

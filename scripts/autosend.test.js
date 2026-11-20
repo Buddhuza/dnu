@@ -27,9 +27,9 @@ test('autosend rejects a missing or mismatched latest scrape before clearing any
   assert.throws(() => autosendEdition({ ...draft, articles: [] }, status, {}), /not changed/);
 });
 
-test('scheduled AUTOSEND waits for a scrape from the due Vienna morning', () => {
-  assert.throws(() => autosendEdition(draft, status, {}, '2026-11-20'), /older than the 2026-11-20 Vienna morning/);
-  const fresh = { ...draft, checkedAt: '2026-11-20T00:05:00Z' };
+test('scheduled AUTOSEND requires a scrape from the due Vienna date or later', () => {
+  assert.throws(() => autosendEdition(draft, status, {}, '2026-11-20'), /older than 2026-11-20 in Vienna/);
+  const fresh = { ...draft, checkedAt: '2026-11-19T23:05:00Z' };
   assert.equal(autosendEdition(fresh, { ...status, checkedAt: fresh.checkedAt }, {}, '2026-11-20').edition.articles.length, 1);
 });
 

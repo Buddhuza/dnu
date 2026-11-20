@@ -63,7 +63,10 @@ def report_content(result, edition, progress, kind, run_url, finished_at):
             if progress.get("total"):
                 lines.append(f"Progress: {progress.get('completed', 0)}/{progress['total']}")
     else:
-        lines.extend(["", "The completed scrape is a review draft; it does not automatically replace the published DNU."])
+        if os.environ.get("DNU_SCRAPE_PUBLISHED") == "true":
+            lines.extend(["", "AUTOSEND published this scrape to the shared DNU."])
+        else:
+            lines.extend(["", "The completed scrape is a review draft; it has not replaced the published DNU."])
     return subject, "\n".join(lines) + "\n"
 
 
