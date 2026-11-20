@@ -22,3 +22,9 @@ test('failed automatic collection retains the failure explanation and earlier ru
   assert.deepEqual(log.entries.map(item => item.runId), [18, 17]);
   assert.equal(updateCollectionLog(log, entry).entries.length, 2);
 });
+
+test('a completed collection remains successful when its report artifact is unavailable', () => {
+  const entry = collectionLogEntry({ runId: 19, eventName: 'schedule', conclusion: 'success', finishedAt: '2026-11-20T13:06:00Z' });
+  assert.equal(entry.outcome, 'succeeded');
+  assert.match(entry.description, /detailed collection report was unavailable/);
+});

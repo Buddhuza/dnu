@@ -10,7 +10,7 @@ export function collectionLogEntry({ runId, eventName, conclusion, edition, prog
   if (!Number.isSafeInteger(Number(runId)) || Number(runId) <= 0) throw new Error('A GitHub Actions run ID is required.');
   const trigger = eventName === 'workflow_dispatch' ? 'manual' : 'automatic';
   const completed = conclusion === 'success' && edition?.nativeEdition === true && Array.isArray(edition.articles) && edition.articles.length > 0;
-  const outcome = completed ? 'succeeded' : conclusion === 'cancelled' ? 'cancelled' : 'failed';
+  const outcome = conclusion === 'success' ? 'succeeded' : conclusion === 'cancelled' ? 'cancelled' : 'failed';
   const startedAt = Number.isFinite(Date.parse(progress?.startedAt)) ? progress.startedAt : null;
   const stories = completed ? edition.articles.length : Number.isInteger(progress?.stories) ? progress.stories : null;
   const fullBodies = completed ? edition.articles.filter(article => String(article.body || '').trim()).length : null;
@@ -18,6 +18,7 @@ export function collectionLogEntry({ runId, eventName, conclusion, edition, prog
   const failedRoutes = completed ? (edition.sourceOutcomes || []).filter(item => item.status === 'failed').length : null;
   let description;
   if (completed) description = `Saved ${stories} ${stories === 1 ? 'story' : 'stories'} from ${sourceRoutes} source ${sourceRoutes === 1 ? 'route' : 'routes'}. ${failedRoutes} ${failedRoutes === 1 ? 'route' : 'routes'} failed; ${fullBodies} full article ${fullBodies === 1 ? 'text' : 'texts'} available.`;
+  else if (conclusion === 'success') description = 'The scrape completed and saved its draft, but the detailed collection report was unavailable.';
   else if (conclusion === 'cancelled') description = 'Scrape was cancelled before a completed draft was saved.';
   else if (progress?.state === 'complete') description = 'Collection finished, but the completed draft could not be saved to the website.';
   else description = `No completed draft was saved. ${String(progress?.message || 'The collection job failed before it reported a result.').trim()}`;
