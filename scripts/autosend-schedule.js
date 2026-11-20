@@ -22,6 +22,8 @@ export function dueAutosendDate(now = new Date(), completed = {}, holidays = [])
   const current = viennaParts(now);
   for (let day = new Date(`${AUTOSEND_START_DATE}T12:00:00Z`); day.toISOString().slice(0, 10) <= current.date; day.setUTCDate(day.getUTCDate() + 1)) {
     const date = day.toISOString().slice(0, 10);
+    // The one-time test must never block a later weekend edition.
+    if (date === AUTOSEND_TEST_DATE && date !== current.date) continue;
     if (!isAutosendDate(date, holidays) || completed[date] === 'email_submitted') continue;
     if (date === current.date && current.time < (date === AUTOSEND_TEST_DATE ? AUTOSEND_TEST_TIME : '08:00')) continue;
     return date;

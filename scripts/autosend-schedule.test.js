@@ -7,6 +7,7 @@ test('the one-time 22:15 Vienna test is due only from its appointed minute', () 
   assert.equal(dueAutosendDate(new Date('2026-11-20T21:14:00Z')), '');
   assert.equal(dueAutosendDate(new Date('2026-11-20T21:15:00Z')), '2026-11-20');
   assert.equal(dueAutosendDate(new Date('2026-11-20T21:20:00Z'), { '2026-11-20': 'email_submitted' }), '');
+  assert.equal(dueAutosendDate(new Date('2026-11-21T07:00:00Z')), '2026-11-21');
 });
 
 test('weekend AUTOSEND follows Vienna daylight saving time and catches missed days', () => {

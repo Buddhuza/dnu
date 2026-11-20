@@ -42,6 +42,7 @@ Deno.serve(async request => {
     let due = '';
     for (let day = new Date(`${startDate}T12:00:00Z`); day.toISOString().slice(0, 10) <= current.date; day.setUTCDate(day.getUTCDate() + 1)) {
       const date = day.toISOString().slice(0, 10);
+      if (date === testDate && date !== current.date) continue;
       const weekday = day.getUTCDay();
       if (date !== testDate && weekday !== 0 && weekday !== 6 && !holidays.includes(date)) continue;
       if (history[date] === 'email_submitted') continue;
