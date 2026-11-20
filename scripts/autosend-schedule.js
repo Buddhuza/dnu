@@ -2,6 +2,7 @@
 export const AUTOSEND_START_DATE = '2026-11-20';
 export const AUTOSEND_TEST_DATE = '2026-11-20';
 export const AUTOSEND_TEST_TIME = '22:15';
+export const AUTOSEND_SECOND_TEST_KEY = '2026-11-20-2300';
 
 export function viennaParts(now = new Date()) {
   const parts = Object.fromEntries(new Intl.DateTimeFormat('en-GB', {
@@ -28,5 +29,7 @@ export function dueAutosendDate(now = new Date(), completed = {}, holidays = [])
     if (date === current.date && current.time < (date === AUTOSEND_TEST_DATE ? AUTOSEND_TEST_TIME : '08:00')) continue;
     return date;
   }
+  if (current.date === AUTOSEND_TEST_DATE && current.time >= '23:00' && completed[AUTOSEND_SECOND_TEST_KEY] !== 'email_submitted')
+    return AUTOSEND_SECOND_TEST_KEY;
   return '';
 }

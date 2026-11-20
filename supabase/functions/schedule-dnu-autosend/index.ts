@@ -3,6 +3,7 @@
 const githubApi = 'https://api.github.com/repos/Buddhuza/dnu';
 const startDate = '2026-11-20';
 const testDate = '2026-11-20';
+const secondTestKey = '2026-11-20-2300';
 
 function sameSecret(left: string, right: string) {
   if (!left || !right || left.length !== right.length) return false;
@@ -50,6 +51,8 @@ Deno.serve(async request => {
       due = date;
       break;
     }
+    if (!due && current.date === testDate && current.time >= '23:00' && history[secondTestKey] !== 'email_submitted')
+      due = secondTestKey;
     if (!due) return reply(200, { skipped: true, reason: 'No unsent weekend, holiday or test date is due.' });
     const runsResponse = await fetch(`${githubApi}/actions/workflows/autosend.yml/runs?per_page=30`, { headers });
     if (runsResponse.ok) {
