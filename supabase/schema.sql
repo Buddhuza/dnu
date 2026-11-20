@@ -75,13 +75,19 @@ begin
      or jsonb_typeof(p_excluded_story_ids) <> 'array' or jsonb_typeof(p_bodies) <> 'array' then
     raise exception 'Invalid DNU update data';
   end if;
+  -- Editors share Scope, Stories, Sources and Email. The owner alone controls
+  -- Content, Sections and Theme. Compare protected keys before writing state.
   if editor_role <> 'owner' and exists (
-    select 1 from public.dnu_state where id = 'main'
-      and (settings - array['sections','articleEdits','articleOrder','leadOrigins','customCountries','customArticles']::text[])
-        is distinct from
-        (p_settings - array['sections','articleEdits','articleOrder','leadOrigins','customCountries','customArticles']::text[])
+    select 1 from public.dnu_state state,
+      lateral jsonb_object_keys(state.settings || p_settings) as protected(key)
+    where state.id = 'main'
+      and protected.key = any(array['brandName','brandTagline','updateTitle','coverageText',
+        'showCoverage','showSources','showUpdate','showScope','showLatest',
+        'sections','fontSize','sectionHeadingSize','sectionHeadingUppercase',
+        'updateWidth','theme','darkTheme'])
+      and state.settings -> protected.key is distinct from p_settings -> protected.key
   ) then
-    raise exception 'Only the owner may change site settings' using errcode = '42501';
+    raise exception 'Only the owner may change Content, Sections or Theme' using errcode = '42501';
   end if;
 
   update public.dnu_state

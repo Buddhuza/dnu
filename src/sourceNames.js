@@ -23,6 +23,7 @@ const aliases = {
   'ipn.ge': 'IPN.ge',
   'qazinform': 'Kazinform',
   'politico europe': 'Politico.eu',
+  'politiko': 'Politiko.al',
   'vreme.com': 'Vreme',
   'aol.com': 'AOL',
   'nin.rs': 'NIN',

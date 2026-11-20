@@ -3,17 +3,17 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { transform } from 'esbuild';
 
-test('Gmail trigger accepts the owner, fixes the workflow and checks the published revision', async () => {
+test('Gmail trigger accepts active editors, fixes the workflow and checks the published revision', async () => {
   const originalDeno = globalThis.Deno;
   const originalFetch = globalThis.fetch;
-  let handler, role = 'editor', revision = 7, dispatches = 0;
+  let handler, role = 'inactive', active = false, revision = 7, dispatches = 0;
   globalThis.Deno = {
     env: { get: key => ({ SUPABASE_URL: 'https://project.supabase.co', SUPABASE_ANON_KEY: 'public-key', GITHUB_WORKFLOW_TOKEN: 'private-token' })[key] },
     serve: callback => { handler = callback; }
   };
   globalThis.fetch = async (url, options) => {
     if (String(url).endsWith('/auth/v1/user')) return Response.json({ id: 'owner-id', email: 'owner@example.com' });
-    if (String(url).includes('/rest/v1/dnu_editors')) return Response.json([{ active: true, role }]);
+    if (String(url).includes('/rest/v1/dnu_editors')) return Response.json([{ active, role }]);
     if (String(url).includes('/rest/v1/dnu_state')) return Response.json([{ revision }]);
     if (String(url).endsWith('/dispatches')) {
       dispatches += 1;
@@ -37,13 +37,15 @@ test('Gmail trigger accepts the owner, fixes the workflow and checks the publish
       body: JSON.stringify({ expectedRevision: 7, headlineOnly: true })
     });
     assert.equal((await handler(request())).status, 403);
-    role = 'owner'; revision = 8;
+    role = 'editor'; active = true; revision = 8;
     assert.equal((await handler(request())).status, 409);
     revision = 7;
     const response = await handler(request());
     assert.equal(response.status, 202);
     assert.equal((await response.json()).queued, true);
     assert.equal(dispatches, 1);
+    role = 'owner';
+    assert.equal((await handler(request())).status, 202);
   } finally {
     globalThis.Deno = originalDeno;
     globalThis.fetch = originalFetch;

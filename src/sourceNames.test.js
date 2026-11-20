@@ -33,7 +33,7 @@ test('sheet agency aliases and legacy source names use DNU labels', () => {
     ['1TV Georgia', '1TV.ge'], ['1TV', '1TV.ge'], ['Asia Plus', 'Asia-Plus'],
     ['Crude Oil Prices Today | OilPrice.com', 'OilPrice.com'], ['IPN Moldova', 'IPN.md'],
     ['ipn.md', 'IPN.md'], ['interpressnews.ge', 'IPN.ge'], ['Qazinform', 'Kazinform'],
-    ['Politico Europe', 'Politico.eu']
+    ['Politico Europe', 'Politico.eu'], ['Politiko', 'Politiko.al']
   ];
   for (const [input, expected] of pairs) assert.equal(displaySourceName(input), expected, input);
   assert.equal(displaySourceName('IPN', { sourceId: 'source-32' }), 'IPN.md');
@@ -41,4 +41,5 @@ test('sheet agency aliases and legacy source names use DNU labels', () => {
   assert.equal(displaySourceName('IPN', { url: 'https://ipn.md/en/story' }), 'IPN.md');
   assert.equal(displaySourceName('IPN'), 'IPN');
   assert.equal(displaySources(sources, defaultSiteConfig([])).find(source => source.id === 'source-62').name, '1TV.ge');
+  assert.equal(sources.find(source => source.id === 'source-gas-politiko-al').name, 'Politiko.al');
 });

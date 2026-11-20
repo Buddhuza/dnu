@@ -24,6 +24,12 @@ test('default reading text starts at 18 px', () => {
   assert.equal(defaultSiteConfig(articles).fontSize, 18);
 });
 
+test('shared Scope keywords survive settings normalisation', () => {
+  const config = normalizeSiteConfig({ ...defaultSiteConfig(articles), scopeInclude: 'diplomacy, security', scopeExclude: 'sports' }, articles);
+  assert.equal(config.scopeInclude, 'diplomacy, security');
+  assert.equal(config.scopeExclude, 'sports');
+});
+
 test('section edits reorder, rename, and hide news without changing source data', () => {
   const config = defaultSiteConfig(articles);
   config.sections = [{ id: 'Asia', name: 'Asia Pacific', visible: true }, { id: 'Europe', name: 'Europe', visible: false }];

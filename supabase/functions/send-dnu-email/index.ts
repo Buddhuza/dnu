@@ -1,4 +1,4 @@
-// The site never receives Gmail credentials. This function verifies the owner
+// The site never receives Gmail credentials. This function verifies an active editor
 // and queues delivery to the recipients stored with the published edition.
 const workflowApi = 'https://api.github.com/repos/Buddhuza/dnu/actions/workflows/send-dnu-gmail.yml';
 const allowedOrigins = new Set(['https://buddhuza.github.io', 'http://localhost:5173', 'http://127.0.0.1:5173']);
@@ -21,7 +21,7 @@ Deno.serve(async request => {
   const supabaseUrl = Deno.env.get('SUPABASE_URL');
   const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY');
   const githubToken = Deno.env.get('GITHUB_WORKFLOW_TOKEN');
-  if (!jwt || !supabaseUrl || !supabaseKey) return reply(401, { error: 'Sign in as the owner first.' });
+  if (!jwt || !supabaseUrl || !supabaseKey) return reply(401, { error: 'Sign in as an editor first.' });
   if (!githubToken) return reply(503, { error: 'Email delivery is not configured yet.' });
   let input: { headlineOnly?: boolean; expectedRevision?: number };
   try { input = await request.json(); } catch { return reply(400, { error: 'Invalid send request.' }); }
@@ -34,10 +34,10 @@ Deno.serve(async request => {
     if (!userResponse.ok) return reply(401, { error: 'Your session has expired. Sign in again.' });
     const user = await userResponse.json();
     const editorResponse = await fetch(`${supabaseUrl}/rest/v1/dnu_editors?user_id=eq.${encodeURIComponent(user.id)}&select=role,active`, { headers });
-    const owner = editorResponse.ok && (await editorResponse.json())?.[0];
+    const editor = editorResponse.ok && (await editorResponse.json())?.[0];
     const legacyOwner = editorResponse.status === 404 && String(user.email || '').toLowerCase() === 'buddhuza@gmail.com';
-    if (!(owner?.active === true && owner.role === 'owner') && !legacyOwner)
-      return reply(403, { error: 'Only the DNU owner can send this email.' });
+    if (!(editor?.active === true && ['owner', 'editor'].includes(editor.role)) && !legacyOwner)
+      return reply(403, { error: 'Only an active DNU editor can send this email.' });
 
     const stateResponse = await fetch(`${supabaseUrl}/rest/v1/dnu_state?id=eq.main&select=revision`, { headers });
     if (!stateResponse.ok) return reply(502, { error: 'Could not check the published update.' });
