@@ -10,6 +10,11 @@ on:
     # Recovery check; it collects only when the current Vienna slot has no completed draft.
     - cron: '15 * * * *'
   workflow_dispatch:
+    inputs:
+      scheduled_recovery:
+        description: Reserved for the Supabase scheduler
+        type: boolean
+        default: false
   push:
     branches: [main]
     paths: [.github/dnu-catchup-trigger.txt]
@@ -35,6 +40,7 @@ jobs:
         id: slot
         env:
           GITHUB_EVENT_SCHEDULE: ${{ github.event.schedule }}
+          SCHEDULED_RECOVERY: ${{ inputs.scheduled_recovery }}
         run: |
           git fetch origin gh-pages:refs/remotes/origin/gh-pages
           git show origin/gh-pages:native-draft-status.json > /tmp/dnu-latest-draft-status.json || true
@@ -49,7 +55,7 @@ jobs:
       - name: Collect completed JSON from publishers
         if: steps.slot.outputs.run == 'true'
         env:
-          DNU_COLLECTION_TRIGGER: ${{ github.event_name == 'schedule' && 'automatic' || 'manual' }}
+          DNU_COLLECTION_TRIGGER: ${{ (github.event_name == 'schedule' || inputs.scheduled_recovery == true) && 'automatic' || 'manual' }}
         run: npm run collect:daily
       - name: Save draft and route audit
         if: always() && steps.slot.outputs.run == 'true'
@@ -65,6 +71,7 @@ jobs:
         if: steps.slot.outputs.run == 'true' && success()
         env:
           DNU_SCHEDULED_SLOT: ${{ steps.slot.outputs.scheduled_slot }}
+          DNU_COLLECTION_TRIGGER: ${{ (github.event_name == 'schedule' || inputs.scheduled_recovery == true) && 'automatic' || 'manual' }}
         run: |
           set -e
           git fetch origin gh-pages:refs/remotes/origin/gh-pages
@@ -101,6 +108,7 @@ jobs:
           DNU_COLLECTION_RESULT: ${{ needs.collect.result }}
           DNU_COLLECTION_SKIPPED: ${{ needs.collect.outputs.record_skip }}
           DNU_COLLECTION_SLOT: ${{ needs.collect.outputs.scheduled_slot }}
+          DNU_COLLECTION_TRIGGER: ${{ (github.event_name == 'schedule' || inputs.scheduled_recovery == true) && 'automatic' || 'manual' }}
         run: |
           set -e
           git config user.name "github-actions[bot]"

@@ -41,3 +41,11 @@ test('an explicit catch-up trigger is manual', () => {
     edition: { nativeEdition: true, articles: [{ body: '' }], sourceOutcomes: [] }, finishedAt: '2026-11-20T10:00:00Z' });
   assert.equal(entry.trigger, 'manual');
 });
+
+test('a Supabase recovery dispatch is logged as automatic', () => {
+  const entry = collectionLogEntry({ runId: 22, eventName: 'workflow_dispatch', triggerOverride: 'automatic',
+    scheduledSlot: '2026-11-20T13:00 Europe/Vienna', conclusion: 'success',
+    edition: { nativeEdition: true, articles: [{ body: '' }], sourceOutcomes: [] }, finishedAt: '2026-11-20T12:10:00Z' });
+  assert.equal(entry.trigger, 'automatic');
+  assert.match(entry.description, /13:00 Vienna slot/);
+});

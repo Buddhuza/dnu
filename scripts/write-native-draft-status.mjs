@@ -12,7 +12,7 @@ try { previous = JSON.parse(readFileSync(outputPath, 'utf8')); }
 catch { /* The first scrape has no earlier checkpoint. */ }
 const status = {
   runId, checkedAt: edition.checkedAt, finishedAt: new Date().toISOString(), stories: edition.articles.length,
-  trigger: ['workflow_dispatch', 'push'].includes(process.env.GITHUB_EVENT_NAME) ? 'manual' : 'automatic',
+  trigger: process.env.DNU_COLLECTION_TRIGGER || (['workflow_dispatch', 'push'].includes(process.env.GITHUB_EVENT_NAME) ? 'manual' : 'automatic'),
   lastCompletedSlot: process.env.DNU_SCHEDULED_SLOT || previous?.lastCompletedSlot || null,
   bodies: edition.articles.filter(article => String(article.body || '').trim()).length,
   failedRoutes: (edition.sourceOutcomes || []).filter(outcome => outcome.status === 'failed').length,

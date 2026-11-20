@@ -6,9 +6,9 @@ const readJson = path => {
   catch { return null; }
 };
 
-export function collectionLogEntry({ runId, eventName, conclusion, skipped = false, scheduledSlot = '', edition, progress, finishedAt = new Date().toISOString() }) {
+export function collectionLogEntry({ runId, eventName, triggerOverride = '', conclusion, skipped = false, scheduledSlot = '', edition, progress, finishedAt = new Date().toISOString() }) {
   if (!Number.isSafeInteger(Number(runId)) || Number(runId) <= 0) throw new Error('A GitHub Actions run ID is required.');
-  const trigger = ['workflow_dispatch', 'push'].includes(eventName) ? 'manual' : 'automatic';
+  const trigger = ['manual', 'automatic'].includes(triggerOverride) ? triggerOverride : ['workflow_dispatch', 'push'].includes(eventName) ? 'manual' : 'automatic';
   const completed = conclusion === 'success' && edition?.nativeEdition === true && Array.isArray(edition.articles) && edition.articles.length > 0;
   const outcome = skipped ? 'skipped' : conclusion === 'success' ? 'succeeded' : conclusion === 'cancelled' ? 'cancelled' : 'failed';
   const startedAt = Number.isFinite(Date.parse(progress?.startedAt)) ? progress.startedAt : null;
@@ -41,6 +41,7 @@ if (process.argv[1]?.endsWith('/write-native-collection-log.mjs')) {
   const entry = collectionLogEntry({
     runId: process.env.GITHUB_RUN_ID,
     eventName: process.env.GITHUB_EVENT_NAME,
+    triggerOverride: process.env.DNU_COLLECTION_TRIGGER,
     conclusion: process.env.DNU_COLLECTION_RESULT,
     skipped: process.env.DNU_COLLECTION_SKIPPED === 'true',
     scheduledSlot: process.env.DNU_COLLECTION_SLOT || '',

@@ -32,13 +32,13 @@ export function scheduledSlotForCron(cron, now = new Date()) {
   return scheduled && viennaSlot(scheduled);
 }
 
-export function collectionDecision(eventName, cron, previousSlot, now = new Date()) {
-  if (eventName === 'workflow_dispatch') return { run: true, scheduledSlot: '', recordSkip: false };
+export function collectionDecision(eventName, cron, previousSlot, now = new Date(), scheduledRecovery = false) {
+  if (eventName === 'workflow_dispatch' && !scheduledRecovery) return { run: true, scheduledSlot: '', recordSkip: false };
   if (eventName === 'push') return { run: true, scheduledSlot: mostRecentViennaSlot(now), recordSkip: false };
-  if (eventName !== 'schedule') return { run: false, scheduledSlot: '', recordSkip: false };
-  const slot = cron === '15 * * * *' ? mostRecentViennaSlot(now) : scheduledSlotForCron(cron, now);
+  if (eventName !== 'schedule' && !scheduledRecovery) return { run: false, scheduledSlot: '', recordSkip: false };
+  const slot = scheduledRecovery || cron === '15 * * * *' ? mostRecentViennaSlot(now) : scheduledSlotForCron(cron, now);
   if (!slot || slot === previousSlot) return { run: false, scheduledSlot: '', recordSkip: false };
-  if (cron !== '15 * * * *' && !isScheduledUtcCandidate(cron, now))
+  if (!scheduledRecovery && cron !== '15 * * * *' && !isScheduledUtcCandidate(cron, now))
     return { run: false, scheduledSlot: slot, recordSkip: isStaleScheduledUtcCandidate(cron, now) };
   return { run: true, scheduledSlot: slot, recordSkip: false };
 }

@@ -16,7 +16,9 @@ test('manual drafts preserve the completed slot checkpoint and scheduled drafts 
     });
     run({ GITHUB_EVENT_NAME: 'workflow_dispatch', DNU_SCHEDULED_SLOT: '' });
     assert.equal(JSON.parse(readFileSync(statusPath)).lastCompletedSlot, '2026-11-20T01:00 Europe/Vienna');
-    run({ GITHUB_EVENT_NAME: 'schedule', DNU_SCHEDULED_SLOT: '2026-11-20T13:00 Europe/Vienna' });
-    assert.equal(JSON.parse(readFileSync(statusPath)).lastCompletedSlot, '2026-11-20T13:00 Europe/Vienna');
+    run({ GITHUB_EVENT_NAME: 'workflow_dispatch', DNU_COLLECTION_TRIGGER: 'automatic', DNU_SCHEDULED_SLOT: '2026-11-20T13:00 Europe/Vienna' });
+    const recovered = JSON.parse(readFileSync(statusPath));
+    assert.equal(recovered.lastCompletedSlot, '2026-11-20T13:00 Europe/Vienna');
+    assert.equal(recovered.trigger, 'automatic');
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
