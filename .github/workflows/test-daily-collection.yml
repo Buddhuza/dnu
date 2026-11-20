@@ -34,6 +34,9 @@ jobs:
             echo 'run=true' >> "$GITHUB_OUTPUT"
           else
             echo 'run=false' >> "$GITHUB_OUTPUT"
+            if node --input-type=module -e "import { isStaleScheduledUtcCandidate } from './collector/slots.js'; process.exit(isStaleScheduledUtcCandidate(process.env.CRON_SCHEDULE) ? 0 : 1)"; then
+              echo 'record_skip=true' >> "$GITHUB_OUTPUT"
+            fi
           fi
       - uses: actions/setup-node@v4
         if: steps.slot.outputs.run == 'true'
@@ -76,7 +79,7 @@ jobs:
           exit 1
 
   report:
-    if: always() && (needs.collect.outputs.ran == 'true' || needs.collect.result == 'failure' || needs.collect.result == 'cancelled')
+    if: always() && (needs.collect.outputs.ran == 'true' || needs.collect.outputs.record_skip == 'true' || needs.collect.result == 'failure' || needs.collect.result == 'cancelled')
     needs: collect
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -91,6 +94,7 @@ jobs:
       - name: Record scrape in site log
         env:
           DNU_COLLECTION_RESULT: ${{ needs.collect.result }}
+          DNU_COLLECTION_SKIPPED: ${{ needs.collect.outputs.record_skip }}
         run: |
           set -e
           git config user.name "github-actions[bot]"
@@ -107,7 +111,7 @@ jobs:
           done
           exit 1
       - name: Email scrape report
-        if: always()
+        if: always() && (needs.collect.outputs.ran == 'true' || needs.collect.result == 'failure' || needs.collect.result == 'cancelled')
         env:
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           DNU_SCRAPE_RESULT: ${{ needs.collect.result }}

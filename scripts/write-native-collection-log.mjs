@@ -6,18 +6,19 @@ const readJson = path => {
   catch { return null; }
 };
 
-export function collectionLogEntry({ runId, eventName, conclusion, edition, progress, finishedAt = new Date().toISOString() }) {
+export function collectionLogEntry({ runId, eventName, conclusion, skipped = false, edition, progress, finishedAt = new Date().toISOString() }) {
   if (!Number.isSafeInteger(Number(runId)) || Number(runId) <= 0) throw new Error('A GitHub Actions run ID is required.');
   const trigger = eventName === 'workflow_dispatch' ? 'manual' : 'automatic';
   const completed = conclusion === 'success' && edition?.nativeEdition === true && Array.isArray(edition.articles) && edition.articles.length > 0;
-  const outcome = conclusion === 'success' ? 'succeeded' : conclusion === 'cancelled' ? 'cancelled' : 'failed';
+  const outcome = skipped ? 'skipped' : conclusion === 'success' ? 'succeeded' : conclusion === 'cancelled' ? 'cancelled' : 'failed';
   const startedAt = Number.isFinite(Date.parse(progress?.startedAt)) ? progress.startedAt : null;
   const stories = completed ? edition.articles.length : Number.isInteger(progress?.stories) ? progress.stories : null;
   const fullBodies = completed ? edition.articles.filter(article => String(article.body || '').trim()).length : null;
   const sourceRoutes = completed ? (edition.sourceOutcomes || []).length : null;
   const failedRoutes = completed ? (edition.sourceOutcomes || []).filter(item => item.status === 'failed').length : null;
   let description;
-  if (completed) description = `Saved ${stories} ${stories === 1 ? 'story' : 'stories'} from ${sourceRoutes} source ${sourceRoutes === 1 ? 'route' : 'routes'}. ${failedRoutes} ${failedRoutes === 1 ? 'route' : 'routes'} failed; ${fullBodies} full article ${fullBodies === 1 ? 'text' : 'texts'} available.`;
+  if (skipped) description = 'GitHub started this scheduled slot more than 12 hours late. No scrape ran; the previous draft was retained.';
+  else if (completed) description = `Saved ${stories} ${stories === 1 ? 'story' : 'stories'} from ${sourceRoutes} source ${sourceRoutes === 1 ? 'route' : 'routes'}. ${failedRoutes} ${failedRoutes === 1 ? 'route' : 'routes'} failed; ${fullBodies} full article ${fullBodies === 1 ? 'text' : 'texts'} available.`;
   else if (conclusion === 'success') description = 'The scrape completed and saved its draft, but the detailed collection report was unavailable.';
   else if (conclusion === 'cancelled') description = 'Scrape was cancelled before a completed draft was saved.';
   else if (progress?.state === 'complete') description = 'Collection finished, but the completed draft could not be saved to the website.';
@@ -40,6 +41,7 @@ if (process.argv[1]?.endsWith('/write-native-collection-log.mjs')) {
     runId: process.env.GITHUB_RUN_ID,
     eventName: process.env.GITHUB_EVENT_NAME,
     conclusion: process.env.DNU_COLLECTION_RESULT,
+    skipped: process.env.DNU_COLLECTION_SKIPPED === 'true',
     edition: readJson(join(artifactDir, 'prepared-update.json')),
     progress: readJson(join(artifactDir, 'native-collection-progress.json'))
   });

@@ -3,7 +3,7 @@ const viennaParts = new Intl.DateTimeFormat('en-GB', {
   hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
 });
 
-const scheduledStartWindowMs = 15 * 60_000;
+const maxGithubDelayMs = 12 * 60 * 60_000;
 
 export function dueCollectionSlot(now = new Date()) {
   const parts = Object.fromEntries(viennaParts.formatToParts(now).map(part => [part.type, part.value]));
@@ -25,5 +25,13 @@ export function isScheduledUtcCandidate(cron, now = new Date()) {
   if (!Number.isInteger(hour) || hour < 0 || hour > 23) return false;
   const scheduled = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), hour));
   if (scheduled > now) scheduled.setUTCDate(scheduled.getUTCDate() - 1);
-  return isScheduledCollectionHour(scheduled) && now >= scheduled && now - scheduled < scheduledStartWindowMs;
+  return isScheduledCollectionHour(scheduled) && now >= scheduled && now - scheduled < maxGithubDelayMs;
+}
+
+export function isStaleScheduledUtcCandidate(cron, now = new Date()) {
+  const hour = Number(String(cron).match(/^0\s+(\d{1,2})\s+\*\s+\*\s+\*$/)?.[1]);
+  if (!Number.isInteger(hour) || hour < 0 || hour > 23) return false;
+  const scheduled = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), hour));
+  if (scheduled > now) scheduled.setUTCDate(scheduled.getUTCDate() - 1);
+  return isScheduledCollectionHour(scheduled) && now - scheduled >= maxGithubDelayMs;
 }

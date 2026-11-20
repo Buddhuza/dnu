@@ -28,3 +28,10 @@ test('a completed collection remains successful when its report artifact is unav
   assert.equal(entry.outcome, 'succeeded');
   assert.match(entry.description, /detailed collection report was unavailable/);
 });
+
+test('a stale scheduled attempt is labelled skipped, not successful', () => {
+  const entry = collectionLogEntry({ runId: 20, eventName: 'schedule', conclusion: 'success', skipped: true,
+    finishedAt: '2026-11-20T16:00:00Z' });
+  assert.equal(entry.outcome, 'skipped');
+  assert.match(entry.description, /No scrape ran/);
+});

@@ -68,6 +68,7 @@
 .scrape-log-outcome-succeeded{background:#e3f2e7;color:#22663d}
 .scrape-log-outcome-failed{background:#fae7e4;color:#9b3530}
 .scrape-log-outcome-cancelled{background:#eeece9;color:#5c5a57}
+.scrape-log-outcome-skipped{background:#fff0d8;color:#80551c}
 .scrape-log-entry p{margin:8px 0 3px}
 .scrape-log-entry small{color:#697a75}
 .app-shell[data-mode="dark"] .scrape-log,.app-shell[data-mode="dark"] .scrape-log-entry{border-color:#3b555d}

@@ -29,7 +29,7 @@ export default function ScrapeLog() {
         <time dateTime={entry.finishedAt}>{formatViennaCompactDateTime(entry.finishedAt)} Vienna</time>
         <span className="scrape-log-trigger">{entry.trigger === 'manual' ? 'Manual' : 'Automatic'}</span>
         <span className={`scrape-log-outcome scrape-log-outcome-${entry.outcome}`}>
-          {entry.outcome === 'succeeded' ? '✓ Successful' : entry.outcome === 'cancelled' ? '– Cancelled' : '✕ Failed'}
+          {entry.outcome === 'succeeded' ? '✓ Successful' : entry.outcome === 'skipped' ? '– Skipped' : entry.outcome === 'cancelled' ? '– Cancelled' : '✕ Failed'}
         </span>
       </div>
       <p>{entry.description}</p>
