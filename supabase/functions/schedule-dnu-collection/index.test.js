@@ -7,12 +7,12 @@ test('independent recovery dispatches only when the current Vienna slot is missi
   const originalDeno = globalThis.Deno, originalFetch = globalThis.fetch, OriginalDate = globalThis.Date;
   let handler, completed = true, running = false, dispatches = 0;
   globalThis.Date = class extends OriginalDate {
-    constructor(...args) { super(...(args.length ? args : ['2026-11-20T05:00:00Z'])); }
+    constructor(...args) { super(...(args.length ? args : ['2026-11-21T07:00:00Z'])); }
   };
   globalThis.Deno = { env: { get: key => ({ DNU_SCHEDULE_TOKEN: 'shared-secret', GITHUB_WORKFLOW_TOKEN: 'workflow-token' })[key] },
     serve: callback => { handler = callback; } };
   globalThis.fetch = async (url, options) => {
-    if (String(url).includes('native-draft-status.json')) return Response.json({ lastCompletedSlot: completed ? '2026-11-20T01:00 Europe/Vienna' : '2026-11-19T13:00 Europe/Vienna' });
+    if (String(url).includes('native-draft-status.json')) return Response.json({ lastCompletedSlot: completed ? '2026-11-21T07:00 Europe/Vienna' : '2026-11-20T13:00 Europe/Vienna' });
     if (String(url).endsWith('/runs?branch=main&per_page=1')) return Response.json({ workflow_runs: running ? [{ status: 'in_progress' }] : [] });
     if (String(url).endsWith('/dispatches')) {
       dispatches++;
@@ -37,7 +37,7 @@ test('independent recovery dispatches only when the current Vienna slot is missi
     running = false;
     const response = await handler(request('shared-secret'));
     assert.equal(response.status, 202);
-    assert.equal((await response.json()).slot, '2026-11-20T01:00 Europe/Vienna');
+    assert.equal((await response.json()).slot, '2026-11-21T07:00 Europe/Vienna');
     assert.equal(dispatches, 1);
   } finally {
     globalThis.Deno = originalDeno;

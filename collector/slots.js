@@ -7,7 +7,7 @@ const maxGithubDelayMs = 12 * 60 * 60_000;
 
 function viennaSlot(date) {
   const parts = Object.fromEntries(viennaParts.formatToParts(date).map(part => [part.type, part.value]));
-  return [1, 13].includes(Number(parts.hour)) ? `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:00 Europe/Vienna` : null;
+  return [7, 19].includes(Number(parts.hour)) ? `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:00 Europe/Vienna` : null;
 }
 
 function candidateTime(cron, now) {
@@ -21,10 +21,10 @@ function candidateTime(cron, now) {
 export function mostRecentViennaSlot(now = new Date()) {
   const parts = Object.fromEntries(viennaParts.formatToParts(now).map(part => [part.type, part.value]));
   const hour = Number(parts.hour);
-  if (hour >= 13) return `${parts.year}-${parts.month}-${parts.day}T13:00 Europe/Vienna`;
-  if (hour >= 1) return `${parts.year}-${parts.month}-${parts.day}T01:00 Europe/Vienna`;
+  if (hour >= 19) return `${parts.year}-${parts.month}-${parts.day}T19:00 Europe/Vienna`;
+  if (hour >= 7) return `${parts.year}-${parts.month}-${parts.day}T07:00 Europe/Vienna`;
   const prior = new Date(Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day) - 1));
-  return `${prior.toISOString().slice(0, 10)}T13:00 Europe/Vienna`;
+  return `${prior.toISOString().slice(0, 10)}T19:00 Europe/Vienna`;
 }
 
 export function scheduledSlotForCron(cron, now = new Date()) {
@@ -46,7 +46,7 @@ export function collectionDecision(eventName, cron, previousSlot, now = new Date
 export function dueCollectionSlot(now = new Date()) {
   const parts = Object.fromEntries(viennaParts.formatToParts(now).map(part => [part.type, part.value]));
   const hour = Number(parts.hour);
-  if (![1, 13].includes(hour) || Number(parts.minute) >= 15) return null;
+  if (![7, 19].includes(hour) || Number(parts.minute) >= 15) return null;
   const slot = parts.hour;
   return `${parts.year}-${parts.month}-${parts.day}T${slot}:00 Europe/Vienna`;
 }
@@ -55,7 +55,7 @@ export function isScheduledCollectionHour(now = new Date()) {
   const hour = Number(new Intl.DateTimeFormat('en-GB', {
     timeZone: 'Europe/Vienna', hour: '2-digit', hourCycle: 'h23'
   }).format(now));
-  return hour === 1 || hour === 13;
+  return hour === 7 || hour === 19;
 }
 
 export function isScheduledUtcCandidate(cron, now = new Date()) {

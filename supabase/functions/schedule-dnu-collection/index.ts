@@ -1,4 +1,4 @@
-// Independent hourly recovery trigger for the 01:00 and 13:00 Vienna slots.
+// Independent hourly recovery trigger for the 07:00 and 19:00 Vienna slots.
 // Supabase Cron sends the token from Vault; the GitHub workflow checks the
 // completed-slot marker again before collecting.
 const workflowApi = 'https://api.github.com/repos/Buddhuza/dnu/actions/workflows/test-daily-collection.yml';
@@ -18,9 +18,9 @@ function equalSecret(left: string, right: string) {
 function latestSlot(now: Date) {
   const parts = Object.fromEntries(clock.formatToParts(now).map(part => [part.type, part.value]));
   const hour = Number(parts.hour);
-  if (hour >= 1) return `${parts.year}-${parts.month}-${parts.day}T${hour >= 13 ? '13' : '01'}:00 Europe/Vienna`;
+  if (hour >= 7) return `${parts.year}-${parts.month}-${parts.day}T${hour >= 19 ? '19' : '07'}:00 Europe/Vienna`;
   const previous = new Date(Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day) - 1));
-  return `${previous.toISOString().slice(0, 10)}T13:00 Europe/Vienna`;
+  return `${previous.toISOString().slice(0, 10)}T19:00 Europe/Vienna`;
 }
 
 Deno.serve(async request => {
@@ -33,6 +33,8 @@ Deno.serve(async request => {
   const githubToken = Deno.env.get('GITHUB_WORKFLOW_TOKEN');
   if (!githubToken) return reply(503, { error: 'GitHub workflow token is unavailable.' });
   const slot = latestSlot(new Date());
+  if (slot < '2026-11-21T07:00 Europe/Vienna')
+    return reply(200, { skipped: true, reason: 'The new collection schedule has not begun.', slot });
   const headers = { authorization: `Bearer ${githubToken}`, accept: 'application/vnd.github+json',
     'x-github-api-version': '2022-11-28' };
   try {
