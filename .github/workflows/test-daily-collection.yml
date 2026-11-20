@@ -7,6 +7,8 @@ on:
     - cron: '0 0 * * *'
     - cron: '0 11 * * *'
     - cron: '0 12 * * *'
+    # Recovery check; it collects only when the current Vienna slot has no completed draft.
+    - cron: '15 * * * *'
   workflow_dispatch:
   push:
     branches: [main]
@@ -25,22 +27,18 @@ jobs:
     timeout-minutes: 60
     outputs:
       ran: ${{ steps.slot.outputs.run }}
+      record_skip: ${{ steps.slot.outputs.record_skip }}
+      scheduled_slot: ${{ steps.slot.outputs.scheduled_slot }}
     steps:
       - uses: actions/checkout@v4
       - name: Check Vienna collection time
         id: slot
         env:
-          EVENT_NAME: ${{ github.event_name }}
-          CRON_SCHEDULE: ${{ github.event.schedule }}
+          GITHUB_EVENT_SCHEDULE: ${{ github.event.schedule }}
         run: |
-          if [ "$EVENT_NAME" != schedule ] || node --input-type=module -e "import { isScheduledUtcCandidate } from './collector/slots.js'; process.exit(isScheduledUtcCandidate(process.env.CRON_SCHEDULE) ? 0 : 1)"; then
-            echo 'run=true' >> "$GITHUB_OUTPUT"
-          else
-            echo 'run=false' >> "$GITHUB_OUTPUT"
-            if node --input-type=module -e "import { isStaleScheduledUtcCandidate } from './collector/slots.js'; process.exit(isStaleScheduledUtcCandidate(process.env.CRON_SCHEDULE) ? 0 : 1)"; then
-              echo 'record_skip=true' >> "$GITHUB_OUTPUT"
-            fi
-          fi
+          git fetch origin gh-pages:refs/remotes/origin/gh-pages
+          git show origin/gh-pages:native-draft-status.json > /tmp/dnu-latest-draft-status.json || true
+          node scripts/collection-slot-decision.mjs /tmp/dnu-latest-draft-status.json
       - uses: actions/setup-node@v4
         if: steps.slot.outputs.run == 'true'
         with:
@@ -50,6 +48,8 @@ jobs:
         run: npm ci
       - name: Collect completed JSON from publishers
         if: steps.slot.outputs.run == 'true'
+        env:
+          DNU_COLLECTION_TRIGGER: ${{ github.event_name == 'schedule' && 'automatic' || 'manual' }}
         run: npm run collect:daily
       - name: Save draft and route audit
         if: always() && steps.slot.outputs.run == 'true'
@@ -63,6 +63,8 @@ jobs:
           retention-days: 7
       - name: Make completed draft available to the editor on GitHub Pages
         if: steps.slot.outputs.run == 'true' && success()
+        env:
+          DNU_SCHEDULED_SLOT: ${{ steps.slot.outputs.scheduled_slot }}
         run: |
           set -e
           git fetch origin gh-pages:refs/remotes/origin/gh-pages
@@ -98,6 +100,7 @@ jobs:
         env:
           DNU_COLLECTION_RESULT: ${{ needs.collect.result }}
           DNU_COLLECTION_SKIPPED: ${{ needs.collect.outputs.record_skip }}
+          DNU_COLLECTION_SLOT: ${{ needs.collect.outputs.scheduled_slot }}
         run: |
           set -e
           git config user.name "github-actions[bot]"

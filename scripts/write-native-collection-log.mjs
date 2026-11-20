@@ -6,7 +6,7 @@ const readJson = path => {
   catch { return null; }
 };
 
-export function collectionLogEntry({ runId, eventName, conclusion, skipped = false, edition, progress, finishedAt = new Date().toISOString() }) {
+export function collectionLogEntry({ runId, eventName, conclusion, skipped = false, scheduledSlot = '', edition, progress, finishedAt = new Date().toISOString() }) {
   if (!Number.isSafeInteger(Number(runId)) || Number(runId) <= 0) throw new Error('A GitHub Actions run ID is required.');
   const trigger = ['workflow_dispatch', 'push'].includes(eventName) ? 'manual' : 'automatic';
   const completed = conclusion === 'success' && edition?.nativeEdition === true && Array.isArray(edition.articles) && edition.articles.length > 0;
@@ -23,7 +23,8 @@ export function collectionLogEntry({ runId, eventName, conclusion, skipped = fal
   else if (conclusion === 'cancelled') description = 'Scrape was cancelled before a completed draft was saved.';
   else if (progress?.state === 'complete') description = 'Collection finished, but the completed draft could not be saved to the website.';
   else description = `No completed draft was saved. ${String(progress?.message || 'The collection job failed before it reported a result.').trim()}`;
-  return { runId: Number(runId), trigger, outcome, startedAt, finishedAt, description,
+  if (scheduledSlot) description = `${scheduledSlot.replace('T', ' ').replace(' Europe/Vienna', '')} Vienna slot: ${description}`;
+  return { runId: Number(runId), trigger, outcome, scheduledSlot: scheduledSlot || null, startedAt, finishedAt, description,
     stories, fullBodies, sourceRoutes, failedRoutes };
 }
 
@@ -42,6 +43,7 @@ if (process.argv[1]?.endsWith('/write-native-collection-log.mjs')) {
     eventName: process.env.GITHUB_EVENT_NAME,
     conclusion: process.env.DNU_COLLECTION_RESULT,
     skipped: process.env.DNU_COLLECTION_SKIPPED === 'true',
+    scheduledSlot: process.env.DNU_COLLECTION_SLOT || '',
     edition: readJson(join(artifactDir, 'prepared-update.json')),
     progress: readJson(join(artifactDir, 'native-collection-progress.json'))
   });
