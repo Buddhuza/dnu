@@ -88,7 +88,26 @@ jobs:
         with:
           name: native-daily-draft
           path: report-data
+      - name: Record scrape in site log
+        env:
+          DNU_COLLECTION_RESULT: ${{ needs.collect.result }}
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin gh-pages:refs/remotes/origin/gh-pages
+            git worktree add --detach /tmp/dnu-scrape-log-pages origin/gh-pages
+            node scripts/write-native-collection-log.mjs report-data /tmp/dnu-scrape-log-pages/native-collection-log.json
+            git -C /tmp/dnu-scrape-log-pages add native-collection-log.json
+            git -C /tmp/dnu-scrape-log-pages commit -m "Record DNU scrape ${{ github.run_id }}"
+            if git -C /tmp/dnu-scrape-log-pages push origin HEAD:gh-pages; then exit 0; fi
+            git worktree remove --force /tmp/dnu-scrape-log-pages
+            sleep $((attempt * 3))
+          done
+          exit 1
       - name: Email scrape report
+        if: always()
         env:
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           DNU_SCRAPE_RESULT: ${{ needs.collect.result }}
