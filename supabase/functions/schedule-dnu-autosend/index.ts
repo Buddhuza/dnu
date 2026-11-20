@@ -55,10 +55,16 @@ Deno.serve(async request => {
     if (runsResponse.ok) {
       const runs = (await runsResponse.json()).workflow_runs || [];
       const matching = runs.filter((run: { display_title?: string }) => run.display_title === `AUTOSEND ${due}`);
-      if (matching.some((run: { conclusion?: string }) => run.conclusion === 'success'))
-        return reply(200, { skipped: true, reason: 'A successful AUTOSEND run is already recorded.', due });
       if (matching.some((run: { status?: string }) => ['queued', 'in_progress', 'waiting', 'pending'].includes(run.status || '')))
         return reply(200, { skipped: true, reason: 'AUTOSEND is already queued or running.', due });
+      for (const run of matching.slice(0, 5)) {
+        const jobsResponse = await fetch(`${githubApi}/actions/runs/${run.id}/jobs?per_page=30`, { headers });
+        if (!jobsResponse.ok) continue;
+        const jobs = (await jobsResponse.json()).jobs || [];
+        if (jobs.some((job: { steps?: Array<{ name?: string; conclusion?: string }> }) =>
+          (job.steps || []).some(step => step.name === 'Send the published edition to the saved address book' && step.conclusion === 'success')))
+          return reply(200, { skipped: true, reason: 'Gmail submission already succeeded.', due });
+      }
     }
     const dispatch = await fetch(`${githubApi}/actions/workflows/autosend.yml/dispatches`, {
       method: 'POST', headers: { ...headers, 'content-type': 'application/json' },
