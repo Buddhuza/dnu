@@ -40,7 +40,7 @@ Each AUTOSEND run writes a credential-free `status.json` to the `autosend-status
 
 Automatic full-update email now uses AUTOSEND on Saturdays and Sundays at 08:00 Europe/Vienna. Holiday dates will be added to `data/autosend-holidays.json` and the Supabase scheduler when the owner provides the list. A one-time test is due on 20 November 2026 at 22:15 Vienna time. AUTOSEND clears the previous stories, publishes the latest completed scrape, then emails that compressed edition. The former daily 16:00 Gmail schedule and all six Supabase daily-email jobs are retired. Manual paper-plane sending remains available.
 
-Supabase Cron checks for a due AUTOSEND every five minutes; GitHub Actions has independent weekend backup checks. Successful scheduled dates are recorded in `autosend-status:history.json`, so later checks skip them. Failed or missed dates are retried until the email submission succeeds. GitHub Actions and Gmail can delay actual delivery, so 08:00 is the target start rather than a guaranteed inbox arrival time. A confirmed SMTP submission does not prove delivery to every recipient.
+Supabase Cron checks for a due AUTOSEND every five minutes; GitHub Actions has independent weekend backup checks. Successful scheduled dates are recorded in `autosend-status:history.json`, so later checks skip them. Failed or missed dates are retried until the email submission succeeds. A scheduled run requires a completed scrape from its due Vienna morning or later; an older draft is not published or emailed. GitHub Actions and Gmail can delay actual delivery, so 08:00 is the target start rather than a guaranteed inbox arrival time. A confirmed SMTP submission does not prove delivery to every recipient.
 
 To activate the paper-plane button:
 

@@ -72,6 +72,7 @@ jobs:
         name: Clear old stories and publish the latest scrape
         if: steps.due.outputs.run == 'true'
         env:
+          DNU_REQUIRED_COLLECTION_DATE: ${{ steps.due.outputs.scheduled_date }}
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: node scripts/autosend.mjs "$RUNNER_TEMP/native-draft.json" "$RUNNER_TEMP/native-draft-status.json" "$RUNNER_TEMP/dnu-gmail-message.json"

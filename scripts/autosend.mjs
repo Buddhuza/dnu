@@ -9,10 +9,18 @@ import { ensureUkraineWarLeads } from '../src/weekendEdition.js';
 
 const supabaseUrl = 'https://epghsyajgspcywqqbfso.supabase.co';
 
-export function autosendEdition(draft, status, settings) {
+export function autosendEdition(draft, status, settings, requiredDate = '') {
   if (draft?.nativeEdition !== true || !draft.checkedAt || !Array.isArray(draft.articles) || !draft.articles.length ||
       status?.checkedAt !== draft.checkedAt || status?.stories !== draft.articles.length || !Number.isSafeInteger(status?.runId))
     throw new Error('The latest completed scrape is missing or does not match its status. The shared update was not changed.');
+  if (requiredDate) {
+    const parts = Object.fromEntries(new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Europe/Vienna', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hourCycle: 'h23'
+    }).formatToParts(new Date(draft.checkedAt)).map(part => [part.type, part.value]));
+    const collectedDate = `${parts.year}-${parts.month}-${parts.day}`;
+    if (collectedDate < requiredDate.slice(0, 10) || collectedDate === requiredDate.slice(0, 10) && Number(parts.hour) < 1)
+      throw new Error(`The latest scrape is older than the ${requiredDate.slice(0, 10)} Vienna morning. No shared stories were cleared or emailed; AUTOSEND will retry.`);
+  }
   const leadSelection = ensureUkraineWarLeads(latestCollectionArticles(draft), draft.leadOrigins);
   const incoming = leadSelection.articles;
   if (!incoming.length) throw new Error('The latest scrape has no stories to publish. The shared update was not changed.');
@@ -68,7 +76,7 @@ async function main() {
   if (!draftPath || !statusPath || !outputPath) throw new Error('Usage: autosend.mjs DRAFT_JSON STATUS_JSON MESSAGE_JSON');
   const draft = JSON.parse(readFileSync(draftPath, 'utf8'));
   const status = JSON.parse(readFileSync(statusPath, 'utf8'));
-  autosendEdition(draft, status, {}); // Validate before connecting to the shared database.
+  autosendEdition(draft, status, {}, process.env.DNU_REQUIRED_COLLECTION_DATE || ''); // Validate before connecting to the shared database.
   const client = createClient(supabaseUrl, await serviceRoleKey(), { auth: { persistSession: false, autoRefreshToken: false } });
   const result = await autosend(draft, status, client);
   writeFileSync(outputPath, JSON.stringify(result.message), { mode: 0o600 });

@@ -27,6 +27,12 @@ test('autosend rejects a missing or mismatched latest scrape before clearing any
   assert.throws(() => autosendEdition({ ...draft, articles: [] }, status, {}), /not changed/);
 });
 
+test('scheduled AUTOSEND waits for a scrape from the due Vienna morning', () => {
+  assert.throws(() => autosendEdition(draft, status, {}, '2026-11-20'), /older than the 2026-11-20 Vienna morning/);
+  const fresh = { ...draft, checkedAt: '2026-11-20T00:05:00Z' };
+  assert.equal(autosendEdition(fresh, { ...status, checkedAt: fresh.checkedAt }, {}, '2026-11-20').edition.articles.length, 1);
+});
+
 test('autosend promotes two suitable Ukraine stories from an older draft with no leads', () => {
   const ukraine = { sectionId: 'Eastern Europe', section: 'Eastern Europe', subsection: 'Ukraine', country: '', publishedAt: draft.checkedAt, sourceName: 'Reuters' };
   const updated = { ...draft, articles: [
