@@ -49,7 +49,8 @@ test('recovery follows summer time and a delayed primary cannot duplicate the co
   assert.equal(mostRecentViennaSlot(new Date('2026-06-02T17:15:00Z')), summerSlot);
   assert.equal(collectionDecision('schedule', '15 * * * *', summerSlot, new Date('2026-06-02T17:15:00Z')).run, false);
   assert.equal(collectionDecision('schedule', '0 11 * * *', '', new Date('2026-06-02T17:15:00Z')).scheduledSlot, summerSlot);
-  assert.equal(collectionDecision('push', '', '', new Date('2026-11-20T09:42:00Z')).scheduledSlot, '2026-11-20T01:00 Europe/Vienna');
+  assert.deepEqual(collectionDecision('push', '', '', new Date('2026-11-20T09:42:00Z')),
+    { run: true, scheduledSlot: '', recordSkip: false });
   assert.equal(collectionDecision('workflow_dispatch', '', '', new Date('2026-11-20T09:42:00Z'), true).scheduledSlot, '2026-11-20T01:00 Europe/Vienna');
   assert.equal(collectionDecision('workflow_dispatch', '', '2026-11-20T01:00 Europe/Vienna', new Date('2026-11-20T09:42:00Z'), true).run, false);
   assert.equal(collectionDecision('workflow_dispatch', '', '2026-11-20T01:00 Europe/Vienna', new Date('2026-11-20T09:42:00Z')).run, true);

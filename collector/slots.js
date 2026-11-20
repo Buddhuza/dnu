@@ -34,7 +34,7 @@ export function scheduledSlotForCron(cron, now = new Date()) {
 
 export function collectionDecision(eventName, cron, previousSlot, now = new Date(), scheduledRecovery = false) {
   if (eventName === 'workflow_dispatch' && !scheduledRecovery) return { run: true, scheduledSlot: '', recordSkip: false };
-  if (eventName === 'push') return { run: true, scheduledSlot: mostRecentViennaSlot(now), recordSkip: false };
+  if (eventName === 'push') return { run: true, scheduledSlot: '', recordSkip: false };
   if (eventName !== 'schedule' && !scheduledRecovery) return { run: false, scheduledSlot: '', recordSkip: false };
   const slot = scheduledRecovery || cron === '15 * * * *' ? mostRecentViennaSlot(now) : scheduledSlotForCron(cron, now);
   if (!slot || slot === previousSlot) return { run: false, scheduledSlot: '', recordSkip: false };
