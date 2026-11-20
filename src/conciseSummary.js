@@ -5,7 +5,7 @@ const meaningful = value => (String(value || '').toLowerCase().match(/[a-z]{4,}/
 // Keep imported copy to one readable sentence. This is a conservative text
 // selection pass, not a generated paraphrase of an article we have not read.
 export function conciseDnuSummary(value, headline = '') {
-  const original = String(value || '').replace(/\s+/g, ' ').trim();
+  const original = String(value || '').replace(/\s+/g, ' ').replace(/\bU\.S\./g, 'US').replace(/\bU\.K\./g, 'UK').trim();
   if (!original) return '';
   const headlineWords = new Set(meaningful(headline));
   const sentences = [...new Intl.Segmenter('en', { granularity: 'sentence' }).segment(original)]
