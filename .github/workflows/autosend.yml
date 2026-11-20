@@ -34,7 +34,7 @@ jobs:
     timeout-minutes: 75
     steps:
       - id: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - id: due
         name: Check Vienna date and prior successful delivery
         env:
@@ -46,7 +46,7 @@ jobs:
             git fetch origin autosend-status:refs/remotes/origin/autosend-status
           fi
           node scripts/should-run-autosend.mjs >> "$GITHUB_OUTPUT"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         if: steps.due.outputs.run == 'true'
         with:
           node-version: '24.5.0'

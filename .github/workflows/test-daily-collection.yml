@@ -35,7 +35,7 @@ jobs:
       record_skip: ${{ steps.slot.outputs.record_skip }}
       scheduled_slot: ${{ steps.slot.outputs.scheduled_slot }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Check Vienna collection time
         id: slot
         env:
@@ -45,7 +45,7 @@ jobs:
           git fetch origin gh-pages:refs/remotes/origin/gh-pages
           git show origin/gh-pages:native-draft-status.json > /tmp/dnu-latest-draft-status.json || true
           node scripts/collection-slot-decision.mjs /tmp/dnu-latest-draft-status.json
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         if: steps.slot.outputs.run == 'true'
         with:
           node-version: '24.5.0'
@@ -96,7 +96,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Download collection results if available
         uses: actions/download-artifact@v4
         continue-on-error: true

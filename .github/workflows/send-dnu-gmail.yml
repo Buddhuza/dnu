@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Check Vienna slot and earlier delivery
         id: delivery
         env:
@@ -48,7 +48,7 @@ jobs:
           CRON_SCHEDULE: ${{ github.event.schedule }}
           SCHEDULED_DELIVERY: ${{ inputs.scheduled_delivery || 'false' }}
         run: node scripts/should-send-scheduled-gmail.mjs >> "$GITHUB_OUTPUT"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         if: steps.delivery.outputs.send == 'true'
         with:
           node-version: '24.5.0'
