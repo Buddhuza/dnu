@@ -35,3 +35,9 @@ test('a stale scheduled attempt is labelled skipped, not successful', () => {
   assert.equal(entry.outcome, 'skipped');
   assert.match(entry.description, /No scrape ran/);
 });
+
+test('an explicit catch-up trigger is manual', () => {
+  const entry = collectionLogEntry({ runId: 21, eventName: 'push', conclusion: 'success',
+    edition: { nativeEdition: true, articles: [{ body: '' }], sourceOutcomes: [] }, finishedAt: '2026-11-20T10:00:00Z' });
+  assert.equal(entry.trigger, 'manual');
+});

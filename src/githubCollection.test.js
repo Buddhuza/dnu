@@ -21,7 +21,7 @@ test('latest scrape metadata supplies its finish time and story count', async ()
 });
 
 test('latest completed scrape retains manual or automatic origin', async () => {
-  for (const [event, trigger] of [['workflow_dispatch', 'manual'], ['schedule', 'automatic']]) {
+  for (const [event, trigger] of [['workflow_dispatch', 'manual'], ['push', 'manual'], ['schedule', 'automatic']]) {
     const fetchImpl = async url => ({ ok: true, json: async () => String(url).includes('native-draft-status.json')
       ? { runId: 42, checkedAt: '2026-11-16T13:00:00Z', stories: 81, trigger }
       : { workflow_runs: [{ id: 42, event, status: 'completed', conclusion: 'success', updated_at: '2026-11-16T13:08:00Z' }] } });

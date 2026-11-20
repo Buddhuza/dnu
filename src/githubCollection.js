@@ -41,7 +41,7 @@ export async function fetchGithubDraftStatus(fetchImpl = fetch) {
 }
 
 function runTrigger(event) {
-  return event === 'workflow_dispatch' ? 'manual' : ['schedule', 'push'].includes(event) ? 'automatic' : null;
+  return ['workflow_dispatch', 'push'].includes(event) ? 'manual' : event === 'schedule' ? 'automatic' : null;
 }
 
 export async function startGithubCollection(client) {

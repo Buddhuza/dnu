@@ -8,7 +8,7 @@ const readJson = path => {
 
 export function collectionLogEntry({ runId, eventName, conclusion, skipped = false, edition, progress, finishedAt = new Date().toISOString() }) {
   if (!Number.isSafeInteger(Number(runId)) || Number(runId) <= 0) throw new Error('A GitHub Actions run ID is required.');
-  const trigger = eventName === 'workflow_dispatch' ? 'manual' : 'automatic';
+  const trigger = ['workflow_dispatch', 'push'].includes(eventName) ? 'manual' : 'automatic';
   const completed = conclusion === 'success' && edition?.nativeEdition === true && Array.isArray(edition.articles) && edition.articles.length > 0;
   const outcome = skipped ? 'skipped' : conclusion === 'success' ? 'succeeded' : conclusion === 'cancelled' ? 'cancelled' : 'failed';
   const startedAt = Number.isFinite(Date.parse(progress?.startedAt)) ? progress.startedAt : null;
