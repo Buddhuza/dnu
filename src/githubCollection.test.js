@@ -38,6 +38,24 @@ test('a skipped daylight-saving candidate keeps the previous completed draft ava
   assert.match(status.message, /39 stories/);
 });
 
+test('a newer saved draft ends an older completed run’s preparing notice', async () => {
+  const fetchImpl = async url => ({ ok: true, json: async () => String(url).includes('native-draft-status.json')
+    ? { runId: 44, checkedAt: '2026-11-21T00:13:00Z', finishedAt: '2026-11-21T00:14:00Z', stories: 63, trigger: 'automatic' }
+    : { workflow_runs: [{ id: 42, event: 'workflow_dispatch', status: 'completed', conclusion: 'success', updated_at: '2026-11-20T22:00:00Z' }] } });
+  const status = await githubCollectionStatus(fetchImpl, new Date('2026-11-21T00:15:00Z'));
+  assert.equal(status.state, 'complete');
+  assert.equal(status.runId, 44);
+  assert.match(status.message, /63 stories/);
+});
+
+test('a completed scrape cannot say it is preparing forever', async () => {
+  const fetchImpl = async url => ({ ok: String(url).includes('native-draft-status.json') ? false : true,
+    json: async () => ({ workflow_runs: [{ id: 42, status: 'completed', conclusion: 'success', updated_at: '2026-11-21T00:00:00Z' }] }) });
+  const status = await githubCollectionStatus(fetchImpl, new Date('2026-11-21T00:03:00Z'));
+  assert.equal(status.state, 'failed');
+  assert.match(status.message, /without a completed draft/);
+});
+
 test('one-click collection uses the signed-in editor function', async () => {
   let invoked = '';
   const client = {

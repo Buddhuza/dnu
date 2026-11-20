@@ -10,4 +10,7 @@ test('completed scrape notice expires and stays dismissed for the same run', () 
   assert.equal(showScrapeNotice(status, { now: now + completedNoticeMs }), false);
   assert.equal(showScrapeNotice({ ...status, runId: 43 }, { now, dismissedRunId: '42' }), true);
   assert.equal(showScrapeNotice({ state: 'running', runId: 43 }, { now }), true);
+  assert.equal(showScrapeNotice({ state: 'running', runId: 43 }, { now, dismissedRunId: '43' }), false);
+  assert.equal(showScrapeNotice({ state: 'running', runId: 44, updatedAt: new Date(now - 1000).toISOString() }, { now, hiddenBefore: now }), false);
+  assert.equal(showScrapeNotice({ ...status, runId: 44 }, { now, hiddenBefore: now }), false);
 });

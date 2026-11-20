@@ -125,6 +125,7 @@ function App() {
   const [scrapeStatus, setScrapeStatus] = useState(null);
   const [scrapeNoticeClock, setScrapeNoticeClock] = useState(Date.now);
   const [dismissedScrapeRunId, setDismissedScrapeRunId] = useState('');
+  const [scrapeNoticeHiddenBefore, setScrapeNoticeHiddenBefore] = useState(0);
   const dismissCompletedScrape = () => {
     if (scrapeStatus?.state === 'complete') setDismissedScrapeRunId(String(scrapeStatus.runId || ''));
   };
@@ -498,7 +499,8 @@ function App() {
       setDaily(current => emptyEdition(current || preparedUpdate, clearedAt));
       setCompiledAt(clearedAt);
       setImportingSpreadsheet(false);
-      dismissCompletedScrape();
+      setDismissedScrapeRunId(String(scrapeStatus?.runId || ''));
+      setScrapeNoticeHiddenBefore(Date.now());
       setScrapingOpen(false);
       return;
     }
@@ -514,6 +516,8 @@ function App() {
     setCompiledAt(preparedUpdate.checkedAt);
     setStaticPreview(true);
     setImportingSpreadsheet(false);
+    setDismissedScrapeRunId(String(scrapeStatus?.runId || ''));
+    setScrapeNoticeHiddenBefore(Date.now());
     setToast('Update cleared. Its structure and article cache remain available.');
   }
 
@@ -898,7 +902,7 @@ function App() {
 
       </main>
     </div>{toast && <div className={`toast ${toast.startsWith('Not published:') ? 'toast-error' : toast.includes('Publishing for everyone…') ? 'toast-pending' : ''}`} role={toast.startsWith('Not published:') ? 'alert' : 'status'} onClick={() => setToast('')}>{toast} ×</div>}
-    {isEditor && showScrapeNotice(scrapeStatus, { dialogOpen: scrapingOpen, dismissedRunId: dismissedScrapeRunId, now: scrapeNoticeClock }) && <button type="button" className="scrape-live-status" role="status" onClick={() => { dismissCompletedScrape(); setScrapingOpen(true); }}><strong>{scrapeStatus.state === 'complete' ? 'Scrape complete' : 'Scraping news'}</strong><span>{scrapeStatus.message}</span><small>{scrapeStatus.state === 'complete' ? 'Publish draft' : 'Open progress'}</small></button>}
+    {isEditor && showScrapeNotice(scrapeStatus, { dialogOpen: scrapingOpen, dismissedRunId: dismissedScrapeRunId, hiddenBefore: scrapeNoticeHiddenBefore, now: scrapeNoticeClock }) && <button type="button" className="scrape-live-status" role="status" onClick={() => { dismissCompletedScrape(); setScrapingOpen(true); }}><strong>{scrapeStatus.state === 'complete' ? 'Scrape complete' : 'Scraping news'}</strong><span>{scrapeStatus.message}</span><small>{scrapeStatus.state === 'complete' ? 'Publish draft' : 'Open progress'}</small></button>}
     {spreadsheetResults && <div className="add-backdrop" onClick={() => setSpreadsheetResults(null)}><section className="add-dialog spreadsheet-results" role="dialog" aria-modal="true" aria-labelledby="spreadsheet-results-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="spreadsheet-results-title">Spreadsheet export results</h2><button type="button" aria-label="Close export results" onClick={() => setSpreadsheetResults(null)}>×</button></div><p>{spreadsheetResults.downloaded ? `Downloaded ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} visible full articles.` : `No spreadsheet downloaded. ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} articles available.`}</p>{spreadsheetResults.error && <p role="alert">{spreadsheetResults.error}</p>}{spreadsheetResults.failures.length > 0 && <><h3>{spreadsheetResults.failures.length} unavailable</h3><ul>{spreadsheetResults.failures.map((failure, index) => <li key={index}>{failure}</li>)}</ul></>}<div className="add-dialog-actions"><button type="button" onClick={() => setSpreadsheetResults(null)}>Close</button></div></section></div>}
     {isEditor && managing && <SiteManager initialTab={managerTab} isOwner={managementEnabled} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} onClose={() => setManaging(false)}/>}
     {isEditor && sendDialogOpen && <SendGmailDialog recipients={siteConfig.gmailRecipients} subject={`[TEST] ${emailSubject(compiledAt)}`} articleCount={selectedArticles.length} onSave={saveGmailRecipients} onSend={sendPublishedGmail} onClose={() => setSendDialogOpen(false)}/>}

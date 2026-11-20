@@ -58,7 +58,16 @@ export async function startGithubCollection(client) {
   return data;
 }
 
-export async function githubCollectionStatus(fetchImpl = fetch) {
+function completedDraftStatus(draft) {
+  return {
+    state: 'complete', runId: Number(draft.runId), checkedAt: draft.checkedAt,
+    createdAt: draft.checkedAt, updatedAt: draft.finishedAt || draft.checkedAt,
+    runUrl: draft.runUrl, trigger: draft.trigger || null,
+    message: `Latest completed draft: ${draft.stories} stories.`
+  };
+}
+
+export async function githubCollectionStatus(fetchImpl = fetch, now = new Date()) {
   try {
     const response = await fetchImpl(githubRunsApi, { cache: 'no-store', headers: { Accept: 'application/vnd.github+json' } });
     if (!response.ok) throw new Error(`GitHub status HTTP ${response.status}`);
@@ -70,14 +79,22 @@ export async function githubCollectionStatus(fetchImpl = fetch) {
       if (state === 'complete') {
         const published = await fetchImpl(pagesFile('native-draft-status.json'), { cache: 'no-store' });
         draft = published.ok ? await published.json() : null;
-        if (draft && run.event === 'schedule' && Number(draft.runId) !== Number(run.id)) return {
-          state: 'complete', runId: Number(draft.runId), checkedAt: draft.checkedAt, createdAt: draft.checkedAt, updatedAt: draft.checkedAt, runUrl: draft.runUrl, trigger: draft.trigger || null,
-          message: `Latest completed draft: ${draft.stories} stories.`
-        };
-        if (!draft || Number(draft.runId) !== Number(run.id)) return {
-          state: 'running', runId: run.id, createdAt: run.created_at, startedAt: run.run_started_at || run.created_at, updatedAt: run.updated_at, runUrl: run.html_url,
-          message: 'Scraping finished; preparing the completed draft…'
-        };
+        if (!draft || Number(draft.runId) !== Number(run.id)) {
+          const runFinishedAt = Date.parse(run.updated_at || run.created_at || '');
+          const draftFinishedAt = Date.parse(draft?.finishedAt || draft?.checkedAt || '');
+          // A completed run may have saved no draft, or another workflow may have
+          // saved a newer one. Neither case is an indefinitely running scrape.
+          if (draft && (run.event === 'schedule' || draftFinishedAt >= runFinishedAt ||
+              !Number.isFinite(runFinishedAt) || now.getTime() - runFinishedAt >= 120_000))
+            return completedDraftStatus(draft);
+          if (!Number.isFinite(runFinishedAt) || now.getTime() - runFinishedAt >= 120_000)
+            return { state: 'failed', runId: run.id, updatedAt: run.updated_at, message: 'The scrape finished without a completed draft.' };
+          return {
+            state: 'running', runId: run.id, createdAt: run.created_at,
+            startedAt: run.run_started_at || run.created_at, updatedAt: run.updated_at, runUrl: run.html_url,
+            message: 'Scraping finished; preparing the completed draft…'
+          };
+        }
       }
       return {
         state, runId: run.id, checkedAt: run.updated_at, createdAt: run.created_at, startedAt: run.run_started_at || run.created_at, updatedAt: run.updated_at, runUrl: run.html_url,
