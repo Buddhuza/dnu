@@ -19,6 +19,7 @@ export function buildAutosendStatus(env, draftStatus, now = new Date()) {
     runUrl: `https://github.com/${env.GITHUB_REPOSITORY}/actions/runs/${runId}`,
     commit: env.GITHUB_SHA || '',
     finishedAt: now.toISOString(),
+    scheduledDate: env.AUTOSEND_SCHEDULED_DATE || null,
     result,
     steps,
     draft: draftStatus && typeof draftStatus === 'object' ? {
@@ -36,10 +37,17 @@ function git(args, options = {}) {
 function publishStatus(status) {
   const contents = `${JSON.stringify(status, null, 2)}\n`;
   const blob = git(['hash-object', '-w', '--stdin'], { input: contents });
-  const tree = git(['mktree'], { input: `100644 blob ${blob}\tstatus.json\n` });
   const remote = git(['ls-remote', 'origin', branch]);
   const parent = remote ? remote.split(/\s+/)[0] : null;
   if (parent) git(['fetch', 'origin', branch]);
+  let history = {};
+  if (parent) {
+    try { history = JSON.parse(git(['show', `${parent}:history.json`])); }
+    catch { /* First scheduled run creates the history. */ }
+  }
+  if (status.scheduledDate && status.result === 'email_submitted') history[status.scheduledDate] = status.result;
+  const historyBlob = git(['hash-object', '-w', '--stdin'], { input: `${JSON.stringify(history, null, 2)}\n` });
+  const tree = git(['mktree'], { input: `100644 blob ${historyBlob}\thistory.json\n100644 blob ${blob}\tstatus.json\n` });
   const commit = git(['commit-tree', tree, ...(parent ? ['-p', parent] : []), '-m', `Record AUTOSEND run ${status.runId}`], {
     env: { ...process.env, GIT_AUTHOR_NAME: 'DNU Actions', GIT_AUTHOR_EMAIL: 'actions@users.noreply.github.com',
       GIT_COMMITTER_NAME: 'DNU Actions', GIT_COMMITTER_EMAIL: 'actions@users.noreply.github.com' }

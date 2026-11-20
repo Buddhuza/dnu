@@ -6,14 +6,6 @@ on:
     branches: [main]
     paths:
       - .github/dnu-email-trigger.txt
-  schedule:
-    # 16:00 Vienna in summer and winter, with 16:10 and 16:20 backups.
-    - cron: '0 14 * * *'
-    - cron: '10 14 * * *'
-    - cron: '20 14 * * *'
-    - cron: '0 15 * * *'
-    - cron: '10 15 * * *'
-    - cron: '20 15 * * *'
   workflow_dispatch:
     inputs:
       expected_revision:
