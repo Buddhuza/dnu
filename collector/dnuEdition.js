@@ -74,7 +74,7 @@ export function adaptSelectedArticles(selected, leads, registry) {
       || (malformed ? 'Routine, incomplete or malformed headline outside the DNU brief' : '')
       || (unrelatedHome ? 'Local outlet reports an event outside its home country without a local subject' : '')
       || (!placement ? 'No DNU heading could be identified' : blockedPlacementReason(base, placement));
-    if (reason) { rejected.push({ id: item.id, title, reason }); continue; }
+    if (reason) { rejected.push({ id: item.id, title, reason, sourceName, sourceId: base.sourceId, url: item.link }); continue; }
     const lead = leads.has(item.id);
     const body = String(item.articleBody || '').trim();
     articles.push({
