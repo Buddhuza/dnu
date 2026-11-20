@@ -10,7 +10,7 @@ from pathlib import Path
 
 SENDER = "sitroom.github@gmail.com"
 SENDER_NAME = "OSCE SitRoom"
-TO_ADDRESS = "sitcen-at@osce.org"
+TO_ADDRESS = "sitroom.github@gmail.com"
 
 
 def validated_recipients(data):

@@ -46,7 +46,7 @@ try {
     $outlook = New-Object -ComObject Outlook.Application
     $mail = $outlook.CreateItem(0)
     $mail.Subject = [string]$message.subject
-    $toAddress = 'sitcen-at@osce.org'
+    $toAddress = 'sitroom.github@gmail.com'
     $toRecipient = $mail.Recipients.Add($toAddress)
     $toRecipient.Type = 1
     foreach ($address in $recipients) {

@@ -33,13 +33,21 @@ class GmailEnvelopeTest(unittest.TestCase):
             SCRIPT.parents[1] / "public" / "osce-logo.png", recipients)
         smtp = CaptureSMTP()
         smtp.send_message(message, from_addr=GMAIL.SENDER, to_addrs=(GMAIL.TO_ADDRESS, *recipients))
-        self.assertEqual(message["To"], "sitcen-at@osce.org")
+        self.assertEqual(message["To"], "sitroom.github@gmail.com")
         self.assertEqual(message["Bcc"], ", ".join(recipients))
-        self.assertEqual(smtp.recipients, ("sitcen-at@osce.org", *recipients))
-        self.assertIn(b"To: sitcen-at@osce.org", smtp.payload)
+        self.assertEqual(smtp.recipients, ("sitroom.github@gmail.com", *recipients))
+        self.assertIn(b"To: sitroom.github@gmail.com", smtp.payload)
         self.assertNotIn(b"Bcc:", smtp.payload)
         self.assertNotIn(b"buddhuza@gmail.com", smtp.payload)
         self.assertNotIn(b"ayabushady@gmail.com", smtp.payload)
+
+    def test_to_address_is_not_repeated_in_bcc(self):
+        message = GMAIL.build_message(
+            {"subject": "[TEST] Daily update", "text": "Headline", "html": "<p>Headline</p>"},
+            SCRIPT.parents[1] / "public" / "osce-logo.png",
+            ("sitroom.github@gmail.com", "buddhuza@gmail.com"))
+        self.assertEqual(message["To"], "sitroom.github@gmail.com")
+        self.assertEqual(message["Bcc"], "buddhuza@gmail.com")
 
 
 if __name__ == "__main__":
