@@ -14,8 +14,8 @@ on:
         default: ''
   schedule:
     # GitHub backup. Supabase checks every five minutes from 08:00 Vienna time.
-    - cron: '0 6,7 * * 6,0'
-    - cron: '30 8-22 * * 6,0'
+    - cron: '0 6,7 * * *'
+    - cron: '30 8-22 * * *'
   push:
     branches: [main]
     paths:
