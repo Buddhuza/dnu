@@ -50,6 +50,15 @@ Deno.serve(async request => {
       break;
     }
     if (!due) return reply(200, { skipped: true, reason: 'No unsent weekend, holiday or test date is due.' });
+    const runsResponse = await fetch(`${githubApi}/actions/workflows/autosend.yml/runs?per_page=30`, { headers });
+    if (runsResponse.ok) {
+      const runs = (await runsResponse.json()).workflow_runs || [];
+      const matching = runs.filter((run: { display_title?: string }) => run.display_title === `AUTOSEND ${due}`);
+      if (matching.some((run: { conclusion?: string }) => run.conclusion === 'success'))
+        return reply(200, { skipped: true, reason: 'A successful AUTOSEND run is already recorded.', due });
+      if (matching.some((run: { status?: string }) => ['queued', 'in_progress', 'waiting', 'pending'].includes(run.status || '')))
+        return reply(200, { skipped: true, reason: 'AUTOSEND is already queued or running.', due });
+    }
     const dispatch = await fetch(`${githubApi}/actions/workflows/autosend.yml/dispatches`, {
       method: 'POST', headers: { ...headers, 'content-type': 'application/json' },
       body: JSON.stringify({ ref: 'main', inputs: { scheduled_run: 'true', scheduled_date: due } })

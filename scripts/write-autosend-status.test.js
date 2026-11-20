@@ -7,11 +7,12 @@ const base = { GITHUB_RUN_ID: '123', GITHUB_REPOSITORY: 'Buddhuza/dnu', GITHUB_S
   AUTOSEND_PUBLISH_OUTCOME: 'success', AUTOSEND_EMAIL_OUTCOME: 'success' };
 
 test('records a completed email submission without storing recipient details', () => {
-  const status = buildAutosendStatus(base, { checkedAt: '2026-11-19T19:51:51Z', stories: 82, runId: 456 }, new Date('2026-11-19T22:00:00Z'));
+  const status = buildAutosendStatus({ ...base, AUTOSEND_SCHEDULED_DATE: '2026-11-20' }, { checkedAt: '2026-11-19T19:51:51Z', stories: 82, runId: 456 }, new Date('2026-11-19T22:00:00Z'));
   assert.equal(status.result, 'email_submitted');
   assert.equal(status.draft.stories, 82);
   assert.equal(status.runUrl, 'https://github.com/Buddhuza/dnu/actions/runs/123');
   assert.equal(status.finishedAt, '2026-11-19T22:00:00.000Z');
+  assert.equal(status.scheduledDate, '2026-11-20');
 });
 
 test('distinguishes publication from failed email and reports pre-publication failure', () => {
