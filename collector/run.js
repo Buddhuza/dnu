@@ -111,11 +111,9 @@ const finalSelection = dedupeNativeEvents(reviewed.articles);
 const balancedSelection = limitBelarusStateAgency(finalSelection.articles);
 const leadSelection = ensureUkraineWarLeads(balancedSelection.articles, reviewed.leadOrigins);
 const articles = leadSelection.articles;
-const rejected = [...adapted.rejected, ...[...reviewed.removed, ...finalSelection.removed].map(item => ({ id: item.article.id, title: item.article.title,
-  sourceName: item.article.sourceName, sourceId: item.article.sourceId, url: item.article.url,
+const rejected = [...adapted.rejected, ...[...reviewed.removed, ...finalSelection.removed].map(item => ({ ...item.article,
   reason: 'Duplicate development; kept ' + item.preferred.sourceName })),
-  ...balancedSelection.removed.map(article => ({ id: article.id, title: article.title,
-    sourceName: article.sourceName, sourceId: article.sourceId, url: article.url,
+  ...balancedSelection.removed.map(article => ({ ...article,
     reason: 'Limit on Belarus state agency coverage' }))];
 console.log(JSON.stringify({routes:outcomes.length,failed:outcomes.filter(x=>x.status==='failed').length,candidates:unique.length,selected:articles.length,rejected:rejected.length,bodies:articles.filter(x=>x.body).length,firstFailure:outcomes.find(x=>x.status==='failed')?.reason}));
 if(!articles.length){progress('failed','selection','No qualifying articles. Previous edition retained.');throw Error('No qualifying articles. Previous edition retained.');}

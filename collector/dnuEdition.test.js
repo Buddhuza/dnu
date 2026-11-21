@@ -36,6 +36,8 @@ test('native adapter drops live blogs and direct OSCE publications', () => {
   assert.equal(rejected[0].sourceName, 'BBC');
   assert.equal(rejected[0].sourceId, 'source-83');
   assert.equal(rejected[0].url, 'https://bbc.com/LIVE%3A%20US%20security%20talks%20begin');
+  assert.equal(rejected[0].publishedAt, '2026-11-10T09:00:00Z');
+  assert.equal(typeof rejected[0].summary, 'string');
 });
 
 test('native event deduplication keeps the international account of a repeated event', () => {

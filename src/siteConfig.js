@@ -44,6 +44,7 @@ const defaults = {
   leadOrigins: {},
   customCountries: {},
   customArticles: [],
+  rejectedReview: { checkedAt: '', deletedIds: [] },
   customSources: [],
   gmailRecipients: defaultGmailRecipients,
   sourceListingOverrides: {},
@@ -128,7 +129,7 @@ export function normalizeSiteConfig(input, articles = []) {
     const legacyOrganisations = item.sectionId === 'International organisations';
     return [{
       id: clean(item.id, `manual-${url}`, 500), url,
-      sourceId: 'manual', ingestMethod: ['add', 'import', 'scrape', 'feedrun'].includes(item.ingestMethod) ? item.ingestMethod : 'add', sourceName: clean(item.sourceName, 'Manual entry', 100),
+      sourceId: /^source-[\w-]+$/.test(item.sourceId || '') ? item.sourceId : 'manual', ingestMethod: ['add', 'import', 'scrape', 'feedrun'].includes(item.ingestMethod) ? item.ingestMethod : 'add', sourceName: clean(item.sourceName, 'Manual entry', 100),
       title, summary: clean(item.summary, '', 1200),
       translated: item.translated === true,
       manualOverride: item.manualOverride === true,
@@ -189,6 +190,11 @@ export function normalizeSiteConfig(input, articles = []) {
     theme, darkTheme, sections, articleEdits, leadOrigins,
     articleOrder: [...new Set((Array.isArray(input.articleOrder) ? input.articleOrder : []).filter(id => typeof id === 'string' && id.length <= 500))].slice(0, 1000),
     customArticles, customSources, sourceListingOverrides, customCountries,
+    rejectedReview: {
+      checkedAt: clean(input.rejectedReview?.checkedAt, '', 50),
+      deletedIds: [...new Set((Array.isArray(input.rejectedReview?.deletedIds) ? input.rejectedReview.deletedIds : [])
+        .filter(id => typeof id === 'string' && id.length <= 500))].slice(0, 1000)
+    },
     gmailRecipients: normalizedGmailRecipients(input.gmailRecipients),
     hiddenSourceIds: (Array.isArray(input.hiddenSourceIds) ? input.hiddenSourceIds : []).filter(id => typeof id === 'string').slice(0, 500)
   };

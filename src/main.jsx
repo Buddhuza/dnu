@@ -39,6 +39,7 @@ import { useEscapeToClose } from './useEscapeToClose.js';
 import { apiUrl } from './apiUrl.js';
 import { githubCollectionStatus } from './githubCollection.js';
 import { clearNativeDraft } from './nativeDraftCache.js';
+import { dismissRejectedStory } from './rejectedReview.js';
 import { completedNoticeMs, showScrapeNotice } from './scrapeNotice.js';
 import './styles.css';
 
@@ -853,6 +854,34 @@ function App() {
       throw failure;
     } finally { savingRef.current = false; }
   };
+  const approveRejectedStory = async (item, placement, draftCheckedAt) => {
+    if (!isEditor) throw new Error('Sign in as an editor first.');
+    const url = String(item.url || '');
+    if (!/^https:\/\//i.test(url) || !item.title || !item.sourceName) throw new Error('This rejected story needs an original HTTPS URL, headline and agency.');
+    const section = siteConfig.sections.find(entry => entry.id === placement.sectionId && entry.visible);
+    if (!section || !section.subsections.includes(placement.subsection)) throw new Error('Choose a valid section and subsection.');
+    if (!Number.isFinite(Date.parse(placement.publishedAt))) throw new Error('Enter a valid publication date.');
+    if (siteConfig.customArticles.length >= 100) throw new Error('The update has reached its 100 added-story limit.');
+    const key = canonicalArticleUrl(url);
+    if ([...(daily?.articles || []), ...siteConfig.customArticles].some(article => canonicalArticleUrl(article.url) === key))
+      throw new Error('This article is already in the DNU.');
+    const article = {
+      id: `rejected-${crypto.randomUUID()}`, url, sourceId: item.sourceId || 'manual', sourceName: item.sourceName,
+      title: item.title, summary: item.summary || '', publishedAt: new Date(placement.publishedAt).toISOString(),
+      sectionId: section.id, subsection: placement.subsection, country: section.id === 'Miscellaneous' ? placement.country : '',
+      ingestMethod: 'scrape', manualOverride: true, reviewed: true, addedBy: contributor
+    };
+    if (item.body) {
+      const body = { url, heading: item.title, body: item.body };
+      try { await storeArticleBodies([body]); } catch (failure) { if (!sharedEnabled) throw failure; }
+      if (sharedEnabled) {
+        const prior = pendingBodiesRef.current?.bodies || [];
+        pendingBodiesRef.current = { replace: false, bodies: [...new Map([...prior, body].map(entry => [entry.url, entry])).values()] };
+      }
+    }
+    setSaveStatus('Saving approved story…');
+    setSiteConfig(current => ({ ...dismissRejectedStory(current, draftCheckedAt, item.id), customArticles: [...current.customArticles, article] }));
+  };
   const collectionPanel = <NativeCollection onPublish={publishNativeDraft}/>;
 
   return <div className="app-shell" data-mode={siteConfig.darkMode ? 'dark' : 'light'} style={themeStyle}>
@@ -904,7 +933,7 @@ function App() {
     </div>{toast && <div className={`toast ${toast.startsWith('Not published:') ? 'toast-error' : toast.includes('Publishing for everyone…') ? 'toast-pending' : ''}`} role={toast.startsWith('Not published:') ? 'alert' : 'status'} onClick={() => setToast('')}>{toast} ×</div>}
     {isEditor && showScrapeNotice(scrapeStatus, { dialogOpen: scrapingOpen, dismissedRunId: dismissedScrapeRunId, hiddenBefore: scrapeNoticeHiddenBefore, now: scrapeNoticeClock }) && <button type="button" className="scrape-live-status" role="status" onClick={() => { dismissCompletedScrape(); setScrapingOpen(true); }}><strong>{scrapeStatus.state === 'complete' ? 'Scrape complete' : 'Scraping news'}</strong><span>{scrapeStatus.message}</span><small>{scrapeStatus.state === 'complete' ? 'Publish draft' : 'Open progress'}</small></button>}
     {spreadsheetResults && <div className="add-backdrop" onClick={() => setSpreadsheetResults(null)}><section className="add-dialog spreadsheet-results" role="dialog" aria-modal="true" aria-labelledby="spreadsheet-results-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="spreadsheet-results-title">Spreadsheet export results</h2><button type="button" aria-label="Close export results" onClick={() => setSpreadsheetResults(null)}>×</button></div><p>{spreadsheetResults.downloaded ? `Downloaded ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} visible full articles.` : `No spreadsheet downloaded. ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} articles available.`}</p>{spreadsheetResults.error && <p role="alert">{spreadsheetResults.error}</p>}{spreadsheetResults.failures.length > 0 && <><h3>{spreadsheetResults.failures.length} unavailable</h3><ul>{spreadsheetResults.failures.map((failure, index) => <li key={index}>{failure}</li>)}</ul></>}<div className="add-dialog-actions"><button type="button" onClick={() => setSpreadsheetResults(null)}>Close</button></div></section></div>}
-    {isEditor && managing && <SiteManager initialTab={managerTab} isOwner={managementEnabled} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} onClose={() => setManaging(false)}/>}
+    {isEditor && managing && <SiteManager initialTab={managerTab} isOwner={managementEnabled} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} onApproveRejected={approveRejectedStory} onClose={() => setManaging(false)}/>}
     {isEditor && sendDialogOpen && <SendGmailDialog recipients={siteConfig.gmailRecipients} subject={`[TEST] ${emailSubject(compiledAt)}`} articleCount={selectedArticles.length} onSave={saveGmailRecipients} onSend={sendPublishedGmail} onClose={() => setSendDialogOpen(false)}/>}
     {isEditor && scrapingOpen && <div className="add-backdrop" onClick={closeScrapeDialog}><section className="add-dialog scrape-dialog" role="dialog" aria-modal="true" aria-labelledby="scrape-dialog-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="scrape-dialog-title">Scrape news</h2><button type="button" aria-label="Close scrape status" onClick={closeScrapeDialog}>×</button></div><NativeCollection onPublish={publishNativeDraft} onClear={clearCurrentUpdate} hasStories={Boolean((daily?.articles.length || 0) + (siteConfig.customArticles?.length || 0))}/></section></div>}
     {isEditor && addingArticles && daily && <AddArticlesDialog sections={siteConfig.sections} sources={configuredSources} customCountries={siteConfig.customCountries} existingArticles={selectedArticles} remainingSlots={100 - siteConfig.customArticles.length} onAdd={async (article, placement, body) => { if (body?.body) { try { await storeArticleBodies([body]); } catch (error) { if (!sharedEnabled) throw error; } if (sharedEnabled) { const prior = pendingBodiesRef.current?.bodies || []; pendingBodiesRef.current = { replace: false, bodies: [...new Map([...prior, body].map(item => [item.url, item])).values()] }; } } setSiteConfig(current => addCustomArticleInConfig(current, { ...article, addedBy: contributor }, placement)); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}

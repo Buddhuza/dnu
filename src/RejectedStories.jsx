@@ -1,0 +1,67 @@
+import React, { useEffect, useState } from 'react';
+import { fetchGithubDraft } from './githubCollection.js';
+import { MISCELLANEOUS_COUNTRIES } from './newsSections.js';
+import { dismissRejectedStory, pendingRejectedStories } from './rejectedReview.js';
+import { viennaWallTimeToIso } from './viennaTime.js';
+
+const initialPlacement = config => ({ sectionId: config.sections.find(section => section.id === 'Miscellaneous')?.id || config.sections[0]?.id || '', subsection: '', country: '', publishedAt: '' });
+
+export default function RejectedStories({ config, setConfig, publishedArticles, onApprove }) {
+  const [draft, setDraft] = useState(null);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [busyId, setBusyId] = useState('');
+  const [placements, setPlacements] = useState({});
+  const [message, setMessage] = useState('');
+  async function refresh() {
+    setLoading(true);
+    setError('');
+    try { setDraft(await fetchGithubDraft()); }
+    catch (failure) { setError(failure.message); }
+    finally { setLoading(false); }
+  }
+  useEffect(() => { refresh(); }, []);
+  const pending = pendingRejectedStories(draft, config, publishedArticles);
+  const updatePlacement = (id, patch) => setPlacements(current => ({ ...current, [id]: { ...initialPlacement(config), ...current[id], ...patch } }));
+  async function approve(item, placement) {
+    setBusyId(item.id);
+    setError('');
+    try {
+      const parts = placement.publishedAt?.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
+      const publishedAt = parts ? viennaWallTimeToIso(...parts.slice(1).map(Number)) : item.publishedAt;
+      await onApprove(item, { ...placement, publishedAt }, draft.checkedAt);
+      setMessage(`Approved “${item.title}”. Saving for everyone…`);
+    } catch (failure) { setError(failure.message); }
+    finally { setBusyId(''); }
+  }
+  return <section className="rejected-review">
+    <div className="rejected-review-header"><div><h3>Rejected stories</h3><p className="cms-help">Latest completed scrape. Review the reason and original article before approving. Delete removes a story from this scrape’s review list.</p></div><button type="button" className="cms-primary" onClick={refresh} disabled={loading}>Refresh</button></div>
+    {loading && <p role="status">Loading rejected stories…</p>}
+    {error && <p role="alert" className="rejected-review-error">{error}</p>}
+    {message && <p role="status" className="cms-message">{message}</p>}
+    {draft && <p className="cms-help">Scrape completed {new Date(draft.checkedAt).toLocaleString('en-GB', { timeZone: 'Europe/Vienna', dateStyle: 'medium', timeStyle: 'short' })} · {pending.length} awaiting review</p>}
+    {draft && !pending.length && <p role="status">No rejected stories awaiting review.</p>}
+    <div className="rejected-review-list">{pending.map(item => {
+      const placement = { ...initialPlacement(config), ...placements[item.id] };
+      const section = config.sections.find(entry => entry.id === placement.sectionId);
+      const countries = [...new Set([...(MISCELLANEOUS_COUNTRIES[placement.subsection] || []), ...(config.customCountries?.[placement.subsection] || [])])];
+      const valid = section?.visible && placement.subsection && section.subsections.includes(placement.subsection)
+        && Number.isFinite(Date.parse(placement.publishedAt || item.publishedAt))
+        && (section.id !== 'Miscellaneous' || !placement.country || countries.includes(placement.country));
+      const href = /^https:\/\//i.test(item.url || '') ? item.url : '';
+      return <article key={item.id} className="rejected-review-card">
+        <h4>{item.title}</h4>
+        <p className="rejected-review-meta"><strong>{item.sourceName || 'Unknown agency'}</strong> · {item.reason || 'No reason recorded'}</p>
+        {href ? <a href={href} target="_blank" rel="noopener noreferrer">Original article ↗</a> : <span>Original URL unavailable</span>}
+        {href && <small className="rejected-review-url">{href}</small>}
+        <div className="cms-fields rejected-review-fields">
+          <label>Section<select value={placement.sectionId} onChange={event => updatePlacement(item.id, { sectionId: event.target.value, subsection: '', country: '' })}>{config.sections.filter(entry => entry.id !== 'Lead stories').map(entry => <option key={entry.id} value={entry.id}>{entry.name}</option>)}</select></label>
+          <label>Subsection<select value={placement.subsection} onChange={event => updatePlacement(item.id, { subsection: event.target.value, country: '' })}><option value="">Choose subsection</option>{(section?.subsections || []).map(name => <option key={name} value={name}>{name}</option>)}</select></label>
+          <label>Country or organisation<select value={placement.country} onChange={event => updatePlacement(item.id, { country: event.target.value })} disabled={section?.id !== 'Miscellaneous' || !placement.subsection}><option value="">Directly under subsection</option>{countries.map(name => <option key={name} value={name}>{name}</option>)}</select></label>
+          <label>Publication date and time<input type="datetime-local" value={placement.publishedAt || (Number.isFinite(Date.parse(item.publishedAt)) ? new Date(item.publishedAt).toLocaleString('sv-SE', { timeZone: 'Europe/Vienna' }).replace(' ', 'T').slice(0, 16) : '')} onChange={event => updatePlacement(item.id, { publishedAt: event.target.value })}/></label>
+        </div>
+        <div className="rejected-review-actions"><button type="button" className="cms-primary" disabled={!valid || !href || Boolean(busyId)} onClick={() => approve(item, placement)}>Approve and add to DNU</button><button type="button" className="cms-danger" disabled={Boolean(busyId)} onClick={() => { setConfig(current => dismissRejectedStory(current, draft.checkedAt, item.id)); setMessage(`Deleted “${item.title}” from this review list.`); }}>Delete</button></div>
+      </article>;
+    })}</div>
+  </section>;
+}

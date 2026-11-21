@@ -84,3 +84,15 @@
 .cms-guidance summary{cursor:pointer;font-weight:800}
 .cms-guidance li{margin:8px 0;line-height:1.45}
 .app-shell[data-mode="dark"] .cms-guidance{border-color:#3b555d}
+.rejected-review-header{display:flex;justify-content:space-between;align-items:start;gap:16px}
+.rejected-review-header .cms-primary{flex:none}
+.rejected-review-list{display:grid;gap:12px}
+.rejected-review-card{border:1px solid #dce5de;border-radius:9px;padding:16px;background:var(--site-background,#f8f8f5)}
+.rejected-review-card h4{font-size:var(--site-body-size,18px);line-height:1.4;margin:0 0 7px}
+.rejected-review-meta{margin:0 0 8px;color:var(--site-text,#182a36)}
+.rejected-review-url{display:block;overflow-wrap:anywhere;color:#61766a;margin:5px 0 12px}
+.rejected-review-fields{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:12px}
+.rejected-review-actions{display:flex;gap:9px;margin-top:15px}
+.rejected-review-error{color:#a45140}
+.app-shell[data-mode="dark"] .rejected-review-card{border-color:#3b555d}
+@media(max-width:720px){.rejected-review-fields{grid-template-columns:1fr}.rejected-review-actions{flex-wrap:wrap}}
