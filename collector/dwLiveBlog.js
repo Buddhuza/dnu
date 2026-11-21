@@ -58,6 +58,43 @@ function jsonEntries(html) {
   }));
 }
 
+function embeddedStateEntries(html) {
+  const $ = load(html);
+  const entries = [];
+  $('script').each((_, script) => {
+    const source = $(script).html() || '';
+    const marker = source.indexOf('window.__APP_STATE__=');
+    if (marker < 0) return;
+    const start = source.indexOf('{', marker);
+    if (start < 0) return;
+    let depth = 0, quoted = false, escaped = false, end = -1;
+    for (let index = start; index < source.length; index++) {
+      const character = source[index];
+      if (escaped) { escaped = false; continue; }
+      if (quoted && character === '\\') { escaped = true; continue; }
+      if (character === '"') { quoted = !quoted; continue; }
+      if (quoted) continue;
+      if (character === '{') depth++;
+      if (character === '}' && --depth === 0) { end = index + 1; break; }
+    }
+    if (end < 0) return;
+    let state;
+    try { state = JSON.parse(source.slice(start, end)); } catch { return; }
+    const visit = node => {
+      if (Array.isArray(node)) { node.forEach(visit); return; }
+      if (!node || typeof node !== 'object') return;
+      if (Array.isArray(node.posts)) for (const post of node.posts) {
+        if (post?.__typename !== 'LiveblogElement' || !Number.isSafeInteger(post.id)) continue;
+        entries.push({ title: text(post.title), published: post.firstPublicationDate || post.contentDate,
+          body: bodyText(post.text), id: `post-liveblog-post-${post.id}`, url: '' });
+      }
+      for (const [key, value] of Object.entries(node)) if (key !== 'posts' && value && typeof value === 'object') visit(value);
+    };
+    visit(state);
+  });
+  return entries;
+}
+
 function domEntries(html) {
   const $ = load(html);
   const entries = [];
@@ -83,7 +120,7 @@ export function extractDwLiveBlogEntries(html, parent) {
   if (!isDwLiveBlog(parent?.link) || !html) return [];
   const parentTitle = text(parent.headline).toLowerCase();
   const seen = new Set();
-  const entries = [...jsonEntries(html), ...domEntries(html)];
+  const entries = [...embeddedStateEntries(html), ...jsonEntries(html), ...domEntries(html)];
   return entries.flatMap(entry => {
     const published = explicitTime(entry.published);
     const title = text(entry.title);

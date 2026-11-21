@@ -53,6 +53,19 @@ test('a saved editor decision overrides rejection and places the next matching s
   assert.equal(deleted.rejected[0].editorDecision, 'deleted');
 });
 
+test('DW live updates follow the official making the statement', () => {
+  const titles = [
+    'German defense minister open to talks with Russia',
+    "Trump says Putin's his friend, not sure if he is a friend to America",
+    'Moscow invites Germany France and UK for talks on Ukraine',
+    'Trump says Putin will discuss Ukraine security'
+  ];
+  const candidates = titles.map(title => item(title, { source: 'DW', sourceDomain: 'dw.com', category: 'Eastern Europe', country: 'Ukraine' }));
+  const { articles, rejected } = adaptSelectedArticles(candidates, new Set(), [...registry, { id: 'source-dw', domain: 'dw.com', name: 'DW', country: 'International' }]);
+  assert.equal(rejected.length, 0);
+  assert.deepEqual(articles.map(article => article.country), ['Germany', 'United States', 'Russia', 'United States']);
+});
+
 test('native event deduplication keeps the international account of a repeated event', () => {
   const stories = [
     { id: 'regional', title: 'Hegseth faces impeachment effort over Iran war', sourceName: 'Gazeta Express', body: '', subsection: 'NORTH AMERICA' },

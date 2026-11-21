@@ -30,6 +30,10 @@ function proposedPlacement(item) {
 }
 
 function principalHeadlinePlacement(title, sourceName) {
+  if (/^German (?:defen[cs]e|foreign) minister\b/i.test(title))
+    return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Germany' };
+  if (/^Moscow invites\b/i.test(title))
+    return { sectionId: 'Miscellaneous', subsection: 'RUSSIA / EURASIA', country: 'Russia' };
   if (/^(?:China['’]s\s+)?Xi\b/i.test(title)) return { sectionId: 'Miscellaneous', subsection: 'NORTH EAST ASIA', country: 'China' };
   if (/\bTrump,?\s+Xi\s+and\s+Putin\b/i.test(title) && /\bjoint peace declaration\b/i.test(title))
     return { sectionId: 'Miscellaneous', subsection: 'NORTH EAST ASIA', country: 'China' };
@@ -66,9 +70,9 @@ export function adaptSelectedArticles(selected, leads, registry, editorialLearni
       ? { sectionId: learned.sectionId, subsection: learned.subsection, country: learned.country || '' } : null;
     const headlineReason = excludedHeadlineReason(title, summary, item.link);
     const sourceReason = directGovernmentPublicationReason(base) || paywalledSourceReason(base);
-    const proposed = learnedPlacement || (usActor.test(title) && /\b(?:Iran|impeach|defence|defense|Pentagon|war|sanction|strikes?|Nvidia|FBI)\b/i.test(title)
+    const proposed = learnedPlacement || principalHeadlinePlacement(title, sourceName) || (usActor.test(title) && /\b(?:Iran|impeach|defence|defense|Pentagon|war|sanction|strikes?|Nvidia|FBI|Putin|Russia|Ukraine)\b/i.test(title)
       ? { sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' }
-      : principalHeadlinePlacement(title, sourceName) || articlePlacement({}, title, '') || proposedPlacement(item));
+      : articlePlacement({}, title, '') || proposedPlacement(item));
     const placement = learnedPlacement || proposed && (proposed.sectionId !== 'Miscellaneous' || MISCELLANEOUS_COUNTRIES[proposed.subsection]?.includes(proposed.country))
       ? proposed : articlePlacement({}, title, summary);
     const unrelatedRegional = source?.country === 'Azerbaijan' && /\b(?:IRGC|Netanyahu|Tanzania|Sri Lanka)\b/i.test(title) && !/\b(?:Azerbaijan|Azerbaijani|Baku|Aliyev)\b/i.test(title)
