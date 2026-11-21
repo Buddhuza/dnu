@@ -5,7 +5,7 @@ import { excludedHeadlineReason } from '../src/headlinePolicy.js';
 import { displaySourceName } from '../src/sourceNames.js';
 import { stripFeedTeaser } from '../src/feedHeadline.js';
 import { conciseDnuSummary } from '../src/conciseSummary.js';
-import { mentionsCountry, sourceHomeCountry } from '../src/storyPlacement.js';
+import { mentionsCountry, sourceHomeCountry, ukraineAttackPlacement } from '../src/storyPlacement.js';
 import { matchingEditorialDecision } from '../src/editorialLearning.js';
 
 const regional = new Set(NEWS_SECTIONS.slice(1, 5).map(section => section.id));
@@ -29,7 +29,17 @@ function proposedPlacement(item) {
   return region ? { sectionId: 'Miscellaneous', subsection: region, country } : null;
 }
 
-function principalHeadlinePlacement(title, sourceName) {
+function principalHeadlinePlacement(title, sourceName, summary = '') {
+  if (/\bassassination (?:attempt|plot)\b/i.test(title) && /\b(?:in Denmark|Danish)\b/i.test(title))
+    return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Denmark' };
+  if (/^Zelenskyy\b/i.test(title) || /,\s*Zelenskyy says\b/i.test(title))
+    return { sectionId: 'Eastern Europe', subsection: 'Ukraine', country: '' };
+  if (/,\s*Polish (?:PM|prime minister|defen[cs]e minister) says\b/i.test(title))
+    return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Poland' };
+  if (!usActor.test(title) && !/\b(?:Poland|Polish|Estonia|Estonian)\b/i.test(title)) {
+    const attackedUkraine = ukraineAttackPlacement(title, summary);
+    if (attackedUkraine) return attackedUkraine;
+  }
   if (/^German (?:defen[cs]e|foreign) minister\b/i.test(title))
     return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Germany' };
   if (/^Moscow invites\b/i.test(title))
@@ -70,7 +80,7 @@ export function adaptSelectedArticles(selected, leads, registry, editorialLearni
       ? { sectionId: learned.sectionId, subsection: learned.subsection, country: learned.country || '' } : null;
     const headlineReason = excludedHeadlineReason(title, summary, item.link);
     const sourceReason = directGovernmentPublicationReason(base) || paywalledSourceReason(base);
-    const proposed = learnedPlacement || principalHeadlinePlacement(title, sourceName) || (usActor.test(title) && /\b(?:Iran|impeach|defence|defense|Pentagon|war|sanction|strikes?|Nvidia|FBI|Putin|Russia|Ukraine)\b/i.test(title)
+    const proposed = learnedPlacement || principalHeadlinePlacement(title, sourceName, summary) || (usActor.test(title) && /\b(?:Iran|impeach|defence|defense|Pentagon|war|sanction|strikes?|Nvidia|FBI|Putin|Russia|Ukraine)\b/i.test(title)
       ? { sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' }
       : articlePlacement({}, title, '') || proposedPlacement(item));
     const placement = learnedPlacement || proposed && (proposed.sectionId !== 'Miscellaneous' || MISCELLANEOUS_COUNTRIES[proposed.subsection]?.includes(proposed.country))

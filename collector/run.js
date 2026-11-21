@@ -8,6 +8,7 @@ import { collectionDataPath, ensureCollectionData } from '../server/dataDirector
 import { loadEditorialLearning } from './loadEditorialLearning.js';
 import { matchingEditorialDecision } from '../src/editorialLearning.js';
 import { extractDwLiveBlogEntries, isDwLiveBlog } from './dwLiveBlog.js';
+import { extractSkyLiveBlogEntries, SKY_UKRAINE_LIVE_URL, SKY_UKRAINE_LIVE_FEED } from './skyLiveBlog.js';
 
 const root = new URL('../', import.meta.url);
 ensureCollectionData();
@@ -94,6 +95,21 @@ await parallel(liveParents, async parent => {
     console.log(`DW live blog ${parent.link}: ${entries.length} dated individual updates in window.`);
   } catch (error) { console.warn(`DW live blog ${parent.link}: ${error.message}`); }
 });
+if (!filter || filter === 'news.sky.com') {
+  const skySource = registry.find(source => source.domain === 'news.sky.com');
+  try {
+    const parent = { link: SKY_UKRAINE_LIVE_URL, headline: 'Ukraine war latest', source: skySource?.name || 'Sky News',
+      sourceDomain: 'news.sky.com', sourceCountry: 'International', sourceVerified: true };
+    const entries = extractSkyLiveBlogEntries(await request(SKY_UKRAINE_LIVE_FEED), parent)
+      .filter(item => Date.parse(item.published) >= +window.start && Date.parse(item.published) <= +end);
+    candidates.push(...entries);
+    outcomes.push({ id: skySource?.id, url: SKY_UKRAINE_LIVE_FEED, status: 'checked', count: entries.length });
+    console.log(`Sky Ukraine live blog: ${entries.length} dated individual updates in window.`);
+  } catch (error) {
+    outcomes.push({ id: skySource?.id, url: SKY_UKRAINE_LIVE_FEED, status: 'failed', reason: error.message });
+    console.warn(`Sky Ukraine live blog: ${error.message}`);
+  }
+}
 const unique=[...new Map(candidates.sort((a,b)=>a.id.localeCompare(b.id)).map(x=>[x.link,x])).values()];
 for(const item of unique)item.score=baselineScore_(item);
 const shortlist=unique.filter(x=>x.score>0 && !x.fromLiveBlog && !x.link.startsWith('https://news.google.com/')).sort((a,b)=>b.score-a.score).slice(0,150);
