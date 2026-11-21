@@ -39,16 +39,24 @@ test('DW timestamped HTML entries are extracted without treating the whole blog 
 test('DW embedded app state supplies exact time and text when visible time tags only show a date', () => {
   const state = { '/graph-api/en/road/content': { data: { content: { posts: [
     { id: 80007448, __typename: 'LiveblogElement', title: 'Russian missiles hit Kyiv power infrastructure',
-      firstPublicationDate: '2026-11-20T21:35:25.518Z', contentDate: '2026-11-20T22:05:00.000Z', text: `<p>${body}</p>` },
+      firstPublicationDate: '2026-11-20T21:35:25.518Z', contentDate: '2026-11-20T22:05:00.000Z', text: `<p>${body}</p>`, permaLinkUrl: 'https://p.dw.com/p/5Phai' },
     { id: 80007328, __typename: 'LiveblogElement', title: 'Ukraine officials report further attacks in Odesa',
-      firstPublicationDate: '2026-11-20T21:16:05.068Z', text: `<p>${body}</p>` }
+      firstPublicationDate: '2026-11-20T21:16:05.068Z', text: `<p>${body}</p>`, permaLinkUrl: 'https://p.dw.com/p/5PhYm' }
   ] } } } };
   const html = `<script> window.__APP_STATE__=${JSON.stringify(state)};</script><section class="liveblog-post" id="liveblog-post-80007448"><time>11/20/2026</time></section>`;
   const entries = extractDwLiveBlogEntries(html, parent);
   assert.equal(entries.length, 2);
   assert.equal(entries[0].published, '2026-11-20T21:35:25.518Z');
-  assert.match(entries[0].link, /#post-liveblog-post-80007448$/);
+  assert.equal(entries[0].link, 'https://p.dw.com/p/5Phai');
+  assert.equal(entries[1].link, 'https://p.dw.com/p/5PhYm');
   assert.ok(entries[0].articleBody.startsWith('Russian missiles'));
+});
+
+test('DW ignores a non-DW permalink and uses the entry fragment instead', () => {
+  const state = { posts: [{ id: 80007448, __typename: 'LiveblogElement', title: 'Russian missiles hit Kyiv power infrastructure',
+    firstPublicationDate: '2026-11-20T21:35:25.518Z', text: `<p>${body}</p>`, permaLinkUrl: 'https://example.com/story' }] };
+  const entries = extractDwLiveBlogEntries(`<script>window.__APP_STATE__=${JSON.stringify(state)};</script>`, parent);
+  assert.match(entries[0].link, /#post-liveblog-post-80007448$/);
 });
 
 test('an older DW blog wrapper remains eligible for checking fresh individual updates', () => {

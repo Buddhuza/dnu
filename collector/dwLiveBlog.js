@@ -27,8 +27,12 @@ function bodyText(value) {
 
 function entryUrl(parentUrl, suppliedUrl, id) {
   const parent = new URL(parentUrl);
-  const url = typeof suppliedUrl === 'string' && suppliedUrl ? new URL(suppliedUrl, parent) : new URL(parent);
-  if (!isDwLiveBlog(url.href) || url.pathname !== parent.pathname) return '';
+  let url;
+  try { url = typeof suppliedUrl === 'string' && suppliedUrl ? new URL(suppliedUrl, parent) : new URL(parent); }
+  catch { url = new URL(parent); }
+  if (url.protocol === 'https:' && url.hostname === 'p.dw.com' && /^\/p\/[A-Za-z0-9]+\/?$/.test(url.pathname)
+    && !url.search && !url.hash) return url.href;
+  if (!isDwLiveBlog(url.href) || url.pathname !== parent.pathname) url = new URL(parent);
   const anchor = url.hash.slice(1) || id;
   if (!anchor || !/^[\w-]{2,120}$/.test(anchor)) return '';
   url.searchParams.delete('maca');
@@ -86,7 +90,7 @@ function embeddedStateEntries(html) {
       if (Array.isArray(node.posts)) for (const post of node.posts) {
         if (post?.__typename !== 'LiveblogElement' || !Number.isSafeInteger(post.id)) continue;
         entries.push({ title: text(post.title), published: post.firstPublicationDate || post.contentDate,
-          body: bodyText(post.text), id: `post-liveblog-post-${post.id}`, url: '' });
+          body: bodyText(post.text), id: `post-liveblog-post-${post.id}`, url: post.permaLinkUrl || '' });
       }
       for (const [key, value] of Object.entries(node)) if (key !== 'posts' && value && typeof value === 'object') visit(value);
     };
@@ -111,7 +115,8 @@ function domEntries(html) {
     const body = container.find('p').toArray().map(node => text($(node).text())).filter(Boolean).join('\n\n');
     const id = container.attr('id') || container.attr('data-id') || heading.attr('id')
       || container.find('[id]').first().attr('id') || '';
-    entries.push({ title, published, body, id, url: '' });
+    const url = container.text().match(/https:\/\/p\.dw\.com\/p\/[A-Za-z0-9]+/)?.[0] || '';
+    entries.push({ title, published, body, id, url });
   });
   return entries;
 }
