@@ -6,6 +6,7 @@ import { displaySourceName } from '../src/sourceNames.js';
 import { stripFeedTeaser } from '../src/feedHeadline.js';
 import { conciseDnuSummary } from '../src/conciseSummary.js';
 import { mentionsCountry, sourceHomeCountry } from '../src/storyPlacement.js';
+import { matchingEditorialDecision } from '../src/editorialLearning.js';
 
 const regional = new Set(NEWS_SECTIONS.slice(1, 5).map(section => section.id));
 const categoryNames = { 'South Caucasus Region': 'South Caucasus', 'Central Asia Region': 'Central Asia' };
@@ -52,7 +53,7 @@ function coversRegionalSubject(sourceName, placement, title) {
     && placement.subsection === 'Bosnia and Herzegovina' && /\bConstitutional Court of Bosnia\b/i.test(title);
 }
 
-export function adaptSelectedArticles(selected, leads, registry) {
+export function adaptSelectedArticles(selected, leads, registry, editorialLearning = []) {
   const articles = [], rejected = [];
   for (const item of selected) {
     const source = registry.find(entry => entry.domain === item.sourceDomain);
@@ -60,12 +61,15 @@ export function adaptSelectedArticles(selected, leads, registry) {
     const title = cleanedHeadline(item.headline);
     const summary = String(item.summary || item.description || '').trim();
     const base = { id: item.id, url: item.link, title, summary, sourceName, sourceId: source?.id || item.sourceDomain };
+    const learned = matchingEditorialDecision(base, editorialLearning);
+    const learnedPlacement = learned?.action === 'approve' && learned.sectionId && learned.subsection
+      ? { sectionId: learned.sectionId, subsection: learned.subsection, country: learned.country || '' } : null;
     const headlineReason = excludedHeadlineReason(title, summary, item.link);
     const sourceReason = directGovernmentPublicationReason(base) || paywalledSourceReason(base);
-    const proposed = usActor.test(title) && /\b(?:Iran|impeach|defence|defense|Pentagon|war|sanction|strikes?|Nvidia|FBI)\b/i.test(title)
+    const proposed = learnedPlacement || (usActor.test(title) && /\b(?:Iran|impeach|defence|defense|Pentagon|war|sanction|strikes?|Nvidia|FBI)\b/i.test(title)
       ? { sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' }
-      : principalHeadlinePlacement(title, sourceName) || articlePlacement({}, title, '') || proposedPlacement(item);
-    const placement = proposed && (proposed.sectionId !== 'Miscellaneous' || MISCELLANEOUS_COUNTRIES[proposed.subsection]?.includes(proposed.country))
+      : principalHeadlinePlacement(title, sourceName) || articlePlacement({}, title, '') || proposedPlacement(item));
+    const placement = learnedPlacement || proposed && (proposed.sectionId !== 'Miscellaneous' || MISCELLANEOUS_COUNTRIES[proposed.subsection]?.includes(proposed.country))
       ? proposed : articlePlacement({}, title, summary);
     const unrelatedRegional = source?.country === 'Azerbaijan' && /\b(?:IRGC|Netanyahu|Tanzania|Sri Lanka)\b/i.test(title) && !/\b(?:Azerbaijan|Azerbaijani|Baku|Aliyev)\b/i.test(title)
       || source?.country === 'Kyrgyzstan' && /\b(?:Leningrad|Kirishi)\b/i.test(title);
@@ -84,12 +88,13 @@ export function adaptSelectedArticles(selected, leads, registry) {
       || /\barchives?\s*-\s*page\s+\d+\b/i.test(title)
       || unrelatedRegional
       || /^(?:Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Monday),?\s+\d{1,2}\s+[A-Z][a-z]+\s+20\d{2}$/i.test(title);
-    const reason = headlineReason || sourceReason || (/^(?:OHCHR)$/i.test(sourceName) ? 'Direct organisation publication' : '')
+    const reason = learned?.action === 'reject' ? 'Editor rejected this or a closely matching story'
+      : learnedPlacement ? '' : headlineReason || sourceReason || (/^(?:OHCHR)$/i.test(sourceName) ? 'Direct organisation publication' : '')
       || (!source ? 'Publisher is not in the configured catalogue' : '')
       || (malformed ? 'Routine, incomplete or malformed headline outside the DNU brief' : '')
       || (unrelatedHome ? 'Local outlet reports an event outside its home country without a local subject' : '')
       || (!placement ? 'No DNU heading could be identified' : blockedPlacementReason(base, placement));
-    if (reason) { rejected.push({ ...base, reason, summary: conciseDnuSummary(item.publicSummary || '', title), publishedAt: item.published,
+    if (reason) { rejected.push({ ...base, reason, editorDecision: learned?.action === 'reject' ? 'deleted' : '', summary: conciseDnuSummary(item.publicSummary || '', title), publishedAt: item.published,
       body: String(item.articleBody || '').trim() }); continue; }
     const lead = leads.has(item.id);
     const body = String(item.articleBody || '').trim();
@@ -101,7 +106,7 @@ export function adaptSelectedArticles(selected, leads, registry) {
       subsection: lead ? placement.country || placement.subsection : placement.subsection,
       country: lead ? '' : placement.country,
       originSection: placement.sectionId, originCountry: placement.country || placement.subsection,
-      reviewed: true, fromNativeCollector: true,
+      reviewed: true, fromNativeCollector: true, editorialApproval: Boolean(learnedPlacement),
       body: body.split(/\s+/).length >= 25 ? body : ''
     });
   }
@@ -112,6 +117,7 @@ export function limitBelarusStateAgency(articles) {
   let beltaStories = 0;
   const kept = [], removed = [];
   for (const article of articles) {
+    if (article.editorialApproval) { kept.push(article); continue; }
     if (/^BelTA$/i.test(article.sourceName || '') && article.sectionId === 'Eastern Europe' && article.subsection === 'Belarus') {
       if (++beltaStories > 1) { removed.push(article); continue; }
     }
@@ -135,7 +141,7 @@ function sourceRank(article) {
   const source = article.sourceName.toLowerCase();
   const priority = ['reuters', 'ap', 'afp', 'bbc', 'dw', 'dpa', 'euronews', 'france 24', 'kabar', 'n1', 'civil.ge', 'ipn.ge'];
   const index = priority.indexOf(source);
-  return (index < 0 ? 0 : 100 - index * 5) + (article.body ? 2 : 0);
+  return (article.editorialApproval ? 1000 : 0) + (index < 0 ? 0 : 100 - index * 5) + (article.body ? 2 : 0);
 }
 
 export function dedupeNativeEvents(articles) {

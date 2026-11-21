@@ -40,6 +40,19 @@ test('native adapter drops live blogs and direct OSCE publications', () => {
   assert.equal(typeof rejected[0].summary, 'string');
 });
 
+test('a saved editor decision overrides rejection and places the next matching story', () => {
+  const candidate = item('LIVE: US security talks begin');
+  const decision = { action: 'approve', title: candidate.headline, sourceName: 'BBC', url: candidate.link,
+    sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' };
+  const result = adaptSelectedArticles([candidate], new Set(), registry, [decision]);
+  assert.equal(result.rejected.length, 0);
+  assert.equal(result.articles[0].editorialApproval, true);
+  assert.equal(result.articles[0].country, 'United States');
+  const deleted = adaptSelectedArticles([candidate], new Set(), registry, [{ ...decision, action: 'reject' }]);
+  assert.equal(deleted.articles.length, 0);
+  assert.equal(deleted.rejected[0].editorDecision, 'deleted');
+});
+
 test('native event deduplication keeps the international account of a repeated event', () => {
   const stories = [
     { id: 'regional', title: 'Hegseth faces impeachment effort over Iran war', sourceName: 'Gazeta Express', body: '', subsection: 'NORTH AMERICA' },

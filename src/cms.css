@@ -94,5 +94,9 @@
 .rejected-review-fields{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:12px}
 .rejected-review-actions{display:flex;gap:9px;margin-top:15px}
 .rejected-review-error{color:#a45140}
+.rejected-learned-rules{margin-top:24px;border-top:1px solid #dce5de;padding-top:14px}
+.rejected-learned-rules summary{cursor:pointer;font-weight:750}
+.rejected-learned-rule{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #dce5de;padding:10px 0;line-height:1.4}
+.rejected-learned-rule .cms-danger{flex:none}
 .app-shell[data-mode="dark"] .rejected-review-card{border-color:#3b555d}
-@media(max-width:720px){.rejected-review-fields{grid-template-columns:1fr}.rejected-review-actions{flex-wrap:wrap}}
+@media(max-width:720px){.rejected-review-fields{grid-template-columns:1fr}.rejected-review-actions,.rejected-learned-rule{flex-wrap:wrap}}

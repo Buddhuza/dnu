@@ -12,6 +12,7 @@ export function internationalSource(article) {
 }
 
 function ukraineWarLeadScore(article) {
+  if (article.editorialApproval) return 0;
   if (!internationalSource(article) || article.sectionId !== 'Eastern Europe' || article.subsection !== 'Ukraine') return 0;
   const title = stripFeedTeaser(article.title);
   if (/\b\d+\s+(?:minutes?|mins?|hours?|hrs?|days?)\s+ago\b/i.test(title)) return 0;
@@ -57,6 +58,7 @@ function leadHeading(article) {
 
 export function selectWeekendStories(articles) {
   const ranked = articles.map((article, index) => ({ article, index })).sort((a, b) =>
+    Number(Boolean(b.article.editorialApproval)) - Number(Boolean(a.article.editorialApproval)) ||
     Number(internationalSource(b.article)) - Number(internationalSource(a.article)) || a.index - b.index);
   const kept = [], removed = [];
   for (const entry of ranked) {
@@ -69,7 +71,7 @@ export function selectWeekendStories(articles) {
   const promoted = [], leadOrigins = {};
   const selected = kept.map(article => {
     const heading = leadHeading(article);
-    if (article.sectionId === 'Lead stories' || !heading || !significantHeadline.test(article.title || '') || (sources.get(article.id)?.size || 0) < 3) return article;
+    if (article.editorialApproval || article.sectionId === 'Lead stories' || !heading || !significantHeadline.test(article.title || '') || (sources.get(article.id)?.size || 0) < 3) return article;
     const origin = { sectionId: article.sectionId, subsection: article.subsection || '', country: article.country || '' };
     promoted.push({ article, heading, sourceCount: sources.get(article.id).size });
     leadOrigins[article.id] = origin;

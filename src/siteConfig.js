@@ -45,6 +45,7 @@ const defaults = {
   customCountries: {},
   customArticles: [],
   rejectedReview: { checkedAt: '', deletedIds: [] },
+  editorialLearning: [],
   customSources: [],
   gmailRecipients: defaultGmailRecipients,
   sourceListingOverrides: {},
@@ -195,6 +196,16 @@ export function normalizeSiteConfig(input, articles = []) {
       deletedIds: [...new Set((Array.isArray(input.rejectedReview?.deletedIds) ? input.rejectedReview.deletedIds : [])
         .filter(id => typeof id === 'string' && id.length <= 500))].slice(0, 1000)
     },
+    editorialLearning: (Array.isArray(input.editorialLearning) ? input.editorialLearning : []).slice(-500).flatMap(item => {
+      const url = httpsUrl(item?.url);
+      const title = clean(item?.title, '', 400).trim();
+      if (!url || !title || !['approve', 'reject'].includes(item.action)) return [];
+      return [{ action: item.action, title, url, sourceName: clean(item.sourceName, '', 100),
+        sectionId: item.action === 'approve' && sectionIds.has(item.sectionId) ? item.sectionId : '',
+        subsection: item.action === 'approve' ? clean(item.subsection, '', 100) : '',
+        country: item.action === 'approve' ? clean(item.country, '', 100) : '',
+        at: Number.isFinite(Date.parse(item.at)) ? new Date(item.at).toISOString() : '' }];
+    }),
     gmailRecipients: normalizedGmailRecipients(input.gmailRecipients),
     hiddenSourceIds: (Array.isArray(input.hiddenSourceIds) ? input.hiddenSourceIds : []).filter(id => typeof id === 'string').slice(0, 500)
   };

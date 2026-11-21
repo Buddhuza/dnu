@@ -40,6 +40,7 @@ import { apiUrl } from './apiUrl.js';
 import { githubCollectionStatus } from './githubCollection.js';
 import { clearNativeDraft } from './nativeDraftCache.js';
 import { dismissRejectedStory } from './rejectedReview.js';
+import { recordEditorialDecision } from './editorialLearning.js';
 import { completedNoticeMs, showScrapeNotice } from './scrapeNotice.js';
 import './styles.css';
 
@@ -880,7 +881,7 @@ function App() {
       }
     }
     setSaveStatus('Saving approved story…');
-    setSiteConfig(current => ({ ...dismissRejectedStory(current, draftCheckedAt, item.id), customArticles: [...current.customArticles, article] }));
+    setSiteConfig(current => ({ ...dismissRejectedStory(recordEditorialDecision(current, item, 'approve', placement), draftCheckedAt, item.id), customArticles: [...current.customArticles, article] }));
   };
   const collectionPanel = <NativeCollection onPublish={publishNativeDraft}/>;
 

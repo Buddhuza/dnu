@@ -3,6 +3,7 @@ import { fetchGithubDraft } from './githubCollection.js';
 import { MISCELLANEOUS_COUNTRIES } from './newsSections.js';
 import { dismissRejectedStory, pendingRejectedStories } from './rejectedReview.js';
 import { viennaWallTimeToIso } from './viennaTime.js';
+import { recordEditorialDecision } from './editorialLearning.js';
 
 const initialPlacement = config => ({ sectionId: config.sections.find(section => section.id === 'Miscellaneous')?.id || config.sections[0]?.id || '', subsection: '', country: '', publishedAt: '' });
 
@@ -35,7 +36,7 @@ export default function RejectedStories({ config, setConfig, publishedArticles, 
     finally { setBusyId(''); }
   }
   return <section className="rejected-review">
-    <div className="rejected-review-header"><div><h3>Rejected stories</h3><p className="cms-help">Latest completed scrape. Review the reason and original article before approving. Delete removes a story from this scrape’s review list.</p></div><button type="button" className="cms-primary" onClick={refresh} disabled={loading}>Refresh</button></div>
+    <div className="rejected-review-header"><div><h3>Rejected stories</h3><p className="cms-help">Latest completed scrape. Review the reason and original article before approving. Approval teaches similar future stories their placement; deletion teaches the collector to exclude repeats. Delete also removes the story from this review list.</p></div><button type="button" className="cms-primary" onClick={refresh} disabled={loading}>Refresh</button></div>
     {loading && <p role="status">Loading rejected stories…</p>}
     {error && <p role="alert" className="rejected-review-error">{error}</p>}
     {message && <p role="status" className="cms-message">{message}</p>}
@@ -60,8 +61,9 @@ export default function RejectedStories({ config, setConfig, publishedArticles, 
           <label>Country or organisation<select value={placement.country} onChange={event => updatePlacement(item.id, { country: event.target.value })} disabled={section?.id !== 'Miscellaneous' || !placement.subsection}><option value="">Directly under subsection</option>{countries.map(name => <option key={name} value={name}>{name}</option>)}</select></label>
           <label>Publication date and time<input type="datetime-local" value={placement.publishedAt || (Number.isFinite(Date.parse(item.publishedAt)) ? new Date(item.publishedAt).toLocaleString('sv-SE', { timeZone: 'Europe/Vienna' }).replace(' ', 'T').slice(0, 16) : '')} onChange={event => updatePlacement(item.id, { publishedAt: event.target.value })}/></label>
         </div>
-        <div className="rejected-review-actions"><button type="button" className="cms-primary" disabled={!valid || !href || Boolean(busyId)} onClick={() => approve(item, placement)}>Approve and add to DNU</button><button type="button" className="cms-danger" disabled={Boolean(busyId)} onClick={() => { setConfig(current => dismissRejectedStory(current, draft.checkedAt, item.id)); setMessage(`Deleted “${item.title}” from this review list.`); }}>Delete</button></div>
+        <div className="rejected-review-actions"><button type="button" className="cms-primary" disabled={!valid || !href || Boolean(busyId)} onClick={() => approve(item, placement)}>Approve and add to DNU</button><button type="button" className="cms-danger" disabled={Boolean(busyId)} onClick={() => { setConfig(current => dismissRejectedStory(recordEditorialDecision(current, item, 'reject'), draft.checkedAt, item.id)); setMessage(`Deleted “${item.title}” from this review list. The collector will exclude close repeats.`); }}>Delete</button></div>
       </article>;
     })}</div>
+    {(config.editorialLearning || []).length > 0 && <details className="rejected-learned-rules"><summary>Learned decisions ({config.editorialLearning.length})</summary><p className="cms-help">Forget a decision to stop applying it to future scrapes. This does not remove an already published story.</p>{[...config.editorialLearning].reverse().map(rule => <div className="rejected-learned-rule" key={`${rule.url}-${rule.at}`}><span><strong>{rule.action === 'approve' ? 'Approved' : 'Excluded'}</strong> · {rule.sourceName || 'Unknown agency'} · {rule.title}{rule.action === 'approve' ? ` → ${rule.sectionId} / ${rule.subsection}${rule.country ? ` / ${rule.country}` : ''}` : ''}</span><button type="button" className="cms-danger" onClick={() => setConfig(current => ({ ...current, editorialLearning: current.editorialLearning.filter(item => item.url !== rule.url), rejectedReview: current.rejectedReview?.checkedAt === draft?.checkedAt ? { ...current.rejectedReview, deletedIds: current.rejectedReview.deletedIds.filter(id => !(draft?.editorialRejections || []).some(item => item.id === id && item.url === rule.url)) } : current.rejectedReview }))}>Forget rule</button></div>)}</details>}
   </section>;
 }

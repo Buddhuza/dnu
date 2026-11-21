@@ -5,6 +5,8 @@ import { listingCandidates_, parseItem_, extractPage_, baselineScore_, selectArt
 import { adaptSelectedArticles, dedupeNativeEvents, limitBelarusStateAgency } from './dnuEdition.js';
 import { selectWeekendStories, ensureUkraineWarLeads } from '../src/weekendEdition.js';
 import { collectionDataPath, ensureCollectionData } from '../server/dataDirectory.js';
+import { loadEditorialLearning } from './loadEditorialLearning.js';
+import { matchingEditorialDecision } from '../src/editorialLearning.js';
 
 const root = new URL('../', import.meta.url);
 ensureCollectionData();
@@ -19,6 +21,10 @@ function progress(state, phase, message, completed = 0, total = 0, details = {})
   console.log('DNU_PROGRESS ' + JSON.stringify(update));
 }
 const registry = JSON.parse(await readFile(new URL('sources.json',root)));
+let editorialLearning = [];
+try { editorialLearning = await loadEditorialLearning(); }
+catch (error) { console.warn(`Could not load editor decisions: ${error.message}`); }
+console.log(`Loaded ${editorialLearning.length} saved editor decisions for collection.`);
 const end = new Date();
 const hours = new Intl.DateTimeFormat('en',{weekday:'short',timeZone:'Europe/Vienna'}).format(end)==='Mon' ? 72 : 24;
 const window = {end, start:new Date(+end-hours*3600000),hours};
@@ -87,7 +93,14 @@ await parallel(shortlist,async item=>{
   checkedPages++;
   if(checkedPages%10===0||checkedPages===shortlist.length) progress('running','articles','Reading shortlisted original articles…',checkedPages,shortlist.length,{candidates:unique.length});
 });
-const selected=selectArticles_(unique.filter(x=>Date.parse(x.published)>=+window.start && Date.parse(x.published)<=+end));
+const inWindow = unique.filter(x=>Date.parse(x.published)>=+window.start && Date.parse(x.published)<=+end);
+const selected=selectArticles_(inWindow);
+const selectedUrls = new Set(selected.map(item => item.link));
+for (const item of inWindow) {
+  if (selectedUrls.has(item.link) || matchingEditorialDecision(item, editorialLearning)?.action !== 'approve') continue;
+  selected.push(item);
+  selectedUrls.add(item.link);
+}
 const bodyOutcomes=[];
 const bodyTargets=selected.filter(item=>!item.articleBody && !item.link.startsWith('https://news.google.com/'));
 let bodiesDone=0;
@@ -105,7 +118,7 @@ progress('running','selection','Applying editorial rules and removing duplicates
 const verifiedSelected=selected.filter(item=>Date.parse(item.published)>=+window.start && Date.parse(item.published)<=+end);
 const leads=new Set();
 for (const item of verifiedSelected) item.publicSummary = publicSummary_(item, leads.has(item.id));
-const adapted = adaptSelectedArticles(verifiedSelected, leads, registry);
+const adapted = adaptSelectedArticles(verifiedSelected, leads, registry, editorialLearning);
 const reviewed = selectWeekendStories(adapted.articles);
 const finalSelection = dedupeNativeEvents(reviewed.articles);
 const balancedSelection = limitBelarusStateAgency(finalSelection.articles);
