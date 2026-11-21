@@ -7,6 +7,7 @@ import { selectWeekendStories, ensureUkraineWarLeads } from '../src/weekendEditi
 import { collectionDataPath, ensureCollectionData } from '../server/dataDirectory.js';
 import { loadEditorialLearning } from './loadEditorialLearning.js';
 import { matchingEditorialDecision } from '../src/editorialLearning.js';
+import { extractDwLiveBlogEntries, isDwLiveBlog } from './dwLiveBlog.js';
 
 const root = new URL('../', import.meta.url);
 ensureCollectionData();
@@ -83,9 +84,19 @@ await parallel(activeRoutes,async feed=>{
   routesDone++;
   if(routesDone%20===0||routesDone===activeRoutes.length) progress('running','routes','Checking publisher feeds and pages…',routesDone,activeRoutes.length,{candidates:candidates.length,failedRoutes:outcomes.filter(x=>x.status==='failed').length});
 });
+const liveParents = [...new Map(candidates.filter(item => isDwLiveBlog(item.link) && !new URL(item.link).searchParams.has('dnu-update'))
+  .map(item => [new URL(item.link).pathname, item])).values()].slice(0, 8);
+await parallel(liveParents, async parent => {
+  try {
+    const entries = extractDwLiveBlogEntries(await request(parent.link, true), parent)
+      .filter(item => Date.parse(item.published) >= +window.start && Date.parse(item.published) <= +end);
+    candidates.push(...entries);
+    console.log(`DW live blog ${parent.link}: ${entries.length} dated individual updates in window.`);
+  } catch (error) { console.warn(`DW live blog ${parent.link}: ${error.message}`); }
+});
 const unique=[...new Map(candidates.sort((a,b)=>a.id.localeCompare(b.id)).map(x=>[x.link,x])).values()];
 for(const item of unique)item.score=baselineScore_(item);
-const shortlist=unique.filter(x=>x.score>0 && !x.link.startsWith('https://news.google.com/')).sort((a,b)=>b.score-a.score).slice(0,150);
+const shortlist=unique.filter(x=>x.score>0 && !x.fromLiveBlog && !x.link.startsWith('https://news.google.com/')).sort((a,b)=>b.score-a.score).slice(0,150);
 let checkedPages=0;
 progress('running','articles','Reading shortlisted original articles…',0,shortlist.length,{candidates:unique.length});
 await parallel(shortlist,async item=>{

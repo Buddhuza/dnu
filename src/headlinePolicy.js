@@ -5,7 +5,8 @@ export function excludedHeadlineReason(value, summary = '', url = '') {
   } catch { /* Some callers check headlines before they have a URL. */ }
   const headline = String(value || '').trim().replace(/^\(文A\)\s*/, '');
   const detail = `${headline} ${summary}`;
-  if (/\blive\s*:/i.test(headline) || /^live(?:\s+updates?)?\s*[:|–-]/i.test(headline) || /\/(?:liveblog|live-blog|live-updates)(?:\/|$)/i.test(String(url))) return 'Live blogs are excluded';
+  if (/\blive\s*:/i.test(headline) || /^live(?:\s+updates?)?\s*[:|–-]/i.test(headline) || /\/(?:liveblog|live-blog|live-updates)(?:\/|$)/i.test(String(url))
+    || /\/live-\d+(?:[/?#]|$)/i.test(String(url)) && !/[?&]dnu-update=/.test(String(url))) return 'Live blogs are excluded';
   if (/^why\b/i.test(headline)) return 'Why headlines are excluded';
   if (/^what\b/i.test(headline)) return 'What explainer headlines are excluded';
   if (/^how\b/i.test(headline)) return 'Explainer headlines are excluded';

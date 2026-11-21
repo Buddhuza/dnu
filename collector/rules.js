@@ -1,4 +1,5 @@
 import { conciseDnuSummary } from '../src/conciseSummary.js';
+import { isDwLiveBlog } from './dwLiveBlog.js';
 
 var NEWS = {
   TIMEZONE: 'Europe/Vienna', CUT_OFF_HOUR: 8, CUT_OFF_MINUTE: 0,
@@ -200,7 +201,7 @@ function parseItem_(el,feed,win,registry){
  var dateText=textChild_(el,'pubDate')||textChild_(el,'published')||textChild_(el,'date')||textChild_(el,'updated'),published=new Date(dateText);
  if(!title||!safeURL_(link))return {reject:'missing_title_or_valid_link'};
  if(!dateText||isNaN(published.getTime()))return {reject:'unknown_publication_time',headline:title};
- if(published<win.start||published>win.end)return {reject:'outside_edition_window',headline:title};
+ if((published<win.start||published>win.end)&&!isDwLiveBlog(link))return {reject:'outside_edition_window',headline:title};
  var source=sourceFor_(src,srcAttr?srcAttr.getValue():link,feed,registry);
  if(src)title=title.replace(new RegExp('\\s+-\\s+'+src.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'$','i'),'').trim();
  var description=descriptionEvidence_(title,textChild_(el,'description')||textChild_(el,'summary')||textChild_(el,'encoded')||textChild_(el,'content'),feed.search);
@@ -227,7 +228,7 @@ function listingCandidates_(html,feed,win,registry){
  function add(title,url,date,description){title=cleanText_(title);url=canonicalURL_(resolveURL_(url,feed.url));
   if(!sourceDomainsMatch_(url,domain)||!title||tokens_(title).length<5||tokens_(title).length>50||/^(read more|latest news|privacy policy|terms of|subscribe|contact us|about us)/i.test(title)||seen[url]||url.replace(/\/$/,'')===feed.url.replace(/\/$/,''))return;
   if(/\/(?:tag|category|author|search)\/|[?&](?:s|page)=/i.test(url))return;seen[url]=true;
-  var pub=explicitUTC_(date);if(pub&&(new Date(pub)<win.start||new Date(pub)>win.end))return;
+  var pub=explicitUTC_(date);if(pub&&(new Date(pub)<win.start||new Date(pub)>win.end)&&!isDwLiveBlog(url))return;
   var it={id:hash_(url+'|'+title),headline:title,source:source.name,sourceCountry:source.country,sourceDomain:domain,sourceVerified:source.verified,
    link:url,originalLink:url,description:descriptionEvidence_(title,description||'',false),published:pub,collected:now_().toISOString(),feed:feed.url,
    contentStatus:'headline_only',wire:'',selected:false,aiStatus:'rules',decision:'candidate',pendingPublication:!pub,dateEvidence:pub?'publisher_listing':'publication_verification_pending'};
