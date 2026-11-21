@@ -100,7 +100,9 @@ if (!filter || filter === 'news.sky.com') {
   try {
     const parent = { link: SKY_UKRAINE_LIVE_URL, headline: 'Ukraine war latest', source: skySource?.name || 'Sky News',
       sourceDomain: 'news.sky.com', sourceCountry: 'International', sourceVerified: true };
-    const entries = extractSkyLiveBlogEntries(await request(SKY_UKRAINE_LIVE_FEED), parent)
+    const skyFeed = JSON.parse((await request(SKY_UKRAINE_LIVE_FEED)).replace(/^\uFEFF/, ''));
+    if (skyFeed?.success !== true || !Array.isArray(skyFeed.result)) throw Error('Unexpected Sky live feed response');
+    const entries = extractSkyLiveBlogEntries(skyFeed, parent)
       .filter(item => Date.parse(item.published) >= +window.start && Date.parse(item.published) <= +end);
     candidates.push(...entries);
     outcomes.push({ id: skySource?.id, url: SKY_UKRAINE_LIVE_FEED, status: 'checked', count: entries.length });

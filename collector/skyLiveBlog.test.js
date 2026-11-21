@@ -18,6 +18,7 @@ test('Sky live posts use the postid Copy link, timestamp and individual body', (
   assert.equal(entries[0].link, `${SKY_UKRAINE_LIVE_URL}?postid=12884642#liveblog-body`);
   assert.match(entries[0].articleBody, /European Union soil/);
   assert.equal(entries[0].sourceDomain, 'news.sky.com');
+  assert.equal(extractSkyLiveBlogEntries(`\uFEFF${JSON.stringify(posts)}`, parent).length, 1);
 });
 
 test('Sky extractor rejects unrelated pages and malformed feed entries', () => {

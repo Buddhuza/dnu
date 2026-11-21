@@ -24,7 +24,7 @@ function postBody(html) {
 export function extractSkyLiveBlogEntries(payload, parent = {}) {
   if (!isSkyUkraineLiveBlog(parent.link)) return [];
   let data;
-  try { data = typeof payload === 'string' ? JSON.parse(payload) : payload; }
+  try { data = typeof payload === 'string' ? JSON.parse(payload.replace(/^\uFEFF/, '')) : payload; }
   catch { return []; }
   if (data?.success !== true || !Array.isArray(data.result)) return [];
   const seen = new Set();
