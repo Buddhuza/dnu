@@ -30,12 +30,26 @@ function proposedPlacement(item) {
 
 function principalHeadlinePlacement(title, sourceName) {
   if (/^(?:China['’]s\s+)?Xi\b/i.test(title)) return { sectionId: 'Miscellaneous', subsection: 'NORTH EAST ASIA', country: 'China' };
+  if (/\bTrump,?\s+Xi\s+and\s+Putin\b/i.test(title) && /\bjoint peace declaration\b/i.test(title))
+    return { sectionId: 'Miscellaneous', subsection: 'NORTH EAST ASIA', country: 'China' };
+  if (/^Russian MFA\b/i.test(title) && /\bBaku\b/i.test(title) && /\bYerevan\b/i.test(title) && /^Azertag$/i.test(sourceName))
+    return { sectionId: 'South Caucasus', subsection: 'Azerbaijan', country: '' };
+  if (/\bSaudi-led forces\b/i.test(title) && /\bstrike\w*\s+Yemen\s+port\b/i.test(title))
+    return { sectionId: 'Miscellaneous', subsection: 'MIDDLE EAST / NORTH AFRICA', country: 'Yemen' };
   if (/\bSilicon Valley\b/i.test(title) && /\b(?:spy|spying|agent|arrest)\b/i.test(title))
     return { sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' };
   if (/\bCrimea(?:n)? Bridge\b/i.test(title)) return { sectionId: 'Miscellaneous', subsection: 'RUSSIA / EURASIA', country: 'Russia' };
   if (/^(?:Dutch|Netherlands)\b/i.test(title) || /^Asylum minister\b/i.test(title) && /^NL Times$/i.test(sourceName))
     return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Netherlands' };
   return null;
+}
+
+function coversRegionalSubject(sourceName, placement, title) {
+  if (placement?.sectionId === 'South Eastern Europe' && /^(?:BIRN|DTT)$/i.test(sourceName)) return true;
+  if (placement?.sectionId === 'Central Asia' && /^(?:Kabar|Trend|Interfax)$/i.test(sourceName)) return true;
+  if (placement?.sectionId === 'Eastern Europe' && placement.subsection === 'Belarus' && /^Belsat$/i.test(sourceName)) return true;
+  return /^Demócrata$/i.test(sourceName) && placement?.sectionId === 'South Eastern Europe'
+    && placement.subsection === 'Bosnia and Herzegovina' && /\bConstitutional Court of Bosnia\b/i.test(title);
 }
 
 export function adaptSelectedArticles(selected, leads, registry) {
@@ -58,7 +72,8 @@ export function adaptSelectedArticles(selected, leads, registry) {
     const home = sourceHomeCountry(base) || (source?.country !== 'International' ? source?.country : '');
     const subjectCountry = placement?.country || placement?.subsection || '';
     const unrelatedHome = home && subjectCountry && home !== subjectCountry && !(home === 'Kosovo' && subjectCountry === 'Serbia / Kosovo')
-      && !isInternationalOutlet(base) && !mentionsCountry(`${title} ${summary}`, home);
+      && !isInternationalOutlet(base) && !coversRegionalSubject(sourceName, placement, title)
+      && !mentionsCountry(`${title} ${summary}`, home);
     const malformed = routineOrMalformed.test(title) || title.length > 180 || title.split(/\s+/).length < 4
       || /^(?:LIVE|WATCH|Podcast)\b/i.test(title)
       || /\|\s*(?:First Thing|Podcast)\s*$/i.test(title)

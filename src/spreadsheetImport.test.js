@@ -147,22 +147,16 @@ test('worksheet choices use exact workbook tab names with the newest morning she
   assert.deepEqual(await readSpreadsheetGrid(file, '2026-11-03_Sources'), [['Source', 'Status'], ['AP', 'ok']]);
 });
 
-test('unplaced articles stay available for a chosen or newly created destination', () => {
+test('Yemen articles use the built-in Middle East country heading', () => {
   const rows = [{ rowNumber: 2, date: '2026-11-03', source: 'AP', region: 'International', countries: '',
     url: 'https://apnews.com/article/yemen-medical-centre', heading: 'Five killed in Houthi strike on medical centre' }];
-  const pending = convertSpreadsheetRows(rows);
-  assert.equal(pending.articles.length, 0);
-  assert.equal(pending.skipped.length, 0);
-  assert.equal(pending.needsPlacement.length, 1);
-  assert.deepEqual(pending.needsPlacement[0].suggested, {
-    sectionId: 'Miscellaneous', subsection: 'MIDDLE EAST / NORTH AFRICA', country: 'Yemen'
-  });
-  const placed = convertSpreadsheetRows(rows, { placementOverrides: { 2: pending.needsPlacement[0].suggested } });
+  const placed = convertSpreadsheetRows(rows);
   assert.equal(placed.needsPlacement.length, 0);
+  assert.equal(placed.skipped.length, 0);
   assert.deepEqual([placed.articles[0].sectionId, placed.articles[0].subsection, placed.articles[0].country],
     ['Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Yemen']);
   const config = extendSiteConfigForImportedPlacements(normalizeSiteConfig({}, []), placed.articles);
-  assert.ok(config.customCountries['MIDDLE EAST / NORTH AFRICA'].includes('Yemen'));
+  assert.ok(config.sections.find(section => section.id === 'Miscellaneous').subsections.includes('MIDDLE EAST / NORTH AFRICA'));
   assert.equal(displaySiteContent(placed.articles, config)[0].country, 'Yemen');
 });
 

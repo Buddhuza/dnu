@@ -30,7 +30,7 @@ const countryMentions = [
   ['North Macedonia', /\b(?:North Macedonia|Macedonian|Skopje)\b/i],
   ['Serbia / Kosovo', /\b(?:Kosovo|Kosovar|Pristina|Prishtina|Kurti|Konjufca)\b/i],
   ['Serbia', /\b(?:Serbia|Serbian|Belgrade|Vučić|Vucic)\b/i],
-  ['Belarus', /\b(?:Belarus|Belarusian|Minsk|Lukashenko)\b/i],
+  ['Belarus', /\b(?:Belarus|Belarusian|Minsk|Lukashenk[ao])\b/i],
   ['Moldova / Transdniestria', /\b(?:Transdniestria|Transnistria)\b/i],
   ['Moldova', /\b(?:Moldova|Moldovan|Chișinău|Chisinau)\b/i],
   ['Ukraine', /\b(?:Ukraine|Ukrainian|Kyiv|Zelenskyy|Zelensky)\b/i],
@@ -41,7 +41,7 @@ const countryMentions = [
   ['Kazakhstan', /\b(?:Kazakhstan|Kazakh|Astana|Tokayev)\b/i],
   ['Kyrgyzstan', /\b(?:Kyrgyzstan|Kyrgyz|Bishkek|Japarov|Zhaparov)\b/i],
   ['Tajikistan', /\b(?:Tajikistan|Tajik|Dushanbe|Rahmon)\b/i],
-  ['Turkmenistan', /\b(?:Turkmenistan|Turkmen|Ashgabat)\b/i],
+  ['Turkmenistan', /\b(?:Turkmenistan|Turkmen|Ashgabat|Gurbanguly Berdimuhamedov)\b/i],
   ['Uzbekistan', /\b(?:Uzbekistan|Uzbek|Tashkent|Mirziyoyev)\b/i]
 ];
 

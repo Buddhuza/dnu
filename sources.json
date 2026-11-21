@@ -4655,5 +4655,19 @@
     ],
     "feedUrls": [],
     "listingUrl": "https://www.trend.az/casia/"
+  },
+  {
+    "id": "source-democrata-es",
+    "domain": "democrata.es",
+    "name": "Demócrata",
+    "country": "Spain",
+    "group": "Miscl",
+    "url": "https://www.democrata.es/",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://www.democrata.es/"
   }
 ]

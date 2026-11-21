@@ -12,6 +12,7 @@ export function excludedHeadlineReason(value, summary = '', url = '') {
   if (/^interview\b/i.test(headline)) return 'Interview headlines are excluded';
   if (headline.includes('?')) return 'Question headlines are excluded';
   if (/\bMehriban Aliyeva\b/i.test(detail)) return 'Mehriban Aliyeva stories are excluded';
+  if (/\b(?:offers?|expresses?|extends?|sends?)\s+condolences\b/i.test(headline)) return 'Condolence message without a new political or security development';
   if (/^(?:analysis|opinion|commentary|editorial|feature|in depth|explainer)\b/i.test(headline)) return 'Analysis, opinion and feature headlines are excluded';
   if (/^analyst\b/i.test(headline) || /\s[–—-]\s*expert\b/i.test(headline) || /\b(?:memoir|UFC event|parts ways with coach)\b/i.test(headline)) return 'Analysis, memoir or sports rather than current political or security news';
   if (/\bHaiti\b/i.test(headline) || /\bIndonesia police arrest\b/i.test(headline)) return 'Outside the DNU geography';
@@ -28,7 +29,7 @@ export function excludedHeadlineReason(value, summary = '', url = '') {
   if (/(?:^|:\s*)(?:experts?|analysts?)\s*$/i.test(headline)) return 'Expert commentary is excluded';
   if (/\b(?:food poisoning|poisoning of \d+ children)\b/i.test(detail) &&
       !/\b(?:terror\w*|attack|deliberate|intentional|targeted|politic\w*|government|minister|resign\w*|security)\b/i.test(headline)) return 'Routine public-health incident outside the security and political scope';
-  if (/\b(?:flights?|airlines?|airports?)\b/i.test(headline) && !/\b(?:attack|bomb|terror\w*|war|conflict|sanction|military|security|diplomatic|government|minister|parliament|election|protest|border|airspace)\b/i.test(headline)) return 'Travel and airline business outside the security and political scope';
+  if (/\b(?:flights?|airlines?|airports?)\b/i.test(headline) && !/\b(?:attack|bomb|strik\w*|struck|raid|shell\w*|missile\w*|terror\w*|war|conflict|sanction|military|security|diplomatic|government|minister|parliament|election|protest|border|airspace)\b/i.test(headline)) return 'Travel and airline business outside the security and political scope';
   if (/^(?:agenda of events|events calendar)\b/i.test(headline)) return 'Event calendars are not news articles';
   return '';
 }

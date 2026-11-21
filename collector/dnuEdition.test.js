@@ -93,6 +93,39 @@ test('local sources do not place foreign events under their home countries', () 
   assert.equal(rejected.length, 3);
 });
 
+test('approved regional coverage and named international placements are retained', () => {
+  const cases = [
+    ['Belsat', 'belsat.eu', 'Belarus', 'Lukashenka confirms US raised issue of replenishing political prisoner exchange fund', 'Eastern Europe', 'Belarus', ''],
+    ['BIRN', 'balkaninsight.com', 'Regional', 'Serbia Formally Drops Violent Overthrow Case Against Student Protesters', 'South Eastern Europe', 'Serbia', ''],
+    ['Kabar', 'kabar.kg', 'Kyrgyzstan', 'Speakers of CIS parliaments meet with Gurbanguly Berdimuhamedov', 'Central Asia', 'Turkmenistan', ''],
+    ['Trend', 'trend.az', 'Azerbaijan', 'Turkmenistan seeks CIS assembly observer status for parliament', 'Central Asia', 'Turkmenistan', ''],
+    ['DTT', 'dtt-net.com', 'Regional', 'Albania Parliament approves 2027 budget draft-law in the first reading', 'South Eastern Europe', 'Albania', ''],
+    ['Azertag', 'azertag.az', 'Azerbaijan', 'Russian MFA describes peace between Baku and Yerevan as a prerequisite for development in South Caucasus', 'South Caucasus', 'Azerbaijan', ''],
+    ['Interfax', 'interfax.com', 'Russia', 'Turkmen parliament, Russian Federation Council sign cooperation plan for 2027', 'Central Asia', 'Turkmenistan', ''],
+    ['Copenhagen Post', 'cphpost.dk', 'International', 'Trump, Xi and Putin agree on UN reform, energy supplies, international courts and nuclear weapons in joint peace declaration', 'Miscellaneous', 'NORTH EAST ASIA', 'China'],
+    ['Ekathimerini', 'ekathimerini.com', 'International', 'Athens police bust suspected forgery lab producing fake asylum documents', 'Miscellaneous', 'WESTERN / CENTRAL EUROPE', 'Greece'],
+    ['Reuters', 'reuters.com', 'International', 'Spanish police used excessive force during general strike, Amnesty says', 'Miscellaneous', 'WESTERN / CENTRAL EUROPE', 'Spain'],
+    ['Demócrata', 'democrata.es', 'Spain', 'The Constitutional Court of Bosnia enrages the Bosnian Serbs by overturning the veto of its representative in the Presidency', 'South Eastern Europe', 'Bosnia and Herzegovina', ''],
+    ['Reuters', 'reuters.com', 'International', 'Saudi-led forces strike Yemen port as Houthis warn airlines off the kingdom', 'Miscellaneous', 'MIDDLE EAST / NORTH AFRICA', 'Yemen']
+  ];
+  const sources = cases.map(([name, domain, country], index) => ({ id: `source-case-${index}`, name, domain, country }));
+  const selected = cases.map(([name, domain, , title], index) => item(title, {
+    source: name, sourceDomain: domain, link: `https://${domain}/article-${index}`
+  }));
+  const { articles, rejected } = adaptSelectedArticles(selected, new Set(), [...registry, ...sources]);
+  assert.deepEqual(rejected.map(article => article.title), []);
+  assert.deepEqual(articles.map(article => [article.sectionId, article.subsection, article.country]), cases.map(([, , , , section, subsection, country]) => [section, subsection, country]));
+});
+
+test('a minister offering condolences is still excluded', () => {
+  const title = 'Education Minister offers condolences to the families of those killed in the Ponichala tragedy';
+  const { articles, rejected } = adaptSelectedArticles([item(title, {
+    source: '1TV.ge', sourceDomain: '1tv.ge', link: 'https://1tv.ge/article'
+  })], new Set(), [...registry, { id: 'source-62', name: '1TV.ge', domain: '1tv.ge', country: 'Georgia' }]);
+  assert.equal(articles.length, 0);
+  assert.match(rejected[0].reason, /Condolence message/);
+});
+
 test('Belarus state agency coverage is limited within one edition', () => {
   const result = limitBelarusStateAgency([
     { id: 'a', sourceName: 'BelTA', sectionId: 'Eastern Europe', subsection: 'Belarus' },

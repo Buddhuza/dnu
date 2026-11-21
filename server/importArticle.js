@@ -17,7 +17,7 @@ const countryRules = [
     ['Eastern Europe', ['Belarus', 'Moldova', 'Ukraine']],
     ['South Caucasus', ['Armenia', 'Azerbaijan', 'Georgia']],
     ['Central Asia', ['Kazakhstan', 'Kyrgyzstan', 'Tajikistan', 'Turkmenistan', 'Uzbekistan']]
-  ].flatMap(([section, countries]) => countries.map(country => [section, country, new RegExp(`\\b(?:${country === 'Bosnia and Herzegovina' ? 'Bosnia|Bosnian|Herzegovina' : country === 'North Macedonia' ? 'North Macedonia|Macedonian' : country === 'Ukraine' ? 'Ukraine|Ukrainian|Kyiv' : country === 'Kyrgyzstan' ? 'Kyrgyzstan|Kyrgyz' : country === 'Kazakhstan' ? 'Kazakhstan|Kazakh' : country === 'Georgia' ? 'Georgia|Georgian|Tbilisi' : country})\\b`, 'i')]))
+  ].flatMap(([section, countries]) => countries.map(country => [section, country, new RegExp(`\\b(?:${country === 'Bosnia and Herzegovina' ? 'Bosnia|Bosnian|Herzegovina' : country === 'North Macedonia' ? 'North Macedonia|Macedonian' : country === 'Ukraine' ? 'Ukraine|Ukrainian|Kyiv' : country === 'Kyrgyzstan' ? 'Kyrgyzstan|Kyrgyz' : country === 'Kazakhstan' ? 'Kazakhstan|Kazakh' : country === 'Belarus' ? 'Belarus|Belarusian|Lukashenk[ao]' : country === 'Turkmenistan' ? 'Turkmenistan|Turkmen|Gurbanguly Berdimuhamedov' : country === 'Georgia' ? 'Georgia|Georgian|Tbilisi' : country})\\b`, 'i')]))
 ];
 const miscellaneous = [
   ['MIDDLE EAST / NORTH AFRICA', 'Saudi Arabia', /\bSaudi Arabia|Saudi|Riyadh|Aramco\b/i],
@@ -27,6 +27,7 @@ const miscellaneous = [
   ['MIDDLE EAST / NORTH AFRICA', 'Libya', /\bLibya|Libyan\b/i],
   ['MIDDLE EAST / NORTH AFRICA', 'Syria', /\bSyria|Syrian|Damascus\b/i],
   ['MIDDLE EAST / NORTH AFRICA', 'Türkiye', /\bT[üu]rki(?:ye|sh)|Ankara|Istanbul\b/i],
+  ['MIDDLE EAST / NORTH AFRICA', 'Yemen', /\bYemen|Yemeni|Sanaa|Sana'a|Houthi\b/i],
   ['RUSSIA / EURASIA', 'Russia', /\bRussia|Russian|Moscow|Kremlin|Putin\b/i],
   ['AFGHANISTAN / PAKISTAN', 'Afghanistan', /\bAfghanistan|Afghan|Kabul\b/i],
   ['NORTH EAST ASIA', 'China', /\bChina|Chinese|Beijing\b/i],
@@ -66,6 +67,8 @@ function inferredPlacement(text) {
     return { sectionId: 'Miscellaneous', subsection: 'INTERNATIONAL ORGANISATIONS', country: 'EU' };
   }
   for (const [sectionId, subsection, pattern] of countryRules) if (pattern.test(text)) return { sectionId, subsection, country: '' };
+  if (/\bAthens\s+police\b/i.test(text)) return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Greece' };
+  if (/\bSpanish\s+police\b/i.test(text)) return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Spain' };
   for (const [subsection, country, pattern] of miscellaneous) if (pattern.test(text)) {
     if (subsection === 'AFGHANISTAN / PAKISTAN' && !/\bRussia|Russian|Central Asia|Kazakh|Kyrgyz|Tajik|Turkmen|Uzbek\b/i.test(text)) continue;
     return { sectionId: 'Miscellaneous', subsection, country };

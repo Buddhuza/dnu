@@ -40,12 +40,12 @@ test('weekend conversion publishes rows that manual import would hold for placem
     { rowNumber: 4, date: '2026-11-08', source: 'AP', region: 'Europe', url: 'https://apnews.com/article/europe-test', heading: 'Officials discuss cross-border energy links' }
   ];
   const initial = convertSpreadsheetRows(rows);
-  assert.equal(initial.needsPlacement.length, 3);
+  assert.equal(initial.needsPlacement.length, 2); // Yemen now has a built-in heading.
   const result = resolveWeekendPlacementRows(rows, convertSpreadsheetRows);
   assert.equal(result.needsPlacement.length, 0);
-  assert.equal(result.autoPlaced.length, 3);
+  assert.equal(result.autoPlaced.length, 2);
   assert.equal(result.articles.length, 3);
-  assert.ok(result.articles.every(article => article.weekendAutoPlaced));
+  assert.equal(result.articles.filter(article => article.weekendAutoPlaced).length, 2);
   assert.deepEqual(result.articles.map(article => [article.subsection, article.country]), [
     ['WESTERN / CENTRAL EUROPE', 'Poland'], ['MIDDLE EAST / NORTH AFRICA', 'Yemen'], ['WESTERN / CENTRAL EUROPE', '']
   ]);
