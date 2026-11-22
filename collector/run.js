@@ -9,6 +9,8 @@ import { loadEditorialLearning } from './loadEditorialLearning.js';
 import { matchingEditorialDecision } from '../src/editorialLearning.js';
 import { extractDwLiveBlogEntries, isDwLiveBlog } from './dwLiveBlog.js';
 import { extractSkyLiveBlogEntries, SKY_UKRAINE_LIVE_URL, SKY_UKRAINE_LIVE_FEED } from './skyLiveBlog.js';
+import { extractCbsLiveBlogEntries, isCbsLiveBlog } from './cbsLiveBlog.js';
+import { extractAlJazeeraLiveBlogEntries, isAlJazeeraLiveBlog, alJazeeraAmpUrl, alJazeeraMissingPostIds } from './alJazeeraLiveBlog.js';
 
 const root = new URL('../', import.meta.url);
 ensureCollectionData();
@@ -39,6 +41,11 @@ for(const source of registry){
   route(source,source.listingUrl,'html');
   route(source,source.url,'html');
   route(source,'https://news.google.com/rss/search?hl=en-US&gl=US&ceid=US:en&q='+encodeURIComponent('site:'+source.domain+' when:'+hours+'h'),'rss',true);
+}
+// The current live-blog URL changes each day; discover it from publisher listings.
+for (const [domain, url] of [['cbsnews.com', 'https://www.cbsnews.com/'], ['aljazeera.com', 'https://www.aljazeera.com/']]) {
+  const source = registry.find(item => item.domain === domain);
+  if (source) route(source, url, 'html');
 }
 for(const [url] of PUBLISHER_PAGES){
   const host=new URL(url).hostname.replace(/^www\./,'');
@@ -95,6 +102,49 @@ await parallel(liveParents, async parent => {
     console.log(`DW live blog ${parent.link}: ${entries.length} dated individual updates in window.`);
   } catch (error) { console.warn(`DW live blog ${parent.link}: ${error.message}`); }
 });
+if (!filter || filter === 'cbsnews.com') {
+  const cbsSource = registry.find(source => source.domain === 'cbsnews.com');
+  const parents = [...new Map(candidates.filter(item => isCbsLiveBlog(item.link))
+    .map(item => [new URL(item.link).pathname, item])).values()].slice(0, 8);
+  await parallel(parents, async parent => {
+    try {
+      const entries = extractCbsLiveBlogEntries(await request(parent.link, true), parent)
+        .filter(item => Date.parse(item.published) >= +window.start && Date.parse(item.published) <= +end);
+      candidates.push(...entries);
+      outcomes.push({ id: cbsSource?.id, url: parent.link, status: 'checked', count: entries.length });
+      console.log(`CBS live blog ${parent.link}: ${entries.length} dated individual updates in window.`);
+    } catch (error) {
+      outcomes.push({ id: cbsSource?.id, url: parent.link, status: 'failed', reason: error.message });
+      console.warn(`CBS live blog ${parent.link}: ${error.message}`);
+    }
+  });
+}
+if (!filter || filter === 'aljazeera.com') {
+  const source = registry.find(item => item.domain === 'aljazeera.com');
+  const parents = [...new Map(candidates.filter(item => isAlJazeeraLiveBlog(item.link))
+    .map(item => [new URL(item.link).pathname, item])).values()].slice(0, 8);
+  await parallel(parents, async parent => {
+    try {
+      const ampUrl = alJazeeraAmpUrl(parent.link);
+      const entries = extractAlJazeeraLiveBlogEntries(await request(ampUrl, true), parent)
+        .filter(item => Date.parse(item.published) >= +window.start && Date.parse(item.published) <= +end);
+      const missing = alJazeeraMissingPostIds(await request(`${new URL(parent.link).origin}${new URL(parent.link).pathname}`, true), entries, window.start, end);
+      for (let index = 0; index < missing.length; index += 4) {
+        const older = await Promise.all(missing.slice(index, index + 4).map(async id => {
+          try { return extractAlJazeeraLiveBlogEntries(await request(`${ampUrl}?update=${id}`, true), parent); }
+          catch (error) { console.warn(`Al Jazeera live update ${id}: ${error.message}`); return []; }
+        }));
+        entries.push(...older.flat());
+      }
+      candidates.push(...entries);
+      outcomes.push({ id: source?.id, url: parent.link, status: 'checked', count: entries.length });
+      console.log(`Al Jazeera live blog ${parent.link}: ${entries.length} dated individual updates in window.`);
+    } catch (error) {
+      outcomes.push({ id: source?.id, url: parent.link, status: 'failed', reason: error.message });
+      console.warn(`Al Jazeera live blog ${parent.link}: ${error.message}`);
+    }
+  });
+}
 if (!filter || filter === 'news.sky.com') {
   const skySource = registry.find(source => source.domain === 'news.sky.com');
   try {
@@ -112,17 +162,19 @@ if (!filter || filter === 'news.sky.com') {
     console.warn(`Sky Ukraine live blog: ${error.message}`);
   }
 }
-const unique=[...new Map(candidates.sort((a,b)=>a.id.localeCompare(b.id)).map(x=>[x.link,x])).values()];
-for(const item of unique)item.score=baselineScore_(item);
-const shortlist=unique.filter(x=>x.score>0 && !x.fromLiveBlog && !x.link.startsWith('https://news.google.com/')).sort((a,b)=>b.score-a.score).slice(0,150);
+const byLink = new Map(candidates.sort((a,b)=>a.id.localeCompare(b.id)).map(item => [item.link, item]));
+for (const item of candidates) if (item.fromLiveBlog && item.articleBody) byLink.set(item.link, item);
+const distinct = [...byLink.values()];
+for(const item of distinct)item.score=baselineScore_(item);
+const shortlist=distinct.filter(x=>x.score>0 && !x.fromLiveBlog && !x.link.startsWith('https://news.google.com/')).sort((a,b)=>b.score-a.score).slice(0,150);
 let checkedPages=0;
-progress('running','articles','Reading shortlisted original articles…',0,shortlist.length,{candidates:unique.length});
+progress('running','articles','Reading shortlisted original articles…',0,shortlist.length,{candidates:distinct.length});
 await parallel(shortlist,async item=>{
   try {const page=extractPage_(await request(item.link,true),item.headline);if(page){item.published=page.published||item.published;item.pageVerified=Boolean(page.published);item.articleBody=page.text||'';}}catch{/* Feed evidence remains available. */}
   checkedPages++;
-  if(checkedPages%10===0||checkedPages===shortlist.length) progress('running','articles','Reading shortlisted original articles…',checkedPages,shortlist.length,{candidates:unique.length});
+  if(checkedPages%10===0||checkedPages===shortlist.length) progress('running','articles','Reading shortlisted original articles…',checkedPages,shortlist.length,{candidates:distinct.length});
 });
-const inWindow = unique.filter(x=>Date.parse(x.published)>=+window.start && Date.parse(x.published)<=+end);
+const inWindow = distinct.filter(x=>Date.parse(x.published)>=+window.start && Date.parse(x.published)<=+end);
 const selected=selectArticles_(inWindow);
 const selectedUrls = new Set(selected.map(item => item.link));
 for (const item of inWindow) {

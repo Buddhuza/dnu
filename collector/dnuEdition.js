@@ -13,7 +13,7 @@ const categoryNames = { 'South Caucasus Region': 'South Caucasus', 'Central Asia
 const countryNames = { Kosovo: 'Serbia / Kosovo', UK: 'United Kingdom', US: 'United States' };
 const routineOrMalformed = /\b(?:bus.truck collision|bus crash|passenger train collision|road accident|highway pileup|motorway pileup|sudden cardiac arrest|child support|film[s]? produced|gas prices|f.gas emissions|Conservation Fund buys|buried today|heart attack in prison|transportation expenses reimbursement|died in (?:a |the )?crash|exhibition on political prisoners|currency dealer|transport, communications sector grows|natural gas production plan|Iran war oil shock drives dip in global emissions|letter of condolence|prime minister.s questions session scheduled|anniversary of the anti.communist revolution|conference on ensuring children.s access to justice|healthcare, tariffs|on priorities of new|on life after release|pay tribute)\b/i;
 const headlineArtefact = /^(?:\W*\d{1,2}:\d{2}\s+\d{1,2}[./]\d{1,2}[./]20\d{2}\s+|\W*\d+\s+(?:hours?|days?)\s+ago\s+)/i;
-const usActor = /^(?:US[:\s]|U\.S\.[:\s]|Trump\b|Rubio\b|Hegseth\b|Pentagon\b|House\b|Republican\b|Congress(?:man|woman)?\b|Massie\b)/i;
+const usActor = /^(?:US[:\s]|U\.S\.[:\s]|Trump\b|Rubio\b|Hegseth\b|Pentagon\b|House\b|Republican\b|Democrat(?:ic)? senator\b|Congress(?:man|woman)?\b|Massie\b)/i;
 
 function cleanedHeadline(value) {
   const headline = String(value || '').trim().replace(headlineArtefact, '')
@@ -30,6 +30,10 @@ function proposedPlacement(item) {
 }
 
 function principalHeadlinePlacement(title, sourceName, summary = '') {
+  if (/^(?:US|U\.S\.|Democrat(?:ic)?|Republican) senator\b/i.test(title))
+    return { sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' };
+  if (/^Gold Star families\b/i.test(title) && /\bPentagon\b/i.test(title))
+    return { sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' };
   if (/\bassassination (?:attempt|plot)\b/i.test(title) && /\b(?:in Denmark|Danish)\b/i.test(title))
     return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Denmark' };
   if (/^Zelenskyy\b/i.test(title) || /,\s*Zelenskyy says\b/i.test(title))
@@ -71,7 +75,8 @@ export function adaptSelectedArticles(selected, leads, registry, editorialLearni
   const articles = [], rejected = [];
   for (const item of selected) {
     const source = registry.find(entry => entry.domain === item.sourceDomain);
-    const sourceName = displaySourceName(source?.name || item.source || item.sourceDomain, { ...item, sourceId: source?.id, url: item.link });
+    const creditedWire = /^(?:AP|AFP|Reuters|dpa)$/.test(String(item.wire || '')) ? item.wire : '';
+    const sourceName = displaySourceName(creditedWire || source?.name || item.source || item.sourceDomain, { ...item, sourceId: source?.id, url: item.link });
     const title = cleanedHeadline(item.headline);
     const summary = String(item.summary || item.description || '').trim();
     const base = { id: item.id, url: item.link, title, summary, sourceName, sourceId: source?.id || item.sourceDomain };
@@ -80,7 +85,7 @@ export function adaptSelectedArticles(selected, leads, registry, editorialLearni
       ? { sectionId: learned.sectionId, subsection: learned.subsection, country: learned.country || '' } : null;
     const headlineReason = excludedHeadlineReason(title, summary, item.link);
     const sourceReason = directGovernmentPublicationReason(base) || paywalledSourceReason(base);
-    const proposed = learnedPlacement || principalHeadlinePlacement(title, sourceName, summary) || (usActor.test(title) && /\b(?:Iran|impeach|defence|defense|Pentagon|war|sanction|strikes?|Nvidia|FBI|Putin|Russia|Ukraine)\b/i.test(title)
+    const proposed = learnedPlacement || principalHeadlinePlacement(title, sourceName, summary) || (usActor.test(title) && /\b(?:Iran|Iranian|impeach|defence|defense|Pentagon|war|sanction|strikes?|Nvidia|FBI|Putin|Russia|Ukraine)\b/i.test(title)
       ? { sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' }
       : articlePlacement({}, title, '') || proposedPlacement(item));
     const placement = learnedPlacement || proposed && (proposed.sectionId !== 'Miscellaneous' || MISCELLANEOUS_COUNTRIES[proposed.subsection]?.includes(proposed.country))

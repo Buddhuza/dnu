@@ -20,6 +20,8 @@ const countryRules = [
   ].flatMap(([section, countries]) => countries.map(country => [section, country, new RegExp(`\\b(?:${country === 'Bosnia and Herzegovina' ? 'Bosnia|Bosnian|Herzegovina' : country === 'North Macedonia' ? 'North Macedonia|Macedonian' : country === 'Ukraine' ? 'Ukraine|Ukrainian|Kyiv' : country === 'Kyrgyzstan' ? 'Kyrgyzstan|Kyrgyz' : country === 'Kazakhstan' ? 'Kazakhstan|Kazakh' : country === 'Belarus' ? 'Belarus|Belarusian|Lukashenk[ao]' : country === 'Turkmenistan' ? 'Turkmenistan|Turkmen|Gurbanguly Berdimuhamedov' : country === 'Georgia' ? 'Georgia|Georgian|Tbilisi' : country})\\b`, 'i')]))
 ];
 const miscellaneous = [
+  ['MIDDLE EAST / NORTH AFRICA', 'Bahrain', /\b(?:Bahrain|Bahraini|Manama)\b/i],
+  ['MIDDLE EAST / NORTH AFRICA', 'Qatar', /\b(?:Qatar|Qatari|Doha)\b/i],
   ['MIDDLE EAST / NORTH AFRICA', 'Saudi Arabia', /\bSaudi Arabia|Saudi|Riyadh|Aramco\b/i],
   ['MIDDLE EAST / NORTH AFRICA', 'Iran', /\bIran|Iranian|Tehran|Hormuz\b/i],
   ['MIDDLE EAST / NORTH AFRICA', 'Israel', /\bIsrael|Israeli|Palestin|Gaza|West Bank\b/i],

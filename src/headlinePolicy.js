@@ -5,11 +5,17 @@ export function excludedHeadlineReason(value, summary = '', url = '') {
   } catch { /* Some callers check headlines before they have a URL. */ }
   const headline = String(value || '').trim().replace(/^\(文A\)\s*/, '');
   const detail = `${headline} ${summary}`;
+  const cbsIndividualPost = /https:\/\/(?:www\.)?cbsnews\.com\/live-updates\/[a-z0-9-]+\/#post-update-[a-f0-9]{8,32}$/i.test(String(url));
+  const alJazeeraIndividualPost = /https:\/\/www\.aljazeera\.com\/news\/liveblog\/\d{4}\/\d{1,2}\/\d{1,2}\/[a-z0-9-]+\?update=\d+$/i.test(String(url));
   if (/\blive\s*:/i.test(headline) || /^live(?:\s+updates?)?\s*[:|–-]/i.test(headline) || /\/(?:liveblog|live-blog|live-updates)(?:\/|$)/i.test(String(url))
+    && !cbsIndividualPost && !alJazeeraIndividualPost
     || /^Ukraine war latest\b/i.test(headline) && /news\.sky\.com\/story\/[a-z0-9-]+-12541713(?:\?|#|$)/i.test(String(url)) && !/[?&]postid=\d+/.test(String(url))
     || /\/live-\d+(?:[/?#]|$)/i.test(String(url)) && !/[?&]dnu-update=/.test(String(url))) return 'Live blogs are excluded';
   if (/^why\b/i.test(headline)) return 'Why headlines are excluded';
+  if (/^(?:editor['’]s choice|if you['’]re just joining us)\b|^(?:watch|photos):/i.test(headline)) return 'Live-blog roundup or media prompt rather than a standalone news story';
+  if (/^Iran war was [‘“']perfectly avoidable[’”'],? former UN envoy says$/i.test(headline)) return 'Commentary without a new political or security development';
   if (/^what\b/i.test(headline)) return 'What explainer headlines are excluded';
+  if (/^(?:athlete|swimmer)\b.*\b(?:wildlife|raise awareness)\b/i.test(headline)) return 'Sports or environmental feature outside the security and political brief';
   if (/^how\b/i.test(headline)) return 'Explainer headlines are excluded';
   if (/^interview\b/i.test(headline)) return 'Interview headlines are excluded';
   if (headline.includes('?')) return 'Question headlines are excluded';
