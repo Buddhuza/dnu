@@ -11,6 +11,7 @@ import { extractDwLiveBlogEntries, isDwLiveBlog } from './dwLiveBlog.js';
 import { extractSkyLiveBlogEntries, SKY_UKRAINE_LIVE_URL, SKY_UKRAINE_LIVE_FEED } from './skyLiveBlog.js';
 import { extractCbsLiveBlogEntries, isCbsLiveBlog } from './cbsLiveBlog.js';
 import { extractAlJazeeraLiveBlogEntries, isAlJazeeraLiveBlog, alJazeeraAmpUrl, alJazeeraMissingPostIds } from './alJazeeraLiveBlog.js';
+import { extractBbcLiveBlogEntries, isBbcLiveBlog } from './bbcLiveBlog.js';
 
 const root = new URL('../', import.meta.url);
 ensureCollectionData();
@@ -43,7 +44,7 @@ for(const source of registry){
   route(source,'https://news.google.com/rss/search?hl=en-US&gl=US&ceid=US:en&q='+encodeURIComponent('site:'+source.domain+' when:'+hours+'h'),'rss',true);
 }
 // The current live-blog URL changes each day; discover it from publisher listings.
-for (const [domain, url] of [['cbsnews.com', 'https://www.cbsnews.com/'], ['aljazeera.com', 'https://www.aljazeera.com/']]) {
+for (const [domain, url] of [['cbsnews.com', 'https://www.cbsnews.com/'], ['aljazeera.com', 'https://www.aljazeera.com/'], ['bbc.com', 'https://www.bbc.com/']]) {
   const source = registry.find(item => item.domain === domain);
   if (source) route(source, url, 'html');
 }
@@ -102,6 +103,23 @@ await parallel(liveParents, async parent => {
     console.log(`DW live blog ${parent.link}: ${entries.length} dated individual updates in window.`);
   } catch (error) { console.warn(`DW live blog ${parent.link}: ${error.message}`); }
 });
+if (!filter || filter === 'bbc.com') {
+  const source = registry.find(item => item.domain === 'bbc.com');
+  const parents = [...new Map(candidates.filter(item => isBbcLiveBlog(item.link) && !new URL(item.link).searchParams.has('post'))
+    .map(item => [new URL(item.link).pathname, item])).values()].slice(0, 8);
+  await parallel(parents, async parent => {
+    try {
+      const entries = extractBbcLiveBlogEntries(await request(parent.link, true), parent)
+        .filter(item => Date.parse(item.published) >= +window.start && Date.parse(item.published) <= +end);
+      candidates.push(...entries);
+      outcomes.push({ id: source?.id, url: parent.link, status: 'checked', count: entries.length });
+      console.log(`BBC live blog ${parent.link}: ${entries.length} dated individual updates in window.`);
+    } catch (error) {
+      outcomes.push({ id: source?.id, url: parent.link, status: 'failed', reason: error.message });
+      console.warn(`BBC live blog ${parent.link}: ${error.message}`);
+    }
+  });
+}
 if (!filter || filter === 'cbsnews.com') {
   const cbsSource = registry.find(source => source.domain === 'cbsnews.com');
   const parents = [...new Map(candidates.filter(item => isCbsLiveBlog(item.link))
@@ -162,8 +180,9 @@ if (!filter || filter === 'news.sky.com') {
     console.warn(`Sky Ukraine live blog: ${error.message}`);
   }
 }
-const byLink = new Map(candidates.sort((a,b)=>a.id.localeCompare(b.id)).map(item => [item.link, item]));
-for (const item of candidates) if (item.fromLiveBlog && item.articleBody) byLink.set(item.link, item);
+const collectionKey = item => isBbcLiveBlog(item.link) ? item.link.replace(/#post$/i, '') : item.link;
+const byLink = new Map(candidates.sort((a,b)=>a.id.localeCompare(b.id)).map(item => [collectionKey(item), item]));
+for (const item of candidates) if (item.fromLiveBlog && item.articleBody) byLink.set(collectionKey(item), item);
 const distinct = [...byLink.values()];
 for(const item of distinct)item.score=baselineScore_(item);
 const shortlist=distinct.filter(x=>x.score>0 && !x.fromLiveBlog && !x.link.startsWith('https://news.google.com/')).sort((a,b)=>b.score-a.score).slice(0,150);
