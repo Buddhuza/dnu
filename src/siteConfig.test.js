@@ -24,6 +24,14 @@ test('default reading text starts at 18 px', () => {
   assert.equal(defaultSiteConfig(articles).fontSize, 18);
 });
 
+test('the previous default palette and narrow width move to the approved blue columns design', () => {
+  const previous = JSON.parse(readFileSync(new URL('../data/site-config.json', import.meta.url), 'utf8'));
+  const config = normalizeSiteConfig(previous, []);
+  assert.equal(config.theme.name, 'Blue columns');
+  assert.equal(config.theme.background, '#e6edf1');
+  assert.equal(config.updateWidth, 1400);
+});
+
 test('shared Scope keywords survive settings normalisation', () => {
   const config = normalizeSiteConfig({ ...defaultSiteConfig(articles), scopeInclude: 'diplomacy, security', scopeExclude: 'sports' }, articles);
   assert.equal(config.scopeInclude, 'diplomacy, security');
@@ -152,7 +160,7 @@ test('import rejects unsafe links and invalid colors', () => {
     theme: { primary: 'red; background: black' },
     customArticles: [{ title: 'Unsafe', url: 'javascript:alert(1)' }]
   }, articles);
-  assert.equal(config.theme.primary, '#123e47');
+  assert.equal(config.theme.primary, defaultSiteConfig(articles).theme.primary);
   assert.equal(config.customArticles.length, 0);
   assert.equal(config.sections.length, 8);
   assert.ok(config.sections.some(section => section.id === 'Miscellaneous' && section.subsections.includes('INTERNATIONAL ORGANISATIONS')));

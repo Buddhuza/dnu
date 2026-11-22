@@ -25,3 +25,11 @@ export function reportShortDateLabel(value) {
   }).formatToParts(new Date(value)).map(part => [part.type, part.value]));
   return `${parts.day} ${parts.month} ${parts.year}`;
 }
+
+export function reportNumericDateLabel(value) {
+  if (!Number.isFinite(Date.parse(value))) return '';
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Vienna', day: '2-digit', month: '2-digit', year: 'numeric'
+  }).formatToParts(new Date(value)).map(part => [part.type, part.value]));
+  return `${parts.day}.${parts.month}.${parts.year}`;
+}

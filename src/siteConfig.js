@@ -11,12 +11,12 @@ import { defaultGmailRecipients, normalizedGmailRecipients } from './gmailRecipi
 
 export const THEME_PRESETS = {
   forest: { name: 'Forest', primary: '#123e47', accent: '#bce081', background: '#f4efe6', surface: '#fdfaf4', text: '#182a36', section: '#0070c0', font: 'DM Sans' },
-  blue: { name: 'OSCE blue', primary: '#183b65', accent: '#c6dcf2', background: '#f4f7fb', surface: '#ffffff', text: '#1b2d42', section: '#0070c0', font: 'DM Sans' },
+  blue: { name: 'Blue columns', primary: '#285a78', accent: '#dce9f1', background: '#e6edf1', surface: '#f1f5f7', text: '#203744', section: '#285a78', font: 'DM Sans' },
   slate: { name: 'Slate', primary: '#263340', accent: '#d7e1e9', background: '#f2f4f6', surface: '#ffffff', text: '#1f2d38', section: '#465e78', font: 'Manrope' },
   warm: { name: 'Warm', primary: '#5b3b32', accent: '#f3d4a4', background: '#fbf7f1', surface: '#ffffff', text: '#3d302a', section: '#9b5834', font: 'Georgia' }
 };
 
-export const DARK_THEME = { name: 'Dark', primary: '#172f3a', accent: '#c6e690', background: '#101a20', surface: '#1c2a32', text: '#eaf1ef', section: '#8ec7ee', font: 'DM Sans' };
+export const DARK_THEME = { name: 'Dark', primary: '#15222b', accent: '#294456', background: '#15222b', surface: '#1d2d38', text: '#ebf2f5', section: '#93c9e6', font: 'DM Sans' };
 
 const defaults = {
   version: 1,
@@ -35,8 +35,8 @@ const defaults = {
   fontSize: 18,
   sectionHeadingSize: 26,
   sectionHeadingUppercase: true,
-  updateWidth: 900,
-  theme: THEME_PRESETS.forest,
+  updateWidth: 1400,
+  theme: THEME_PRESETS.blue,
   darkTheme: DARK_THEME,
   sections: [],
   articleEdits: {},
@@ -62,7 +62,7 @@ export function defaultSiteConfig(articles = []) {
   const names = [...new Set(articles.map(item => item.section).filter(Boolean))].filter(name => name !== 'International organisations');
   const sections = NEWS_SECTIONS.map(section => ({ ...section, name: section.id, visible: true, subsections: [...section.subsections] }));
   for (const name of names) if (!sections.some(section => section.id === name)) sections.push({ id: name, name, visible: true, subsections: [] });
-  return { ...defaults, theme: { ...THEME_PRESETS.forest }, darkTheme: { ...DARK_THEME }, sections };
+  return { ...defaults, theme: { ...THEME_PRESETS.blue }, darkTheme: { ...DARK_THEME }, sections };
 }
 
 export function normalizeSiteConfig(input, articles = []) {
@@ -98,11 +98,13 @@ export function normalizeSiteConfig(input, articles = []) {
     font: ['DM Sans', 'Manrope', 'Georgia'].includes(raw?.font) ? raw.font : fallback.font
   });
   const theme = parseTheme(input.theme, base.theme);
+  if (theme.name === 'Forest' && theme.primary === '#123e47' && theme.background === '#f4efe6' && theme.surface === '#fdfaf4') Object.assign(theme, THEME_PRESETS.blue);
   if (theme.name === 'Forest' && theme.background === '#f7f8f6' && theme.surface === '#ffffff') {
     theme.background = base.theme.background;
     theme.surface = base.theme.surface;
   }
   const darkTheme = parseTheme(input.darkTheme, base.darkTheme);
+  if (darkTheme.background === '#101a20' && darkTheme.surface === '#1c2a32' && darkTheme.primary === '#172f3a') Object.assign(darkTheme, DARK_THEME);
   const articleEdits = Object.create(null);
   if (input.articleEdits && typeof input.articleEdits === 'object' && !Array.isArray(input.articleEdits)) {
     for (const [id, edit] of Object.entries(input.articleEdits).slice(0, 500)) {
@@ -187,7 +189,7 @@ export function normalizeSiteConfig(input, articles = []) {
     fontSize: Number.isFinite(Number(input.fontSize)) ? Math.max(14, Math.min(24, Number(input.fontSize))) : 18,
     sectionHeadingSize: Number.isFinite(Number(input.sectionHeadingSize)) ? Math.max(20, Math.min(40, Number(input.sectionHeadingSize))) : 26,
     sectionHeadingUppercase: input.sectionHeadingUppercase !== false,
-    updateWidth: Number.isFinite(Number(input.updateWidth)) ? Math.max(480, Math.min(1400, Number(input.updateWidth) === 600 ? 900 : Number(input.updateWidth))) : 900,
+    updateWidth: Number.isFinite(Number(input.updateWidth)) ? Math.max(480, Math.min(1400, [600, 900].includes(Number(input.updateWidth)) ? 1400 : Number(input.updateWidth))) : 1400,
     theme, darkTheme, sections, articleEdits, leadOrigins,
     articleOrder: [...new Set((Array.isArray(input.articleOrder) ? input.articleOrder : []).filter(id => typeof id === 'string' && id.length <= 500))].slice(0, 1000),
     customArticles, customSources, sourceListingOverrides, customCountries,
