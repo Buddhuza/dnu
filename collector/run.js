@@ -300,7 +300,7 @@ const rejected = [...adapted.rejected, ...[...reviewed.removed, ...finalSelectio
   reason: 'Duplicate development; kept ' + item.preferred.sourceName })),
   ...balancedSelection.removed.map(article => ({ ...article,
     reason: 'Limit on Belarus state agency coverage' }))];
-console.log(JSON.stringify({routes:outcomes.length,failed:outcomes.filter(x=>x.status==='failed').length,candidates:unique.length,selected:articles.length,rejected:rejected.length,bodies:articles.filter(x=>x.body).length,firstFailure:outcomes.find(x=>x.status==='failed')?.reason}));
+console.log(JSON.stringify({routes:outcomes.length,failed:outcomes.filter(x=>x.status==='failed').length,candidates:distinct.length,selected:articles.length,rejected:rejected.length,bodies:articles.filter(x=>x.body).length,firstFailure:outcomes.find(x=>x.status==='failed')?.reason}));
 if(!articles.length){progress('failed','selection','No qualifying articles. Previous edition retained.');throw Error('No qualifying articles. Previous edition retained.');}
 const output=collectionDataPath(filter?'native-test-edition.json':process.argv.includes('--stage')?'native-pending.json':'prepared-update.json');
 const temporary=output+'.'+process.pid+'.tmp';
