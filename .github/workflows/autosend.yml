@@ -79,7 +79,7 @@ jobs:
           DNU_COLLECTION_TRIGGER: automatic
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: npm run collect:daily
+        run: bash scripts/retry-collection.sh
       - name: Save today's scrape and its log on the website
         if: steps.due.outputs.run == 'true' && steps.freshness.outputs.scrape_needed == 'true'
         env:

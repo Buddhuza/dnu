@@ -19,7 +19,7 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Collect weekend draft from publishers
-        run: npm run collect:daily
+        run: bash scripts/retry-collection.sh
       - name: Save JSON for editorial review
         if: always()
         uses: actions/upload-artifact@v4
