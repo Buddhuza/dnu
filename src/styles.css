@@ -552,3 +552,8 @@
   .website-panel p{display:block}
 }
 @media(max-width:370px){.header-actions .daily-downloads .daily-action,.header-actions .daily-downloads .daily-action.daily-download,.site-utility{width:19px;height:19px;min-width:19px}.header-actions .daily-downloads .daily-action svg,.site-utility svg{width:11px;height:11px}}
+
+/* Scale the complete interface while keeping fixed panes inside the viewport. */
+:root{zoom:1.5}
+.app-shell{height:66.6667dvh}
+.workspace .sidebar{height:66.6667dvh;width:min(270px,54.6667vw)!important}
