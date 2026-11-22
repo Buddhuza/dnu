@@ -13,7 +13,7 @@ jobs:
         run: |
           node --input-type=module - <<'NODE'
           import { writeFileSync } from 'node:fs';
-          const urls={live:'https://www.independent.co.uk/news/world/europe/ukraine-russia-war-live-crimea-bridge-attack-putin-zelensky-b3088384.html',world:'https://www.independent.co.uk/news/world',home:'https://www.independent.co.uk/'};
+          const urls={older:'https://www.independent.co.uk/news/world/europe/ukraine-russia-war-live-crimea-bridge-attack-putin-zelensky-b3088384.html?page=1'};
           const status=[];
           for(const [name,url] of Object.entries(urls))try{
             const response=await fetch(url,{headers:{'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/131.0 Safari/537.36'},signal:AbortSignal.timeout(30000)});
@@ -26,10 +26,10 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git checkout --orphan independent-live-probe-result-20261122
+          git checkout --orphan independent-older-probe-result-20261122
           git rm -rf .
           cp /tmp/independent-status.json status.json
-          for name in live world home; do test ! -f /tmp/independent-$name.html || cp /tmp/independent-$name.html independent-$name.html; done
+          for name in older; do test ! -f /tmp/independent-$name.html || cp /tmp/independent-$name.html independent-$name.html; done
           git add -A
           git commit -m 'Record one-time Independent live blog page'
-          git push origin HEAD:independent-live-probe-result-20261122
+          git push origin HEAD:independent-older-probe-result-20261122
