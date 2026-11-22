@@ -8,12 +8,15 @@ export function excludedHeadlineReason(value, summary = '', url = '') {
   const cbsIndividualPost = /https:\/\/(?:www\.)?cbsnews\.com\/live-updates\/[a-z0-9-]+\/#post-update-[a-f0-9]{8,32}$/i.test(String(url));
   const alJazeeraIndividualPost = /https:\/\/www\.aljazeera\.com\/news\/liveblog\/\d{4}\/\d{1,2}\/\d{1,2}\/[a-z0-9-]+\?update=\d+$/i.test(String(url));
   const bbcIndividualPost = /https:\/\/(?:www\.)?bbc\.(?:com|co\.uk)\/news\/live\/[a-z0-9]+\?post=asset(?:%3A|:)[0-9a-f-]{36}#post$/i.test(String(url));
+  const guardianIndividualPost = /https:\/\/(?:www\.)?theguardian\.com\/[a-z-]+\/live\/\d{4}\/[a-z]{3}\/\d{1,2}\/[a-z0-9-]+\?page=with%3A(block-[a-f0-9]{20,32})#\1$/i.test(String(url));
   if (/\blive\s*:/i.test(headline) || /^live(?:\s+updates?)?\s*[:|–-]/i.test(headline) || /\/(?:liveblog|live-blog|live-updates)(?:\/|$)/i.test(String(url))
     && !cbsIndividualPost && !alJazeeraIndividualPost
     || /https:\/\/(?:www\.)?bbc\.(?:com|co\.uk)\/news\/live\/[a-z0-9]+(?:[?#]|$)/i.test(String(url)) && !bbcIndividualPost
+    || /https:\/\/(?:www\.)?theguardian\.com\/[a-z-]+\/live\/\d{4}\/[a-z]{3}\/\d{1,2}\/[a-z0-9-]+(?:[?#]|$)/i.test(String(url)) && !guardianIndividualPost
     || /^Ukraine war latest\b/i.test(headline) && /news\.sky\.com\/story\/[a-z0-9-]+-12541713(?:\?|#|$)/i.test(String(url)) && !/[?&]postid=\d+/.test(String(url))
     || /\/live-\d+(?:[/?#]|$)/i.test(String(url)) && !/[?&]dnu-update=/.test(String(url))) return 'Live blogs are excluded';
   if (/^why\b/i.test(headline)) return 'Why headlines are excluded';
+  if (/^(?:opening|closing) summary$/i.test(headline) || /(?:[–—-]\s*podcast|\bin pictures)$/i.test(headline)) return 'Live-blog roundup, podcast or photo gallery rather than a standalone news story';
   if (/^(?:editor['’]s choice|if you['’]re just joining us)\b|^(?:watch|photos):/i.test(headline)) return 'Live-blog roundup or media prompt rather than a standalone news story';
   if (/^Iran war was [‘“']perfectly avoidable[’”'],? former UN envoy says$/i.test(headline)) return 'Commentary without a new political or security development';
   if (/^what\b/i.test(headline)) return 'What explainer headlines are excluded';

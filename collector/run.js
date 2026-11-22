@@ -12,6 +12,7 @@ import { extractSkyLiveBlogEntries, SKY_UKRAINE_LIVE_URL, SKY_UKRAINE_LIVE_FEED 
 import { extractCbsLiveBlogEntries, isCbsLiveBlog } from './cbsLiveBlog.js';
 import { extractAlJazeeraLiveBlogEntries, isAlJazeeraLiveBlog, alJazeeraAmpUrl, alJazeeraMissingPostIds } from './alJazeeraLiveBlog.js';
 import { extractBbcLiveBlogEntries, isBbcLiveBlog } from './bbcLiveBlog.js';
+import { extractGuardianLiveBlogEntries, isGuardianLiveBlog, guardianNextPageUrl, guardianOldestPostTime } from './guardianLiveBlog.js';
 
 const root = new URL('../', import.meta.url);
 ensureCollectionData();
@@ -44,7 +45,7 @@ for(const source of registry){
   route(source,'https://news.google.com/rss/search?hl=en-US&gl=US&ceid=US:en&q='+encodeURIComponent('site:'+source.domain+' when:'+hours+'h'),'rss',true);
 }
 // The current live-blog URL changes each day; discover it from publisher listings.
-for (const [domain, url] of [['cbsnews.com', 'https://www.cbsnews.com/'], ['aljazeera.com', 'https://www.aljazeera.com/'], ['bbc.com', 'https://www.bbc.com/']]) {
+for (const [domain, url] of [['cbsnews.com', 'https://www.cbsnews.com/'], ['aljazeera.com', 'https://www.aljazeera.com/'], ['bbc.com', 'https://www.bbc.com/'], ['theguardian.com', 'https://www.theguardian.com/']]) {
   const source = registry.find(item => item.domain === domain);
   if (source) route(source, url, 'html');
 }
@@ -117,6 +118,33 @@ if (!filter || filter === 'bbc.com') {
     } catch (error) {
       outcomes.push({ id: source?.id, url: parent.link, status: 'failed', reason: error.message });
       console.warn(`BBC live blog ${parent.link}: ${error.message}`);
+    }
+  });
+}
+if (!filter || filter === 'theguardian.com') {
+  const source = registry.find(item => item.domain === 'theguardian.com');
+  const parents = [...new Map(candidates.filter(item => isGuardianLiveBlog(item.link) && !new URL(item.link).searchParams.has('page'))
+    .map(item => [new URL(item.link).pathname, item])).values()].slice(0, 8);
+  await parallel(parents, async parent => {
+    const entries = [], visited = new Set();
+    let page = parent.link;
+    try {
+      for (let number = 0; page && number < 12 && !visited.has(page); number++) {
+        visited.add(page);
+        const html = await request(page, true);
+        entries.push(...extractGuardianLiveBlogEntries(html, parent)
+          .filter(item => Date.parse(item.published) >= +window.start && Date.parse(item.published) <= +end));
+        const oldest = guardianOldestPostTime(html);
+        if (!oldest || oldest < +window.start) break;
+        page = guardianNextPageUrl(html, parent.link);
+      }
+      candidates.push(...entries);
+      outcomes.push({ id: source?.id, url: parent.link, status: 'checked', count: entries.length });
+      console.log(`Guardian live blog ${parent.link}: ${entries.length} dated individual updates in window.`);
+    } catch (error) {
+      candidates.push(...entries);
+      outcomes.push({ id: source?.id, url: parent.link, status: 'failed', count: entries.length, reason: error.message });
+      console.warn(`Guardian live blog ${parent.link}: ${error.message}`);
     }
   });
 }
