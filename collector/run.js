@@ -13,6 +13,7 @@ import { extractCbsLiveBlogEntries, isCbsLiveBlog } from './cbsLiveBlog.js';
 import { extractAlJazeeraLiveBlogEntries, isAlJazeeraLiveBlog, alJazeeraAmpUrl, alJazeeraMissingPostIds } from './alJazeeraLiveBlog.js';
 import { extractBbcLiveBlogEntries, isBbcLiveBlog } from './bbcLiveBlog.js';
 import { extractGuardianLiveBlogEntries, isGuardianLiveBlog, guardianNextPageUrl, guardianOldestPostTime } from './guardianLiveBlog.js';
+import { extractFrance24LiveBlogEntries, isFrance24LiveBlog } from './france24LiveBlog.js';
 
 const root = new URL('../', import.meta.url);
 ensureCollectionData();
@@ -49,6 +50,8 @@ for (const [domain, url] of [['cbsnews.com', 'https://www.cbsnews.com/'], ['alja
   const source = registry.find(item => item.domain === domain);
   if (source) route(source, url, 'html');
 }
+const france24 = registry.find(item => item.domain === 'france24.com');
+if (france24) route(france24, 'https://www.france24.com/en/europe/', 'html');
 for(const [url] of PUBLISHER_PAGES){
   const host=new URL(url).hostname.replace(/^www\./,'');
   const source=registry.find(s=>host===s.domain||host.endsWith('.'+s.domain));
@@ -145,6 +148,22 @@ if (!filter || filter === 'theguardian.com') {
       candidates.push(...entries);
       outcomes.push({ id: source?.id, url: parent.link, status: 'failed', count: entries.length, reason: error.message });
       console.warn(`Guardian live blog ${parent.link}: ${error.message}`);
+    }
+  });
+}
+if (!filter || filter === 'france24.com') {
+  const parents = [...new Map(candidates.filter(item => isFrance24LiveBlog(item.link) && !new URL(item.link).searchParams.has('arena_mid'))
+    .map(item => [new URL(item.link).pathname, item])).values()].slice(0, 8);
+  await parallel(parents, async parent => {
+    try {
+      const entries = extractFrance24LiveBlogEntries(await request(parent.link, true), parent)
+        .filter(item => Date.parse(item.published) >= +window.start && Date.parse(item.published) <= +end);
+      candidates.push(...entries);
+      outcomes.push({ id: france24?.id, url: parent.link, status: 'checked', count: entries.length });
+      console.log(`France 24 live blog ${parent.link}: ${entries.length} dated individual updates in window.`);
+    } catch (error) {
+      outcomes.push({ id: france24?.id, url: parent.link, status: 'failed', reason: error.message });
+      console.warn(`France 24 live blog ${parent.link}: ${error.message}`);
     }
   });
 }

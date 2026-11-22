@@ -36,8 +36,14 @@ function principalHeadlinePlacement(title, sourceName, summary = '') {
     return { sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' };
   if (/\bassassination (?:attempt|plot)\b/i.test(title) && /\b(?:in Denmark|Danish)\b/i.test(title))
     return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Denmark' };
-  if (/^Zelenskyy\b/i.test(title) || /,\s*Zelenskyy says\b/i.test(title))
+  if (/^Zelensk(?:y|yy)\b/i.test(title) || /,\s*Zelensk(?:y|yy) says\b/i.test(title))
     return { sectionId: 'Eastern Europe', subsection: 'Ukraine', country: '' };
+  if (/\b(?:Krasnodar region|off Finland)\b/i.test(title) && /\b(?:strike|struck|drone|cargo ship|burn)\w*\b/i.test(title))
+    return /\boff Finland\b/i.test(title)
+      ? { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Finland' }
+      : { sectionId: 'Miscellaneous', subsection: 'RUSSIA / EURASIA', country: 'Russia' };
+  if (/^Ukraine war is .+?,\s*Finland says\b/i.test(title))
+    return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Finland' };
   if (/,\s*Polish (?:PM|prime minister|defen[cs]e minister) says\b/i.test(title))
     return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Poland' };
   if (!usActor.test(title) && !/\b(?:Poland|Polish|Estonia|Estonian)\b/i.test(title)) {
