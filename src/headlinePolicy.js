@@ -10,9 +10,10 @@ export function excludedHeadlineReason(value, summary = '', url = '') {
   const bbcIndividualPost = /https:\/\/(?:www\.)?bbc\.(?:com|co\.uk)\/news\/live\/[a-z0-9]+\?post=asset(?:%3A|:)[0-9a-f-]{36}#post$/i.test(String(url));
   const guardianIndividualPost = /https:\/\/(?:www\.)?theguardian\.com\/[a-z-]+\/live\/\d{4}\/[a-z]{3}\/\d{1,2}\/[a-z0-9-]+\?page=with%3A(block-[a-f0-9]{20,32})#\1$/i.test(String(url));
   const france24IndividualPost = /https:\/\/(?:www\.)?france24\.com\/en\/[a-z-]+\/\d{8}-live-[a-z0-9-]+\?arena_mid=[a-z0-9]{8,40}(?:&|$)/i.test(String(url));
+  const middleEastEyeIndividualPost = /https:\/\/(?:www\.)?middleeasteye\.net\/live-blog\/live-blog-update\/[a-z0-9-]+\/?$/i.test(String(url));
   const independentIndividualPost = /https:\/\/(?:www\.)?independent\.co\.uk\/news\/[a-z0-9/-]+-live-[a-z0-9-]+-b\d+\.html(?:\?page=\d+)?#post-\d+$/i.test(String(url));
   if (/\blive\s*:/i.test(headline) || /^live(?:\s+updates?)?\s*[:|–-]/i.test(headline) || /\/(?:liveblog|live-blog|live-updates)(?:\/|$)/i.test(String(url))
-    && !cbsIndividualPost && !alJazeeraIndividualPost
+    && !cbsIndividualPost && !alJazeeraIndividualPost && !middleEastEyeIndividualPost
     || /https:\/\/(?:www\.)?bbc\.(?:com|co\.uk)\/news\/live\/[a-z0-9]+(?:[?#]|$)/i.test(String(url)) && !bbcIndividualPost
     || /https:\/\/(?:www\.)?theguardian\.com\/[a-z-]+\/live\/\d{4}\/[a-z]{3}\/\d{1,2}\/[a-z0-9-]+(?:[?#]|$)/i.test(String(url)) && !guardianIndividualPost
     || /https:\/\/(?:www\.)?france24\.com\/en\/[a-z-]+\/\d{8}-live-[a-z0-9-]+(?:[?#]|$)/i.test(String(url)) && !france24IndividualPost

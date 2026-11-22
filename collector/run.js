@@ -15,6 +15,7 @@ import { extractBbcLiveBlogEntries, isBbcLiveBlog } from './bbcLiveBlog.js';
 import { extractGuardianLiveBlogEntries, isGuardianLiveBlog, guardianNextPageUrl, guardianOldestPostTime } from './guardianLiveBlog.js';
 import { extractFrance24LiveBlogEntries, isFrance24LiveBlog } from './france24LiveBlog.js';
 import { extractIndependentLiveBlogEntries, isIndependentLiveBlog } from './independentLiveBlog.js';
+import { newSourceListingCandidates } from './newSourceListings.js';
 
 const root = new URL('../', import.meta.url);
 ensureCollectionData();
@@ -53,6 +54,10 @@ for (const [domain, url] of [['cbsnews.com', 'https://www.cbsnews.com/'], ['alja
 }
 const france24 = registry.find(item => item.domain === 'france24.com');
 if (france24) route(france24, 'https://www.france24.com/en/europe/', 'html');
+for (const [domain, url] of [['therecord.media', 'https://therecord.media/'], ['koreatimes.co.kr', 'https://www.koreatimes.co.kr/']]) {
+  const source = registry.find(item => item.domain === domain);
+  if (source) route(source, url, 'html');
+}
 for(const [url] of PUBLISHER_PAGES){
   const host=new URL(url).hostname.replace(/^www\./,'');
   const source=registry.find(s=>host===s.domain||host.endsWith('.'+s.domain));
@@ -91,7 +96,7 @@ progress('running','routes','Checking publisher feeds and pages…',0,activeRout
 await parallel(activeRoutes,async feed=>{
   let rows;
   try {const raw=await request(feed.url);
-    if(feed.kind==='html')rows=listingCandidates_(raw,feed,window,registry);
+    if(feed.kind==='html')rows=newSourceListingCandidates(raw,feed,window,registry);
     else {const $=load(raw,{xmlMode:true});rows=$('item,entry').toArray().map(n=>parseItem_(xmlElement($,n),feed,window,registry)).filter(x=>x.id);}
     candidates.push(...rows);outcomes.push({id:feed.id,url:feed.url,status:'checked',count:rows.length});
   }catch(error){outcomes.push({id:feed.id,url:feed.url,status:'failed',reason:error.message});}

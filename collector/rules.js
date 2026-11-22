@@ -1,4 +1,5 @@
 import { conciseDnuSummary } from '../src/conciseSummary.js';
+import { load } from 'cheerio';
 import { isDwLiveBlog } from './dwLiveBlog.js';
 import { isCbsLiveBlog } from './cbsLiveBlog.js';
 import { isAlJazeeraLiveBlog } from './alJazeeraLiveBlog.js';
@@ -61,7 +62,7 @@ var TOPIC_RULES=[
  ['human rights and rule of law',/\b(human rights|prisoner[s]?|detain[a-z]*|arrest[a-z]*|war crimes?|war criminal|missing (?:persons|citizens)|genocide|court|justice|sentenced|conviction|hate crimes|media|journalist[s]?|censorship|religio[a-z]*|church|assembly|hate speech|discrimination|corruption|repression|extradition|asylum)\b/i],
  ['diplomacy and cooperation',/\b(meets?|meeting|visit[s]?|talks|cooperation|ambassador|ministers?|consulate|consular|envoy|dialogue|partnership|agreement|commitments?|heads of state|cis|commonwealth|summit|accession|enlargement|peace|negotiat[a-z]*|osce|odihr|eufor|unmik|kfor|nato|eu)\b/i],
  ['energy economy and connectivity',/\b(energy|gas|oil|pipeline|electricity|power|sanction[s]?|trade|investment|transport|corridor|railway|infrastructure|budget|refinery|nuclear plant|water|river|dnies?ter|nistru)\b/i],
- ['migration borders and hybrid threats',/\b(migra[a-z]*|refugee[s]?|border[s]?|cyber[a-z]*|disinformation|foreign interference|intelligence|spying|extremis[a-z]*|drug[s]?|trafficking|whatsapp|information manipulation)\b/i]
+ ['migration borders and hybrid threats',/\b(migra[a-z]*|refugee[s]?|border[s]?|cyber[a-z]*|hack(?:er|ing|ed|s)?|ransomware|malware|data breach|vulnerabilit(?:y|ies)|network intrusion|disinformation|foreign interference|intelligence|spying|extremis[a-z]*|drug[s]?|trafficking|whatsapp|information manipulation)\b/i]
 ];
 
 function now_(){return new Date();}
@@ -354,7 +355,10 @@ function foreignInstitutionPrimary_(h){if(/\b(kosovo|georgian|georgia|armenian|a
 
 function countryFor_(it){if(usGeorgia_(it.headline+' '+(it.description||''),it.sourceDomain+' '+it.source))return '';return countryFor_Prior13_(it);}
 
-function remit_(it){return remit_Prior13_(it)||/\b(?:greenland|unctad|unhcr|icc|international criminal court|international court of justice)\b/i.test(it.headline+' '+(it.description||''));}
+function remit_(it){return remit_Prior13_(it)||/\b(?:greenland|unctad|unhcr|icc|international criminal court|international court of justice)\b/i.test(it.headline+' '+(it.description||''))
+ || /^(?:thedefensepost\.com|therecord\.media|defensescoop\.com|securityweek\.com)$/i.test(it.sourceDomain||'')
+ && /\b(?:defen[cs]e|military|army|navy|nato|missile|drone|weapons?|warship|munitions?|pentagon|cyber|hack(?:er|ing|ed|s)?|ransomware|malware|data breach|vulnerabilit(?:y|ies)|CISA|NSA)\b/i.test(it.headline+' '+(it.description||''))
+ || it.sourceDomain==='koreatimes.co.kr' && /\/(?:northkorea|southkorea)\//i.test(it.link||'');}
 
 function baselineScore_(it){var excluded=newsPolicyExclusion_(it);if(excluded){it.decision=excluded;it.urgent=false;return 0;}var h=it.headline,political=/\b(papuashvili|georgian parliament speaker)\b/i.test(h)&&/congratulat/i.test(h)&&/hatred|critici|days.*towards europe/i.test(h);if(political)it.headline=h.replace(/congratulat[a-z]*/ig,'criticises');var score=baselineScore_Prior13_(it);it.headline=h;return score;}
 
@@ -387,7 +391,20 @@ function publicSummary_(it,top){var candidates=[it.articleBody,it.summary,it.des
 
 function evidenceWords_(it){var t=descriptionEvidence_(it.headline,it.articleBody||it.description||'',false);return t?t.split(/\s+/).filter(Boolean).length:0;}
 
-function extractPage_(html,title){var page=extractPage_Prior13_(html,title);if(!page)return null;page.text=newsCleanEvidence_(page.text);if(!page.text||/\blive\s*:/i.test(title||page.title)&&!descriptionEvidence_(title||page.title,page.text,false)){page.text='';page.status='headline_only';}return page;}
+function papPublishedTime_(html){var m=String(html).match(/<div\s+class=["']date["']>\s*(\d{1,2})\.(\d{1,2})\.(\d{4})\s+(\d{1,2}):(\d{2})/i);if(!m)return '';
+ var day=Number(m[1]),month=Number(m[2]),year=Number(m[3]),hour=Number(m[4]),minute=Number(m[5]);
+ var noon=new Date(Date.UTC(year,month-1,day,12)),zone=new Intl.DateTimeFormat('en',{timeZone:'Europe/Warsaw',timeZoneName:'shortOffset'}).formatToParts(noon).find(function(p){return p.type==='timeZoneName';})?.value||'';
+ var offset=zone.match(/^GMT([+-])(\d{1,2})(?::(\d{2}))?$/);if(!offset)return '';
+ var minutes=(offset[1]==='+'?1:-1)*(Number(offset[2])*60+Number(offset[3]||0)),parsed=new Date(Date.UTC(year,month-1,day,hour,minute)-minutes*60000);
+ var parts=Object.fromEntries(new Intl.DateTimeFormat('en',{timeZone:'Europe/Warsaw',year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric',hourCycle:'h23'}).formatToParts(parsed).map(function(p){return [p.type,p.value];}));
+ return Number(parts.year)===year&&Number(parts.month)===month&&Number(parts.day)===day&&Number(parts.hour)===hour&&Number(parts.minute)===minute?parsed.toISOString():'';}
+
+function extractPage_(html,title){var page=extractPage_Prior13_(html,title);if(!page)return null;
+ var canonicalHost=getHost_(page.canonical||metaValue_(html,['og:url']));
+ if(canonicalHost==='pap.pl'&&!page.published)page.published=papPublishedTime_(html);
+ if(canonicalHost==='middleeasteye.net'&&!page.published){var created=load(html)('.submitted-date .date-created').first().text().trim();var match=created.match(/^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})\s+(\d{1,2}:\d{2})\s+GMT$/);if(match){var parsed=new Date(match[2]+' '+match[1]+', '+match[3]+' '+match[4]+' GMT');if(!isNaN(parsed.getTime()))page.published=parsed.toISOString();}}
+ if(canonicalHost==='securityweek.com'&&String(page.text||'').length<250){var $=load(html),paras=$('article p').toArray().map(function(el){return cleanText_($(el).text());}).filter(function(p){return p.length>35&&!/^(?:subscribe|sign up|advertisement|email|share this)/i.test(p);});if(paras.length>1&&paras[1].startsWith(paras[0]))paras.shift();var body=paras.join('\n\n');if(body.length>250){page.text=body.slice(0,14000);page.status='publisher_article_html';}}
+ page.text=newsCleanEvidence_(page.text);if(!page.text||/\blive\s*:/i.test(title||page.title)&&!descriptionEvidence_(title||page.title,page.text,false)){page.text='';page.status='headline_only';}return page;}
 
 function evidenceKey_(it){var h=String(it.headline||'').toLowerCase();if(/\b(?:energy|power|electricity)\b/.test(h)&&/\b(?:ceasefire|truce)\b/.test(h)&&/despite|continu|doubt|since.*announc|accuses|violation|strikes.*(?:sites|facilities)/.test(h)&&!/\b(?:macron|france|french|retaliat|will respond|kremlin|peskov|lavrov|kharkiv|lviv|zaporizh|izium|izyum)\b/.test(h))return 'ukraine-energy-ceasefire-implementation-update';
  if(/\bnato\b/.test(h)&&/commander|general|grynkewich/.test(h)&&/foolish|utterly futile/.test(h)&&/russia|russian/.test(h))return 'nato-commander-foolish-attack-deterrence';

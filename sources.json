@@ -4683,5 +4683,103 @@
     "legacySourceIds": [],
     "feedUrls": [],
     "listingUrl": "https://www.democrata.es/"
+  },
+  {
+    "id": "source-pap-pl",
+    "domain": "pap.pl",
+    "name": "PAP",
+    "country": "Poland",
+    "group": "Miscl",
+    "url": "https://www.pap.pl/en/news",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://www.pap.pl/en/news"
+  },
+  {
+    "id": "source-thedefensepost-com",
+    "domain": "thedefensepost.com",
+    "name": "The Defense Post",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://thedefensepost.com/latest/",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://thedefensepost.com/latest/"
+  },
+  {
+    "id": "source-therecord-media",
+    "domain": "therecord.media",
+    "name": "The Record",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://therecord.media/news",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://therecord.media/news"
+  },
+  {
+    "id": "source-defensescoop-com",
+    "domain": "defensescoop.com",
+    "name": "DefenseScoop",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://defensescoop.com/",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://defensescoop.com/"
+  },
+  {
+    "id": "source-securityweek-com",
+    "domain": "securityweek.com",
+    "name": "SecurityWeek",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://www.securityweek.com/",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://www.securityweek.com/"
+  },
+  {
+    "id": "source-middleeasteye-net",
+    "domain": "middleeasteye.net",
+    "name": "Middle East Eye",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://www.middleeasteye.net/live",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://www.middleeasteye.net/live"
+  },
+  {
+    "id": "source-koreatimes-co-kr",
+    "domain": "koreatimes.co.kr",
+    "name": "The Korea Times",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://www.koreatimes.co.kr/latest",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://www.koreatimes.co.kr/latest"
   }
 ]

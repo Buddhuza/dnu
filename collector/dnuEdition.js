@@ -29,7 +29,16 @@ function proposedPlacement(item) {
   return region ? { sectionId: 'Miscellaneous', subsection: region, country } : null;
 }
 
-function principalHeadlinePlacement(title, sourceName, summary = '') {
+function principalHeadlinePlacement(title, sourceName, summary = '', url = '') {
+  if (/^Romanian\b/i.test(title) && /\b(?:parliament|government|president|minister|court|military|defen[cs]e)\b/i.test(title))
+    return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Romania' };
+  if (/^Araghchi\b/i.test(title))
+    return { sectionId: 'Miscellaneous', subsection: 'MIDDLE EAST / NORTH AFRICA', country: 'Iran' };
+  if (/^The Korea Times$/i.test(sourceName)) {
+    const path = (() => { try { return new URL(url).pathname; } catch { return ''; } })();
+    if (/^\/northkorea\//i.test(path)) return { sectionId: 'Miscellaneous', subsection: 'NORTH EAST ASIA', country: 'North Korea' };
+    if (/^\/southkorea\//i.test(path)) return { sectionId: 'Miscellaneous', subsection: 'NORTH EAST ASIA', country: 'South Korea' };
+  }
   if (/^(?:US|U\.S\.|Democrat(?:ic)?|Republican) senator\b/i.test(title))
     return { sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' };
   if (/^Gold Star families\b/i.test(title) && /\bPentagon\b/i.test(title))
@@ -70,11 +79,30 @@ function principalHeadlinePlacement(title, sourceName, summary = '') {
 }
 
 function coversRegionalSubject(sourceName, placement, title) {
+  if (/^PAP$/i.test(sourceName) && (['South Eastern Europe', 'Eastern Europe'].includes(placement?.sectionId)
+    || placement?.sectionId === 'Miscellaneous' && placement.subsection === 'WESTERN / CENTRAL EUROPE')) return true;
   if (placement?.sectionId === 'South Eastern Europe' && /^(?:BIRN|DTT)$/i.test(sourceName)) return true;
   if (placement?.sectionId === 'Central Asia' && /^(?:Kabar|Trend|Interfax)$/i.test(sourceName)) return true;
   if (placement?.sectionId === 'Eastern Europe' && placement.subsection === 'Belarus' && /^Belsat$/i.test(sourceName)) return true;
   return /^Demócrata$/i.test(sourceName) && placement?.sectionId === 'South Eastern Europe'
     && placement.subsection === 'Bosnia and Herzegovina' && /\bConstitutional Court of Bosnia\b/i.test(title);
+}
+
+function sourceScopeReason(sourceName, placement, title) {
+  const name = String(sourceName || '');
+  const subject = String(title || '');
+  const defence = /\b(defen[cs]e|military|armed forces|army|navy|air force|nato|missile|drone|weapons?|warship|radar|munitions?|pentagon|soldiers?|troops|combat|fighter jets?|aircraft carrier|airstrike|naval|security forces)\b/i;
+  const cyber = /\b(cyber|hack(?:er|ing|ed|s)?|ransomware|malware|data breach|spyware|digital espionage|network intrusion|zero.day|vulnerabilit(?:y|ies)|CISA|NSA)\b/i;
+  if (/^The Defense Post$/i.test(name) && !defence.test(subject)) return 'The Defense Post is used for defence news';
+  if (/^DefenseScoop$/i.test(name) && !defence.test(subject) && !cyber.test(subject)) return 'DefenseScoop is used for defence or cybersecurity news';
+  if (/^(?:The Record|SecurityWeek)$/i.test(name) && !cyber.test(subject)) return `${name} is used for cybersecurity news`;
+  if (/^Middle East Eye$/i.test(name) && !(placement?.sectionId === 'Miscellaneous' && placement.subsection === 'MIDDLE EAST / NORTH AFRICA'
+    || placement?.sectionId === 'Lead stories' && (placement.subsection === 'Middle East' || MISCELLANEOUS_COUNTRIES['MIDDLE EAST / NORTH AFRICA'].includes(placement.subsection))))
+    return 'Middle East Eye is used only for Middle East news';
+  if (/^The Korea Times$/i.test(name) && !(placement?.sectionId === 'Miscellaneous' && placement.subsection === 'NORTH EAST ASIA'
+    && ['South Korea', 'North Korea'].includes(placement.country) || placement?.sectionId === 'Lead stories' && ['South Korea', 'North Korea'].includes(placement.subsection)))
+    return 'The Korea Times is used only for news about the two Koreas';
+  return '';
 }
 
 export function adaptSelectedArticles(selected, leads, registry, editorialLearning = []) {
@@ -91,7 +119,7 @@ export function adaptSelectedArticles(selected, leads, registry, editorialLearni
       ? { sectionId: learned.sectionId, subsection: learned.subsection, country: learned.country || '' } : null;
     const headlineReason = excludedHeadlineReason(title, summary, item.link);
     const sourceReason = directGovernmentPublicationReason(base) || paywalledSourceReason(base);
-    const proposed = learnedPlacement || principalHeadlinePlacement(title, sourceName, summary) || (usActor.test(title) && /\b(?:Iran|Iranian|impeach|defence|defense|Pentagon|war|sanction|strikes?|Nvidia|FBI|Putin|Russia|Ukraine)\b/i.test(title)
+    const proposed = learnedPlacement || principalHeadlinePlacement(title, sourceName, summary, item.link) || (usActor.test(title) && /\b(?:Iran|Iranian|impeach|defence|defense|Pentagon|war|sanction|strikes?|Nvidia|FBI|Putin|Russia|Ukraine)\b/i.test(title)
       ? { sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' }
       : articlePlacement({}, title, '') || proposedPlacement(item));
     const placement = learnedPlacement || proposed && (proposed.sectionId !== 'Miscellaneous' || MISCELLANEOUS_COUNTRIES[proposed.subsection]?.includes(proposed.country))
@@ -118,7 +146,7 @@ export function adaptSelectedArticles(selected, leads, registry, editorialLearni
       || (!source ? 'Publisher is not in the configured catalogue' : '')
       || (malformed ? 'Routine, incomplete or malformed headline outside the DNU brief' : '')
       || (unrelatedHome ? 'Local outlet reports an event outside its home country without a local subject' : '')
-      || (!placement ? 'No DNU heading could be identified' : blockedPlacementReason(base, placement));
+      || (!placement ? 'No DNU heading could be identified' : sourceScopeReason(sourceName, placement, title) || blockedPlacementReason(base, placement));
     if (reason) { rejected.push({ ...base, reason, editorDecision: learned?.action === 'reject' ? 'deleted' : '', summary: conciseDnuSummary(item.publicSummary || '', title), publishedAt: item.published,
       body: String(item.articleBody || '').trim() }); continue; }
     const lead = leads.has(item.id);
