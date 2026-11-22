@@ -15,7 +15,7 @@ import { extractBbcLiveBlogEntries, isBbcLiveBlog } from './bbcLiveBlog.js';
 import { extractGuardianLiveBlogEntries, isGuardianLiveBlog, guardianNextPageUrl, guardianOldestPostTime } from './guardianLiveBlog.js';
 import { extractFrance24LiveBlogEntries, isFrance24LiveBlog } from './france24LiveBlog.js';
 import { extractIndependentLiveBlogEntries, isIndependentLiveBlog } from './independentLiveBlog.js';
-import { newSourceListingCandidates } from './newSourceListings.js';
+import { newSourceListingCandidates, shortlistNewSourcePages } from './newSourceListings.js';
 
 const root = new URL('../', import.meta.url);
 ensureCollectionData();
@@ -54,7 +54,9 @@ for (const [domain, url] of [['cbsnews.com', 'https://www.cbsnews.com/'], ['alja
 }
 const france24 = registry.find(item => item.domain === 'france24.com');
 if (france24) route(france24, 'https://www.france24.com/en/europe/', 'html');
-for (const [domain, url] of [['therecord.media', 'https://therecord.media/'], ['koreatimes.co.kr', 'https://www.koreatimes.co.kr/']]) {
+for (const [domain, url] of [['pap.pl', 'https://www.pap.pl/en'], ['therecord.media', 'https://therecord.media/'], ['koreatimes.co.kr', 'https://www.koreatimes.co.kr/'],
+  ['koreatimes.co.kr', 'https://www.koreatimes.co.kr/foreignaffairs'],
+  ['koreatimes.co.kr', 'https://www.koreatimes.co.kr/southkorea']]) {
   const source = registry.find(item => item.domain === domain);
   if (source) route(source, url, 'html');
 }
@@ -255,7 +257,7 @@ const byLink = new Map(candidates.sort((a,b)=>a.id.localeCompare(b.id)).map(item
 for (const item of candidates) if (item.fromLiveBlog && item.articleBody) byLink.set(collectionKey(item), item);
 const distinct = [...byLink.values()];
 for(const item of distinct)item.score=baselineScore_(item);
-const shortlist=distinct.filter(x=>x.score>0 && !x.fromLiveBlog && !x.link.startsWith('https://news.google.com/')).sort((a,b)=>b.score-a.score).slice(0,150);
+const shortlist=shortlistNewSourcePages(distinct.filter(x=>x.score>0 && !x.fromLiveBlog && !x.link.startsWith('https://news.google.com/')));
 let checkedPages=0;
 progress('running','articles','Reading shortlisted original articles…',0,shortlist.length,{candidates:distinct.length});
 await parallel(shortlist,async item=>{

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { newSourceListingCandidates } from './newSourceListings.js';
+import { newSourceListingCandidates, shortlistNewSourcePages } from './newSourceListings.js';
 import { extractPage_ } from './rules.js';
 import { adaptSelectedArticles } from './dnuEdition.js';
 import { excludedHeadlineReason } from '../src/headlinePolicy.js';
@@ -19,6 +19,16 @@ test('all seven requested sources have stable catalogue IDs and direct collectio
     assert.equal(source(domain)?.domain, domain);
     assert.ok(source(domain).listingUrl.startsWith('https://'));
   }
+});
+
+test('article verification reserves room for the newly requested sources', () => {
+  const crowded = Array.from({ length: 160 }, (_, index) => ({ link: `https://example.org/${index}`, sourceDomain: 'example.org', score: 80 }));
+  crowded.push({ link: 'https://www.pap.pl/en/news/poland-border', sourceDomain: 'pap.pl', score: 57 });
+  crowded.push({ link: 'https://www.middleeasteye.net/live-blog/live-blog-update/iran-talks', sourceDomain: 'middleeasteye.net', score: 55 });
+  const shortlisted = shortlistNewSourcePages(crowded);
+  assert.equal(shortlisted.length, 150);
+  assert.ok(shortlisted.some(item => item.sourceDomain === 'pap.pl'));
+  assert.ok(shortlisted.some(item => item.sourceDomain === 'middleeasteye.net'));
 });
 
 test('PAP empty overlay links use adjacent headline and Warsaw time', () => {
@@ -42,6 +52,14 @@ test('Korea Times long teaser yields only the headline and original article link
   assert.equal(rows[0].headline, 'Ruling party outlines grounds to impeach chief justice');
   assert.equal(rows[0].source, 'The Korea Times');
   assert.equal(rows[0].pendingPublication, true);
+});
+
+test('The Record listing drops the byline and calendar text from its headline', () => {
+  const html = `<a href="/west-virginia-legislature-cyberattack"><h2>West Virginia Legislature hit with cyber incident affecting IT systems</h2>
+    <div><span>Jonathan Greig</span><span>| November 20th, 2026</span></div></a>`;
+  const rows = newSourceListingCandidates(html, feed('therecord.media', 'https://therecord.media/'), win, registry);
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].headline, 'West Virginia Legislature hit with cyber incident affecting IT systems');
 });
 
 test('PAP article date and Middle East Eye live-update time are verified on article pages', () => {
@@ -80,8 +98,12 @@ test('PAP can cover another European country; Middle East Eye and Korea Times st
     [item('pap.pl', 'Romanian parliament approves new defence cooperation law', '/en/news/romania-defence-law'), true],
     [item('middleeasteye.net', 'Araghchi talks down Qatari visit', '/live-blog/live-blog-update/araghchi-talks-down-qatari-visit'), true],
     [item('middleeasteye.net', 'French government announces defence spending plan', '/news/france-defence-spending'), false],
+    [{ ...item('securityweek.com', 'French government announces new housing plan', '/france-housing-plan/'), wire: 'AP' }, false],
+    [{ ...item('securityweek.com', 'FBI investigating apparent hack of law enforcement database', '/fbi-database-hack/'), wire: 'AP' }, true],
+    [item('defensescoop.com', 'GAO calls for broad munitions plan from Pentagon', '/2026/11/22/gao-pentagon-munitions-plan/'), true],
     [item('koreatimes.co.kr', 'Ruling party outlines grounds to impeach chief justice', '/southkorea/politics/20261122/chief-justice'), true],
-    [item('koreatimes.co.kr', 'North Korea launches ballistic missile into sea', '/northkorea/20261122/ballistic-missile'), true]
+    [item('koreatimes.co.kr', 'North Korea launches ballistic missile into sea', '/foreignaffairs/northkorea/20261122/ballistic-missile'), true],
+    [item('koreatimes.co.kr', 'Trump says Putin summit discussed dangers on Korean Peninsula', '/foreignaffairs/northkorea/20261122/trump-putin-summit'), false]
   ];
   for (const [story, accepted] of cases) {
     const result = adaptSelectedArticles([story], new Set(), registry);

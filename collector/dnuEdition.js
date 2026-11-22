@@ -30,13 +30,16 @@ function proposedPlacement(item) {
 }
 
 function principalHeadlinePlacement(title, sourceName, summary = '', url = '') {
+  if (/^(?:The Record|SecurityWeek|DefenseScoop|The Defense Post)$/i.test(sourceName)
+    && /^(?:FBI\b|NSA\b|CISA\b|GAO\b|West Virginia Legislature\b|Cyber Director\b|National Cyber Director\b|White House\b|(?:U\.S\.|US)\s+(?:Army|Navy|Air Force|Space Force)\b|Army\b|Navy\b)/i.test(title))
+    return { sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' };
   if (/^Romanian\b/i.test(title) && /\b(?:parliament|government|president|minister|court|military|defen[cs]e)\b/i.test(title))
     return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Romania' };
   if (/^Araghchi\b/i.test(title))
     return { sectionId: 'Miscellaneous', subsection: 'MIDDLE EAST / NORTH AFRICA', country: 'Iran' };
-  if (/^The Korea Times$/i.test(sourceName)) {
+  if (/^The Korea Times$/i.test(sourceName) && !usActor.test(title)) {
     const path = (() => { try { return new URL(url).pathname; } catch { return ''; } })();
-    if (/^\/northkorea\//i.test(path)) return { sectionId: 'Miscellaneous', subsection: 'NORTH EAST ASIA', country: 'North Korea' };
+    if (/^\/(?:northkorea|foreignaffairs\/northkorea)\//i.test(path)) return { sectionId: 'Miscellaneous', subsection: 'NORTH EAST ASIA', country: 'North Korea' };
     if (/^\/southkorea\//i.test(path)) return { sectionId: 'Miscellaneous', subsection: 'NORTH EAST ASIA', country: 'South Korea' };
   }
   if (/^(?:US|U\.S\.|Democrat(?:ic)?|Republican) senator\b/i.test(title))
@@ -91,8 +94,8 @@ function coversRegionalSubject(sourceName, placement, title) {
 function sourceScopeReason(sourceName, placement, title) {
   const name = String(sourceName || '');
   const subject = String(title || '');
-  const defence = /\b(defen[cs]e|military|armed forces|army|navy|air force|nato|missile|drone|weapons?|warship|radar|munitions?|pentagon|soldiers?|troops|combat|fighter jets?|aircraft carrier|airstrike|naval|security forces)\b/i;
-  const cyber = /\b(cyber|hack(?:er|ing|ed|s)?|ransomware|malware|data breach|spyware|digital espionage|network intrusion|zero.day|vulnerabilit(?:y|ies)|CISA|NSA)\b/i;
+  const defence = /\b(defen[cs]e|military|armed forces|army|navy|air force|nato|missile|drone|weapons?|warship|radar|munitions?|pentagon|soldiers?|troops|combat|fighter jets?|aircraft carrier|airstrike|naval|security forces|CENTCOM|NORTHCOM|NORAD|surveillance|facial recognition)\b/i;
+  const cyber = /\b(cyber\w*|hack(?:er|ing|ed|s)?|ransomware|malware|data breach|spyware|digital espionage|network intrusion|zero.day|vulnerabilit(?:y|ies)|CISA|NSA)\b/i;
   if (/^The Defense Post$/i.test(name) && !defence.test(subject)) return 'The Defense Post is used for defence news';
   if (/^DefenseScoop$/i.test(name) && !defence.test(subject) && !cyber.test(subject)) return 'DefenseScoop is used for defence or cybersecurity news';
   if (/^(?:The Record|SecurityWeek)$/i.test(name) && !cyber.test(subject)) return `${name} is used for cybersecurity news`;
@@ -119,7 +122,7 @@ export function adaptSelectedArticles(selected, leads, registry, editorialLearni
       ? { sectionId: learned.sectionId, subsection: learned.subsection, country: learned.country || '' } : null;
     const headlineReason = excludedHeadlineReason(title, summary, item.link);
     const sourceReason = directGovernmentPublicationReason(base) || paywalledSourceReason(base);
-    const proposed = learnedPlacement || principalHeadlinePlacement(title, sourceName, summary, item.link) || (usActor.test(title) && /\b(?:Iran|Iranian|impeach|defence|defense|Pentagon|war|sanction|strikes?|Nvidia|FBI|Putin|Russia|Ukraine)\b/i.test(title)
+    const proposed = learnedPlacement || principalHeadlinePlacement(title, source?.name || sourceName, summary, item.link) || (usActor.test(title) && /\b(?:Iran|Iranian|impeach|defence|defense|Pentagon|war|sanction|strikes?|Nvidia|FBI|Putin|Russia|Ukraine)\b/i.test(title)
       ? { sectionId: 'Miscellaneous', subsection: 'NORTH AMERICA', country: 'United States' }
       : articlePlacement({}, title, '') || proposedPlacement(item));
     const placement = learnedPlacement || proposed && (proposed.sectionId !== 'Miscellaneous' || MISCELLANEOUS_COUNTRIES[proposed.subsection]?.includes(proposed.country))
@@ -146,7 +149,7 @@ export function adaptSelectedArticles(selected, leads, registry, editorialLearni
       || (!source ? 'Publisher is not in the configured catalogue' : '')
       || (malformed ? 'Routine, incomplete or malformed headline outside the DNU brief' : '')
       || (unrelatedHome ? 'Local outlet reports an event outside its home country without a local subject' : '')
-      || (!placement ? 'No DNU heading could be identified' : sourceScopeReason(sourceName, placement, title) || blockedPlacementReason(base, placement));
+      || (!placement ? 'No DNU heading could be identified' : sourceScopeReason(source?.name || sourceName, placement, title) || blockedPlacementReason(base, placement));
     if (reason) { rejected.push({ ...base, reason, editorDecision: learned?.action === 'reject' ? 'deleted' : '', summary: conciseDnuSummary(item.publicSummary || '', title), publishedAt: item.published,
       body: String(item.articleBody || '').trim() }); continue; }
     const lead = leads.has(item.id);

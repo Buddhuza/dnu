@@ -357,8 +357,8 @@ function countryFor_(it){if(usGeorgia_(it.headline+' '+(it.description||''),it.s
 
 function remit_(it){return remit_Prior13_(it)||/\b(?:greenland|unctad|unhcr|icc|international criminal court|international court of justice)\b/i.test(it.headline+' '+(it.description||''))
  || /^(?:thedefensepost\.com|therecord\.media|defensescoop\.com|securityweek\.com)$/i.test(it.sourceDomain||'')
- && /\b(?:defen[cs]e|military|army|navy|nato|missile|drone|weapons?|warship|munitions?|pentagon|cyber|hack(?:er|ing|ed|s)?|ransomware|malware|data breach|vulnerabilit(?:y|ies)|CISA|NSA)\b/i.test(it.headline+' '+(it.description||''))
- || it.sourceDomain==='koreatimes.co.kr' && /\/(?:northkorea|southkorea)\//i.test(it.link||'');}
+ && /\b(?:defen[cs]e|military|army|navy|nato|missile|drone|weapons?|warship|munitions?|pentagon|cyber\w*|hack(?:er|ing|ed|s)?|ransomware|malware|data breach|vulnerabilit(?:y|ies)|CISA|NSA)\b/i.test(it.headline+' '+(it.description||''))
+ || it.sourceDomain==='koreatimes.co.kr' && /\/(?:foreignaffairs\/northkorea|northkorea|southkorea)\//i.test(it.link||'');}
 
 function baselineScore_(it){var excluded=newsPolicyExclusion_(it);if(excluded){it.decision=excluded;it.urgent=false;return 0;}var h=it.headline,political=/\b(papuashvili|georgian parliament speaker)\b/i.test(h)&&/congratulat/i.test(h)&&/hatred|critici|days.*towards europe/i.test(h);if(political)it.headline=h.replace(/congratulat[a-z]*/ig,'criticises');var score=baselineScore_Prior13_(it);it.headline=h;return score;}
 
