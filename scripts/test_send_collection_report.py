@@ -39,6 +39,11 @@ class ScrapeReportTests(unittest.TestCase):
         self.assertIn("Last stage: articles", body)
         self.assertIn("Progress: 8/20", body)
 
+    def test_scheduled_recovery_report_is_automatic(self):
+        with patch.dict(os.environ, {"GITHUB_EVENT_NAME": "workflow_dispatch", "DNU_COLLECTION_TRIGGER": "automatic"}):
+            _, body = report.report_content("failure", None, None, "daily", "https://github.com/run/3", NOW)
+        self.assertIn("Run type: automatic", body)
+
     def test_main_sends_to_fixed_owner_without_real_smtp(self):
         with tempfile.TemporaryDirectory() as directory, patch.dict(os.environ, {
             "GMAIL_APP_PASSWORD": "temporary-secret", "GITHUB_RUN_ID": "123", "DNU_SCRAPE_RESULT": "failure"

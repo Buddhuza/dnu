@@ -36,7 +36,7 @@ def report_content(result, edition, progress, kind, run_url, finished_at):
     lines = [
         f"DNU scrape {status}",
         f"Finished: {local_time}",
-        f"Run type: {'manual weekend' if kind == 'weekend' else 'manual' if os.environ.get('GITHUB_EVENT_NAME') == 'workflow_dispatch' else 'automatic'}",
+        f"Run type: {'manual weekend' if kind == 'weekend' else os.environ.get('DNU_COLLECTION_TRIGGER') or ('manual' if os.environ.get('GITHUB_EVENT_NAME') == 'workflow_dispatch' else 'automatic')}",
         f"Workflow: {run_url}",
     ]
     if isinstance(edition, dict):

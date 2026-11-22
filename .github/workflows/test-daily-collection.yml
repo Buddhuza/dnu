@@ -132,4 +132,5 @@ jobs:
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           DNU_SCRAPE_RESULT: ${{ needs.collect.result }}
           DNU_SCRAPE_KIND: daily
+          DNU_COLLECTION_TRIGGER: ${{ (github.event_name == 'schedule' || inputs.scheduled_recovery == true) && 'automatic' || 'manual' }}
         run: python3 scripts/send-collection-report.py report-data
