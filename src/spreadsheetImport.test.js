@@ -568,3 +568,15 @@ test('a DW live blog imported through a Google News link is excluded', () => {
     sourceName: 'DW', sectionId: 'Lead stories', subsection: 'Ukraine', fromSpreadsheet: true };
   assert.deepEqual(displaySiteContent([olderImport], normalizeSiteConfig({}, [])), []);
 });
+
+test('a Guardian war briefing imported through a Google News link is excluded', () => {
+  const article = { rowNumber: 2, date: '2026-11-22', source: 'Guardian', region: 'Eastern Europe', countries: 'Ukraine',
+    url: 'https://news.google.com/rss/articles/guardian-briefing?oc=5',
+    heading: 'Ukraine war briefing: Trump ‘open’ to Kyiv getting Nato-like mutual defence guarantee, says Kushner' };
+  const result = convertSpreadsheetRows([article]);
+  assert.equal(result.articles.length, 0);
+  assert.equal(result.skipped[0].reason, 'Multi-story war briefing rather than a standalone news report');
+  const olderImport = { id: 'guardian-briefing', title: article.heading, url: article.url,
+    sourceName: 'Guardian', sectionId: 'Eastern Europe', country: 'Ukraine', fromSpreadsheet: true };
+  assert.deepEqual(displaySiteContent([olderImport], normalizeSiteConfig({}, [])), []);
+});

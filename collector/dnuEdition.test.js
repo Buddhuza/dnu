@@ -40,6 +40,15 @@ test('native adapter drops live blogs and direct OSCE publications', () => {
   assert.equal(typeof rejected[0].summary, 'string');
 });
 
+test('native adapter drops a Guardian war briefing even when its title highlights one statement', () => {
+  const { articles, rejected } = adaptSelectedArticles([
+    item('Ukraine war briefing: Trump open to Kyiv getting Nato-like mutual defence guarantee, says Kushner',
+      { source: 'Guardian', sourceDomain: 'theguardian.com' })
+  ], new Set(), registry);
+  assert.equal(articles.length, 0);
+  assert.match(rejected[0].reason, /Multi-story war briefing/);
+});
+
 test('a saved editor decision overrides rejection and places the next matching story', () => {
   const candidate = item('LIVE: US security talks begin');
   const decision = { action: 'approve', title: candidate.headline, sourceName: 'BBC', url: candidate.link,
