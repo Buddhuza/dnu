@@ -516,7 +516,7 @@
 .source-drawer-scrim{position:fixed;z-index:69;inset:0;border:0;background:#091b2580}
 .workspace .sidebar{position:fixed;z-index:70;top:0;bottom:0;left:0;width:min(270px,82vw)!important;height:100dvh;min-height:0;display:flex;flex-direction:column;transform:translateX(-102%);transition:transform .18s ease;box-shadow:5px 0 22px #0d253037;background:var(--site-surface);border-right:1px solid #c4d2db}
 .workspace .sidebar.is-open{transform:translateX(0)}
-.workspace .sidebar .source-list{flex:1;min-height:0;width:100%!important;overflow-y:auto}
+.workspace .sidebar .source-list{display:block;flex:1;min-height:0;width:100%!important;overflow-x:hidden;overflow-y:auto}
 .workspace .sidebar .source-row{min-width:0;width:100%}
 .workspace .sidebar .source-copy{flex:1;min-width:0}
 .workspace .sidebar .source-copy strong{overflow:hidden;text-overflow:ellipsis;font-size:13px}
@@ -559,4 +559,4 @@
 /* Scale the complete interface while keeping fixed panes inside the viewport. */
 :root{zoom:1.5}
 .app-shell{height:66.6667dvh}
-.workspace .sidebar{height:66.6667dvh;width:min(270px,54.6667vw)!important}
+.workspace .sidebar{height:66.6667dvh;width:min(var(--source-drawer-width,220px),54.6667vw)!important}

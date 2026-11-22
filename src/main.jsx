@@ -117,6 +117,7 @@ function App() {
   const [staticPreview, setStaticPreview] = useState(false);
   const [websiteSourceId, setWebsiteSourceId] = useState('');
   const [sourceDrawerOpen, setSourceDrawerOpen] = useState(false);
+  const [sourceDrawerWidth, setSourceDrawerWidth] = useState(220);
   useEffect(() => {
     if (!sourceDrawerOpen) return;
     const closeOnEscape = event => { if (event.key === 'Escape') setSourceDrawerOpen(false); };
@@ -363,6 +364,20 @@ function App() {
   }, [editingStories, headlineOnly]);
   const configuredSources = useMemo(() => displaySources(config?.sources ?? [], { ...siteConfig, hiddenSourceIds: [] }), [config, siteConfig]);
   const sources = useMemo(() => displaySources(config?.sources ?? [], siteConfig), [config, siteConfig]);
+  useEffect(() => {
+    let active = true;
+    const measure = () => {
+      if (!active) return;
+      const context = document.createElement('canvas').getContext('2d');
+      if (!context) return;
+      context.font = '700 13px "DM Sans", sans-serif';
+      const longest = Math.max(0, ...sources.map(source => context.measureText(source.name).width));
+      setSourceDrawerWidth(Math.ceil(longest) + 34);
+    };
+    measure();
+    document.fonts?.ready.then(measure);
+    return () => { active = false; };
+  }, [sources]);
   const websiteSource = sources.find(x => x.id === websiteSourceId);
   const groups = ['All sources', ...new Set(sources.map(x => x.group))];
   const visibleSources = useMemo(() => sources.filter(x => (group === 'All sources' || x.group === group) && `${x.name} ${x.group} ${x.url}`.toLowerCase().includes(search.toLowerCase())), [sources, group, search]);
@@ -899,7 +914,7 @@ function App() {
     {siteConfig.showSources && <button className="sources-edge" type="button" aria-label="Open sources" onMouseEnter={() => setSourceDrawerOpen(true)} onClick={() => setSourceDrawerOpen(true)}/>}
     {sourceDrawerOpen && <button className="source-drawer-scrim" type="button" aria-label="Close sources" onClick={() => setSourceDrawerOpen(false)}/>}
     <div className={`workspace ${siteConfig.showSources ? '' : 'no-sidebar'}`}>
-      {siteConfig.showSources && <aside id="source-drawer" className={`sidebar ${sourceDrawerOpen ? 'is-open' : ''}`} aria-hidden={!sourceDrawerOpen} inert={!sourceDrawerOpen} onMouseLeave={() => { if (window.innerWidth > 600) setSourceDrawerOpen(false); }}>
+      {siteConfig.showSources && <aside id="source-drawer" className={`sidebar ${sourceDrawerOpen ? 'is-open' : ''}`} style={{ '--source-drawer-width': `${sourceDrawerWidth}px` }} aria-hidden={!sourceDrawerOpen} inert={!sourceDrawerOpen} onMouseLeave={() => { if (window.innerWidth > 600) setSourceDrawerOpen(false); }}>
         <div className="sidebar-heading"><h2>Sources <em>{sources.length}</em></h2></div>
         <label className="search-box"><span>⌕</span><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search sources" aria-label="Search sources"/><kbd>⌘ K</kbd></label>
         <select className="group-select" value={group} onChange={e => setGroup(e.target.value)} aria-label="Filter source region">{groups.map(x => <option key={x}>{x}</option>)}</select>
