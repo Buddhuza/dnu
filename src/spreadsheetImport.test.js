@@ -556,3 +556,15 @@ test('live blogs are excluded even when their headline names a concrete event', 
   const olderStory = { id: 'liveblog', title: rows[0].heading, url: rows[0].url, sourceName: rows[0].source, sectionId: 'Miscellaneous', section: 'Miscellaneous', subsection: 'MIDDLE EAST / NORTH AFRICA', country: 'Iran', fromSpreadsheet: true };
   assert.deepEqual(displaySiteContent([olderStory], normalizeSiteConfig({}, [])), []);
 });
+
+test('a DW live blog imported through a Google News link is excluded', () => {
+  const article = { rowNumber: 2, date: '2026-11-22', source: 'DW', region: 'Lead stories', countries: 'Ukraine',
+    url: 'https://news.google.com/rss/articles/example?oc=5',
+    heading: "Ukraine updates: Russian attack 'one of largest,' Zelenskyy says" };
+  const result = convertSpreadsheetRows([article]);
+  assert.equal(result.articles.length, 0);
+  assert.equal(result.skipped[0].reason, 'Live blogs are excluded');
+  const olderImport = { id: 'older-dw-blog', title: article.heading, url: article.url,
+    sourceName: 'DW', sectionId: 'Lead stories', subsection: 'Ukraine', fromSpreadsheet: true };
+  assert.deepEqual(displaySiteContent([olderImport], normalizeSiteConfig({}, [])), []);
+});

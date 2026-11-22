@@ -15,6 +15,7 @@ import { extractBbcLiveBlogEntries, isBbcLiveBlog } from './bbcLiveBlog.js';
 import { extractGuardianLiveBlogEntries, isGuardianLiveBlog, guardianNextPageUrl, guardianOldestPostTime } from './guardianLiveBlog.js';
 import { extractFrance24LiveBlogEntries, isFrance24LiveBlog } from './france24LiveBlog.js';
 import { extractIndependentLiveBlogEntries, isIndependentLiveBlog } from './independentLiveBlog.js';
+import { isLiveBlogParentCandidate } from './liveBlogCandidates.js';
 import { newSourceListingCandidates, shortlistNewSourcePages } from './newSourceListings.js';
 
 const root = new URL('../', import.meta.url);
@@ -253,8 +254,9 @@ if (!filter || filter === 'news.sky.com') {
   }
 }
 const collectionKey = item => isBbcLiveBlog(item.link) ? item.link.replace(/#post$/i, '') : item.link;
-const byLink = new Map(candidates.sort((a,b)=>a.id.localeCompare(b.id)).map(item => [collectionKey(item), item]));
-for (const item of candidates) if (item.fromLiveBlog && item.articleBody) byLink.set(collectionKey(item), item);
+const articleCandidates = candidates.filter(item => !isLiveBlogParentCandidate(item));
+const byLink = new Map(articleCandidates.sort((a,b)=>a.id.localeCompare(b.id)).map(item => [collectionKey(item), item]));
+for (const item of articleCandidates) if (item.fromLiveBlog && item.articleBody) byLink.set(collectionKey(item), item);
 const distinct = [...byLink.values()];
 for(const item of distinct)item.score=baselineScore_(item);
 const shortlist=shortlistNewSourcePages(distinct.filter(x=>x.score>0 && !x.fromLiveBlog && !x.link.startsWith('https://news.google.com/')));
