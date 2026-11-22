@@ -38,7 +38,7 @@ function principalHeadlinePlacement(title, sourceName, summary = '') {
     return { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Denmark' };
   if (/^Zelensk(?:y|yy)\b/i.test(title) || /,\s*Zelensk(?:y|yy) says\b/i.test(title))
     return { sectionId: 'Eastern Europe', subsection: 'Ukraine', country: '' };
-  if (/\b(?:Krasnodar region|off Finland)\b/i.test(title) && /\b(?:strike|struck|drone|cargo ship|burn)\w*\b/i.test(title))
+  if (/\b(?:Krasnodar(?: region)?|off Finland)\b/i.test(title) && /\b(?:strike|struck|drone|cargo ship|burn)\w*\b/i.test(title))
     return /\boff Finland\b/i.test(title)
       ? { sectionId: 'Miscellaneous', subsection: 'WESTERN / CENTRAL EUROPE', country: 'Finland' }
       : { sectionId: 'Miscellaneous', subsection: 'RUSSIA / EURASIA', country: 'Russia' };

@@ -370,7 +370,10 @@ export function canonicalArticleUrl(value) {
     for (const key of [...url.searchParams.keys()]) if (/^utm_|^(?:fbclid|gclid|mc_cid|mc_eid)$/i.test(key)) url.searchParams.delete(key);
     const cbsPost = /^(?:www\.)?cbsnews\.com$/i.test(url.hostname) && /^\/live-updates\/[a-z0-9-]+\/$/i.test(url.pathname)
       && /^#post-update-[a-f0-9]{8,32}$/i.test(url.hash) ? url.hash : '';
-    return `${url.hostname.replace(/^www\./, '').toLowerCase()}${url.pathname.replace(/\/$/, '')}${url.search}${cbsPost}`;
+    const independentPost = /^(?:www\.)?independent\.co\.uk$/i.test(url.hostname)
+      && /^\/news\/.+-live-.+-b\d+\.html$/i.test(url.pathname)
+      && /^#post-\d+$/i.test(url.hash) ? url.hash : '';
+    return `${url.hostname.replace(/^www\./, '').toLowerCase()}${url.pathname.replace(/\/$/, '')}${url.search}${cbsPost || independentPost}`;
   } catch { return ''; }
 }
 

@@ -14,6 +14,7 @@ import { extractAlJazeeraLiveBlogEntries, isAlJazeeraLiveBlog, alJazeeraAmpUrl, 
 import { extractBbcLiveBlogEntries, isBbcLiveBlog } from './bbcLiveBlog.js';
 import { extractGuardianLiveBlogEntries, isGuardianLiveBlog, guardianNextPageUrl, guardianOldestPostTime } from './guardianLiveBlog.js';
 import { extractFrance24LiveBlogEntries, isFrance24LiveBlog } from './france24LiveBlog.js';
+import { extractIndependentLiveBlogEntries, isIndependentLiveBlog } from './independentLiveBlog.js';
 
 const root = new URL('../', import.meta.url);
 ensureCollectionData();
@@ -164,6 +165,23 @@ if (!filter || filter === 'france24.com') {
     } catch (error) {
       outcomes.push({ id: france24?.id, url: parent.link, status: 'failed', reason: error.message });
       console.warn(`France 24 live blog ${parent.link}: ${error.message}`);
+    }
+  });
+}
+if (!filter || filter === 'independent.co.uk') {
+  const source = registry.find(item => item.domain === 'independent.co.uk');
+  const parents = [...new Map(candidates.filter(item => isIndependentLiveBlog(item.link) && !new URL(item.link).hash)
+    .map(item => [new URL(item.link).pathname, item])).values()].slice(0, 8);
+  await parallel(parents, async parent => {
+    try {
+      const entries = extractIndependentLiveBlogEntries(await request(parent.link, true), parent)
+        .filter(item => Date.parse(item.published) >= +window.start && Date.parse(item.published) <= +end);
+      candidates.push(...entries);
+      outcomes.push({ id: source?.id, url: parent.link, status: 'checked', count: entries.length });
+      console.log(`Independent live blog ${parent.link}: ${entries.length} dated individual updates in window.`);
+    } catch (error) {
+      outcomes.push({ id: source?.id, url: parent.link, status: 'failed', reason: error.message });
+      console.warn(`Independent live blog ${parent.link}: ${error.message}`);
     }
   });
 }

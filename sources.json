@@ -1879,6 +1879,20 @@
     "listingUrl": "https://www.france24.com/en/"
   },
   {
+    "id": "source-independent-co-uk",
+    "domain": "independent.co.uk",
+    "name": "The Independent",
+    "country": "International",
+    "group": "Miscl",
+    "url": "https://www.independent.co.uk/news/world",
+    "origins": [
+      "dnu"
+    ],
+    "legacySourceIds": [],
+    "feedUrls": [],
+    "listingUrl": "https://www.independent.co.uk/news/world"
+  },
+  {
     "id": "source-83",
     "domain": "bbc.com",
     "name": "BBC",
