@@ -14,6 +14,7 @@ import SendGmailDialog from './SendGmailDialog.jsx';
 import { normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig, toggleLeadStoryInConfig, addCustomArticleInConfig, extendSiteConfigForImportedPlacements, canonicalArticleUrl } from './siteConfig.js';
 import { appendScrapedEdition, latestCollectionArticles, mergeImportedArticles, removeStoryFromEdition, removeStoryFromConfig } from './editionActions.js';
 import { orderedSubsections, leadRegionalHeadings } from './newsSections.js';
+import { assignSectionsToColumns } from './sectionLayout.js';
 import { ensureUkraineWarLeads } from './weekendEdition.js';
 import { createReportDocxFromTemplate } from './docxBuilder.js';
 import { reportFilename } from './reportFilename.js';
@@ -94,7 +95,7 @@ function scrollReportTo(target, gap) {
 }
 
 function App() {
-  const [compiledAt, setCompiledAt] = useState(() => sharedEnabled ? preparedUpdate.checkedAt : readStored(importedUpdateKey, null)?.checkedAt || preparedUpdate.checkedAt || new Date().toISOString());
+  const [compiledAt, setCompiledAt] = useState(() => sharedEnabled ? null : readStored(importedUpdateKey, null)?.checkedAt || preparedUpdate.checkedAt || new Date().toISOString());
   const [config, setConfig] = useState(null);
   const [daily, setDaily] = useState(() => sharedEnabled ? null : readStored(importedUpdateKey, null));
   const [importedMode, setImportedMode] = useState(() => !sharedEnabled && Boolean(readStored(importedUpdateKey, null)?.importedFromSpreadsheet));
@@ -151,6 +152,7 @@ function App() {
   const [importingSpreadsheet, setImportingSpreadsheet] = useState(false);
   const [updateSearchOpen, setUpdateSearchOpen] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState('');
+  const [sectionHeights, setSectionHeights] = useState({});
   const [updateSearchText, setUpdateSearchText] = useState('');
   const [activeSearchResult, setActiveSearchResult] = useState(0);
   const [excludedStoryIds, setExcludedStoryIds] = useState(() => {
@@ -443,16 +445,20 @@ function App() {
       subsections: orderedSubsections(siteConfig.sections.find(item => item.id === sectionId), subsections.keys(), extraRegionalHeadings).map(label => [label, subsections.get(label)])
     }));
   }, [readingArticles, siteConfig.sections, siteConfig.leadOrigins]);
-  const sectionColumns = useMemo(() => {
-    const totals = [0, 0];
-    return dailySections.map(({ sectionId, subsections }) => {
-      const column = ['Lead stories', 'Eastern Europe', 'Central Asia', 'Miscellaneous'].includes(sectionId) ? 0
-        : ['South Eastern Europe', 'South Caucasus'].includes(sectionId) ? 1
-          : (totals[0] <= totals[1] ? 0 : 1);
-      totals[column] += subsections.reduce((sum, [, stories]) => sum + stories.length, 0);
-      return column;
-    });
-  }, [dailySections]);
+  const sectionColumns = useMemo(() => assignSectionsToColumns(dailySections, sectionHeights), [dailySections, sectionHeights]);
+  useLayoutEffect(() => {
+    const nodes = [...document.querySelectorAll('.daily-scroll .daily-section')];
+    if (!nodes.length) return;
+    const update = () => {
+      const next = Object.fromEntries(nodes.filter(node => node.isConnected).map(node => [node.dataset.sectionId, node.getBoundingClientRect().height + Number.parseFloat(getComputedStyle(node).marginBottom || 0)]));
+      setSectionHeights(current => JSON.stringify(current) === JSON.stringify(next) ? current : next);
+    };
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(update);
+    nodes.forEach(node => observer?.observe(node));
+    window.addEventListener('resize', update);
+    update();
+    return () => { observer?.disconnect(); window.removeEventListener('resize', update); };
+  }, [dailySections, sectionColumns, headlineOnly, editingStories, websiteSourceId]);
   async function importSpreadsheet(result, fileName) {
     const importedAt = new Date().toISOString();
     const currentArticles = [...(daily?.articles || []), ...(siteConfig.customArticles || [])];
@@ -900,7 +906,7 @@ function App() {
   const collectionPanel = <NativeCollection onPublish={publishNativeDraft}/>;
 
   return <div className="app-shell" data-mode={siteConfig.darkMode ? 'dark' : 'light'} style={themeStyle}>
-    <header className="topbar"><div className="brand-text"><h1 id="daily-update-title">{siteConfig.brandName === 'SITUATION ROOM' ? 'SITROOM' : siteConfig.brandName} / {siteConfig.updateTitle}</h1><span className="header-date">{reportEndDateLabel(compiledAt)}</span></div><div className="header-actions">{siteConfig.showUpdate && updateControls()}<div className="site-utilities"><button className="site-utility" type="button" aria-label={siteConfig.darkMode ? 'Light mode' : 'Dark mode'} title={siteConfig.darkMode ? 'Light mode' : 'Dark mode'} aria-pressed={siteConfig.darkMode} onClick={() => setSiteConfig(current => ({ ...current, darkMode: !current.darkMode }))}><svg viewBox="0 0 24 24" aria-hidden="true">{siteConfig.darkMode ? <><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19m0-14-1.5 1.5m-11 11L5 19"/></> : <path d="M20.2 16.4A8.5 8.5 0 0 1 7.6 3.8 8.5 8.5 0 1 0 20.2 16.4Z"/>}</svg></button><button className="site-utility" type="button" aria-label={isEditor ? 'Log out' : 'Log in'} title={isEditor ? 'Log out' : 'Log in'} onClick={async () => { if (isEditor) { await sharedClient.auth.signOut(); setEditorUser(null); setManaging(false); setEditingStories(false); } else setLoginOpen(true); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5M13 8l4 4-4 4M7 12h10"/></svg></button>{isEditor && <button className="site-utility" type="button" aria-label="Manage site" title="Manage site" onClick={() => { setManagerTab(managementEnabled ? 'Content' : 'Scope'); setManaging(true); }}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4m0-14.2-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg></button>}</div></div>
+    <header className="topbar"><div className="brand-text"><h1 id="daily-update-title">{siteConfig.brandName === 'SITUATION ROOM' ? 'SITROOM' : siteConfig.brandName} / {siteConfig.updateTitle}</h1><span className="header-date">{daily && compiledAt ? reportEndDateLabel(compiledAt) : ''}</span></div><div className="header-actions">{siteConfig.showUpdate && updateControls()}<div className="site-utilities"><button className="site-utility" type="button" aria-label={siteConfig.darkMode ? 'Light mode' : 'Dark mode'} title={siteConfig.darkMode ? 'Light mode' : 'Dark mode'} aria-pressed={siteConfig.darkMode} onClick={() => setSiteConfig(current => ({ ...current, darkMode: !current.darkMode }))}><svg viewBox="0 0 24 24" aria-hidden="true">{siteConfig.darkMode ? <><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19m0-14-1.5 1.5m-11 11L5 19"/></> : <path d="M20.2 16.4A8.5 8.5 0 0 1 7.6 3.8 8.5 8.5 0 1 0 20.2 16.4Z"/>}</svg></button><button className="site-utility" type="button" aria-label={isEditor ? 'Log out' : 'Log in'} title={isEditor ? 'Log out' : 'Log in'} onClick={async () => { if (isEditor) { await sharedClient.auth.signOut(); setEditorUser(null); setManaging(false); setEditingStories(false); } else setLoginOpen(true); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5M13 8l4 4-4 4M7 12h10"/></svg></button>{isEditor && <button className="site-utility" type="button" aria-label="Manage site" title="Manage site" onClick={() => { setManagerTab(managementEnabled ? 'Content' : 'Scope'); setManaging(true); }}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4m0-14.2-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg></button>}</div></div>
     {(toast || (isEditor && saveStatus)) && <div className="header-feedback" title={toast || saveStatus}>
       {toast ? <div className={`toast ${toast.startsWith('Not published:') ? 'toast-error' : toast.includes('Publishing for everyone…') ? 'toast-pending' : ''}`} role={toast.startsWith('Not published:') ? 'alert' : 'status'} onClick={() => setToast('')}>{toast} ×</div> : <span className="shared-save-status" role="status">{saveStatus}</span>}
     </div>}
@@ -921,7 +927,7 @@ function App() {
         <div className={`reading-layout ${websiteSource ? 'website-open' : ''}`}>
         {siteConfig.showUpdate && <section className={`daily-update ${siteConfig.sectionHeadingUppercase ? 'uppercase-headings' : ''} ${headlineOnly && !editingStories ? 'headline-only' : ''}`} aria-labelledby="daily-update-title">
           {daily && <div className="daily-scroll" role="region" aria-label="Daily update stories" tabIndex={0}>
-            <div className="daily-section-grid">{[0, 1].map(column => <div className="daily-section-column" key={column}>{dailySections.map(({ sectionId, section, subsections }, sectionIndex) => sectionColumns[sectionIndex] === column && <div className={`daily-section ${sectionId === 'Lead stories' ? 'lead-section' : ''}`} id={`daily-section-${sectionIndex}`} key={sectionId} style={{ order: sectionIndex }}>
+            <div className="daily-section-grid">{[0, 1].map(column => <div className="daily-section-column" key={column}>{dailySections.map(({ sectionId, section, subsections }, sectionIndex) => sectionColumns[sectionIndex] === column && <div className={`daily-section ${sectionId === 'Lead stories' ? 'lead-section' : ''}`} id={`daily-section-${sectionIndex}`} data-section-id={sectionId} key={sectionId} style={{ order: sectionIndex }}>
               <h3 data-drop-kind="section" data-section-id={sectionId} className={dropTarget === `section:${sectionId}::` ? 'story-drop-target' : ''}>{highlightSearch(section)}</h3>
               {subsections.map(([subsection, items]) => <div key={subsection || 'direct'}>
                 {subsection && <h4 data-drop-kind="subsection" data-section-id={sectionId} data-subsection={subsection} className={`${section === 'Miscellaneous' ? 'plain-topic topic-heading' : sectionId === 'Lead stories' && subsection === 'Middle East' ? 'topic-heading' : ''} ${dropTarget === `subsection:${sectionId}:${subsection}:` ? 'story-drop-target' : ''}`}>{highlightSearch(reportHeadingLabel(subsection))}</h4>}
