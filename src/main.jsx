@@ -85,11 +85,12 @@ function StoryBadges({ article }) {
 function scrollReportTo(target, gap) {
   const scroller = target.closest('.daily-scroll');
   if (!scroller) return;
+  const zoom = Number.parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
   if (getComputedStyle(scroller).overflowY === 'visible') {
     const headingHeight = document.querySelector('.daily-heading')?.getBoundingClientRect().height || 0;
-    window.scrollTo({ top: window.scrollY + target.getBoundingClientRect().top - headingHeight - gap, behavior: 'smooth' });
+    window.scrollTo({ top: window.scrollY + (target.getBoundingClientRect().top - headingHeight - gap) / zoom, behavior: 'smooth' });
   } else {
-    scroller.scrollTo({ top: scroller.scrollTop + target.getBoundingClientRect().top - scroller.getBoundingClientRect().top - gap, behavior: 'smooth' });
+    scroller.scrollTo({ top: scroller.scrollTop + (target.getBoundingClientRect().top - scroller.getBoundingClientRect().top - gap) / zoom, behavior: 'smooth' });
   }
 }
 
