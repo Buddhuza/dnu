@@ -133,6 +133,7 @@ function App() {
   useEscapeToClose('spreadsheet-results-title', () => setSpreadsheetResults(null), Boolean(spreadsheetResults));
   const [managing, setManaging] = useState(false);
   const [scrapingOpen, setScrapingOpen] = useState(false);
+  const [importBusy, setImportBusy] = useState(false);
   const [scrapeStatus, setScrapeStatus] = useState(null);
   const [scrapeNoticeClock, setScrapeNoticeClock] = useState(Date.now);
   const [dismissedScrapeRunId, setDismissedScrapeRunId] = useState('');
@@ -140,8 +141,8 @@ function App() {
   const dismissCompletedScrape = () => {
     if (scrapeStatus?.state === 'complete') setDismissedScrapeRunId(String(scrapeStatus.runId || ''));
   };
-  const closeScrapeDialog = () => { dismissCompletedScrape(); setScrapingOpen(false); };
-  useEscapeToClose('scrape-dialog-title', closeScrapeDialog, scrapingOpen);
+  const closeScrapeDialog = () => { if (importBusy) return; dismissCompletedScrape(); setScrapingOpen(false); };
+  useEscapeToClose('scrape-dialog-title', closeScrapeDialog, scrapingOpen && !importBusy);
   const [editingStories, setEditingStories] = useState(false);
   const [headlineOnly, setHeadlineOnly] = useState(() => readStored('dnu-headline-only-v1', false) === true);
   const [moveStoryId, setMoveStoryId] = useState('');
@@ -149,7 +150,6 @@ function App() {
   const pointerDragRef = useRef(null);
   const pendingReadingPositionRef = useRef(null);
   const [addingArticles, setAddingArticles] = useState(false);
-  const [importingSpreadsheet, setImportingSpreadsheet] = useState(false);
   const [updateSearchOpen, setUpdateSearchOpen] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState('');
   const [sectionHeights, setSectionHeights] = useState({});
@@ -494,7 +494,7 @@ function App() {
     setEditingStories(false);
     setDaily(update);
     setCompiledAt(importedAt);
-    setImportingSpreadsheet(false);
+    setScrapingOpen(false);
     const importedMessage = `Imported ${result.articles.length} stories from ${fileName}: ${addedCount} added, ${result.articles.length - addedCount} already present${result.skipped.length ? `; ${result.skipped.length} skipped` : ''}. Earlier stories remain in the update.`;
     if (sharedEnabled) {
       pendingPublishNoticeRef.current = `${importedMessage} Saved for everyone.`;
@@ -520,7 +520,7 @@ function App() {
     setDaily(update);
     setCompiledAt(backup?.compiledAt || update.checkedAt || new Date().toISOString());
     setStaticPreview(!fromServer);
-    setImportingSpreadsheet(false);
+    setScrapingOpen(false);
     setToast('Published update restored.');
   }
 
@@ -538,7 +538,6 @@ function App() {
       setEditingStories(false);
       setDaily(current => emptyEdition(current || preparedUpdate, clearedAt));
       setCompiledAt(clearedAt);
-      setImportingSpreadsheet(false);
       setDismissedScrapeRunId(String(scrapeStatus?.runId || ''));
       setScrapeNoticeHiddenBefore(Date.now());
       setScrapingOpen(false);
@@ -555,7 +554,7 @@ function App() {
     setDaily(preparedUpdate);
     setCompiledAt(preparedUpdate.checkedAt);
     setStaticPreview(true);
-    setImportingSpreadsheet(false);
+    setScrapingOpen(false);
     setDismissedScrapeRunId(String(scrapeStatus?.runId || ''));
     setScrapeNoticeHiddenBefore(Date.now());
     setToast('Update cleared. Its structure and article cache remain available.');
@@ -763,7 +762,6 @@ function App() {
   const keepStoryTextInline = event => { if (event.key === 'Enter') event.preventDefault(); };
   const updateControls = () => daily && <div className="daily-downloads">
     {isEditor && <button className="daily-action daily-edit" type="button" aria-label="Open scrape news" title={editingStories ? 'Save edits before scraping' : 'Open the news scraper'} disabled={editingStories} onClick={() => setScrapingOpen(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.8 9a7 7 0 0 1 12-2L20 12M4 12l2.2 5a7 7 0 0 0 12-2"/></svg></button>}
-    {isEditor && <button className="daily-action daily-edit" type="button" aria-label="Import spreadsheet" title={editingStories ? 'Save edits before importing a spreadsheet' : 'Import stories from an Excel or CSV file'} disabled={editingStories} onClick={() => setImportingSpreadsheet(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v16H3zM3 9h18M3 14h11M10 9v11M16 9v5m2 2v5m-3-3 3 3 3-3"/></svg></button>}
     {isEditor && <button className="daily-action daily-edit" type="button" aria-label="Add articles" title="Add article URLs" onClick={() => setAddingArticles(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M4 12h16"/></svg></button>}
     {isEditor && <button className="daily-action daily-edit" type="button" aria-label={editingStories ? 'Save edits' : 'Edit update'} title={editingStories ? 'Save text and story changes' : 'Edit text and stories'} aria-pressed={editingStories} disabled={!displayedArticles.length && !editingStories} onClick={toggleStoryEditing}><svg viewBox="0 0 24 24" aria-hidden="true">{editingStories ? <path d="m4 12 5 5L20 6"/> : <><path d="m4 20 4.2-.9L19 8.3 15.7 5 4.9 15.8 4 20Z"/><path d="m13.9 6.8 3.3 3.3"/></>}</svg></button>}
     <button className={`daily-action daily-edit ${headlineOnly ? 'is-active' : ''}`} type="button" aria-label={headlineOnly ? 'Show full view' : 'Show compressed view'} title={editingStories ? 'Save edits before switching views' : headlineOnly ? 'Show full view with summaries' : 'Show compressed view without summaries'} aria-pressed={headlineOnly} disabled={editingStories} onClick={() => { rememberReadingPosition(); setHeadlineOnly(current => !current); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16"/>{!headlineOnly && <path d="M4 15h16"/>}</svg></button>
@@ -945,7 +943,7 @@ function App() {
                 </React.Fragment>)}
               </div>)}
             </div>)}</div>)}</div>
-            {!readingArticles.length && <p className="daily-empty">{displayedArticles.length ? isEditor ? 'No stories are selected. Press Edit to choose stories for this update.' : 'No stories are selected for this update.' : isEditor ? 'No stories yet. Press Import spreadsheet to populate the update.' : 'No stories have been published yet.'}</p>}
+            {!readingArticles.length && <p className="daily-empty">{displayedArticles.length ? isEditor ? 'No stories are selected. Press Edit to choose stories for this update.' : 'No stories are selected for this update.' : isEditor ? 'No stories yet. Open Scrape news to import a spreadsheet.' : 'No stories have been published yet.'}</p>}
             {selectedArticles.length > 0 && <div className="daily-disclaimer"><p><strong>Disclaimer:</strong> {disclaimerFirst}</p><p>{disclaimerSecond}</p></div>}
             {siteConfig.showCoverage && coverageNote && selectedArticles.length > 0 && <p className="daily-coverage">{coverageNote}</p>}
           </div>}
@@ -959,9 +957,8 @@ function App() {
     {spreadsheetResults && <div className="add-backdrop" onClick={() => setSpreadsheetResults(null)}><section className="add-dialog spreadsheet-results" role="dialog" aria-modal="true" aria-labelledby="spreadsheet-results-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="spreadsheet-results-title">Spreadsheet export results</h2><button type="button" aria-label="Close export results" onClick={() => setSpreadsheetResults(null)}>×</button></div><p>{spreadsheetResults.downloaded ? `Downloaded ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} visible full articles.` : `No spreadsheet downloaded. ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} articles available.`}</p>{spreadsheetResults.error && <p role="alert">{spreadsheetResults.error}</p>}{spreadsheetResults.failures.length > 0 && <><h3>{spreadsheetResults.failures.length} unavailable</h3><ul>{spreadsheetResults.failures.map((failure, index) => <li key={index}>{failure}</li>)}</ul></>}<div className="add-dialog-actions"><button type="button" onClick={() => setSpreadsheetResults(null)}>Close</button></div></section></div>}
     {isEditor && managing && <SiteManager initialTab={managerTab} isOwner={managementEnabled} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} accountProfile={editorUser.editorProfile} onApproveRejected={approveRejectedStory} onClose={() => setManaging(false)}/>}
     {isEditor && sendDialogOpen && <SendGmailDialog recipients={siteConfig.gmailRecipients} subject={`[TEST] ${emailSubject(compiledAt)}`} articleCount={selectedArticles.length} onSave={saveGmailRecipients} onSend={sendPublishedGmail} onClose={() => setSendDialogOpen(false)}/>}
-    {isEditor && scrapingOpen && <div className="add-backdrop" onClick={closeScrapeDialog}><section className="add-dialog scrape-dialog" role="dialog" aria-modal="true" aria-labelledby="scrape-dialog-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="scrape-dialog-title">Scrape news</h2><button type="button" aria-label="Close scrape status" onClick={closeScrapeDialog}>×</button></div><NativeCollection onPublish={publishNativeDraft} onClear={clearCurrentUpdate} hasStories={Boolean((daily?.articles.length || 0) + (siteConfig.customArticles?.length || 0))}/></section></div>}
+    {isEditor && scrapingOpen && <div className="add-backdrop" onClick={closeScrapeDialog}><section className="add-dialog scrape-dialog" role="dialog" aria-modal="true" aria-labelledby="scrape-dialog-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="scrape-dialog-title">Scrape news</h2><button type="button" aria-label="Close scrape status" onClick={closeScrapeDialog} disabled={importBusy}>×</button></div><NativeCollection onPublish={publishNativeDraft} onClear={clearCurrentUpdate} hasStories={Boolean((daily?.articles.length || 0) + (siteConfig.customArticles?.length || 0))} interactionDisabled={importBusy}/><hr className="scrape-import-divider"/><ImportSpreadsheetDialog sections={siteConfig.sections} customCountries={siteConfig.customCountries} existingArticles={[...archivedImportReference.articles, ...preparedUpdate.articles, ...(daily?.articles ?? [])]} sources={configuredSources} importedMode={importedMode} sharedMode={sharedEnabled} onImport={importSpreadsheet} onRestore={restorePublishedUpdate} onBusyChange={setImportBusy}/></section></div>}
     {isEditor && addingArticles && daily && <AddArticlesDialog sections={siteConfig.sections} sources={configuredSources} customCountries={siteConfig.customCountries} existingArticles={selectedArticles} remainingSlots={100 - siteConfig.customArticles.length} onAdd={async (article, placement, body) => { if (body?.body) { try { await storeArticleBodies([body]); } catch (error) { if (!sharedEnabled) throw error; } if (sharedEnabled) { const prior = pendingBodiesRef.current?.bodies || []; pendingBodiesRef.current = { replace: false, bodies: [...new Map([...prior, body].map(item => [item.url, item])).values()] }; } } setSiteConfig(current => addCustomArticleInConfig(current, { ...article, addedBy: contributor }, placement)); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}
-    {isEditor && importingSpreadsheet && <ImportSpreadsheetDialog sections={siteConfig.sections} customCountries={siteConfig.customCountries} existingArticles={[...archivedImportReference.articles, ...preparedUpdate.articles, ...(daily?.articles ?? [])]} sources={configuredSources} importedMode={importedMode} sharedMode={sharedEnabled} publishedEmpty={preparedUpdate.emptyPrepared === true} hasStories={Boolean((daily?.articles.length || 0) + (siteConfig.customArticles?.length || 0))} onImport={importSpreadsheet} onRestore={restorePublishedUpdate} onClear={clearCurrentUpdate} onClose={() => setImportingSpreadsheet(false)}/>}
     {isEditor && editingStories && storyToMove && <MoveStoryDialog story={storyToMove} sections={siteConfig.sections} articles={displayedArticles} customCountries={siteConfig.customCountries} onMove={moveStory} onClose={() => setMoveStoryId('')}/>}
     {loginOpen && <EditorLoginDialog onLogin={user => { setEditorUser(user); setLoginOpen(false); }} onClose={() => setLoginOpen(false)}/>}
   </div>;

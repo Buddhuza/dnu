@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { convertSpreadsheetRows, listSpreadsheetSheets, readSpreadsheet, readSpreadsheetGrid } from './spreadsheetImport.js';
 import { DEFAULT_GOOGLE_SHEET_URL, readGoogleSheetEdition } from './googleSheetClient.js';
 import { MISCELLANEOUS_COUNTRIES } from './newsSections.js';
-import { useEscapeToClose } from './useEscapeToClose.js';
 
 const NEW = '__create_new__';
 const DIRECT = '__directly_under_section__';
@@ -63,7 +62,7 @@ function PlacementChooser({ item, sections, customCountries, onApply, onDelete }
   </li>;
 }
 
-export default function ImportSpreadsheetDialog({ sections = [], customCountries = {}, existingArticles, sources, importedMode, sharedMode = false, publishedEmpty, hasStories, onImport, onRestore, onClear, onClose }) {
+export default function ImportSpreadsheetDialog({ sections = [], customCountries = {}, existingArticles, sources, importedMode, sharedMode = false, onImport, onRestore, onBusyChange }) {
   const [fileName, setFileName] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
@@ -72,11 +71,19 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
   const [sheetNames, setSheetNames] = useState([]);
   const [sheetName, setSheetName] = useState('');
   const [googleUrl, setGoogleUrl] = useState(DEFAULT_GOOGLE_SHEET_URL);
+  const [copyMessage, setCopyMessage] = useState('');
   const [rawRows, setRawRows] = useState([]);
   const [placementOverrides, setPlacementOverrides] = useState({});
   const [discardedRows, setDiscardedRows] = useState(new Set());
 
-  useEscapeToClose('import-spreadsheet-title', onClose, !busy);
+  useEffect(() => { onBusyChange?.(busy); }, [busy, onBusyChange]);
+
+  async function copyGoogleUrl() {
+    try {
+      await navigator.clipboard.writeText(googleUrl);
+      setCopyMessage('Google Sheet URL copied.');
+    } catch { setCopyMessage('Could not copy the URL. Select and copy it from the field.'); }
+  }
 
   function reviewedRows(overrides, discarded) {
     const converted = convertSpreadsheetRows(rawRows.filter(row => !discarded.has(row.rowNumber)), { existingArticles, sources, placementOverrides: overrides });
@@ -188,11 +195,11 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
     setResult(current => ({ ...current, ...converted }));
   }
 
-  return <div className="add-backdrop" onMouseDown={event => { if (!busy && event.target === event.currentTarget) onClose(); }}>
-    <section className="add-dialog import-spreadsheet-dialog" role="dialog" aria-modal="true" aria-labelledby="import-spreadsheet-title">
-      <div className="add-dialog-heading"><h2 id="import-spreadsheet-title">Import spreadsheet</h2><button type="button" onClick={onClose} disabled={busy} aria-label="Close spreadsheet import">×</button></div>
+  return <section className="import-spreadsheet-content" aria-labelledby="import-spreadsheet-heading">
+      <h3 id="import-spreadsheet-heading">Import spreadsheet</h3>
       <label className="import-file-label" htmlFor="import-google-sheet-url">Google Sheet URL</label>
-      <div className="import-google-controls"><input id="import-google-sheet-url" type="url" value={googleUrl} onChange={event => { setGoogleUrl(event.target.value); setResult(null); setSheetNames([]); setSheetName(''); }} disabled={busy}/><button type="button" onClick={loadGoogleSheet} disabled={busy}>Load latest</button></div>
+      <div className="import-google-controls"><input id="import-google-sheet-url" type="url" value={googleUrl} onChange={event => { setGoogleUrl(event.target.value); setResult(null); setSheetNames([]); setSheetName(''); setCopyMessage(''); }} disabled={busy}/><button type="button" className="import-copy-url" onClick={copyGoogleUrl} disabled={busy || !googleUrl} aria-label="Copy Google Sheet URL">Copy</button><button type="button" onClick={loadGoogleSheet} disabled={busy}>Load latest</button></div>
+      {copyMessage && <p className="import-copy-message" role="status">{copyMessage}</p>}
       <details className="import-file-fallback"><summary>Use an Excel or CSV file instead</summary><label className="import-file-label" htmlFor="import-spreadsheet-file">Spreadsheet file</label><input id="import-spreadsheet-file" type="file" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" onChange={chooseFile} disabled={busy}/></details>
       {sheetNames.length > 1 && <label className="import-file-label" htmlFor="import-spreadsheet-sheet">Worksheet (exact tab name)<select id="import-spreadsheet-sheet" value={sheetName} onChange={chooseSheet} disabled={busy}>{sheetNames.map(name => <option key={name} value={name}>{name}</option>)}</select></label>}
       {busy && <p role="status">Preparing spreadsheet…</p>}
@@ -207,10 +214,8 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
         {result.skipped.length > 0 && <details><summary>Skipped rows</summary><ul>{result.skipped.map(item => <li key={`${item.row}-${item.reason}`}>Row {item.row}: {item.reason}</li>)}</ul></details>}
       </div>}
       <div className="add-dialog-actions">
-        {sharedMode ? <button type="button" className="import-spreadsheet-clear" onClick={onClear} disabled={busy || !hasStories}>Clear all stories</button> : publishedEmpty && hasStories ? <button type="button" className="import-spreadsheet-clear" onClick={onClear} disabled={busy}>Clear update</button> : importedMode && <button type="button" onClick={onRestore} disabled={busy}>Restore published update</button>}
-        <button type="button" onClick={onClose} disabled={busy}>Cancel</button>
+        {!sharedMode && importedMode && <button type="button" onClick={onRestore} disabled={busy}>Restore published update</button>}
         <button type="button" className="import-spreadsheet-confirm" onClick={importFile} disabled={!result?.articles.length || Boolean(result?.needsPlacement.length) || busy}>Import {result?.articles.length || ''} stories</button>
       </div>
-    </section>
-  </div>;
+    </section>;
 }

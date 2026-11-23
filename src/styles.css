@@ -460,7 +460,7 @@
 .app-shell{--reading-surface:color-mix(in srgb,var(--site-surface) 80%,white 20%);--header-background:color-mix(in srgb,var(--site-surface) 75%,#278bc2 25%);--country-highlight-background:color-mix(in srgb,var(--site-surface) 87%,#278bc2 13%);--story-text-size:clamp(11px,calc(var(--site-body-size,18px) - 6px),18px)}
 .app-shell[data-mode="dark"]{--reading-surface:color-mix(in srgb,var(--site-surface) 98%,white 2%);--header-background:color-mix(in srgb,var(--site-surface) 82%,#102634 18%);--country-highlight-background:color-mix(in srgb,var(--site-surface) 75%,#477fa8 25%)}
 .app-shell{height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden}
-.topbar{--content-gutter:max(clamp(10px,1.2vw,18px),calc((66.6667vw - var(--update-width,1400px) - 40px)/2 + clamp(10px,1.2vw,18px)));position:relative;z-index:20;flex:none;min-height:0;height:auto;display:flex;align-items:flex-start;flex-wrap:wrap;column-gap:10px;row-gap:3px;padding:12px calc(var(--content-gutter) + 5px) 4px var(--content-gutter);background:var(--header-background);border:0;border-bottom:1px solid #c4d2db}
+.topbar{--content-gutter:max(clamp(10px,1.2vw,18px),calc((100vw - var(--update-width,1400px) - 40px)/2 + clamp(10px,1.2vw,18px)));position:relative;z-index:20;flex:none;min-height:0;height:auto;display:flex;align-items:flex-start;flex-wrap:wrap;column-gap:10px;row-gap:3px;padding:12px calc(var(--content-gutter) + 5px) 4px var(--content-gutter);background:var(--header-background);border:0;border-bottom:1px solid #c4d2db}
 .topbar .brand-text{flex:none;min-width:0;gap:3px}
 .topbar .brand-text h1{margin:0;font:800 19px/1.16 var(--site-font,'DM Sans',sans-serif);letter-spacing:.01em;white-space:normal;overflow:visible}
 .topbar .header-date{font:500 14px/1.15 var(--site-font,'DM Sans',sans-serif);color:var(--site-text);opacity:.68}
@@ -486,7 +486,7 @@
 .header-actions .update-search input{flex:1 1 auto;min-width:0;height:23px;padding:3px 7px;border-color:#c7d5dc;border-radius:4px;font-size:12px;line-height:1.2}
 .header-actions .update-search span{flex:none;min-width:0;font-size:10px}
 .header-actions .update-search button{flex:none;width:23px;height:23px;border-color:#c7d5dc;border-radius:4px;font-size:13px}
-@media(max-width:700px){.header-actions .update-search{right:auto;left:0;width:min(220px,calc(66.6667vw - 28px))}}
+@media(max-width:700px){.header-actions .update-search{right:auto;left:0;width:min(220px,calc(100vw - 28px))}}
 @media(max-width:370px){.header-actions .update-search span{display:none}}
 .daily-section-nav{grid-column:1/-1;display:flex;align-items:stretch;justify-content:space-between;gap:4px;min-width:0;width:100%;max-width:none;margin:0;padding:0;overflow:hidden}
 .daily-section-nav a{flex:1 1 0;min-width:0;min-height:27px;display:grid;place-items:center;padding:5px 4px;border:1px solid color-mix(in srgb,var(--site-section) 55%,transparent);border-radius:4px;background:color-mix(in srgb,var(--site-surface) 60%,transparent);color:var(--site-text);font-size:11px;font-weight:700;line-height:1.15;text-align:center;text-transform:none;white-space:nowrap;opacity:.9}
@@ -572,9 +572,9 @@
 @media(max-width:900px){.daily-section-nav .section-label-full{display:none}.daily-section-nav .section-label-compact{display:inline}}
 
 /* Scale the complete interface while keeping fixed panes inside the viewport. */
-:root{zoom:1.5}
-.app-shell{height:66.6667dvh}
-.workspace .sidebar{height:66.6667dvh;width:min(var(--source-drawer-width,220px),54.6667vw)!important}
+:root{zoom:1}
+.app-shell{height:100dvh}
+.workspace .sidebar{height:100dvh;width:min(var(--source-drawer-width,220px),82vw)!important}
 
 /* Keep editor dialogs in the same compact type scale as the reading view. */
 .add-dialog,.move-dialog{font-family:var(--site-font,'DM Sans',sans-serif);font-size:13px;line-height:1.4}
@@ -617,11 +617,11 @@
 .daily-disclaimer p{margin-bottom:8px}
 .daily-coverage{padding:8px 10px;margin-top:14px}
 .add-dialog,.move-dialog{font-size:var(--story-text-size)}
-.add-dialog{width:min(100%,450px);max-height:min(650px,calc(66.6667dvh - 36px));padding:12px;overflow-y:auto;overscroll-behavior:contain}
+.add-dialog{width:min(100%,450px);max-height:min(650px,calc(100dvh - 36px));padding:12px;overflow-y:auto;overscroll-behavior:contain}
 .import-spreadsheet-dialog{width:min(100%,530px)}
 .scrape-dialog{width:min(100%,410px)}
 .editor-login-dialog{width:min(100%,300px)}
-.move-dialog{width:min(100%,340px);max-height:min(650px,calc(66.6667dvh - 36px));padding:12px;overflow-y:auto}
+.move-dialog{width:min(100%,340px);max-height:min(650px,calc(100dvh - 36px));padding:12px;overflow-y:auto}
 .add-dialog-heading h2,.move-dialog-heading h2{font-size:16px}
 .add-dialog :is(p,label,input,select,textarea,button,summary,li,small),.move-dialog :is(p,label,input,select,textarea,button,summary,li,small){font-size:var(--story-text-size)!important}
 .add-dialog .add-dialog-heading button,.move-dialog .move-dialog-heading button{font-size:18px!important}
@@ -633,3 +633,22 @@
 .add-dialog-actions,.move-dialog-actions{gap:6px;margin-top:10px}
 @media(max-width:520px){.add-dialog,.move-dialog{padding:10px}}
 :root{font-family:'Source Sans 3',Arial,sans-serif}
+
+/* Combined scrape and spreadsheet import dialog. */
+.scrape-dialog .native-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.scrape-dialog .native-actions>button{width:100%;min-width:0;min-height:34px;margin:0;padding:5px 3px;line-height:1.15;white-space:normal}
+.scrape-dialog .native-publish-description{margin:7px 0 3px}
+.scrape-dialog .native-scrape-description{margin:0 0 9px}
+.scrape-dialog .native-latest-draft{margin:9px 0 0}
+.scrape-import-divider{border:0;border-top:1px solid #a7bbba;margin:15px 0 12px}
+.import-spreadsheet-content h3{font-size:15px;margin:0 0 7px}
+.scrape-dialog .import-file-label{margin:7px 0 5px}
+.scrape-dialog .import-google-controls{gap:5px}
+.scrape-dialog .import-google-controls input{min-width:0}
+.scrape-dialog .import-google-controls button{min-width:0;padding:5px 6px}
+.scrape-dialog .import-google-controls .import-copy-url{background:var(--site-surface,#fff);color:var(--site-primary,#123e47);font-size:11px!important}
+.import-copy-message{margin:5px 0 0}
+.scrape-dialog .import-spreadsheet-preview{padding:8px}
+.scrape-dialog .import-spreadsheet-preview ul{max-height:280px}
+.scrape-dialog .import-file-fallback input[type=file],.scrape-dialog .import-file-label select{width:100%}
+.scrape-dialog .import-file-label select{display:block;margin-top:5px;border:1px solid #a7bbba;border-radius:6px;background:var(--site-surface,#fff);color:var(--site-text,#182a36)}

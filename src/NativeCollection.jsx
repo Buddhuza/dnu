@@ -17,7 +17,7 @@ function scrapeKind(trigger) {
   return trigger === 'manual' ? 'manual ' : trigger === 'automatic' ? 'automatic ' : '';
 }
 
-function GithubCollection({ onPublish, onClear, hasStories }) {
+function GithubCollection({ onPublish, onClear, hasStories, interactionDisabled = false }) {
   const [status, setStatus] = useState({ state: 'checking', message: 'Checking scrape status…' });
   const [latestDraft, setLatestDraft] = useState(null);
   const [error, setError] = useState('');
@@ -68,24 +68,22 @@ function GithubCollection({ onPublish, onClear, hasStories }) {
     } catch (failure) { setError(`Not published: ${failure.message}`); }
     finally { publishingRef.current = false; setPublishing(false); }
   }
-  const busy = publishing || ['checking', 'starting', 'running'].includes(status.state);
+  const busy = interactionDisabled || publishing || ['checking', 'starting', 'running'].includes(status.state);
   const finishedAt = latestDraft?.finishedAt || (latestDraft?.runId === status.runId && status.state === 'complete' ? status.updatedAt : '') || latestDraft?.checkedAt;
   const finishedLabel = formatViennaCompactDateTime(finishedAt);
   const latestTrigger = latestDraft?.trigger || (latestDraft?.runId === status.runId ? status.trigger : null);
-  const statusMessage = publishing ? 'Publishing the latest scrape' : status.state === 'complete' && latestDraft
-    ? `Latest completed draft: ${latestDraft.stories} stories.` : status.message;
+  const progressMessage = publishing ? 'Publishing the latest scrape' : status.state === 'complete' ? '' : status.message;
   return <section className="native-collection">
     <p className="native-publish-description">{finishedLabel ? <>Publish the latest {scrapeKind(latestTrigger)}scrape, completed <time dateTime={finishedAt}>{finishedLabel}</time>{scrapedStoryCount(latestDraft?.stories)}.</> : 'Publish the latest completed scrape.'}</p>
-    <button type="button" className="cms-primary" onClick={publishDraft} disabled={busy}>Publish</button>
     <p className="native-scrape-description">Scrape manually if you need a newer update.</p>
-    <button type="button" className="native-secondary" onClick={() => start()} disabled={busy}>Scrape</button>
-    {onClear && <button type="button" className="native-clear-stories" onClick={onClear} disabled={!hasStories || publishing}>Clear all stories</button>}
+    <div className="native-actions"><button type="button" className="cms-primary" onClick={publishDraft} disabled={busy}>Publish</button><button type="button" className="native-secondary" onClick={() => start()} disabled={busy}>Scrape</button>{onClear && <button type="button" className="native-clear-stories" onClick={onClear} disabled={!hasStories || busy}>Clear all stories</button>}</div>
+    <p className="native-latest-draft">{latestDraft ? `Latest completed draft: ${latestDraft.stories} ${latestDraft.stories === 1 ? 'story' : 'stories'}.` : 'Latest completed draft: checking…'}</p>
     {error && <p role="alert">{error}</p>}
-    <p role="status" className="native-status">{statusMessage?.replace(/(?:…|\.\.\.)$/, '')}<ActivityDots active={busy}/></p>
+    {progressMessage && <p role="status" className="native-status">{progressMessage.replace(/(?:…|\.\.\.)$/, '')}<ActivityDots active={busy}/></p>}
   </section>;
 }
 
-function NodeCollection({ onPublish, onClear, hasStories }) {
+function NodeCollection({ onPublish, onClear, hasStories, interactionDisabled = false }) {
   const [status, setStatus] = useState({ state: 'checking' });
   const [publishing, setPublishing] = useState(false);
   const [error, setError] = useState('');
@@ -126,17 +124,16 @@ function NodeCollection({ onPublish, onClear, hasStories }) {
     } catch (failure) { setError(`Not published: ${failure.message}`); }
     finally { setPublishing(false); }
   }
-  const busy = publishing || ['running', 'checking'].includes(status.state);
+  const busy = interactionDisabled || publishing || ['running', 'checking'].includes(status.state);
   const finishedAt = status.finishedAt || status.updatedAt || status.checkedAt;
   const finishedLabel = status.state === 'complete' ? formatViennaCompactDateTime(finishedAt) : '';
   return <section className="native-collection">
     <p className="native-publish-description">{finishedLabel ? <>Publish the latest {scrapeKind(status.trigger)}scrape, completed <time dateTime={finishedAt}>{finishedLabel}</time>{scrapedStoryCount(status.stories)}.</> : 'Publish the latest completed scrape.'}</p>
-    <button type="button" className="cms-primary" onClick={publishDraft} disabled={busy || status.state !== 'complete'}>Publish</button>
     <p className="native-scrape-description">Scrape manually if you need a newer update.</p>
-    <button type="button" className="native-secondary" onClick={start} disabled={!sharedClient || busy || status.state === 'unavailable'}>Scrape</button>
-    {onClear && <button type="button" className="native-clear-stories" onClick={onClear} disabled={!hasStories || publishing}>Clear all stories</button>}
+    <div className="native-actions"><button type="button" className="cms-primary" onClick={publishDraft} disabled={busy || status.state !== 'complete'}>Publish</button><button type="button" className="native-secondary" onClick={start} disabled={!sharedClient || busy || status.state === 'unavailable'}>Scrape</button>{onClear && <button type="button" className="native-clear-stories" onClick={onClear} disabled={!hasStories || busy}>Clear all stories</button>}</div>
+    <p className="native-latest-draft">{status.state === 'complete' && Number.isInteger(status.stories) ? `Latest completed draft: ${status.stories} ${status.stories === 1 ? 'story' : 'stories'}.` : 'Latest completed draft: checking…'}</p>
     {error && <p role="alert">{error}</p>}
-    <p role="status" className="native-status">{(publishing ? 'Publishing the latest scrape' : status.message || (status.state === 'idle' ? 'Ready to scrape.' : status.state === 'checking' ? 'Checking collector…' : '')).replace(/(?:…|\.\.\.)$/, '')}{status.state === 'running' && status.total > 0 && <> {status.completed || 0} of {status.total} {status.phase === 'routes' ? 'source routes checked' : status.phase === 'articles' ? 'article pages checked' : 'full texts checked'}{Number.isFinite(status.candidates) ? ` · ${status.candidates} candidates found` : ''}</>}<ActivityDots active={busy}/></p>
+    {(publishing || status.state !== 'complete') && <p role="status" className="native-status">{(publishing ? 'Publishing the latest scrape' : status.message || (status.state === 'idle' ? 'Ready to scrape.' : status.state === 'checking' ? 'Checking collector…' : '')).replace(/(?:…|\.\.\.)$/, '')}{status.state === 'running' && status.total > 0 && <> {status.completed || 0} of {status.total} {status.phase === 'routes' ? 'source routes checked' : status.phase === 'articles' ? 'article pages checked' : 'full texts checked'}{Number.isFinite(status.candidates) ? ` · ${status.candidates} candidates found` : ''}</>}<ActivityDots active={busy}/></p>}
   </section>;
 }
 
