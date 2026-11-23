@@ -457,8 +457,10 @@
 }
 
 /* Blue columns reading layout. The header and section links stay in place; stories scroll. */
+.app-shell{--reading-surface:color-mix(in srgb,var(--site-surface) 80%,white 20%)}
+.app-shell[data-mode="dark"]{--reading-surface:color-mix(in srgb,var(--site-surface) 98%,white 2%)}
 .app-shell{height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden}
-.topbar{position:relative;z-index:20;flex:none;min-height:0;height:auto;display:flex;align-items:flex-start;flex-wrap:wrap;column-gap:10px;row-gap:3px;padding:12px clamp(14px,2vw,26px) 0;background:color-mix(in srgb,var(--site-surface) 78%,var(--site-section) 22%);border:0;border-bottom:1px solid #c4d2db}
+.topbar{position:relative;z-index:20;flex:none;min-height:0;height:auto;display:flex;align-items:flex-start;flex-wrap:wrap;column-gap:10px;row-gap:3px;padding:12px clamp(14px,2vw,26px) 0;background:color-mix(in srgb,var(--site-surface) 81%,var(--site-section) 19%);border:0;border-bottom:1px solid #c4d2db}
 .topbar .brand-text{flex:none;min-width:0;gap:3px}
 .topbar .brand-text h1{margin:0;font:800 19px/1.16 var(--site-font,'DM Sans',sans-serif);letter-spacing:.01em;white-space:normal;overflow:visible}
 .topbar .header-date{font:500 14px/1.15 var(--site-font,'DM Sans',sans-serif);color:var(--site-text);opacity:.68}
@@ -473,11 +475,11 @@
 .header-feedback{grid-column:2;display:flex;justify-content:flex-end;align-items:center;min-width:0;max-width:min(360px,36vw);padding:0}
 .topbar .shared-save-status,.topbar .toast{position:static;max-width:100%;margin:0;padding:3px 8px;transform:none;border-radius:4px;background:color-mix(in srgb,var(--site-surface) 80%,var(--site-section) 20%);color:var(--site-text);box-shadow:none;font-size:11px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .topbar .toast.toast-error{background:#fbe7e6;color:#8b302c}
-.workspace,.workspace.no-sidebar{flex:1;min-height:0;display:block;overflow:hidden;background:var(--site-surface)}
+.workspace,.workspace.no-sidebar{flex:1;min-height:0;display:block;overflow:hidden;background:var(--reading-surface)}
 .main-panel,.main-panel.with-website{width:100%;max-width:calc(var(--update-width,1400px) + 40px);height:100%;min-height:0;display:flex;flex-direction:column;margin:0 auto;padding:0 clamp(10px,1.2vw,18px) 8px;overflow:hidden}
 .reading-layout,.reading-layout.website-open{height:100%;min-height:0;display:block;overflow:hidden}
 .reading-layout.website-open{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:stretch}
-.daily-update,.reading-layout.website-open .daily-update{width:100%;max-width:none;height:100%;min-height:0;display:flex;flex-direction:column;margin:0;padding:0;background:var(--site-surface);border:0;border-radius:0;box-shadow:none;overflow:hidden}
+.daily-update,.reading-layout.website-open .daily-update{width:100%;max-width:none;height:100%;min-height:0;display:flex;flex-direction:column;margin:0;padding:0;background:var(--reading-surface);border:0;border-radius:0;box-shadow:none;overflow:hidden}
 .daily-heading{position:relative;flex:0 0 100%;width:100%;display:grid;grid-template-columns:minmax(0,1fr) max-content;align-items:center;column-gap:6px;margin:0;padding:0 0 4px;border:0;border-radius:0;background:transparent}
 .daily-heading .update-search{grid-column:1/-1;width:100%}
 .daily-section-nav{grid-column:1;display:flex;align-items:center;justify-content:flex-start;gap:2px;min-width:0;width:100%;max-width:none;margin:0;padding:0;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin}
@@ -531,7 +533,7 @@
 .workspace .sidebar .search-box{height:32px;margin:0 12px 6px}
 .workspace .sidebar .group-select{height:30px;margin:0 12px 6px}
 .app-shell[data-mode="dark"] .daily-heading,.app-shell[data-mode="dark"] .website-panel{border-color:#405766}
-.app-shell[data-mode="dark"] .topbar{background:color-mix(in srgb,var(--site-surface) 70%,#0a1e31 30%);border-bottom-color:#405766}
+.app-shell[data-mode="dark"] .topbar{background:color-mix(in srgb,var(--site-surface) 78%,#0a1e31 22%);border-bottom-color:#405766}
 .app-shell[data-mode="dark"] .daily-story{border-color:#405766}
 .app-shell[data-mode="dark"] .daily-update{--country-highlight-bg:color-mix(in srgb,#294456 70%,#098ad1 30%);--country-highlight-text:#d6f1ff}
 .app-shell[data-mode="dark"] .daily-section h4:not(.plain-topic),.app-shell[data-mode="dark"] .daily-country{background:var(--country-highlight-bg);color:var(--country-highlight-text)}
