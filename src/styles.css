@@ -460,7 +460,7 @@
 .app-shell{--reading-surface:color-mix(in srgb,var(--site-surface) 80%,white 20%)}
 .app-shell[data-mode="dark"]{--reading-surface:color-mix(in srgb,var(--site-surface) 98%,white 2%)}
 .app-shell{height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden}
-.topbar{position:relative;z-index:20;flex:none;min-height:0;height:auto;display:flex;align-items:flex-start;flex-wrap:wrap;column-gap:10px;row-gap:3px;padding:12px clamp(14px,2vw,26px) 0;background:color-mix(in srgb,var(--site-surface) 81%,var(--site-section) 19%);border:0;border-bottom:1px solid #c4d2db}
+.topbar{position:relative;z-index:20;flex:none;min-height:0;height:auto;display:flex;align-items:flex-start;flex-wrap:wrap;column-gap:10px;row-gap:3px;padding:12px clamp(14px,2vw,26px) 0;background:color-mix(in srgb,var(--site-surface) 78%,#278bc2 22%);border:0;border-bottom:1px solid #c4d2db}
 .topbar .brand-text{flex:none;min-width:0;gap:3px}
 .topbar .brand-text h1{margin:0;font:800 19px/1.16 var(--site-font,'DM Sans',sans-serif);letter-spacing:.01em;white-space:normal;overflow:visible}
 .topbar .header-date{font:500 14px/1.15 var(--site-font,'DM Sans',sans-serif);color:var(--site-text);opacity:.68}
@@ -539,7 +539,7 @@
 .workspace .sidebar .search-box{height:32px;margin:0 12px 6px}
 .workspace .sidebar .group-select{height:30px;margin:0 12px 6px}
 .app-shell[data-mode="dark"] .daily-heading,.app-shell[data-mode="dark"] .website-panel{border-color:#405766}
-.app-shell[data-mode="dark"] .topbar{background:color-mix(in srgb,var(--site-surface) 78%,#0a1e31 22%);border-bottom-color:#405766}
+.app-shell[data-mode="dark"] .topbar{background:color-mix(in srgb,var(--site-surface) 80%,#12466e 20%);border-bottom-color:#405766}
 .app-shell[data-mode="dark"] .daily-story{border-color:#405766}
 .app-shell[data-mode="dark"] .daily-update{--country-highlight-bg:color-mix(in srgb,#294456 70%,#098ad1 30%);--country-highlight-text:#d6f1ff}
 .app-shell[data-mode="dark"] .daily-section h4:not(.plain-topic),.app-shell[data-mode="dark"] .daily-country{background:var(--country-highlight-bg);color:var(--country-highlight-text)}
