@@ -683,7 +683,7 @@
 .add-dialog :is(p,label,input,select,textarea,button,summary,li,small),.move-dialog :is(p,label,input,select,textarea,button,summary,li,small){font-size:var(--story-text-size)!important}
 .add-dialog .add-dialog-heading button,.move-dialog .move-dialog-heading button{font-size:27px!important}
 .add-dialog-actions button,.add-dialog .cms-primary,.add-dialog .native-secondary,.add-dialog .native-clear-stories,.move-dialog-actions button{min-height:42px;padding:7px 12px}
-.scrape-dialog .native-actions>button{min-height:51px;padding:7px 5px}
+  .scrape-dialog .native-actions>button{height:41px;min-height:41px;padding:3px 5px;font-size:clamp(18px,1.6vw,20px)!important}
 .scrape-dialog .import-google-controls .import-copy-url{font-size:18px!important}
 .scrape-dialog .import-file-label select{min-height:42px}
 .import-spreadsheet-content h3{font-size:24.5px}
@@ -752,3 +752,20 @@
 
 /* Keep the title visibly bold without enlarging the compact header. */
 .topbar .brand-text h1{font-weight:900;-webkit-text-stroke:.3px currentColor}
+
+/* Match scrape controls to section shortcuts and separate the draft from import. */
+.scrape-dialog .native-publish-description{margin-bottom:16px}
+.scrape-dialog .import-google-controls button:not(.import-copy-url){min-height:41px;font-size:clamp(18px,1.6vw,20px)!important}
+.scrape-dialog .scrape-import-divider{border-top:2px solid color-mix(in srgb,var(--site-text) 65%,transparent)}
+@media(max-width:1100px){
+  .scrape-dialog .native-actions>button{height:33px;min-height:33px;font-size:15px!important}
+  .scrape-dialog .import-google-controls button:not(.import-copy-url){min-height:33px;font-size:15px!important}
+}
+@media(max-width:700px){
+  .scrape-dialog .native-actions>button{height:30px;min-height:30px;font-size:14px!important}
+  .scrape-dialog .import-google-controls button:not(.import-copy-url){min-height:30px;font-size:14px!important}
+}
+@media(max-width:400px){
+  .scrape-dialog .native-actions>button{height:28px;min-height:28px;font-size:12.5px!important}
+  .scrape-dialog .import-google-controls button:not(.import-copy-url){min-height:28px;font-size:12.5px!important}
+}
