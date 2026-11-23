@@ -729,8 +729,8 @@
 @media(max-width:400px){.daily-section-nav a{min-height:28px;padding:3px 1px;font-size:12.5px}}
 
 /* Make the colour transition visible at every viewport width. */
-.app-shell .topbar{background:linear-gradient(180deg,color-mix(in srgb,var(--country-highlight-background) 50%,var(--site-primary) 50%) 0%,var(--country-highlight-background) 100%)}
-.app-shell[data-mode="dark"] .topbar{background:linear-gradient(180deg,color-mix(in srgb,var(--country-highlight-background) 25%,var(--site-primary) 75%) 0%,var(--country-highlight-background) 100%)}
+.app-shell .topbar{background:linear-gradient(180deg,var(--header-top-color,color-mix(in srgb,var(--country-highlight-background) 50%,var(--site-primary) 50%)) 0%,var(--country-highlight-background) 100%)}
+.app-shell[data-mode="dark"] .topbar{background:linear-gradient(180deg,var(--header-top-color,color-mix(in srgb,var(--country-highlight-background) 25%,var(--site-primary) 75%)) 0%,var(--country-highlight-background) 100%)}
 @media(max-width:980px){
   .topbar{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto auto auto;row-gap:0;padding-top:7px;padding-bottom:0}
   .topbar .brand-text{display:contents}

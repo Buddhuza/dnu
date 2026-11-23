@@ -155,3 +155,30 @@
 .cms-primary,.cms-file,.cms-danger{min-height:42px;padding:8px 12px}
 .cms-close{width:41px;height:41px;font-size:27px!important}
 @media(max-width:720px){.cms-dialog{height:calc(100dvh - 16px)}.cms-header{padding:12px 15px}.cms-layout{display:flex}.cms-tabs{padding:6px}.cms-content{padding:14px 15px}}
+
+/* Show which settings follow the editor and which affect the shared site. */
+.cms-tabs button{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.cms-tabs .cms-tab-scope{font-size:12px!important;font-weight:600;white-space:nowrap;opacity:.8}
+.cms-tabs button.active .cms-tab-scope{opacity:1}
+.cms-content .native-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;max-width:480px}
+.cms-content .native-actions>button{width:100%;min-width:0;min-height:42px;margin:0;padding:6px 10px}
+
+/* Rejected stories use the same placement grid and delete affordance as import review. */
+.rejected-review-card{position:relative;background:var(--site-bg,#f4efe6)}
+.rejected-review-card h4{padding-right:42px;overflow-wrap:anywhere}
+.rejected-review-card h4 a{color:inherit;text-decoration:underline;text-decoration-color:var(--site-section);text-underline-offset:2px}
+.rejected-review-card h4 a:hover{color:var(--site-section)}
+.rejected-review-card h4 a:focus-visible{outline:2px solid var(--site-section);outline-offset:2px}
+.rejected-review-fields{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
+.rejected-review-selects,.rejected-review-details{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.rejected-review-fields label{min-width:0}
+.rejected-review-fields :is(select,input,button){min-width:0;width:100%;height:42px;font-size:clamp(14px,1.5vw,18px)!important}
+.rejected-review-details button{grid-column:3;align-self:end}
+.rejected-review-card .import-placement-delete{width:30px;height:30px;min-height:30px;padding:5px}
+.rejected-review-card .import-placement-delete svg{width:17px;height:17px}
+.rejected-review-card .import-placement-delete:disabled{opacity:.5;cursor:wait}
+.personal-theme-controls{display:grid;gap:12px;margin-bottom:20px}
+.personal-theme .cms-font-label{margin:0}
+.personal-theme-reset{margin-top:20px}
+@media(max-width:720px){.cms-tabs button{flex-direction:column;align-items:flex-start;gap:1px}}
+@media(max-width:650px){.rejected-review-selects,.rejected-review-details{grid-template-columns:1fr}.rejected-review-details button{grid-column:1}}
