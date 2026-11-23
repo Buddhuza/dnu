@@ -745,9 +745,9 @@
   .header-actions.editor-actions .site-utilities{flex-grow:3}
   .header-actions .daily-downloads .daily-action,.header-actions .daily-downloads .daily-action.daily-download,.header-actions .site-utilities .site-utility{width:var(--compact-action-size);height:var(--compact-action-size);min-width:var(--compact-action-size);padding:2px}
   .header-actions .daily-downloads .daily-action svg,.header-actions .site-utilities .site-utility svg{width:clamp(13px,4.8vw,19px);height:clamp(13px,4.8vw,19px)}
-  .header-feedback{grid-column:1;grid-row:4;height:9px}
-  .header-feedback .shared-save-status,.header-feedback .toast{padding:0 4px;font-size:9px;line-height:1}
-  .topbar .daily-heading{grid-column:1;grid-row:5;padding-bottom:0}
+  .topbar .daily-heading{grid-column:1;grid-row:4;margin-top:3px;padding-bottom:0}
+  .header-feedback{grid-column:1;grid-row:5;height:13px;padding-top:2px}
+  .header-feedback .shared-save-status,.header-feedback .toast{padding:0 4px;font-size:10px;line-height:1}
 }
 @media(max-width:700px){
   .topbar .header-date{font-size:21px;line-height:1.15}
