@@ -565,3 +565,36 @@
 :root{zoom:1.5}
 .app-shell{height:66.6667dvh}
 .workspace .sidebar{height:66.6667dvh;width:min(var(--source-drawer-width,220px),54.6667vw)!important}
+
+/* Keep editor dialogs in the same compact type scale as the reading view. */
+.add-dialog,.move-dialog{font-family:var(--site-font,'DM Sans',sans-serif);font-size:13px;line-height:1.4}
+.add-dialog{width:min(100%,540px);max-height:min(88dvh,740px);padding:18px}
+.import-spreadsheet-dialog{width:min(100%,620px)}
+.scrape-dialog{width:min(100%,500px)}
+.editor-login-dialog{width:min(100%,370px)}
+.add-dialog-heading h2,.move-dialog-heading h2{font:800 18px/1.25 var(--site-font,'DM Sans',sans-serif)}
+.add-dialog-heading button,.move-dialog-heading button{font-size:22px}
+.add-dialog>p,.add-dialog form label,.add-dialog input,.add-dialog textarea,.add-dialog select,.add-dialog-actions button,.add-dialog .cms-primary,.add-dialog .native-secondary,.add-dialog .native-clear-stories,.add-dialog .add-url-tools button,.add-dialog .add-key-controls button,.add-dialog .add-draft>button,.add-dialog .import-google-controls button,.add-dialog .import-file-label,.add-dialog .import-file-fallback,.add-dialog .import-spreadsheet-preview,.add-dialog .import-placement-item,.add-dialog .send-gmail-hint,.add-dialog .add-results strong,.add-dialog .add-results span,.add-dialog .add-manual-error,.add-dialog .add-url-notice,.add-dialog .add-drafts h3,.add-dialog .add-manual-form h3,.add-dialog .spreadsheet-results h3{font-size:13px}
+.add-dialog>p{margin:9px 0;line-height:1.4}
+.add-dialog form label,.send-gmail-dialog>label{margin:11px 0 5px}
+.add-dialog input,.add-dialog textarea,.add-dialog select{padding:7px 9px;line-height:1.35}
+.add-dialog-actions{gap:8px;margin-top:12px;flex-wrap:wrap}
+.add-dialog-actions button,.add-dialog .cms-primary,.add-dialog .native-secondary,.add-dialog .native-clear-stories{min-height:34px;padding:7px 11px}
+.add-dialog .native-collection>.cms-primary,.add-dialog .native-secondary,.add-dialog .native-clear-stories{min-height:34px}
+.add-dialog .native-publish-description,.add-dialog .native-scrape-description{margin:12px 0 8px}
+.add-dialog .native-collection p.native-status{margin:14px 0 0;padding-top:10px}
+.add-dialog .import-file-label{margin:11px 0 5px}
+.add-dialog .import-file-fallback{margin-top:10px}
+.add-dialog .import-spreadsheet-preview{margin-top:11px;padding:10px}
+.add-dialog .import-placement-item{margin:8px 0;padding:9px}
+.add-dialog .import-placement-controls label,.add-dialog .add-placement label,.editor-login-dialog label{font-size:12px}
+.add-dialog .import-placement-controls input,.add-dialog .import-placement-controls select,.add-dialog .import-placement-controls button,.add-dialog .import-google-controls input{font-size:13px;padding:7px 9px}
+.editor-login-dialog input{padding:7px 9px}
+.add-article-dialog form>select{min-height:34px}
+.move-dialog{width:min(100%,410px);max-height:88dvh;padding:18px}
+.move-dialog-story{font-size:13px;margin:7px 0 12px}
+.move-dialog label{font-size:12px;margin-top:9px}
+.move-dialog input,.move-dialog select{font-size:13px;padding:7px 9px}
+.move-dialog-actions{margin-top:15px}
+.move-dialog-actions button{font-size:13px;padding:7px 11px}
+@media(max-width:520px){.add-dialog,.move-dialog{padding:14px}.add-dialog .import-placement-selects,.add-dialog .import-placement-extra,.add-dialog .import-placement-details{grid-template-columns:1fr}.add-dialog .import-placement-details button{grid-column:1}}

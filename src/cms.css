@@ -100,3 +100,25 @@
 .rejected-learned-rule .cms-danger{flex:none}
 .app-shell[data-mode="dark"] .rejected-review-card{border-color:#3b555d}
 @media(max-width:720px){.rejected-review-fields{grid-template-columns:1fr}.rejected-review-actions,.rejected-learned-rule{flex-wrap:wrap}}
+
+/* Match the smaller editorial dialogs and the site's reading typography. */
+.cms-dialog{width:min(800px,100%);height:min(680px,90dvh);font-family:var(--site-font,'DM Sans',sans-serif);font-size:13px}
+.cms-header{padding:17px 20px}
+.cms-header h2{font:800 18px/1.25 var(--site-font,'DM Sans',sans-serif)}
+.cms-header p,.cms-help{font-size:13px;line-height:1.4;margin:4px 0 8px}
+.cms-layout{grid-template-columns:145px minmax(0,1fr)}
+.cms-tabs{padding:12px 8px}
+.cms-tabs button{font-size:13px;padding:8px 10px}
+.cms-content{padding:18px 22px 24px}
+.cms-content h3{font:800 15px/1.3 var(--site-font,'DM Sans',sans-serif);margin-bottom:12px}
+.cms-content h3:not(:first-child){margin-top:20px}
+.cms-fields{gap:10px}
+.cms-content :is(.cms-fields label,.cms-font-label,.cms-fields input:not([type=checkbox]),.cms-fields textarea,.cms-fields select,.cms-font-label select,.cms-section-row input,.cms-search,.cms-check,.cms-story summary,.cms-primary,.cms-file,.cms-danger,.cms-presets button,.cms-color-grid label,.cms-color-grid code,.cms-message,.cms-custom-source input,.cms-source-row,.cms-subsections-label,.cms-subsections-label textarea,.cms-guidance,.rejected-review-card h4){font-size:13px!important}
+.cms-fields label,.cms-font-label{gap:4px}
+.cms-fields input:not([type=checkbox]),.cms-fields textarea,.cms-fields select,.cms-font-label select,.cms-section-row input,.cms-search,.cms-custom-source input,.cms-subsections-label textarea{padding:7px 9px}
+.cms-primary,.cms-file,.cms-danger{padding:8px 11px}
+.cms-source-list{gap:6px;margin:9px 0}
+.cms-source-row{padding:6px}
+.cms-guidance{padding:8px 11px;margin:8px 0 12px}
+.rejected-review-card{padding:12px}
+@media(max-width:720px){.cms-dialog{height:min(90dvh,680px)}.cms-header{padding:12px 14px}.cms-layout{display:flex}.cms-tabs{padding:6px}.cms-content{padding:14px}}
