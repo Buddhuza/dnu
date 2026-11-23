@@ -460,7 +460,7 @@
 .app-shell{--reading-surface:color-mix(in srgb,var(--site-surface) 80%,white 20%);--header-background:color-mix(in srgb,var(--site-surface) 75%,#278bc2 25%);--country-highlight-background:color-mix(in srgb,var(--site-surface) 87%,#278bc2 13%);--story-text-size:clamp(11px,calc(var(--site-body-size,18px) - 6px),18px)}
 .app-shell[data-mode="dark"]{--reading-surface:color-mix(in srgb,var(--site-surface) 98%,white 2%);--header-background:color-mix(in srgb,var(--site-surface) 82%,#102634 18%);--country-highlight-background:color-mix(in srgb,var(--site-surface) 75%,#477fa8 25%)}
 .app-shell{height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden}
-.topbar{position:relative;z-index:20;flex:none;min-height:0;height:auto;display:flex;align-items:flex-start;flex-wrap:wrap;column-gap:10px;row-gap:3px;padding:12px max(clamp(10px,1.2vw,18px),calc((100vw - var(--update-width,1400px) - 40px)/2 + clamp(10px,1.2vw,18px))) 4px;background:var(--header-background);border:0;border-bottom:1px solid #c4d2db}
+.topbar{--content-gutter:max(clamp(10px,1.2vw,18px),calc((66.6667vw - var(--update-width,1400px) - 40px)/2 + clamp(10px,1.2vw,18px)));position:relative;z-index:20;flex:none;min-height:0;height:auto;display:flex;align-items:flex-start;flex-wrap:wrap;column-gap:10px;row-gap:3px;padding:12px calc(var(--content-gutter) + 5px) 4px var(--content-gutter);background:var(--header-background);border:0;border-bottom:1px solid #c4d2db}
 .topbar .brand-text{flex:none;min-width:0;gap:3px}
 .topbar .brand-text h1{margin:0;font:800 19px/1.16 var(--site-font,'DM Sans',sans-serif);letter-spacing:.01em;white-space:normal;overflow:visible}
 .topbar .header-date{font:500 14px/1.15 var(--site-font,'DM Sans',sans-serif);color:var(--site-text);opacity:.68}
@@ -547,7 +547,7 @@
 .app-shell[data-mode="dark"] .site-utility:hover,.app-shell[data-mode="dark"] .daily-section-nav a:hover{background:#294456}
 @media(max-width:700px){
   .app-shell{height:100dvh;min-height:0;display:flex;overflow:hidden}
-  .topbar{display:flex;align-items:flex-start;flex-wrap:wrap;padding:10px 10px 4px}
+  .topbar{display:flex;align-items:flex-start;flex-wrap:wrap;padding:10px 13px 4px 10px}
   .topbar .brand-text{flex:1 0 100%}
   .topbar .brand-text h1{font-size:16px}
   .topbar .header-date{font-size:13px}
