@@ -473,7 +473,7 @@
 .site-utility:hover,.site-utility:focus-visible{background:#dce9f1;color:#004d83;border-color:#004d83}
 .header-actions .daily-downloads .daily-action:hover:not(:disabled){background:#004d83;border-color:#004d83}
 .header-actions .daily-downloads .daily-action:focus-visible,.site-utility:focus-visible{outline:2px solid var(--site-section);outline-offset:2px}
-.header-feedback{flex:1 0 100%;display:flex;justify-content:flex-end;align-items:center;min-width:0;min-height:14px;max-width:none;padding:0}
+.header-feedback{flex:1 0 100%;display:flex;justify-content:flex-end;align-items:center;min-width:0;height:16px;max-width:none;padding:0;overflow:hidden}
 .topbar .shared-save-status,.topbar .toast{position:static;max-width:100%;margin:0;padding:1px 5px;transform:none;border-radius:4px;background:color-mix(in srgb,var(--site-surface) 80%,var(--site-section) 20%);color:var(--site-text);box-shadow:none;font-size:9px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .topbar .toast.toast-error{background:#fbe7e6;color:#8b302c}
 .workspace,.workspace.no-sidebar{flex:1;min-height:0;display:block;overflow:hidden;background:var(--reading-surface)}
@@ -616,16 +616,18 @@
 .daily-disclaimer p{margin-bottom:8px}
 .daily-coverage{padding:8px 10px;margin-top:14px}
 .add-dialog,.move-dialog{font-size:var(--story-text-size)}
-.add-dialog{width:min(100%,480px);max-height:min(86dvh,700px);padding:14px}
-.import-spreadsheet-dialog{width:min(100%,560px)}
-.scrape-dialog{width:min(100%,430px)}
-.editor-login-dialog{width:min(100%,320px)}
-.move-dialog{width:min(100%,360px);max-height:86dvh;padding:14px}
+.add-dialog{width:min(100%,450px);max-height:min(650px,calc(66.6667dvh - 36px));padding:12px;overflow-y:auto;overscroll-behavior:contain}
+.import-spreadsheet-dialog{width:min(100%,530px)}
+.scrape-dialog{width:min(100%,410px)}
+.editor-login-dialog{width:min(100%,300px)}
+.move-dialog{width:min(100%,340px);max-height:min(650px,calc(66.6667dvh - 36px));padding:12px;overflow-y:auto}
 .add-dialog-heading h2,.move-dialog-heading h2{font-size:16px}
 .add-dialog :is(p,label,input,select,textarea,button,summary,li,small),.move-dialog :is(p,label,input,select,textarea,button,summary,li,small){font-size:var(--story-text-size)!important}
 .add-dialog .add-dialog-heading button,.move-dialog .move-dialog-heading button{font-size:18px!important}
 .add-dialog input,.add-dialog textarea,.add-dialog select,.move-dialog input,.move-dialog select{padding:5px 7px}
+.add-dialog form label,.add-article-dialog form>label,.send-gmail-dialog>label{margin:7px 0 3px}
+.add-dialog .add-drafts,.add-dialog .add-manual-form{margin-top:9px;padding-top:7px}
 .add-dialog-actions button,.add-dialog .cms-primary,.add-dialog .native-secondary,.add-dialog .native-clear-stories,.move-dialog-actions button{min-height:28px;padding:5px 8px;font-size:var(--story-text-size)}
 .add-dialog .native-collection>.cms-primary,.add-dialog .native-secondary,.add-dialog .native-clear-stories{min-height:28px}
 .add-dialog-actions,.move-dialog-actions{gap:6px;margin-top:10px}
-@media(max-width:520px){.add-dialog,.move-dialog{padding:12px}}
+@media(max-width:520px){.add-dialog,.move-dialog{padding:10px}}
