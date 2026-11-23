@@ -189,3 +189,5 @@ Use the latest direct instruction from the editor when it changes a rule. Record
 - Lato is the chosen website font for both light and dark themes. Migrate earlier DM Sans, Helvetica and Source Sans 3 settings to Lato while retaining colour choices. This does not change the Word template’s Calibri formatting or the email typography.
 
 - In compressed windows and on mobile, keep the blue main action buttons together and right-aligned. If both button groups cannot fit on one row, move the white utility buttons together to a right-aligned row above the blue group. Keep the section shortcuts equal-width but shorten their height and type size enough for all abbreviated labels to fit comfortably.
+
+- On compressed windows and mobile, place the date beside the right-aligned main action group rather than below a separate button row; preserve the white utility group above the blue actions when space is tight. Reduce the vertical space before the section shortcuts without clipping the saved-status message. Use a subtle header gradient in both light and dark modes, slightly darker at the top and the existing header colour at the bottom.
