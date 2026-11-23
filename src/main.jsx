@@ -422,7 +422,7 @@ function App() {
     '--site-primary': activeTheme.primary, '--site-accent': activeTheme.accent,
     '--site-bg': activeTheme.background, '--site-surface': activeTheme.surface,
     '--site-text': activeTheme.text, '--site-section': activeTheme.section,
-    '--site-font': activeTheme.font === 'Georgia' ? 'Georgia, serif' : `'${activeTheme.font}', sans-serif`,
+    '--site-font': activeTheme.font === 'Georgia' ? 'Georgia, serif' : activeTheme.font === 'Helvetica' ? 'Helvetica, Arial, sans-serif' : `'${activeTheme.font}', Arial, sans-serif`,
     '--site-body-size': `${siteConfig.fontSize}px`,
     '--section-heading-size': `${siteConfig.sectionHeadingSize}px`,
     '--update-width': `${siteConfig.updateWidth}px`

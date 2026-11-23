@@ -10,13 +10,13 @@ import { normaliseContributor } from './storyAttribution.js';
 import { defaultGmailRecipients, normalizedGmailRecipients } from './gmailRecipients.js';
 
 export const THEME_PRESETS = {
-  forest: { name: 'Forest', primary: '#123e47', accent: '#bce081', background: '#f4efe6', surface: '#fdfaf4', text: '#182a36', section: '#0070c0', font: 'DM Sans' },
-  blue: { name: 'Blue columns', primary: '#285a78', accent: '#dce9f1', background: '#e6edf1', surface: '#f1f5f7', text: '#203744', section: '#285a78', font: 'DM Sans' },
+  forest: { name: 'Forest', primary: '#123e47', accent: '#bce081', background: '#f4efe6', surface: '#fdfaf4', text: '#182a36', section: '#0070c0', font: 'Helvetica' },
+  blue: { name: 'Blue columns', primary: '#285a78', accent: '#dce9f1', background: '#e6edf1', surface: '#f1f5f7', text: '#203744', section: '#285a78', font: 'Helvetica' },
   slate: { name: 'Slate', primary: '#263340', accent: '#d7e1e9', background: '#f2f4f6', surface: '#ffffff', text: '#1f2d38', section: '#465e78', font: 'Manrope' },
   warm: { name: 'Warm', primary: '#5b3b32', accent: '#f3d4a4', background: '#fbf7f1', surface: '#ffffff', text: '#3d302a', section: '#9b5834', font: 'Georgia' }
 };
 
-export const DARK_THEME = { name: 'Dark', primary: '#15222b', accent: '#294456', background: '#15222b', surface: '#1d2d38', text: '#ebf2f5', section: '#93c9e6', font: 'DM Sans' };
+export const DARK_THEME = { name: 'Dark', primary: '#15222b', accent: '#294456', background: '#15222b', surface: '#1d2d38', text: '#ebf2f5', section: '#93c9e6', font: 'Helvetica' };
 
 const defaults = {
   version: 1,
@@ -95,7 +95,7 @@ export function normalizeSiteConfig(input, articles = []) {
     surface: color(raw?.surface, fallback.surface),
     text: color(raw?.text, fallback.text),
     section: color(raw?.section, fallback.section),
-    font: ['DM Sans', 'Manrope', 'Georgia'].includes(raw?.font) ? raw.font : fallback.font
+    font: raw?.font === 'DM Sans' ? 'Helvetica' : ['Helvetica', 'Manrope', 'Georgia'].includes(raw?.font) ? raw.font : fallback.font
   });
   const theme = parseTheme(input.theme, base.theme);
   if (theme.name === 'Forest' && theme.primary === '#123e47' && theme.background === '#f4efe6' && theme.surface === '#fdfaf4') Object.assign(theme, THEME_PRESETS.blue);

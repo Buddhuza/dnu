@@ -24,6 +24,15 @@ test('default reading text starts at 18 px', () => {
   assert.equal(defaultSiteConfig(articles).fontSize, 18);
 });
 
+test('existing DM Sans themes use Helvetica after normalisation', () => {
+  const previous = defaultSiteConfig(articles);
+  previous.theme.font = 'DM Sans';
+  previous.darkTheme.font = 'DM Sans';
+  const config = normalizeSiteConfig(previous, articles);
+  assert.equal(config.theme.font, 'Helvetica');
+  assert.equal(config.darkTheme.font, 'Helvetica');
+});
+
 test('the previous default palette and narrow width move to the approved blue columns design', () => {
   const previous = JSON.parse(readFileSync(new URL('../data/site-config.json', import.meta.url), 'utf8'));
   const config = normalizeSiteConfig(previous, []);
