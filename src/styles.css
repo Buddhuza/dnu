@@ -713,3 +713,14 @@
 .website-panel-heading h2{font-size:14px}
 .website-panel-actions a{font-size:12px}
 .workspace .sidebar .no-sources{font-size:17px}
+
+/* Keep the action buttons together in compressed and mobile headers. */
+@media(max-width:1100px){
+  .header-actions{align-items:flex-end;justify-content:flex-end;flex-wrap:wrap-reverse;row-gap:4px}
+  .header-actions .daily-downloads{margin:0;flex-wrap:nowrap;justify-content:flex-end}
+  .header-actions .site-utilities{flex-wrap:nowrap}
+  .daily-section-nav a{min-height:33px;padding:4px 2px;font-size:15px}
+}
+@media(max-width:980px){.header-actions{flex:1 0 100%;width:100%;margin-left:0}}
+@media(max-width:700px){.daily-section-nav a{min-height:30px;padding:3px 2px;font-size:14px}}
+@media(max-width:400px){.daily-section-nav a{min-height:28px;padding:3px 1px;font-size:12.5px}}
