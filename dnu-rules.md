@@ -187,3 +187,5 @@ Use the latest direct instruction from the editor when it changes a rule. Record
 - Increase website reading, section, navigation, source drawer and dialog text modestly again, around eight percent where it fits. Keep “Saved for everyone” and other brief header status messages at their existing smaller font size. Do not change the Word or email type scale for this web-only adjustment.
 
 - Lato is the chosen website font for both light and dark themes. Migrate earlier DM Sans, Helvetica and Source Sans 3 settings to Lato while retaining colour choices. This does not change the Word template’s Calibri formatting or the email typography.
+
+- In compressed windows and on mobile, keep the blue main action buttons together and right-aligned. If both button groups cannot fit on one row, move the white utility buttons together to a right-aligned row above the blue group. Keep the section shortcuts equal-width but shorten their height and type size enough for all abbreviated labels to fit comfortably.
