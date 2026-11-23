@@ -9,7 +9,6 @@ import NativeCollection from './NativeCollection.jsx';
 import AddArticlesDialog from './AddArticlesDialog.jsx';
 import ImportSpreadsheetDialog from './ImportSpreadsheetDialog.jsx';
 import EditorLoginDialog from './EditorLoginDialog.jsx';
-import EditorAccountDialog from './EditorAccountDialog.jsx';
 import MoveStoryDialog from './MoveStoryDialog.jsx';
 import SendGmailDialog from './SendGmailDialog.jsx';
 import { normalizeSiteConfig, displaySiteContent, displaySources, moveArticleInConfig, toggleLeadStoryInConfig, addCustomArticleInConfig, extendSiteConfigForImportedPlacements, canonicalArticleUrl } from './siteConfig.js';
@@ -27,7 +26,7 @@ import { contributorFromUser, contributorHue, storyAttributionStyle, storySource
 import { disclaimerFirst, disclaimerSecond } from './disclaimer.js';
 import { countCoveredCountries } from './collectionSummary.js';
 import { formatViennaDateTime } from './viennaTime.js';
-import { emailSubject, emailUpdateHtml, emailUpdateText } from './emailUpdate.js';
+import { emailSubject } from './emailUpdate.js';
 import { waitForGmailDelivery } from './gmailDelivery.js';
 import { loadFullArticle } from './articleBodyClient.js';
 import { getStoredArticleBody, storeArticleBodies } from './articleBodyStore.js';
@@ -150,7 +149,6 @@ function App() {
   const pendingReadingPositionRef = useRef(null);
   const [addingArticles, setAddingArticles] = useState(false);
   const [importingSpreadsheet, setImportingSpreadsheet] = useState(false);
-  const [accountOpen, setAccountOpen] = useState(false);
   const [updateSearchOpen, setUpdateSearchOpen] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState('');
   const [updateSearchText, setUpdateSearchText] = useState('');
@@ -445,6 +443,16 @@ function App() {
       subsections: orderedSubsections(siteConfig.sections.find(item => item.id === sectionId), subsections.keys(), extraRegionalHeadings).map(label => [label, subsections.get(label)])
     }));
   }, [readingArticles, siteConfig.sections, siteConfig.leadOrigins]);
+  const sectionColumns = useMemo(() => {
+    const totals = [0, 0];
+    return dailySections.map(({ sectionId, subsections }) => {
+      const column = ['Lead stories', 'Eastern Europe', 'Central Asia', 'Miscellaneous'].includes(sectionId) ? 0
+        : ['South Eastern Europe', 'South Caucasus'].includes(sectionId) ? 1
+          : (totals[0] <= totals[1] ? 0 : 1);
+      totals[column] += subsections.reduce((sum, [, stories]) => sum + stories.length, 0);
+      return column;
+    });
+  }, [dailySections]);
   async function importSpreadsheet(result, fileName) {
     const importedAt = new Date().toISOString();
     const currentArticles = [...(daily?.articles || []), ...(siteConfig.customArticles || [])];
@@ -557,24 +565,6 @@ function App() {
       const a = document.createElement('a'); a.href = url; a.download = reportFilename(reportWindow); document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 60_000);
     } catch (error) { setToast(error.message || 'Could not create the Word update.'); }
-  }
-
-  async function emailManagedUpdate() {
-    if (!navigator.clipboard?.write || typeof ClipboardItem === 'undefined') {
-      setToast('This browser cannot copy formatted email text. Try a current browser on the secure website.');
-      return;
-    }
-    const content = { title: siteConfig.updateTitle, compiledAt, articles: selectedArticles, headlineOnly, logoUrl: new URL(`${import.meta.env.BASE_URL}osce-logo.png`, window.location.href).href };
-    try {
-      await navigator.clipboard.write([new ClipboardItem({
-        'text/html': new Blob([emailUpdateHtml(content)], { type: 'text/html' }),
-        'text/plain': new Blob([emailUpdateText(content)], { type: 'text/plain' })
-      })]);
-      setToast('Formatted update copied. Paste it into the new email body.');
-      window.location.href = `mailto:?subject=${encodeURIComponent(emailSubject(compiledAt))}`;
-    } catch {
-      setToast('Could not copy the formatted update. Allow clipboard write access, then try Email again.');
-    }
   }
 
   async function saveGmailRecipients(recipients) {
@@ -772,7 +762,6 @@ function App() {
     {isEditor && <button className="daily-action daily-edit" type="button" aria-label={editingStories ? 'Save edits' : 'Edit update'} title={editingStories ? 'Save text and story changes' : 'Edit text and stories'} aria-pressed={editingStories} disabled={!displayedArticles.length && !editingStories} onClick={toggleStoryEditing}><svg viewBox="0 0 24 24" aria-hidden="true">{editingStories ? <path d="m4 12 5 5L20 6"/> : <><path d="m4 20 4.2-.9L19 8.3 15.7 5 4.9 15.8 4 20Z"/><path d="m13.9 6.8 3.3 3.3"/></>}</svg></button>}
     <button className={`daily-action daily-edit ${headlineOnly ? 'is-active' : ''}`} type="button" aria-label={headlineOnly ? 'Show full view' : 'Show compressed view'} title={editingStories ? 'Save edits before switching views' : headlineOnly ? 'Show full view with summaries' : 'Show compressed view without summaries'} aria-pressed={headlineOnly} disabled={editingStories} onClick={() => { rememberReadingPosition(); setHeadlineOnly(current => !current); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16"/>{!headlineOnly && <path d="M4 15h16"/>}</svg></button>
     <button className="daily-action daily-download" type="button" aria-label="Download update" title={editingStories ? 'Save edits before downloading' : headlineOnly ? 'Download compressed Word update' : 'Download Word update with summaries'} disabled={!selectedArticles.length || editingStories} onClick={downloadManagedDocx}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 17v3h16v-3"/></svg></button>
-    <button className="daily-action daily-edit" type="button" aria-label="Email update" title={editingStories ? 'Save edits before emailing' : 'Copy formatted update and open your email app; paste into the message body'} disabled={!selectedArticles.length || editingStories} onClick={emailManagedUpdate}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5h18v13H3z"/><path d="m3 6 9 7 9-7"/></svg></button>
     {isEditor && <button className="daily-action daily-edit" type="button" aria-label="Send published update by Gmail" title="Preview recipients and send from OSCE SitRoom" disabled={!selectedArticles.length || editingStories || sendingGmail} onClick={() => setSendDialogOpen(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 18-8-8 18-2.5-7.5L3 11Z"/><path d="M10.5 13.5 21 3"/></svg></button>}
     <button className="daily-action daily-edit" type="button" aria-label="Export spreadsheet" title={editingStories ? 'Save edits before exporting' : 'Export visible full articles to spreadsheet'} disabled={!selectedArticles.length || editingStories || exportingSheet} onClick={exportSpreadsheet}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 9h18M3 14h18M10 9v11M16 9v11"/></svg></button>
     <button className="daily-action daily-edit daily-search-toggle" type="button" aria-label="Search update" title="Search within the update" aria-expanded={updateSearchOpen} onClick={() => setUpdateSearchOpen(current => !current)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"/><path d="m16 16 5 5"/></svg></button>
@@ -911,11 +900,11 @@ function App() {
   const collectionPanel = <NativeCollection onPublish={publishNativeDraft}/>;
 
   return <div className="app-shell" data-mode={siteConfig.darkMode ? 'dark' : 'light'} style={themeStyle}>
-    <header className="topbar"><div className="brand-text"><h1 id="daily-update-title">{siteConfig.brandName === 'SITUATION ROOM' ? 'SITROOM' : siteConfig.brandName} / {siteConfig.updateTitle}</h1><span className="header-date">{reportEndDateLabel(compiledAt)}</span></div><div className="header-actions">{siteConfig.showUpdate && updateControls()}<div className="site-utilities">{siteConfig.showSources && <button className="site-utility" type="button" aria-label="Sources" title="Sources" aria-expanded={sourceDrawerOpen} aria-controls="source-drawer" onClick={() => setSourceDrawerOpen(open => !open)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>}<button className="site-utility" type="button" aria-label={siteConfig.darkMode ? 'Light mode' : 'Dark mode'} title={siteConfig.darkMode ? 'Light mode' : 'Dark mode'} aria-pressed={siteConfig.darkMode} onClick={() => setSiteConfig(current => ({ ...current, darkMode: !current.darkMode }))}><svg viewBox="0 0 24 24" aria-hidden="true">{siteConfig.darkMode ? <><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19m0-14-1.5 1.5m-11 11L5 19"/></> : <path d="M20.2 16.4A8.5 8.5 0 0 1 7.6 3.8 8.5 8.5 0 1 0 20.2 16.4Z"/>}</svg></button><button className="site-utility" type="button" aria-label={isEditor ? 'Log out' : 'Log in'} title={isEditor ? 'Log out' : 'Log in'} onClick={async () => { if (isEditor) { await sharedClient.auth.signOut(); setEditorUser(null); setManaging(false); setEditingStories(false); setAccountOpen(false); } else setLoginOpen(true); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5M13 8l4 4-4 4M7 12h10"/></svg></button>{isEditor && <button className="site-utility" type="button" aria-label="Account" title="Account" onClick={() => setAccountOpen(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg></button>}{isEditor && <button className="site-utility" type="button" aria-label="Manage site" title="Manage site" onClick={() => { setManagerTab(managementEnabled ? 'Content' : 'Scope'); setManaging(true); }}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4m0-14.2-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg></button>}</div></div>
-    <div className="daily-heading">{dailySections.length > 0 && <nav className="daily-section-nav" aria-label="Update sections">{dailySections.map(({ sectionId, section }, index) => <a key={sectionId} className={(activeSectionId || dailySections[0].sectionId) === sectionId ? 'is-active' : ''} href={`#daily-section-${index}`} aria-label={section} title={section} onClick={event => { setActiveSectionId(sectionId); jumpToSection(event, index); }}><span className="section-label-full" aria-hidden="true">{section}</span><span className="section-label-compact" aria-hidden="true">{compactSectionLabels[section] || section}</span></a>)}</nav>}
-      {(toast || (isEditor && saveStatus)) && <div className="header-feedback" title={toast || saveStatus}>
+    <header className="topbar"><div className="brand-text"><h1 id="daily-update-title">{siteConfig.brandName === 'SITUATION ROOM' ? 'SITROOM' : siteConfig.brandName} / {siteConfig.updateTitle}</h1><span className="header-date">{reportEndDateLabel(compiledAt)}</span></div><div className="header-actions">{siteConfig.showUpdate && updateControls()}<div className="site-utilities"><button className="site-utility" type="button" aria-label={siteConfig.darkMode ? 'Light mode' : 'Dark mode'} title={siteConfig.darkMode ? 'Light mode' : 'Dark mode'} aria-pressed={siteConfig.darkMode} onClick={() => setSiteConfig(current => ({ ...current, darkMode: !current.darkMode }))}><svg viewBox="0 0 24 24" aria-hidden="true">{siteConfig.darkMode ? <><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19m0-14-1.5 1.5m-11 11L5 19"/></> : <path d="M20.2 16.4A8.5 8.5 0 0 1 7.6 3.8 8.5 8.5 0 1 0 20.2 16.4Z"/>}</svg></button><button className="site-utility" type="button" aria-label={isEditor ? 'Log out' : 'Log in'} title={isEditor ? 'Log out' : 'Log in'} onClick={async () => { if (isEditor) { await sharedClient.auth.signOut(); setEditorUser(null); setManaging(false); setEditingStories(false); } else setLoginOpen(true); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5M13 8l4 4-4 4M7 12h10"/></svg></button>{isEditor && <button className="site-utility" type="button" aria-label="Manage site" title="Manage site" onClick={() => { setManagerTab(managementEnabled ? 'Content' : 'Scope'); setManaging(true); }}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4m0-14.2-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg></button>}</div></div>
+    {(toast || (isEditor && saveStatus)) && <div className="header-feedback" title={toast || saveStatus}>
       {toast ? <div className={`toast ${toast.startsWith('Not published:') ? 'toast-error' : toast.includes('Publishing for everyone…') ? 'toast-pending' : ''}`} role={toast.startsWith('Not published:') ? 'alert' : 'status'} onClick={() => setToast('')}>{toast} ×</div> : <span className="shared-save-status" role="status">{saveStatus}</span>}
-    </div>}</div>
+    </div>}
+    <div className="daily-heading">{dailySections.length > 0 && <nav className="daily-section-nav" aria-label="Update sections">{dailySections.map(({ sectionId, section }, index) => <a key={sectionId} className={(activeSectionId || dailySections[0].sectionId) === sectionId ? 'is-active' : ''} href={`#daily-section-${index}`} aria-label={section} title={section} onClick={event => { setActiveSectionId(sectionId); jumpToSection(event, index); }}><span className="section-label-full" aria-hidden="true">{section}</span><span className="section-label-compact" aria-hidden="true">{compactSectionLabels[section] || section}</span></a>)}</nav>}</div>
 </header>
     {sharedError && <div className="shared-warning" role="alert">{sharedError}</div>}
     {siteConfig.showSources && <button className="sources-edge" type="button" aria-label="Open sources" onMouseEnter={() => setSourceDrawerOpen(true)} onClick={() => setSourceDrawerOpen(true)}/>}
@@ -932,7 +921,7 @@ function App() {
         <div className={`reading-layout ${websiteSource ? 'website-open' : ''}`}>
         {siteConfig.showUpdate && <section className={`daily-update ${siteConfig.sectionHeadingUppercase ? 'uppercase-headings' : ''} ${headlineOnly && !editingStories ? 'headline-only' : ''}`} aria-labelledby="daily-update-title">
           {daily && <div className="daily-scroll" role="region" aria-label="Daily update stories" tabIndex={0}>
-            <div className="daily-section-grid">{[0, 1].map(column => <div className="daily-section-column" key={column}>{dailySections.map(({ sectionId, section, subsections }, sectionIndex) => sectionIndex % 2 === column && <div className={`daily-section ${sectionId === 'Lead stories' ? 'lead-section' : ''}`} id={`daily-section-${sectionIndex}`} key={sectionId} style={{ order: sectionIndex }}>
+            <div className="daily-section-grid">{[0, 1].map(column => <div className="daily-section-column" key={column}>{dailySections.map(({ sectionId, section, subsections }, sectionIndex) => sectionColumns[sectionIndex] === column && <div className={`daily-section ${sectionId === 'Lead stories' ? 'lead-section' : ''}`} id={`daily-section-${sectionIndex}`} key={sectionId} style={{ order: sectionIndex }}>
               <h3 data-drop-kind="section" data-section-id={sectionId} className={dropTarget === `section:${sectionId}::` ? 'story-drop-target' : ''}>{highlightSearch(section)}</h3>
               {subsections.map(([subsection, items]) => <div key={subsection || 'direct'}>
                 {subsection && <h4 data-drop-kind="subsection" data-section-id={sectionId} data-subsection={subsection} className={`${section === 'Miscellaneous' ? 'plain-topic topic-heading' : sectionId === 'Lead stories' && subsection === 'Middle East' ? 'topic-heading' : ''} ${dropTarget === `subsection:${sectionId}:${subsection}:` ? 'story-drop-target' : ''}`}>{highlightSearch(reportHeadingLabel(subsection))}</h4>}
@@ -962,14 +951,13 @@ function App() {
     </div>
     {isEditor && showScrapeNotice(scrapeStatus, { dialogOpen: scrapingOpen, dismissedRunId: dismissedScrapeRunId, hiddenBefore: scrapeNoticeHiddenBefore, now: scrapeNoticeClock }) && <button type="button" className="scrape-live-status" role="status" onClick={() => { dismissCompletedScrape(); setScrapingOpen(true); }}><strong>{scrapeStatus.state === 'complete' ? 'Scrape complete' : 'Scraping news'}</strong><span>{scrapeStatus.message}</span><small>{scrapeStatus.state === 'complete' ? 'Publish draft' : 'Open progress'}</small></button>}
     {spreadsheetResults && <div className="add-backdrop" onClick={() => setSpreadsheetResults(null)}><section className="add-dialog spreadsheet-results" role="dialog" aria-modal="true" aria-labelledby="spreadsheet-results-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="spreadsheet-results-title">Spreadsheet export results</h2><button type="button" aria-label="Close export results" onClick={() => setSpreadsheetResults(null)}>×</button></div><p>{spreadsheetResults.downloaded ? `Downloaded ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} visible full articles.` : `No spreadsheet downloaded. ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} articles available.`}</p>{spreadsheetResults.error && <p role="alert">{spreadsheetResults.error}</p>}{spreadsheetResults.failures.length > 0 && <><h3>{spreadsheetResults.failures.length} unavailable</h3><ul>{spreadsheetResults.failures.map((failure, index) => <li key={index}>{failure}</li>)}</ul></>}<div className="add-dialog-actions"><button type="button" onClick={() => setSpreadsheetResults(null)}>Close</button></div></section></div>}
-    {isEditor && managing && <SiteManager initialTab={managerTab} isOwner={managementEnabled} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} onApproveRejected={approveRejectedStory} onClose={() => setManaging(false)}/>}
+    {isEditor && managing && <SiteManager initialTab={managerTab} isOwner={managementEnabled} collectionPanel={collectionPanel} config={siteConfig} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} accountProfile={editorUser.editorProfile} onApproveRejected={approveRejectedStory} onClose={() => setManaging(false)}/>}
     {isEditor && sendDialogOpen && <SendGmailDialog recipients={siteConfig.gmailRecipients} subject={`[TEST] ${emailSubject(compiledAt)}`} articleCount={selectedArticles.length} onSave={saveGmailRecipients} onSend={sendPublishedGmail} onClose={() => setSendDialogOpen(false)}/>}
     {isEditor && scrapingOpen && <div className="add-backdrop" onClick={closeScrapeDialog}><section className="add-dialog scrape-dialog" role="dialog" aria-modal="true" aria-labelledby="scrape-dialog-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="scrape-dialog-title">Scrape news</h2><button type="button" aria-label="Close scrape status" onClick={closeScrapeDialog}>×</button></div><NativeCollection onPublish={publishNativeDraft} onClear={clearCurrentUpdate} hasStories={Boolean((daily?.articles.length || 0) + (siteConfig.customArticles?.length || 0))}/></section></div>}
     {isEditor && addingArticles && daily && <AddArticlesDialog sections={siteConfig.sections} sources={configuredSources} customCountries={siteConfig.customCountries} existingArticles={selectedArticles} remainingSlots={100 - siteConfig.customArticles.length} onAdd={async (article, placement, body) => { if (body?.body) { try { await storeArticleBodies([body]); } catch (error) { if (!sharedEnabled) throw error; } if (sharedEnabled) { const prior = pendingBodiesRef.current?.bodies || []; pendingBodiesRef.current = { replace: false, bodies: [...new Map([...prior, body].map(item => [item.url, item])).values()] }; } } setSiteConfig(current => addCustomArticleInConfig(current, { ...article, addedBy: contributor }, placement)); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}
     {isEditor && importingSpreadsheet && <ImportSpreadsheetDialog sections={siteConfig.sections} customCountries={siteConfig.customCountries} existingArticles={[...archivedImportReference.articles, ...preparedUpdate.articles, ...(daily?.articles ?? [])]} sources={configuredSources} importedMode={importedMode} sharedMode={sharedEnabled} publishedEmpty={preparedUpdate.emptyPrepared === true} hasStories={Boolean((daily?.articles.length || 0) + (siteConfig.customArticles?.length || 0))} onImport={importSpreadsheet} onRestore={restorePublishedUpdate} onClear={clearCurrentUpdate} onClose={() => setImportingSpreadsheet(false)}/>}
     {isEditor && editingStories && storyToMove && <MoveStoryDialog story={storyToMove} sections={siteConfig.sections} articles={displayedArticles} customCountries={siteConfig.customCountries} onMove={moveStory} onClose={() => setMoveStoryId('')}/>}
     {loginOpen && <EditorLoginDialog onLogin={user => { setEditorUser(user); setLoginOpen(false); }} onClose={() => setLoginOpen(false)}/>}
-    {isEditor && accountOpen && <EditorAccountDialog profile={editorUser.editorProfile} onClose={() => setAccountOpen(false)}/>}
   </div>;
 }
 
