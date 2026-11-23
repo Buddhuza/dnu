@@ -611,6 +611,7 @@
 
 /* Use the reading size for empty states, footer notes and editorial dialogs. */
 .daily-empty,.daily-disclaimer,.daily-coverage{font-size:var(--story-text-size);line-height:1.4}
+.daily-disclaimer,.daily-coverage{font-size:calc(var(--story-text-size) - 2px)}
 .daily-empty{padding:16px 0;color:var(--site-text)}
 .daily-disclaimer{padding-top:10px;margin-top:20px}
 .daily-disclaimer p{margin-bottom:8px}
