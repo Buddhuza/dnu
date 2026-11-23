@@ -292,10 +292,10 @@
 .daily-story-inline-edit [data-edit-field="summary"]:empty::before{content:attr(data-placeholder);opacity:.55}
 .daily-story-inline-edit [data-edit-field="publishedAt"]:empty{display:inline-block;min-width:7ch}
 .daily-story-inline-edit [data-edit-field="publishedAt"]:empty::before{content:attr(data-placeholder);opacity:.55}
-.story-edit-tools{flex:none;display:grid;grid-template-columns:repeat(2,26px);gap:3px;width:55px}
-.daily-story .story-edit-tools button{display:grid;place-items:center;flex:none;width:26px;height:26px;margin:0;padding:0;border:1px solid #aabac2;border-radius:5px;background:var(--site-surface,#fff);color:var(--site-section,#0070c0);line-height:1}
+.story-edit-tools{flex:none;display:grid;grid-template-columns:repeat(2,20px);gap:2px;width:42px}
+.daily-story .story-edit-tools button{display:grid;place-items:center;flex:none;width:20px;height:20px;margin:0;padding:0;border:1px solid #aabac2;border-radius:4px;background:var(--site-surface,#fff);color:var(--site-section,#0070c0);line-height:1}
 .daily-story .story-edit-tools button:hover,.daily-story .story-edit-tools button:focus-visible{background:var(--site-bg,#f4efe6);text-decoration:none}
-.daily-story .story-edit-tools svg{display:block;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.daily-story .story-edit-tools svg{display:block;width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .daily-story .story-edit-tools .story-drag-handle{cursor:grab;touch-action:none}
 .daily-story .story-edit-tools .story-drag-handle svg{fill:currentColor;stroke:none}
 .daily-story .story-edit-tools .story-star-button.is-lead svg{fill:currentColor}
