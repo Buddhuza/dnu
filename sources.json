@@ -1672,34 +1672,6 @@
     "listingUrl": "https://turkmenportal.com/"
   },
   {
-    "id": "source-gas-turkmenistan-gov-tm",
-    "domain": "turkmenistan.gov.tm",
-    "name": "Turkmenistan government",
-    "country": "Turkmenistan",
-    "group": "Central Asia",
-    "url": "https://turkmenistan.gov.tm/",
-    "origins": [
-      "apps-script"
-    ],
-    "legacySourceIds": [],
-    "feedUrls": [],
-    "listingUrl": "https://turkmenistan.gov.tm/"
-  },
-  {
-    "id": "source-gas-tdh-gov-tm",
-    "domain": "tdh.gov.tm",
-    "name": "TDH",
-    "country": "Turkmenistan",
-    "group": "Central Asia",
-    "url": "https://tdh.gov.tm/",
-    "origins": [
-      "apps-script"
-    ],
-    "legacySourceIds": [],
-    "feedUrls": [],
-    "listingUrl": "https://tdh.gov.tm/"
-  },
-  {
     "id": "source-gas-turkmen-news",
     "domain": "turkmen.news",
     "name": "Turkmen news",
