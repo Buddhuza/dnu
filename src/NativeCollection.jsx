@@ -74,8 +74,7 @@ function GithubCollection({ onPublish, onClear, hasStories, interactionDisabled 
   const latestTrigger = latestDraft?.trigger || (latestDraft?.runId === status.runId ? status.trigger : null);
   const progressMessage = publishing ? 'Publishing the latest scrape' : status.state === 'complete' ? '' : status.message;
   return <section className="native-collection">
-    <p className="native-publish-description">{finishedLabel ? <>Publish the latest {scrapeKind(latestTrigger)}scrape, completed <time dateTime={finishedAt}>{finishedLabel}</time>{scrapedStoryCount(latestDraft?.stories)}.</> : 'Publish the latest completed scrape.'}</p>
-    <p className="native-scrape-description">Scrape manually if you need a newer update.</p>
+    <p className="native-publish-description">{finishedLabel ? <>Publish the latest {scrapeKind(latestTrigger)}scrape, completed <time dateTime={finishedAt}>{finishedLabel}</time>{scrapedStoryCount(latestDraft?.stories)}.</> : 'Publish the latest completed scrape.'} {' '}Scrape manually if you need a newer update.</p>
     <div className="native-actions"><button type="button" className="cms-primary" onClick={publishDraft} disabled={busy}>Publish</button><button type="button" className="native-secondary" onClick={() => start()} disabled={busy}>Scrape</button>{onClear && <button type="button" className="native-clear-stories" onClick={onClear} disabled={!hasStories || busy}>Clear all stories</button>}</div>
     <p className="native-latest-draft">{latestDraft ? `Latest completed draft: ${latestDraft.stories} ${latestDraft.stories === 1 ? 'story' : 'stories'}.` : 'Latest completed draft: checking…'}</p>
     {error && <p role="alert">{error}</p>}
@@ -128,8 +127,7 @@ function NodeCollection({ onPublish, onClear, hasStories, interactionDisabled = 
   const finishedAt = status.finishedAt || status.updatedAt || status.checkedAt;
   const finishedLabel = status.state === 'complete' ? formatViennaCompactDateTime(finishedAt) : '';
   return <section className="native-collection">
-    <p className="native-publish-description">{finishedLabel ? <>Publish the latest {scrapeKind(status.trigger)}scrape, completed <time dateTime={finishedAt}>{finishedLabel}</time>{scrapedStoryCount(status.stories)}.</> : 'Publish the latest completed scrape.'}</p>
-    <p className="native-scrape-description">Scrape manually if you need a newer update.</p>
+    <p className="native-publish-description">{finishedLabel ? <>Publish the latest {scrapeKind(status.trigger)}scrape, completed <time dateTime={finishedAt}>{finishedLabel}</time>{scrapedStoryCount(status.stories)}.</> : 'Publish the latest completed scrape.'} {' '}Scrape manually if you need a newer update.</p>
     <div className="native-actions"><button type="button" className="cms-primary" onClick={publishDraft} disabled={busy || status.state !== 'complete'}>Publish</button><button type="button" className="native-secondary" onClick={start} disabled={!sharedClient || busy || status.state === 'unavailable'}>Scrape</button>{onClear && <button type="button" className="native-clear-stories" onClick={onClear} disabled={!hasStories || busy}>Clear all stories</button>}</div>
     <p className="native-latest-draft">{status.state === 'complete' && Number.isInteger(status.stories) ? `Latest completed draft: ${status.stories} ${status.stories === 1 ? 'story' : 'stories'}.` : 'Latest completed draft: checking…'}</p>
     {error && <p role="alert">{error}</p>}
