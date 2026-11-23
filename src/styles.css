@@ -733,18 +733,18 @@
   .topbar .brand-text{display:contents}
   .topbar .brand-text h1{grid-column:1;grid-row:1;text-align:center}
   .topbar .brand-name,.topbar .update-name{display:block}
+  .topbar .brand-slash{display:none}
   .topbar .header-date{grid-column:1;grid-row:2;justify-self:center;align-self:start;min-width:0;text-align:center}
-  .header-actions{display:contents}
-  .header-actions .daily-downloads{grid-column:1;grid-row:3;justify-self:stretch;align-self:end;width:100%;justify-content:space-between;gap:0;margin:6px 0 0}
-  .header-actions .daily-downloads .daily-action,.header-actions .daily-downloads .daily-action.daily-download{width:clamp(24px,8vw,33px);height:clamp(24px,8vw,33px);min-width:clamp(24px,8vw,33px);padding:4px}
-  .header-actions .site-utilities{position:absolute;top:7px;right:calc(var(--content-gutter) + 5px)}
+  .header-actions{--compact-action-size:clamp(19px,6.8vw,30px);grid-column:1;grid-row:3;display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;width:100%;min-width:0;margin:6px 0 0;gap:2px}
+  .header-actions .daily-downloads{flex:1 1 auto;min-width:0;width:auto;justify-content:space-between;gap:2px;margin:0}
+  .header-actions .site-utilities{position:static;flex:none;gap:2px;margin:0}
+  .header-actions .daily-downloads .daily-action,.header-actions .daily-downloads .daily-action.daily-download,.header-actions .site-utilities .site-utility{width:var(--compact-action-size);height:var(--compact-action-size);min-width:var(--compact-action-size);padding:2px}
+  .header-actions .daily-downloads .daily-action svg,.header-actions .site-utilities .site-utility svg{width:clamp(12px,4.5vw,17px);height:clamp(12px,4.5vw,17px)}
   .header-feedback{grid-column:1;grid-row:4;height:19px}
   .topbar .daily-heading{grid-column:1;grid-row:5;padding-bottom:0}
 }
 @media(max-width:700px){
   .topbar .header-date{font-size:21px;line-height:1.15}
-  .header-actions .site-utilities .site-utility{width:24px;height:24px;min-width:24px;padding:3px}
-  .header-actions .daily-downloads .daily-action svg,.site-utility svg{width:16px;height:16px}
 }
 
 /* Keep the title visibly bold without enlarging the compact header. */
