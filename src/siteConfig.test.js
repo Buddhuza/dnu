@@ -24,13 +24,13 @@ test('default reading text starts at 18 px', () => {
   assert.equal(defaultSiteConfig(articles).fontSize, 18);
 });
 
-test('existing DM Sans themes use Helvetica after normalisation', () => {
+test('existing DM Sans and Helvetica themes use Source Sans 3 after normalisation', () => {
   const previous = defaultSiteConfig(articles);
   previous.theme.font = 'DM Sans';
-  previous.darkTheme.font = 'DM Sans';
+  previous.darkTheme.font = 'Helvetica';
   const config = normalizeSiteConfig(previous, articles);
-  assert.equal(config.theme.font, 'Helvetica');
-  assert.equal(config.darkTheme.font, 'Helvetica');
+  assert.equal(config.theme.font, 'Source Sans 3');
+  assert.equal(config.darkTheme.font, 'Source Sans 3');
 });
 
 test('the previous default palette and narrow width move to the approved blue columns design', () => {

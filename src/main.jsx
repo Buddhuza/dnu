@@ -371,14 +371,14 @@ function App() {
       if (!active) return;
       const context = document.createElement('canvas').getContext('2d');
       if (!context) return;
-      context.font = '700 13px "DM Sans", sans-serif';
+      context.font = `700 13px "${siteConfig.darkMode ? siteConfig.darkTheme.font : siteConfig.theme.font}", Arial, sans-serif`;
       const longest = Math.max(0, ...sources.map(source => context.measureText(source.name).width));
       setSourceDrawerWidth(Math.ceil(longest) + 34);
     };
     measure();
     document.fonts?.ready.then(measure);
     return () => { active = false; };
-  }, [sources]);
+  }, [sources, siteConfig.darkMode, siteConfig.theme.font, siteConfig.darkTheme.font]);
   const websiteSource = sources.find(x => x.id === websiteSourceId);
   const groups = ['All sources', ...new Set(sources.map(x => x.group))];
   const visibleSources = useMemo(() => sources.filter(x => (group === 'All sources' || x.group === group) && `${x.name} ${x.group} ${x.url}`.toLowerCase().includes(search.toLowerCase())), [sources, group, search]);
@@ -422,7 +422,7 @@ function App() {
     '--site-primary': activeTheme.primary, '--site-accent': activeTheme.accent,
     '--site-bg': activeTheme.background, '--site-surface': activeTheme.surface,
     '--site-text': activeTheme.text, '--site-section': activeTheme.section,
-    '--site-font': activeTheme.font === 'Georgia' ? 'Georgia, serif' : activeTheme.font === 'Helvetica' ? 'Helvetica, Arial, sans-serif' : `'${activeTheme.font}', Arial, sans-serif`,
+    '--site-font': activeTheme.font === 'Georgia' ? 'Georgia, serif' : `'${activeTheme.font}', Arial, sans-serif`,
     '--site-body-size': `${siteConfig.fontSize}px`,
     '--section-heading-size': `${siteConfig.sectionHeadingSize}px`,
     '--update-width': `${siteConfig.updateWidth}px`
