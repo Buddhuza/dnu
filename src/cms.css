@@ -141,3 +141,17 @@
 .cms-fields input:not([type=checkbox]),.cms-fields textarea,.cms-fields select,.cms-font-label select,.cms-section-row input,.cms-search,.cms-custom-source input,.cms-subsections-label textarea{padding:5px 7px}
 .cms-close{width:27px;height:27px;font-size:18px!important}
 @media(max-width:720px){.cms-dialog{height:min(560px,calc(100dvh - 14px))}.cms-header{padding:8px 10px}.cms-layout{display:flex}.cms-tabs{padding:4px}.cms-content{padding:9px 10px}}
+
+/* Match the larger site reading scale while keeping Manage site scrollable. */
+.cms-dialog{width:min(1020px,100%);height:min(840px,calc(100dvh - 24px));font-size:var(--story-text-size)}
+.cms-header{padding:18px 24px}
+.cms-header h2{font-size:24px}
+.cms-content h3{font-size:21px}
+.cms-layout{grid-template-columns:195px minmax(0,1fr)}
+.cms-content{padding:19px 24px 27px}
+.cms-tabs{padding:12px 9px}
+.cms-tabs button{padding:8px 11px}
+.cms-content :is(.cms-fields label,.cms-font-label,.cms-fields input:not([type=checkbox]),.cms-fields textarea,.cms-fields select,.cms-font-label select,.cms-section-row input,.cms-search,.cms-check,.cms-story summary,.cms-primary,.cms-file,.cms-danger,.cms-presets button,.cms-color-grid label,.cms-color-grid code,.cms-message,.cms-custom-source input,.cms-source-row,.cms-subsections-label,.cms-subsections-label textarea,.cms-guidance,.rejected-review-card h4),.cms-dialog :is(p,label,input,select,textarea,button,summary,li,small){font-size:var(--story-text-size)!important}
+.cms-primary,.cms-file,.cms-danger{min-height:42px;padding:8px 12px}
+.cms-close{width:41px;height:41px;font-size:27px!important}
+@media(max-width:720px){.cms-dialog{height:calc(100dvh - 16px)}.cms-header{padding:12px 15px}.cms-layout{display:flex}.cms-tabs{padding:6px}.cms-content{padding:14px 15px}}

@@ -574,7 +574,7 @@
 /* Scale the complete interface while keeping fixed panes inside the viewport. */
 :root{zoom:1}
 .app-shell{height:100dvh}
-.workspace .sidebar{height:100dvh;width:min(var(--source-drawer-width,220px),82vw)!important}
+.workspace .sidebar{height:100dvh;width:min(calc(var(--source-drawer-width,220px) * 1.5),82vw)!important}
 
 /* Keep editor dialogs in the same compact type scale as the reading view. */
 .add-dialog,.move-dialog{font-family:var(--site-font,'DM Sans',sans-serif);font-size:13px;line-height:1.4}
@@ -652,3 +652,49 @@
 .scrape-dialog .import-spreadsheet-preview ul{max-height:280px}
 .scrape-dialog .import-file-fallback input[type=file],.scrape-dialog .import-file-label select{width:100%}
 .scrape-dialog .import-file-label select{display:block;margin-top:5px;border:1px solid #a7bbba;border-radius:6px;background:var(--site-surface,#fff);color:var(--site-text,#182a36)}
+
+/* Larger reading and editing scale at normal browser zoom. */
+.app-shell{--story-text-size:clamp(16.5px,calc((var(--site-body-size,18px) - 6px) * 1.5),27px)}
+.topbar .brand-text h1{font-size:28.5px}
+.topbar .header-date{font-size:21px}
+.topbar .shared-save-status,.topbar .toast{font-size:13.5px}
+.header-feedback{height:24px}
+.header-actions .daily-downloads .daily-action,.header-actions .daily-downloads .daily-action.daily-download,.site-utility{width:33px;height:33px;min-width:33px;padding:6px}
+.header-actions .daily-downloads .daily-action svg,.site-utility svg{width:18px;height:18px}
+.daily-section-nav a{min-height:41px;padding:7px 5px;font-size:16.5px}
+.daily-section h3{font-size:clamp(19.5px,calc(var(--section-heading-size,26px) * .87),33px)}
+.daily-section h4{font-size:clamp(15px,calc((var(--site-body-size,18px) - 7px) * 1.5),24px)}
+.daily-country{font-size:clamp(15px,calc((var(--site-body-size,18px) - 8px) * 1.5),22.5px)}
+.daily-story-agency,.daily-story-date{font-size:clamp(15px,calc((var(--site-body-size,18px) - 8px) * 1.5),22.5px)}
+.workspace .sidebar .source-copy strong{font-size:19.5px}
+.workspace .sidebar .source-row{height:46px}
+.workspace .sidebar .sidebar-heading h2{font-size:21px}
+.workspace .sidebar .search-box,.workspace .sidebar .group-select{height:45px;font-size:18px}
+.workspace .sidebar .search-box input{font-size:18px}
+.daily-disclaimer,.daily-coverage{font-size:calc(var(--story-text-size) - 3px)}
+.add-dialog,.move-dialog{width:min(100%,675px);max-height:calc(100dvh - 24px);padding:18px;font-size:var(--story-text-size)}
+.scrape-dialog{width:min(100%,615px)}
+.editor-login-dialog{width:min(100%,450px)}
+.move-dialog{width:min(100%,510px)}
+.add-dialog-heading h2,.move-dialog-heading h2{font-size:24px}
+.add-dialog :is(p,label,input,select,textarea,button,summary,li,small),.move-dialog :is(p,label,input,select,textarea,button,summary,li,small){font-size:var(--story-text-size)!important}
+.add-dialog .add-dialog-heading button,.move-dialog .move-dialog-heading button{font-size:27px!important}
+.add-dialog-actions button,.add-dialog .cms-primary,.add-dialog .native-secondary,.add-dialog .native-clear-stories,.move-dialog-actions button{min-height:42px;padding:7px 12px}
+.scrape-dialog .native-actions>button{min-height:51px;padding:7px 5px}
+.scrape-dialog .import-google-controls .import-copy-url{font-size:16.5px!important}
+.scrape-dialog .import-file-label select{min-height:42px}
+.import-spreadsheet-content h3{font-size:22.5px}
+@media(max-width:700px){
+  .topbar .brand-text h1{font-size:24px}
+  .topbar .header-date{font-size:19.5px}
+  .header-actions .daily-downloads{flex-wrap:wrap;justify-content:flex-start}
+  .header-actions .daily-downloads .daily-action,.header-actions .daily-downloads .daily-action.daily-download,.site-utility{width:30px;height:30px;min-width:30px;padding:4px}
+  .header-actions .daily-downloads .daily-action svg,.site-utility svg{width:18px;height:18px}
+  .daily-section-nav a{min-height:41px;padding:6px 2px;font-size:15px}
+  .add-dialog,.move-dialog{max-height:calc(100dvh - 16px);padding:15px}
+}
+@media(max-width:400px){
+  .header-actions .daily-downloads .daily-action,.header-actions .daily-downloads .daily-action.daily-download,.site-utility{width:28.5px;height:28.5px;min-width:28.5px}
+  .scrape-dialog .import-google-controls{flex-wrap:wrap}
+  .scrape-dialog .import-google-controls input{flex-basis:100%}
+}
