@@ -457,7 +457,7 @@
 }
 
 /* Blue columns reading layout. The header and section links stay in place; stories scroll. */
-.app-shell{--reading-surface:color-mix(in srgb,var(--site-surface) 80%,white 20%);--header-background:color-mix(in srgb,var(--site-surface) 75%,#278bc2 25%);--country-highlight-background:color-mix(in srgb,var(--site-surface) 87%,#278bc2 13%)}
+.app-shell{--reading-surface:color-mix(in srgb,var(--site-surface) 80%,white 20%);--header-background:color-mix(in srgb,var(--site-surface) 75%,#278bc2 25%);--country-highlight-background:color-mix(in srgb,var(--site-surface) 87%,#278bc2 13%);--story-text-size:clamp(11px,calc(var(--site-body-size,18px) - 6px),18px)}
 .app-shell[data-mode="dark"]{--reading-surface:color-mix(in srgb,var(--site-surface) 98%,white 2%);--header-background:color-mix(in srgb,var(--site-surface) 82%,#102634 18%);--country-highlight-background:color-mix(in srgb,var(--site-surface) 75%,#477fa8 25%)}
 .app-shell{height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden}
 .topbar{position:relative;z-index:20;flex:none;min-height:0;height:auto;display:flex;align-items:flex-start;flex-wrap:wrap;column-gap:10px;row-gap:3px;padding:12px max(clamp(10px,1.2vw,18px),calc((100vw - var(--update-width,1400px) - 40px)/2 + clamp(10px,1.2vw,18px))) 4px;background:var(--header-background);border:0;border-bottom:1px solid #c4d2db}
@@ -508,7 +508,7 @@
 .daily-country{margin:7px 0 2px!important;padding:3px 7px!important;border-radius:3px;background:var(--country-highlight-bg);color:var(--country-highlight-text);font-size:clamp(10px,calc(var(--site-body-size,18px) - 8px),15px);line-height:1.12;letter-spacing:.08em}
 .daily-story{padding:6px 1px 7px;border-bottom:1px solid #c4d2db}
 .daily-story:last-child{border-bottom:0}
-.daily-story p{margin:0;color:var(--site-text);font-size:clamp(11px,calc(var(--site-body-size,18px) - 6px),18px);line-height:1.1}
+.daily-story p{margin:0;color:var(--site-text);font-size:var(--story-text-size);line-height:1.1}
 .daily-story-headline{color:inherit!important;text-decoration:none!important}
 .daily-story-headline:hover,.daily-story-headline:focus-visible{text-decoration:underline!important;text-underline-offset:2px}
 .daily-story-headline strong{font-size:1em;line-height:inherit}
@@ -608,3 +608,24 @@
 .move-dialog-actions{margin-top:15px}
 .move-dialog-actions button{font-size:13px;padding:7px 11px}
 @media(max-width:520px){.add-dialog,.move-dialog{padding:14px}.add-dialog .import-placement-selects,.add-dialog .import-placement-extra,.add-dialog .import-placement-details{grid-template-columns:1fr}.add-dialog .import-placement-details button{grid-column:1}}
+
+/* Use the reading size for empty states, footer notes and editorial dialogs. */
+.daily-empty,.daily-disclaimer,.daily-coverage{font-size:var(--story-text-size);line-height:1.4}
+.daily-empty{padding:16px 0;color:var(--site-text)}
+.daily-disclaimer{padding-top:10px;margin-top:20px}
+.daily-disclaimer p{margin-bottom:8px}
+.daily-coverage{padding:8px 10px;margin-top:14px}
+.add-dialog,.move-dialog{font-size:var(--story-text-size)}
+.add-dialog{width:min(100%,480px);max-height:min(86dvh,700px);padding:14px}
+.import-spreadsheet-dialog{width:min(100%,560px)}
+.scrape-dialog{width:min(100%,430px)}
+.editor-login-dialog{width:min(100%,320px)}
+.move-dialog{width:min(100%,360px);max-height:86dvh;padding:14px}
+.add-dialog-heading h2,.move-dialog-heading h2{font-size:16px}
+.add-dialog :is(p,label,input,select,textarea,button,summary,li,small),.move-dialog :is(p,label,input,select,textarea,button,summary,li,small){font-size:var(--story-text-size)!important}
+.add-dialog .add-dialog-heading button,.move-dialog .move-dialog-heading button{font-size:18px!important}
+.add-dialog input,.add-dialog textarea,.add-dialog select,.move-dialog input,.move-dialog select{padding:5px 7px}
+.add-dialog-actions button,.add-dialog .cms-primary,.add-dialog .native-secondary,.add-dialog .native-clear-stories,.move-dialog-actions button{min-height:28px;padding:5px 8px;font-size:var(--story-text-size)}
+.add-dialog .native-collection>.cms-primary,.add-dialog .native-secondary,.add-dialog .native-clear-stories{min-height:28px}
+.add-dialog-actions,.move-dialog-actions{gap:6px;margin-top:10px}
+@media(max-width:520px){.add-dialog,.move-dialog{padding:12px}}

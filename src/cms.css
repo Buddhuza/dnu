@@ -122,3 +122,21 @@
 .cms-guidance{padding:8px 11px;margin:8px 0 12px}
 .rejected-review-card{padding:12px}
 @media(max-width:720px){.cms-dialog{height:min(90dvh,680px)}.cms-header{padding:12px 14px}.cms-layout{display:flex}.cms-tabs{padding:6px}.cms-content{padding:14px}}
+
+/* Manage site follows the compact reading scale without losing its scrollable panes. */
+.cms-dialog{width:min(720px,100%);height:min(620px,86dvh);font-size:var(--story-text-size)}
+.cms-header{padding:12px 16px}
+.cms-header h2{font-size:16px}
+.cms-header p,.cms-help{font-size:var(--story-text-size)}
+.cms-layout{grid-template-columns:130px minmax(0,1fr)}
+.cms-tabs{padding:8px 6px}
+.cms-tabs button{padding:5px 7px}
+.cms-content{padding:13px 16px 18px;font-size:var(--story-text-size)!important}
+.cms-content h3{font-size:14px;margin-bottom:9px}
+.cms-fields{gap:8px}
+.cms-content :is(.cms-fields label,.cms-font-label,.cms-fields input:not([type=checkbox]),.cms-fields textarea,.cms-fields select,.cms-font-label select,.cms-section-row input,.cms-search,.cms-check,.cms-story summary,.cms-primary,.cms-file,.cms-danger,.cms-presets button,.cms-color-grid label,.cms-color-grid code,.cms-message,.cms-custom-source input,.cms-source-row,.cms-subsections-label,.cms-subsections-label textarea,.cms-guidance,.rejected-review-card h4),.cms-tabs button,.cms-header p,.cms-help{font-size:var(--story-text-size)!important}
+.cms-dialog :is(p,label,input,select,textarea,button,summary,li,small){font-size:var(--story-text-size)!important}
+.cms-primary,.cms-file,.cms-danger{min-height:28px;padding:5px 8px}
+.cms-fields input:not([type=checkbox]),.cms-fields textarea,.cms-fields select,.cms-font-label select,.cms-section-row input,.cms-search,.cms-custom-source input,.cms-subsections-label textarea{padding:5px 7px}
+.cms-close{width:27px;height:27px;font-size:18px!important}
+@media(max-width:720px){.cms-dialog{height:min(86dvh,620px)}.cms-header{padding:10px 12px}.cms-layout{display:flex}.cms-content{padding:11px 12px}}
