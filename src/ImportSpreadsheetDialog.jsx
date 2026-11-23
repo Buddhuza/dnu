@@ -34,7 +34,7 @@ function PlacementChooser({ item, sections, customCountries, onApply, onDelete }
 
   return <li className="import-placement-item">
     <button type="button" className="import-placement-delete" aria-label={`Delete story: ${item.title}`} title="Delete story from this import" onClick={() => onDelete(item.row)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v6m4-6v6"/></svg></button>
-    <strong>{item.title}</strong><span>{item.sourceName} · row {item.row}</span>
+    <strong><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title}</a></strong><span>{item.sourceName} · row {item.row}</span>
     {item.reason && <p role="alert">{item.reason}. Choose another placement.</p>}
     <div className="import-placement-controls">
       <div className="import-placement-selects">

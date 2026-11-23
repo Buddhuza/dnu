@@ -412,6 +412,9 @@
 .import-placement-review ul{max-height:340px;overflow:auto;padding-left:0;list-style:none}
 .import-placement-item{position:relative;margin:10px 0;padding:10px;border:1px solid #a7bbba;border-radius:6px;background:var(--site-bg,#f4efe6)}
 .import-placement-item>strong{display:block;padding-right:38px}
+.import-placement-item>strong a{color:inherit;text-decoration:underline;text-decoration-color:var(--site-section);text-underline-offset:2px}
+.import-placement-item>strong a:hover{color:var(--site-section)}
+.import-placement-item>strong a:focus-visible{outline:2px solid var(--site-section);outline-offset:2px}
 .import-placement-item>span{display:block;opacity:.75;font-size:.85em}
 .import-placement-delete{position:absolute;top:9px;right:9px;display:grid;place-items:center;width:30px;height:30px;padding:5px;border:1px solid #a53d39;border-radius:6px;background:transparent;color:#a53d39;cursor:pointer}
 .import-placement-delete:hover{background:#a53d3920}
