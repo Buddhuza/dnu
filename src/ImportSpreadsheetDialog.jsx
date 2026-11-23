@@ -55,7 +55,7 @@ function PlacementChooser({ item, sections, customCountries, onApply, onDelete }
         {createSubsection && <label>New heading<input value={newSubsection} maxLength={100} onChange={event => setNewSubsection(event.target.value)} placeholder="Country, organisation or subsection"/></label>}
       </div>}
       <div className="import-placement-details">
-        <label>New country or organisation<input value={newCountry} maxLength={100} disabled={!showCountry || !createCountry} onChange={event => setNewCountry(event.target.value)} placeholder={showCountry ? 'Choose Create country or organisation above' : 'Choose a Miscellaneous subsection first'}/></label>
+        <label>New country<input value={newCountry} maxLength={100} disabled={!showCountry || !createCountry} onChange={event => setNewCountry(event.target.value)} placeholder={showCountry ? 'Choose Create country or organisation above' : 'Choose a Miscellaneous subsection first'}/></label>
         <button type="button" disabled={!valid} onClick={() => onApply(item.row, { sectionId: chosenSection, subsection: direct ? '' : chosenSubsection, country: chosenSection === 'Miscellaneous' && !direct ? chosenCountry : '' })}>Use placement</button>
       </div>
     </div>
