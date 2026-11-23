@@ -183,3 +183,5 @@ Use the latest direct instruction from the editor when it changes a rule. Record
 - At 100% browser zoom, display web reading text, header controls, section shortcuts, and editorial dialog text and dimensions at approximately 150% of their former compact scale. Let dialogs scroll within the viewport and wrap mobile controls as needed. This web scale does not alter Word or email typography.
 
 - In Scrape news, keep “Scrape manually if you need a newer update” in the same paragraph, immediately after the latest-scrape sentence. Use gently rounded section shortcut buttons and the largest shortcut text that fits their equal-width row; switch to abbreviated section names before full labels become cramped. Place Manage site (gear), theme (clear crescent moon or sun), then Log out at the far right of the editor header.
+
+- Increase website reading, section, navigation, source drawer and dialog text modestly again, around eight percent where it fits. Keep “Saved for everyone” and other brief header status messages at their existing smaller font size. Do not change the Word or email type scale for this web-only adjustment.

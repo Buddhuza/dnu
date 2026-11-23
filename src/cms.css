@@ -145,8 +145,8 @@
 /* Match the larger site reading scale while keeping Manage site scrollable. */
 .cms-dialog{width:min(1020px,100%);height:min(840px,calc(100dvh - 24px));font-size:var(--story-text-size)}
 .cms-header{padding:18px 24px}
-.cms-header h2{font-size:24px}
-.cms-content h3{font-size:21px}
+.cms-header h2{font-size:26px}
+.cms-content h3{font-size:23px}
 .cms-layout{grid-template-columns:195px minmax(0,1fr)}
 .cms-content{padding:19px 24px 27px}
 .cms-tabs{padding:12px 9px}
