@@ -136,6 +136,7 @@ Use the latest direct instruction from the editor when it changes a rule. Record
 
 - In the light Import spreadsheet dialog, use the site's pale beige background for the dialog and placement cards, with a lighter surface for the worksheet preview and form fields. Follow the active dark theme colours in dark mode.
 - Keep the Import spreadsheet dialog concise: do not show the introductory Google Sheet sentence or repeat the selected worksheet name inside the results card. Label the Add article entry field “Text” and give the Add article dialog the same pale beige background as the Import spreadsheet dialog in light mode.
+- Keep editor dialogs compact, with the same DM Sans typography and roughly the same text scale as the website. Reduce excessive dialog widths, padding and field spacing while keeping forms and Manage site scrollable on smaller screens.
 
 - The compact web header reads SITROOM / DAILY NEWS UPDATE with the edition date below in sentence case; omit the old monitoring subtitle, search field and OSCE logo. Use the non-white pale blue background, light blue reading surface and working dark mode from the approved two-column design. Section headings are uppercase and larger than subsection headings; subsection headings are larger than country headings.
 - Show the entire website interface at 150% scale while keeping the story pane and source drawer within the viewport.
