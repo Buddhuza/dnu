@@ -152,8 +152,6 @@ function App() {
   const [importingSpreadsheet, setImportingSpreadsheet] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [updateSearchOpen, setUpdateSearchOpen] = useState(false);
-  const updateSearchRef = useRef(null);
-  const actionBarRef = useRef(null);
   const [activeSectionId, setActiveSectionId] = useState('');
   const [updateSearchText, setUpdateSearchText] = useState('');
   const [activeSearchResult, setActiveSearchResult] = useState(0);
@@ -171,27 +169,6 @@ function App() {
     return normalizeSiteConfig({ ...stored, fontSize: shouldIncrease ? 18 : stored.fontSize }, preparedUpdate.articles);
   });
   const isEditor = Boolean(editorUser && sharedReady);
-  useLayoutEffect(() => {
-    if (!updateSearchOpen) return;
-    const search = updateSearchRef.current;
-    const actions = actionBarRef.current;
-    if (!search) return;
-    const alignSearch = () => {
-      const firstButton = actions?.querySelector('button');
-      const zoom = Number.parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
-      const available = search.parentElement.getBoundingClientRect().width;
-      const toFirstButton = firstButton?.getBoundingClientRect().left - search.getBoundingClientRect().left - 8 * zoom;
-      search.style.width = !firstButton || window.innerWidth <= 700 || toFirstButton < 220 * zoom
-        ? 'min(100%, 420px)'
-        : `${Math.min(available, toFirstButton) / zoom}px`;
-    };
-    alignSearch();
-    const observer = new ResizeObserver(alignSearch);
-    observer.observe(search.parentElement);
-    if (actions) observer.observe(actions);
-    window.addEventListener('resize', alignSearch);
-    return () => { observer.disconnect(); window.removeEventListener('resize', alignSearch); };
-  }, [updateSearchOpen, isEditor]);
   const contributor = contributorFromUser(editorUser);
   const managementEnabled = isEditor && editorUser.editorProfile.role === 'owner';
 
@@ -788,7 +765,7 @@ function App() {
     setToast('Story deleted. Save edits to publish the change.');
   };
   const keepStoryTextInline = event => { if (event.key === 'Enter') event.preventDefault(); };
-  const updateControls = () => daily && <div className="daily-downloads" ref={actionBarRef}>
+  const updateControls = () => daily && <div className="daily-downloads">
     {isEditor && <button className="daily-action daily-edit" type="button" aria-label="Open scrape news" title={editingStories ? 'Save edits before scraping' : 'Open the news scraper'} disabled={editingStories} onClick={() => setScrapingOpen(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.8 9a7 7 0 0 1 12-2L20 12M4 12l2.2 5a7 7 0 0 0 12-2"/></svg></button>}
     {isEditor && <button className="daily-action daily-edit" type="button" aria-label="Import spreadsheet" title={editingStories ? 'Save edits before importing a spreadsheet' : 'Import stories from an Excel or CSV file'} disabled={editingStories} onClick={() => setImportingSpreadsheet(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v16H3zM3 9h18M3 14h11M10 9v11M16 9v5m2 2v5m-3-3 3 3 3-3"/></svg></button>}
     {isEditor && <button className="daily-action daily-edit" type="button" aria-label="Add articles" title="Add article URLs" onClick={() => setAddingArticles(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M4 12h16"/></svg></button>}
@@ -799,6 +776,7 @@ function App() {
     {isEditor && <button className="daily-action daily-edit" type="button" aria-label="Send published update by Gmail" title="Preview recipients and send from OSCE SitRoom" disabled={!selectedArticles.length || editingStories || sendingGmail} onClick={() => setSendDialogOpen(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 18-8-8 18-2.5-7.5L3 11Z"/><path d="M10.5 13.5 21 3"/></svg></button>}
     <button className="daily-action daily-edit" type="button" aria-label="Export spreadsheet" title={editingStories ? 'Save edits before exporting' : 'Export visible full articles to spreadsheet'} disabled={!selectedArticles.length || editingStories || exportingSheet} onClick={exportSpreadsheet}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 9h18M3 14h18M10 9v11M16 9v11"/></svg></button>
     <button className="daily-action daily-edit daily-search-toggle" type="button" aria-label="Search update" title="Search within the update" aria-expanded={updateSearchOpen} onClick={() => setUpdateSearchOpen(current => !current)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"/><path d="m16 16 5 5"/></svg></button>
+    {updateSearchOpen && <div className="update-search" role="search" aria-label="Search update"><input autoFocus type="search" value={updateSearchText} onChange={event => setUpdateSearchText(event.target.value)} onKeyDown={event => { if (event.key === 'Escape') setUpdateSearchOpen(false); if (event.key === 'Enter' && updateSearchResults.length) { event.preventDefault(); setActiveSearchResult(current => (current + (event.shiftKey ? -1 : 1) + updateSearchResults.length) % updateSearchResults.length); } }} placeholder="Find text in update" aria-label="Find text in update"/>{updateSearchQuery && <span role="status">{updateSearchResults.length ? `${Math.min(activeSearchResult + 1, updateSearchResults.length)} of ${updateSearchResults.length} stories` : 'No matches'}</span>}<button type="button" aria-label="Previous match" disabled={!updateSearchResults.length} onClick={() => setActiveSearchResult(current => (current - 1 + updateSearchResults.length) % updateSearchResults.length)}>↑</button><button type="button" aria-label="Next match" disabled={!updateSearchResults.length} onClick={() => setActiveSearchResult(current => (current + 1) % updateSearchResults.length)}>↓</button><button type="button" aria-label="Close search" onClick={() => setUpdateSearchOpen(false)}>×</button></div>}
   </div>;
   const highlightSearch = value => {
     const text = String(value || '');
@@ -934,7 +912,7 @@ function App() {
 
   return <div className="app-shell" data-mode={siteConfig.darkMode ? 'dark' : 'light'} style={themeStyle}>
     <header className="topbar"><div className="brand-text"><h1 id="daily-update-title">{siteConfig.brandName === 'SITUATION ROOM' ? 'SITROOM' : siteConfig.brandName} / {siteConfig.updateTitle}</h1><span className="header-date">{reportEndDateLabel(compiledAt)}</span></div><div className="header-actions">{siteConfig.showUpdate && updateControls()}<div className="site-utilities">{siteConfig.showSources && <button className="site-utility" type="button" aria-label="Sources" title="Sources" aria-expanded={sourceDrawerOpen} aria-controls="source-drawer" onClick={() => setSourceDrawerOpen(open => !open)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>}<button className="site-utility" type="button" aria-label={siteConfig.darkMode ? 'Light mode' : 'Dark mode'} title={siteConfig.darkMode ? 'Light mode' : 'Dark mode'} aria-pressed={siteConfig.darkMode} onClick={() => setSiteConfig(current => ({ ...current, darkMode: !current.darkMode }))}><svg viewBox="0 0 24 24" aria-hidden="true">{siteConfig.darkMode ? <><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19m0-14-1.5 1.5m-11 11L5 19"/></> : <path d="M20.2 16.4A8.5 8.5 0 0 1 7.6 3.8 8.5 8.5 0 1 0 20.2 16.4Z"/>}</svg></button><button className="site-utility" type="button" aria-label={isEditor ? 'Log out' : 'Log in'} title={isEditor ? 'Log out' : 'Log in'} onClick={async () => { if (isEditor) { await sharedClient.auth.signOut(); setEditorUser(null); setManaging(false); setEditingStories(false); setAccountOpen(false); } else setLoginOpen(true); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5M13 8l4 4-4 4M7 12h10"/></svg></button>{isEditor && <button className="site-utility" type="button" aria-label="Account" title="Account" onClick={() => setAccountOpen(true)}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg></button>}{isEditor && <button className="site-utility" type="button" aria-label="Manage site" title="Manage site" onClick={() => { setManagerTab(managementEnabled ? 'Content' : 'Scope'); setManaging(true); }}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4m0-14.2-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg></button>}</div></div>
-    <div className="daily-heading">{updateSearchOpen && <div className="update-search" ref={updateSearchRef} role="search" aria-label="Search update"><input autoFocus type="search" value={updateSearchText} onChange={event => setUpdateSearchText(event.target.value)} onKeyDown={event => { if (event.key === 'Escape') setUpdateSearchOpen(false); if (event.key === 'Enter' && updateSearchResults.length) { event.preventDefault(); setActiveSearchResult(current => (current + (event.shiftKey ? -1 : 1) + updateSearchResults.length) % updateSearchResults.length); } }} placeholder="Find text in update" aria-label="Find text in update"/>{updateSearchQuery && <span role="status">{updateSearchResults.length ? `${Math.min(activeSearchResult + 1, updateSearchResults.length)} of ${updateSearchResults.length} stories` : 'No matches'}</span>}<button type="button" aria-label="Previous match" disabled={!updateSearchResults.length} onClick={() => setActiveSearchResult(current => (current - 1 + updateSearchResults.length) % updateSearchResults.length)}>↑</button><button type="button" aria-label="Next match" disabled={!updateSearchResults.length} onClick={() => setActiveSearchResult(current => (current + 1) % updateSearchResults.length)}>↓</button><button type="button" aria-label="Close search" onClick={() => setUpdateSearchOpen(false)}>×</button></div>}{dailySections.length > 0 && <nav className="daily-section-nav" aria-label="Update sections">{dailySections.map(({ sectionId, section }, index) => <a key={sectionId} className={(activeSectionId || dailySections[0].sectionId) === sectionId ? 'is-active' : ''} href={`#daily-section-${index}`} aria-label={section} title={section} onClick={event => { setActiveSectionId(sectionId); jumpToSection(event, index); }}><span className="section-label-full" aria-hidden="true">{section}</span><span className="section-label-compact" aria-hidden="true">{compactSectionLabels[section] || section}</span></a>)}</nav>}
+    <div className="daily-heading">{dailySections.length > 0 && <nav className="daily-section-nav" aria-label="Update sections">{dailySections.map(({ sectionId, section }, index) => <a key={sectionId} className={(activeSectionId || dailySections[0].sectionId) === sectionId ? 'is-active' : ''} href={`#daily-section-${index}`} aria-label={section} title={section} onClick={event => { setActiveSectionId(sectionId); jumpToSection(event, index); }}><span className="section-label-full" aria-hidden="true">{section}</span><span className="section-label-compact" aria-hidden="true">{compactSectionLabels[section] || section}</span></a>)}</nav>}
       {(toast || (isEditor && saveStatus)) && <div className="header-feedback" title={toast || saveStatus}>
       {toast ? <div className={`toast ${toast.startsWith('Not published:') ? 'toast-error' : toast.includes('Publishing for everyone…') ? 'toast-pending' : ''}`} role={toast.startsWith('Not published:') ? 'alert' : 'status'} onClick={() => setToast('')}>{toast} ×</div> : <span className="shared-save-status" role="status">{saveStatus}</span>}
     </div>}</div>
