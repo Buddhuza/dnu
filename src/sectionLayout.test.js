@@ -6,7 +6,7 @@ test('sections start in reading order while shorter columns receive the next sec
   const sections = ['Lead stories', 'South Eastern Europe', 'Eastern Europe', 'South Caucasus', 'Central Asia', 'Miscellaneous']
     .map(sectionId => ({ sectionId, subsections: [['', [{}]]] }));
   const heights = { 'Lead stories': 300, 'South Eastern Europe': 500, 'Eastern Europe': 180, 'South Caucasus': 240, 'Central Asia': 140, Miscellaneous: 200 };
-  const columns = assignSectionsToColumns(sections, heights);
+  const columns = assignSectionsToColumns(sections, heights, 2);
   const bottoms = [0, 0];
   const starts = sections.map(({ sectionId }, index) => {
     const start = bottoms[columns[index]];
@@ -25,4 +25,9 @@ test('one to four columns keep sections in their requested reading order', () =>
     assert.deepEqual(columns.slice(0, count), Array.from({ length: count }, (_, index) => index));
     assert.ok(columns.every(column => column >= 0 && column < count));
   }
+});
+
+test('three reading columns are used by default', () => {
+  const sections = Array.from({ length: 4 }, (_, index) => ({ sectionId: String(index), subsections: [] }));
+  assert.deepEqual(assignSectionsToColumns(sections).slice(0, 3), [0, 1, 2]);
 });

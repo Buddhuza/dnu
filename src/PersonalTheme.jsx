@@ -16,7 +16,7 @@ export default function PersonalTheme({ config, onChange, onReset }) {
       <label className="cms-font-label">Story text: {config.fontSize} px<input type="range" min="14" max="24" value={config.fontSize} onChange={event => onChange({ fontSize: Number(event.target.value) })}/></label>
       <label className="cms-font-label">Section heading: {config.sectionHeadingSize} px<input type="range" min="20" max="40" value={config.sectionHeadingSize} onChange={event => onChange({ sectionHeadingSize: Number(event.target.value) })}/></label>
       <label className="cms-font-label">Reading width: {config.updateWidth} px<input type="range" min="480" max="1400" step="20" value={config.updateWidth} onChange={event => onChange({ updateWidth: Number(event.target.value) })}/></label>
-      <label className="cms-font-label">Reading columns<select value={config.columnCount ?? 2} onChange={event => onChange({ columnCount: Number(event.target.value) })}>{[1, 2, 3, 4].map(count => <option key={count} value={count}>{count}</option>)}</select></label>
+      <label className="cms-font-label">Reading columns<select value={config.columnCount ?? 3} onChange={event => onChange({ columnCount: Number(event.target.value) })}>{[1, 2, 3, 4].map(count => <option key={count} value={count}>{count}</option>)}</select></label>
       <label className="cms-check"><input type="checkbox" checked={config.sectionHeadingUppercase} onChange={event => onChange({ sectionHeadingUppercase: event.target.checked })}/> Uppercase section headings</label>
     </div>
     <h3>{config.darkMode ? 'Dark' : 'Light'} colours</h3>

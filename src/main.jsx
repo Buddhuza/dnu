@@ -475,7 +475,7 @@ function App() {
       subsections: orderedSubsections(siteConfig.sections.find(item => item.id === sectionId), subsections.keys(), extraRegionalHeadings).map(label => [label, subsections.get(label)])
     }));
   }, [readingArticles, siteConfig.sections, siteConfig.leadOrigins]);
-  const readingColumnCount = Math.max(1, Math.min(4, Math.round(Number(viewConfig.columnCount) || 2)));
+  const readingColumnCount = Math.max(1, Math.min(4, Math.round(Number(viewConfig.columnCount) || 3)));
   const sectionColumns = useMemo(() => assignSectionsToColumns(dailySections, sectionHeights, readingColumnCount), [dailySections, sectionHeights, readingColumnCount]);
   useLayoutEffect(() => {
     const nodes = [...document.querySelectorAll('.daily-scroll .daily-section')];
