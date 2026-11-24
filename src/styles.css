@@ -502,7 +502,7 @@
 .daily-section-nav .section-label-full{display:inline}
 .daily-section-nav .section-label-compact{display:none}
 .daily-scroll{flex:1;min-height:0;height:auto;overflow-y:auto;overflow-x:hidden;padding:9px 5px 12px 0;overscroll-behavior:contain;scrollbar-color:#c4d2db transparent}
-.daily-section-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 22px;align-items:start}
+.daily-section-grid{display:grid;grid-template-columns:repeat(var(--reading-columns,2),minmax(0,1fr));gap:0 22px;align-items:start}
 .daily-section-column{min-width:0;display:flex;flex-direction:column}
 .reading-layout.website-open .daily-section-grid{display:flex;flex-direction:column}
 .reading-layout.website-open .daily-section-column{display:contents}

@@ -9,6 +9,8 @@ export function normalizePersonalAppearance(input) {
     const value = number(input[key], min, max);
     if (value !== undefined) result[key] = value;
   }
+  const columnCount = number(input.columnCount, 1, 4);
+  if (columnCount !== undefined) result.columnCount = Math.round(columnCount);
   if (typeof input.sectionHeadingUppercase === 'boolean') result.sectionHeadingUppercase = input.sectionHeadingUppercase;
   for (const mode of ['theme', 'darkTheme']) {
     if (!input[mode] || typeof input[mode] !== 'object') continue;

@@ -7,8 +7,8 @@ import PersonalTheme from './PersonalTheme.jsx';
 import { EditorAccountForm } from './EditorAccountDialog.jsx';
 import './cms.css';
 
-export const ownerTabs = ['Theme'];
-export const sharedTabs = ['Scope', 'Collect', 'Rejected', 'Sources', 'Email', 'Account'];
+export const ownerTabs = ['Scope', 'Theme'];
+export const sharedTabs = ['Collect', 'Rejected', 'Sources', 'Email', 'Account'];
 const tabs = ['Scope', 'Collect', 'Rejected', 'Sources', 'Theme', 'Email', 'Account'];
 const personalTabs = new Set(['Theme', 'Account']);
 
@@ -36,7 +36,7 @@ export default function SiteManager({ initialTab = 'Scope', isOwner = false, col
       <div className="cms-header"><div><span className="eyebrow">SITE SETTINGS</span><h2 id="cms-title">Manage site</h2><p>Shared tabs save for everyone. Theme and Account follow your login.</p></div><button className="cms-close" onClick={onClose} aria-label="Close content management">×</button></div>
       <div className="cms-layout"><nav className="cms-tabs" aria-label="Content management sections">{availableTabs.map(name => <button key={name} className={tab === name ? 'active' : ''} onClick={() => { setTab(name); setMessage(''); }}><span>{name}</span><small className="cms-tab-scope">{personalTabs.has(name) ? 'Only me' : 'Shared'}</small></button>)}</nav>
         <div className="cms-content">
-          {tab === 'Scope' && <div><h3>Coverage keywords</h3><p className="cms-help">Shared editorial reference for all editors. The native collector applies its configured rules to completed JSON.</p><div className="cms-fields"><label>Include keywords<textarea rows="4" value={config.scopeInclude} onChange={e => update({ scopeInclude: e.target.value })} placeholder="security, politics, election"/></label><label>Exclude keywords<textarea rows="4" value={config.scopeExclude} onChange={e => update({ scopeExclude: e.target.value })} placeholder="sports, entertainment, opinion"/></label></div></div>}
+          {tab === 'Scope' && isOwner && <div><h3>Coverage keywords</h3><p className="cms-help">Only the owner can edit these shared editorial rules. The native collector applies its configured rules to completed JSON.</p><div className="cms-fields"><label>Include keywords<textarea rows="4" value={config.scopeInclude} onChange={e => update({ scopeInclude: e.target.value })} placeholder="security, politics, election"/></label><label>Exclude keywords<textarea rows="4" value={config.scopeExclude} onChange={e => update({ scopeExclude: e.target.value })} placeholder="sports, entertainment, opinion"/></label></div></div>}
           {tab === 'Collect' && <>{collectionPanel}<ScrapeLog/></>}
           {tab === 'Rejected' && <RejectedStories config={config} setConfig={setConfig} publishedArticles={articles} onApprove={onApproveRejected}/>}
           {tab === 'Email' && <div className="cms-fields"><h3>Gmail recipients</h3><p className="cms-help">The update is addressed to sitroom.github@gmail.com. Add BCC recipients below, one address per line.</p><label>BCC recipients<textarea rows="6" value={recipientText} onChange={event => setRecipientText(event.target.value)} placeholder="name@example.com"/></label><button className="cms-primary" type="button" onClick={() => { try { const recipients = parseGmailRecipients(recipientText); update({ gmailRecipients: recipients }); setRecipientText(recipients.join('\n')); setMessage('Recipient list saved. Wait for “Saved for everyone” before sending.'); } catch (error) { setMessage(error.message); } }}>Save recipients</button></div>}

@@ -475,7 +475,8 @@ function App() {
       subsections: orderedSubsections(siteConfig.sections.find(item => item.id === sectionId), subsections.keys(), extraRegionalHeadings).map(label => [label, subsections.get(label)])
     }));
   }, [readingArticles, siteConfig.sections, siteConfig.leadOrigins]);
-  const sectionColumns = useMemo(() => assignSectionsToColumns(dailySections, sectionHeights), [dailySections, sectionHeights]);
+  const readingColumnCount = Math.max(1, Math.min(4, Math.round(Number(viewConfig.columnCount) || 2)));
+  const sectionColumns = useMemo(() => assignSectionsToColumns(dailySections, sectionHeights, readingColumnCount), [dailySections, sectionHeights, readingColumnCount]);
   useLayoutEffect(() => {
     const nodes = [...document.querySelectorAll('.daily-scroll .daily-section')];
     if (!nodes.length) return;
@@ -961,7 +962,7 @@ function App() {
         <div className={`reading-layout ${websiteSource ? 'website-open' : ''}`}>
         {siteConfig.showUpdate && <section className={`daily-update ${viewConfig.sectionHeadingUppercase ? 'uppercase-headings' : ''} ${headlineOnly && !editingStories ? 'headline-only' : ''}`} aria-labelledby="daily-update-title">
           {daily && <div className="daily-scroll" role="region" aria-label="Daily update stories" tabIndex={0}>
-            <div className="daily-section-grid">{[0, 1].map(column => <div className="daily-section-column" key={column}>{dailySections.map(({ sectionId, section, subsections }, sectionIndex) => sectionColumns[sectionIndex] === column && <div className={`daily-section ${sectionId === 'Lead stories' ? 'lead-section' : ''}`} id={`daily-section-${sectionIndex}`} data-section-id={sectionId} key={sectionId} style={{ order: sectionIndex }}>
+            <div className="daily-section-grid" style={{ "--reading-columns": readingColumnCount }}>{Array.from({ length: readingColumnCount }, (_, column) => <div className="daily-section-column" key={column}>{dailySections.map(({ sectionId, section, subsections }, sectionIndex) => sectionColumns[sectionIndex] === column && <div className={`daily-section ${sectionId === 'Lead stories' ? 'lead-section' : ''}`} id={`daily-section-${sectionIndex}`} data-section-id={sectionId} key={sectionId} style={{ order: sectionIndex }}>
               <h3 data-drop-kind="section" data-section-id={sectionId} className={dropTarget === `section:${sectionId}::` ? 'story-drop-target' : ''}>{highlightSearch(section)}</h3>
               {subsections.map(([subsection, items]) => <div key={subsection || 'direct'}>
                 {subsection && <h4 data-drop-kind="subsection" data-section-id={sectionId} data-subsection={subsection} className={`${section === 'Miscellaneous' ? 'plain-topic topic-heading' : sectionId === 'Lead stories' && subsection === 'Middle East' ? 'topic-heading' : ''} ${dropTarget === `subsection:${sectionId}:${subsection}:` ? 'story-drop-target' : ''}`}>{highlightSearch(reportHeadingLabel(subsection))}</h4>}

@@ -19,3 +19,11 @@ test('personal appearance changes the rendered view without changing shared sett
 test('personal appearance rejects unsupported fields and invalid colours', () => {
   assert.deepEqual(normalizePersonalAppearance({ theme: { primary: 'red; background:black' }, showUpdate: false }), {});
 });
+
+test('reading columns stay personal and are clamped to one through four', () => {
+  const shared = { columnCount: 2, theme: {}, darkTheme: {} };
+  assert.equal(withPersonalAppearance(shared, normalizePersonalAppearance({ columnCount: 4 })).columnCount, 4);
+  assert.equal(shared.columnCount, 2);
+  assert.equal(normalizePersonalAppearance({ columnCount: 0 }).columnCount, 1);
+  assert.equal(normalizePersonalAppearance({ columnCount: 8 }).columnCount, 4);
+});

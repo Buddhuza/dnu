@@ -14,6 +14,7 @@ export default function RejectedStories({ config, setConfig, publishedArticles, 
   const [busyId, setBusyId] = useState('');
   const [placements, setPlacements] = useState({});
   const [message, setMessage] = useState('');
+  const [learnedSearch, setLearnedSearch] = useState('');
   async function refresh() {
     setLoading(true);
     setError('');
@@ -23,6 +24,7 @@ export default function RejectedStories({ config, setConfig, publishedArticles, 
   }
   useEffect(() => { refresh(); }, []);
   const pending = pendingRejectedStories(draft, config, publishedArticles);
+  const learnedMatches = [...(config.editorialLearning || [])].reverse().filter(rule => [rule.title, rule.sourceName, rule.action, rule.sectionId, rule.subsection, rule.country].some(value => String(value || '').toLocaleLowerCase().includes(learnedSearch.trim().toLocaleLowerCase())));
   const updatePlacement = (id, patch) => setPlacements(current => ({ ...current, [id]: { ...initialPlacement(config), ...current[id], ...patch } }));
   async function approve(item, placement) {
     setBusyId(item.id);
@@ -64,6 +66,6 @@ export default function RejectedStories({ config, setConfig, publishedArticles, 
         </div>
       </article>;
     })}</div>
-    {(config.editorialLearning || []).length > 0 && <details className="rejected-learned-rules"><summary>Learned decisions ({config.editorialLearning.length})</summary><p className="cms-help">Forget a decision to stop applying it to future scrapes. This does not remove an already published story.</p>{[...config.editorialLearning].reverse().map(rule => <div className="rejected-learned-rule" key={`${rule.url}-${rule.at}`}><span><strong>{rule.action === 'approve' ? 'Approved' : 'Excluded'}</strong> · {rule.sourceName || 'Unknown agency'} · {rule.title}{rule.action === 'approve' ? ` → ${rule.sectionId} / ${rule.subsection}${rule.country ? ` / ${rule.country}` : ''}` : ''}</span><button type="button" className="cms-danger" onClick={() => setConfig(current => ({ ...current, editorialLearning: current.editorialLearning.filter(item => item.url !== rule.url), rejectedReview: current.rejectedReview?.checkedAt === draft?.checkedAt ? { ...current.rejectedReview, deletedIds: current.rejectedReview.deletedIds.filter(id => !(draft?.editorialRejections || []).some(item => item.id === id && item.url === rule.url)) } : current.rejectedReview }))}>Forget rule</button></div>)}</details>}
+    {(config.editorialLearning || []).length > 0 && <details className="rejected-learned-rules"><summary>Learned decisions ({config.editorialLearning.length})</summary><p className="cms-help">Forget a decision to stop applying it to future scrapes. This does not remove an already published story.</p><input type="search" className="cms-search" value={learnedSearch} onChange={event => setLearnedSearch(event.target.value)} placeholder="Search headline, agency or placement" aria-label="Search learned decisions"/>{learnedSearch && <p className="cms-help">{learnedMatches.length} matching decisions</p>}{learnedMatches.map(rule => <div className="rejected-learned-rule" key={`${rule.url}-${rule.at}`}><span><strong>{rule.action === 'approve' ? 'Approved' : 'Excluded'}</strong> · {rule.sourceName || 'Unknown agency'} · {rule.title}{rule.action === 'approve' ? ` → ${rule.sectionId} / ${rule.subsection}${rule.country ? ` / ${rule.country}` : ''}` : ''}</span><button type="button" className="cms-danger" onClick={() => setConfig(current => ({ ...current, editorialLearning: current.editorialLearning.filter(item => item.url !== rule.url), rejectedReview: current.rejectedReview?.checkedAt === draft?.checkedAt ? { ...current.rejectedReview, deletedIds: current.rejectedReview.deletedIds.filter(id => !(draft?.editorialRejections || []).some(item => item.id === id && item.url === rule.url)) } : current.rejectedReview }))}>Forget rule</button></div>)}</details>}
   </section>;
 }
