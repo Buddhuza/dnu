@@ -62,6 +62,21 @@ test('a saved editor decision overrides rejection and places the next matching s
   assert.equal(deleted.rejected[0].editorDecision, 'deleted');
 });
 
+test('a reviewed direct section placement is reused without bypassing a blocked publisher', () => {
+  const candidate = item('Regional security talks begin in Tirana');
+  const decision = { action: 'approve', title: candidate.headline, sourceName: 'BBC', url: candidate.link,
+    sectionId: 'South Eastern Europe', subsection: '', country: '' };
+  const placed = adaptSelectedArticles([candidate], new Set(), registry, [decision]);
+  assert.equal(placed.articles[0].sectionId, 'South Eastern Europe');
+  assert.equal(placed.articles[0].subsection, '');
+
+  const osce = item('OSCE statement on regional security', { source: 'OSCE', sourceDomain: 'osce.org', link: 'https://osce.org/statement' });
+  const osceDecision = { ...decision, title: osce.headline, sourceName: 'OSCE', url: osce.link };
+  const blocked = adaptSelectedArticles([osce], new Set(), registry, [osceDecision]);
+  assert.equal(blocked.articles.length, 0);
+  assert.match(blocked.rejected[0].reason, /OSCE publication|Direct organisation publication|publisher/i);
+});
+
 test('DW live updates follow the official making the statement', () => {
   const titles = [
     'German defense minister open to talks with Russia',

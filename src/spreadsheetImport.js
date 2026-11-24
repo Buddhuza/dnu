@@ -10,6 +10,7 @@ import { conciseDnuSummary } from './conciseSummary.js';
 import { reviewedImportedSummary } from './reviewedImportedSummaries.js';
 import { cleanHeadlinePrefix } from './headlineText.js';
 import { displaySourceName } from './sourceNames.js';
+import { matchingEditorialDecision } from './editorialLearning.js';
 import { articlePlacement } from '../server/importArticle.js';
 import { ukraineAttackPlacement } from './storyPlacement.js';
 import { editorialPlacement } from './editorialPlacement.js';
@@ -409,7 +410,7 @@ function suggestedPlacement(row, title) {
   return { sectionId: 'Miscellaneous', subsection: '', country: country || '' };
 }
 
-export function convertSpreadsheetRows(rows, { existingArticles = [], sources = [], importedAt = new Date().toISOString(), placementOverrides = {} } = {}) {
+export function convertSpreadsheetRows(rows, { existingArticles = [], sources = [], importedAt = new Date().toISOString(), placementOverrides = {}, editorialLearning = [] } = {}) {
   const existingByUrl = new Map(existingArticles.map(article => [canonicalArticleUrl(article.url), article]));
   const sourceByName = new Map(sources.map(source => [compact(source.name), source]));
   const sourceByHost = new Map(sources.flatMap(source => {
@@ -435,12 +436,14 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
     if (/^Yahoo(?: News|\.com)?$/i.test(sourceName)) { skipped.push({ row: row.rowNumber, reason: 'Yahoo republication without a verified original agency' }); continue; }
     const title = cleanHeading(row.heading, rawSourceName, url) || existing?.title;
     if (!sourceName || !title) { skipped.push({ row: row.rowNumber, reason: 'Missing source or headline' }); continue; }
+    const learned = matchingEditorialDecision({ title, sourceName, url: parsed.href }, editorialLearning);
+    if (learned?.action === 'reject') { skipped.push({ row: row.rowNumber, reason: 'Editor rejected this or a closely matching story' }); continue; }
     const sourcePaywall = paywalledSourceReason({ sourceName, url: parsed.href });
     if (sourcePaywall) { skipped.push({ row: row.rowNumber, reason: sourcePaywall }); continue; }
     const governmentSource = directGovernmentPublicationReason({ sourceName, url: parsed.href });
     if (governmentSource) { skipped.push({ row: row.rowNumber, reason: governmentSource }); continue; }
     const exclusion = excludedHeadlineReason(title, [row.shortSummary, row.summary, row.body].filter(Boolean).join(' '), parsed.href);
-    if (exclusion) { skipped.push({ row: row.rowNumber, reason: exclusion }); continue; }
+    if (exclusion && learned?.action !== 'approve') { skipped.push({ row: row.rowNumber, reason: exclusion }); continue; }
     if (!existing && row.body && !['eng', 'und'].includes(franc(row.body.slice(0, 1500), { minLength: 100 }))) {
       skipped.push({ row: row.rowNumber, reason: 'Article body is not English; translate it before import' }); continue;
     }
@@ -450,11 +453,13 @@ export function convertSpreadsheetRows(rows, { existingArticles = [], sources = 
     const summary = text(row.dnuSummary) || reviewedImportedSummary(title, publishedAt) || conciseDnuSummary(bodySummary || suggestedSummary || (row.body ? existing?.summary : ''), title);
     const leadPrefix = firstRegional > 0 && index < firstRegional && leadHeadline.test(title);
     const override = placementOverrides[row.rowNumber];
-    const placement = override || placementFromRow(row, title, `${suggestedSummary} ${summary}`.trim(), existing, leadPrefix);
-    if (!override && placement?.sectionId === 'Miscellaneous' && placement.subsection === 'SOUTH PACIFIC' && placement.country === 'New Zealand') {
+    const learnedPlacement = learned?.action === 'approve' && learned.sectionId
+      ? { sectionId: learned.sectionId, subsection: learned.subsection, country: learned.country || '' } : null;
+    const placement = override || learnedPlacement || placementFromRow(row, title, `${suggestedSummary} ${summary}`.trim(), existing, leadPrefix);
+    if (!override && !learnedPlacement && placement?.sectionId === 'Miscellaneous' && placement.subsection === 'SOUTH PACIFIC' && placement.country === 'New Zealand') {
       needsPlacement.push({ row: row.rowNumber, title, sourceName, url: parsed.href, suggested: placement, reason: 'Review whether this New Zealand story is important enough for the update' }); continue;
     }
-    if (!placement?.sectionId || !override && (!placement.subsection && placement.sectionId !== 'South Eastern Europe' || placement.sectionId === 'Miscellaneous' && !placement.country)) {
+    if (!placement?.sectionId || !override && !learnedPlacement && (!placement.subsection && placement.sectionId !== 'South Eastern Europe' || placement.sectionId === 'Miscellaneous' && !placement.country)) {
       needsPlacement.push({ row: row.rowNumber, title, sourceName, url: parsed.href, suggested: suggestedPlacement(row, title) }); continue;
     }
     const source = sourceByHost.get(parsed.hostname.replace(/^www\./, '').toLowerCase()) || sourceByName.get(compact(sourceName));

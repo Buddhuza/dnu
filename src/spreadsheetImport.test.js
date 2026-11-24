@@ -6,6 +6,20 @@ import { createSpreadsheet, spreadsheetRow } from './spreadsheetExport.js';
 import { convertSpreadsheetRows, listSpreadsheetSheets, readSpreadsheet, readSpreadsheetGrid } from './spreadsheetImport.js';
 import { reportStoryText } from './reportText.js';
 import { displaySiteContent, extendSiteConfigForImportedPlacements, normalizeSiteConfig } from './siteConfig.js';
+import { recordEditorialDecision } from './editorialLearning.js';
+
+test('later sheet imports follow a reviewed placement and skip a reviewed deletion', () => {
+  const rows = [
+    { rowNumber: 2, date: '2026-11-24', source: 'Guardian', region: 'South Eastern Europe', countries: 'Albania', url: 'https://theguardian.com/world/bosnia-security-law', heading: 'Bosnia parliament passes new security law' },
+    { rowNumber: 3, date: '2026-11-24', source: 'Guardian', region: 'South Eastern Europe', countries: 'Albania', url: 'https://theguardian.com/world/albania-protest', heading: 'Albania parliament debates protest security measures' }
+  ];
+  const reviewed = recordEditorialDecision({ editorialLearning: [] }, { title: rows[0].heading, sourceName: 'Guardian', url: rows[0].url }, 'approve', { sectionId: 'South Eastern Europe', subsection: 'Bosnia and Herzegovina', country: '' });
+  const decisions = recordEditorialDecision(reviewed, { title: rows[1].heading, sourceName: 'Guardian', url: rows[1].url }, 'reject').editorialLearning;
+  const result = convertSpreadsheetRows(rows, { editorialLearning: decisions });
+  assert.equal(result.articles.length, 1);
+  assert.equal(result.articles[0].subsection, 'Bosnia and Herzegovina');
+  assert.match(result.skipped[0].reason, /Editor rejected/);
+});
 
 const columns = ['2026-10-23', 'Guardian', 'Europe', 'UK, US', '', '', '', '', 'https://www.theguardian.com/example', 'UK and US ministers meet in London | Guardian', 'UK and US ministers met in London on Friday to discuss European security. They agreed to establish a working group on protection of critical undersea cables and to share intelligence across the Atlantic.'];
 

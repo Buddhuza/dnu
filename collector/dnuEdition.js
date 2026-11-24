@@ -118,7 +118,7 @@ export function adaptSelectedArticles(selected, leads, registry, editorialLearni
     const summary = String(item.summary || item.description || '').trim();
     const base = { id: item.id, url: item.link, title, summary, sourceName, sourceId: source?.id || item.sourceDomain };
     const learned = matchingEditorialDecision(base, editorialLearning);
-    const learnedPlacement = learned?.action === 'approve' && learned.sectionId && learned.subsection
+    const learnedPlacement = learned?.action === 'approve' && learned.sectionId
       ? { sectionId: learned.sectionId, subsection: learned.subsection, country: learned.country || '' } : null;
     const headlineReason = excludedHeadlineReason(title, summary, item.link);
     const sourceReason = directGovernmentPublicationReason(base) || paywalledSourceReason(base);
@@ -144,12 +144,14 @@ export function adaptSelectedArticles(selected, leads, registry, editorialLearni
       || /\barchives?\s*-\s*page\s+\d+\b/i.test(title)
       || unrelatedRegional
       || /^(?:Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Monday),?\s+\d{1,2}\s+[A-Z][a-z]+\s+20\d{2}$/i.test(title);
+    const hardReason = sourceReason || (/^(?:OHCHR)$/i.test(sourceName) ? 'Direct organisation publication' : '')
+      || (placement ? sourceScopeReason(source?.name || sourceName, placement, title) || blockedPlacementReason(base, placement) : '');
     const reason = learned?.action === 'reject' ? 'Editor rejected this or a closely matching story'
-      : learnedPlacement ? '' : headlineReason || sourceReason || (/^(?:OHCHR)$/i.test(sourceName) ? 'Direct organisation publication' : '')
+      : hardReason || (learnedPlacement ? '' : headlineReason
       || (!source ? 'Publisher is not in the configured catalogue' : '')
       || (malformed ? 'Routine, incomplete or malformed headline outside the DNU brief' : '')
       || (unrelatedHome ? 'Local outlet reports an event outside its home country without a local subject' : '')
-      || (!placement ? 'No DNU heading could be identified' : sourceScopeReason(source?.name || sourceName, placement, title) || blockedPlacementReason(base, placement));
+      || (!placement ? 'No DNU heading could be identified' : ''));
     if (reason) { rejected.push({ ...base, reason, editorDecision: learned?.action === 'reject' ? 'deleted' : '', summary: conciseDnuSummary(item.publicSummary || '', title), publishedAt: item.published,
       body: String(item.articleBody || '').trim() }); continue; }
     const lead = leads.has(item.id);

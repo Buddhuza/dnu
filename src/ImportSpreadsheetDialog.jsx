@@ -62,7 +62,7 @@ function PlacementChooser({ item, sections, customCountries, onApply, onDelete }
   </li>;
 }
 
-export default function ImportSpreadsheetDialog({ sections = [], customCountries = {}, existingArticles, sources, importedMode, sharedMode = false, onImport, onRestore, onBusyChange }) {
+export default function ImportSpreadsheetDialog({ sections = [], customCountries = {}, existingArticles, sources, editorialLearning = [], importedMode, sharedMode = false, onImport, onRestore, onReviewReject, onBusyChange }) {
   const [fileName, setFileName] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
@@ -75,6 +75,7 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
   const [rawRows, setRawRows] = useState([]);
   const [placementOverrides, setPlacementOverrides] = useState({});
   const [discardedRows, setDiscardedRows] = useState(new Set());
+  const [reviewDecisions, setReviewDecisions] = useState({});
 
   useEffect(() => { onBusyChange?.(busy); }, [busy, onBusyChange]);
 
@@ -86,8 +87,8 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
   }
 
   function reviewedRows(overrides, discarded) {
-    const converted = convertSpreadsheetRows(rawRows.filter(row => !discarded.has(row.rowNumber)), { existingArticles, sources, placementOverrides: overrides });
-    return { ...converted, skipped: [...converted.skipped, ...[...discarded].map(row => ({ row, reason: 'Deleted during import review' }))] };
+    const converted = convertSpreadsheetRows(rawRows.filter(row => !discarded.has(row.rowNumber)), { existingArticles, sources, placementOverrides: overrides, editorialLearning });
+    return { ...converted, skipped: [...converted.skipped, ...[...discarded].map(row => ({ row, reason: 'Deleted during import review; close repeats will be excluded in future' }))] };
   }
 
   async function previewSheet(chosenFile, chosenSheet, link = googleUrl) {
@@ -99,6 +100,7 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
       setRawRows([]);
       setPlacementOverrides({});
       setDiscardedRows(new Set());
+      setReviewDecisions({});
       setResult({ articles: [], bodies: [], skipped: [], needsPlacement: [], total: online.totalRows, sheetName: online.sheetName, tablePreview: online.tablePreview, cacheWarning: online.cacheWarning });
       return;
     }
@@ -110,14 +112,16 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
       setRawRows([]);
       setPlacementOverrides({});
       setDiscardedRows(new Set());
+      setReviewDecisions({});
       setResult({ articles: [], bodies: [], skipped: [], needsPlacement: [], total: Math.max(0, grid.length - 1), sheetName: chosenSheet, tablePreview: grid.slice(0, 8) });
       return;
     }
-    const converted = convertSpreadsheetRows(rows, { existingArticles, sources });
+    const converted = convertSpreadsheetRows(rows, { existingArticles, sources, editorialLearning });
     if (!converted.articles.length && !converted.needsPlacement.length) throw new Error('No usable DNU stories were found in this sheet. This tab may not contain article columns, or all rows were excluded by editorial rules.');
     setRawRows(rows);
     setPlacementOverrides({});
     setDiscardedRows(new Set());
+    setReviewDecisions({});
     if (online) {
       setSheetNames(online.sheetNames);
       setSheetName(online.sheetName);
@@ -174,25 +178,30 @@ export default function ImportSpreadsheetDialog({ sections = [], customCountries
     if (!result || result.needsPlacement.length || busy) return;
     setBusy(true);
     setError('');
-    try { await onImport(result, fileName); }
+    try { await onImport({ ...result, reviewDecisions: Object.values(reviewDecisions) }, fileName); }
     catch (failure) { setError(failure.message || 'Could not import this spreadsheet.'); setBusy(false); }
   }
 
   function applyPlacement(row, placement) {
+    const item = result?.needsPlacement.find(candidate => candidate.row === row);
     const next = { ...placementOverrides, [row]: placement };
     const converted = reviewedRows(next, discardedRows);
     setPlacementOverrides(next);
+    if (item) setReviewDecisions(current => ({ ...current, [row]: { action: 'approve', article: item, placement } }));
     setResult(current => ({ ...current, ...converted }));
   }
 
   function deleteStory(row) {
+    const item = result?.needsPlacement.find(candidate => candidate.row === row) || reviewDecisions[row]?.article;
     const nextDiscarded = new Set(discardedRows).add(row);
     const nextOverrides = { ...placementOverrides };
     delete nextOverrides[row];
     const converted = reviewedRows(nextOverrides, nextDiscarded);
     setDiscardedRows(nextDiscarded);
     setPlacementOverrides(nextOverrides);
+    setReviewDecisions(current => { const next = { ...current }; delete next[row]; return next; });
     setResult(current => ({ ...current, ...converted }));
+    if (item) onReviewReject?.(item);
   }
 
   return <section className="import-spreadsheet-content" aria-labelledby="import-spreadsheet-heading">
