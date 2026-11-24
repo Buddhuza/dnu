@@ -7,11 +7,14 @@ import { duplicateGroups, duplicateGroupHue } from './storyDuplicates.js';
 import { prepareManualArticle } from './manualArticle.js';
 import { articleHintsFromUrl, articleHintsFromPage } from './urlArticleHints.js';
 import { useEscapeToClose } from './useEscapeToClose.js';
+import { articleFieldsFromPage, fetchArticlePage } from './articlePage.js';
+import { sharedClient } from './sharedEdition.js';
 
 const NEW = '__new__';
 
 export default function AddArticlesDialog({ sections, sources = [], customCountries = {}, existingArticles = [], remainingSlots, onAdd, onClose }) {
-  const [manual, setManual] = useState({ title: '', summary: '', sourceName: '', url: '', date: '', language: 'auto' });
+  const emptyManual = { title: '', summary: '', sourceName: '', url: '', date: '', publishedAt: null, language: 'auto' };
+  const [manual, setManual] = useState(emptyManual);
   const [manualError, setManualError] = useState('');
   const [urlBusy, setUrlBusy] = useState(false);
   const [preparing, setPreparing] = useState(false);
@@ -58,24 +61,35 @@ export default function AddArticlesDialog({ sections, sources = [], customCountr
   }
 
   async function useArticleUrl() {
-    const url = publicArticleUrl(manual.url.trim());
+    const typed = manual.url.trim();
+    const url = publicArticleUrl(typed);
     if (!url) { setManualError('Enter a public HTTPS article URL first.'); return; }
     setManualError('');
     setUrlBusy(true);
     const fromUrl = articleHintsFromUrl(url.href, sources);
-    let fromPage = {}, pageAvailable = false;
-    try { fromPage = await articleHintsFromPage(url.href); pageAvailable = true; }
-    catch { /* Most publishers block cross-origin browser requests; URL hints still work. */ }
+    let fromPage = {}, source = '', serverError = '';
+    try {
+      const page = await fetchArticlePage(sharedClient, url.href);
+      fromPage = articleFieldsFromPage(page.html, page.url);
+      source = 'server';
+    } catch (error) {
+      serverError = error.message || '';
+      try { fromPage = { ...await articleHintsFromPage(url.href), text: '' }; source = 'browser'; }
+      catch { /* Most publishers block cross-origin browser requests; URL hints still work. */ }
+    }
     const title = fromPage.title || fromUrl.title;
     const sourceName = fromUrl.sourceName || fromPage.sourceName;
-    const summary = fromPage.summary || '';
+    const summary = fromPage.text || fromPage.summary || '';
     const date = fromPage.date || fromUrl.date;
-    setManual(current => current.url.trim() === url.href || current.url.trim() === manual.url.trim()
-      ? { ...current, title: current.title || title, sourceName: current.sourceName || sourceName, summary: current.summary || summary, date: current.date || date }
+    const publishedAt = fromPage.publishedAt || null;
+    setManual(current => current.url.trim() === typed
+      ? { ...current, title: current.title || title, sourceName: current.sourceName || sourceName, summary: current.summary || summary,
+        date: current.date || date, publishedAt: !current.date || current.date === date ? publishedAt : current.publishedAt }
       : current);
-    setUrlNotice(pageAvailable ? 'Page metadata suggested. Verify the headline, text, agency and date before adding.'
-      : title || sourceName || date ? 'Suggestions came from the URL; verify the exact headline and add text if needed.'
-        : 'This URL does not reveal article details. Enter the headline, agency and text yourself.');
+    setUrlNotice(source === 'server' && fromPage.text ? 'Headline, agency, date and full text read from the page. Verify them before adding.'
+      : source === 'server' ? 'Page metadata read, but the article text could not be isolated (paywall or script-rendered page). Paste the text yourself.'
+        : source === 'browser' ? 'Page metadata suggested. Verify the headline, text, agency and date before adding.'
+          : `${serverError ? serverError.replace(/\.?$/, '. ') : ''}${title || sourceName || date ? 'Suggestions came from the URL; verify the exact headline and add text if needed.' : 'This URL does not reveal article details. Enter the headline, agency and text yourself.'}`);
     setUrlBusy(false);
   }
 
@@ -91,9 +105,10 @@ export default function AddArticlesDialog({ sections, sources = [], customCountr
     catch (error) { setManualError(error.message || 'Could not translate this article.'); setPreparing(false); return; }
     const placement = articlePlacement({}, prepared.title, prepared.summary) || { sectionId: '', subsection: '', country: '' };
     const [year, month, day] = manual.date.split('-').map(Number);
-    const publishedAt = manual.date ? viennaWallTimeToIso(year, month, day, 12) : null;
-    setDrafts(current => [...current, { id: `manual-${crypto.randomUUID()}`, url: url.href, sourceId: 'manual', ingestMethod: 'add', manualOverride: true, sourceName, title: prepared.title, summary: prepared.summary, translated: prepared.translated, originalHeadline: prepared.originalHeadline, fullBody: prepared.body, publishedAt: publishedAt || new Date().toISOString(), timeSource: publishedAt ? 'inferred' : 'current', reviewed: true, hidden: false, russianSource: false, added: false, ...placement }]);
-    setManual({ title: '', summary: '', sourceName: '', url: '', date: '', language: 'auto' });
+    const pageTime = manual.publishedAt && manual.date ? manual.publishedAt : null;
+    const publishedAt = pageTime || (manual.date ? viennaWallTimeToIso(year, month, day, 12) : null);
+    setDrafts(current => [...current, { id: `manual-${crypto.randomUUID()}`, url: url.href, sourceId: 'manual', ingestMethod: 'add', manualOverride: true, sourceName, title: prepared.title, summary: prepared.summary, translated: prepared.translated, originalHeadline: prepared.originalHeadline, fullBody: prepared.body, publishedAt: publishedAt || new Date().toISOString(), timeSource: pageTime ? 'page' : publishedAt ? 'inferred' : 'current', reviewed: true, hidden: false, russianSource: false, added: false, ...placement }]);
+    setManual(emptyManual);
     setManualError('');
     setUrlNotice('');
     setCompletedEntries(count => count + 1);
@@ -106,13 +121,13 @@ export default function AddArticlesDialog({ sections, sources = [], customCountr
       {remainingSlots < 1 && <p className="add-unavailable" role="status">The update has reached its 100 added-story limit. Remove an added story in Manage site → Stories before adding another.</p>}
       <form onSubmit={addManual}>
         <label htmlFor="add-link">Article URL</label>
-        <div className="add-url-tools"><input id="add-link" type="url" value={manual.url} onChange={event => { setManual(current => ({ ...current, url: event.target.value })); setUrlNotice(''); }} placeholder="https://example.com/article" autoFocus/><button type="button" onClick={useArticleUrl} disabled={urlBusy || !manual.url.trim()}>{urlBusy ? 'Checking…' : 'Use URL'}</button></div>
+        <div className="add-url-tools"><input id="add-link" type="url" value={manual.url} onChange={event => { setManual(current => ({ ...current, url: event.target.value })); setUrlNotice(''); }} placeholder="https://example.com/article" autoFocus/><button type="button" onClick={useArticleUrl} disabled={urlBusy || !manual.url.trim()}>{urlBusy ? 'Reading page…' : 'Use URL'}</button></div>
         {urlNotice && <p className="add-url-notice" role="status">{urlNotice}</p>}
         <label htmlFor="add-headline">Headline</label><input id="add-headline" value={manual.title} maxLength="400" onChange={event => setManual(current => ({ ...current, title: event.target.value }))}/>
         <label htmlFor="add-summary">Text</label><textarea id="add-summary" rows="4" value={manual.summary} onChange={event => setManual(current => ({ ...current, summary: event.target.value }))}/>
         <label htmlFor="add-language">Article language</label><select id="add-language" value={manual.language} onChange={event => setManual(current => ({ ...current, language: event.target.value }))}><option value="auto">Detect automatically</option><option value="en">English</option><option value="ar">Arabic</option><option value="hy">Armenian</option><option value="az">Azerbaijani</option><option value="fr">French</option><option value="ka">Georgian</option><option value="de">German</option><option value="fa">Persian</option><option value="ro">Romanian</option><option value="ru">Russian</option><option value="sr">Serbian</option><option value="tr">Turkish</option><option value="uk">Ukrainian</option><option value="uz">Uzbek</option></select><p className="add-url-notice">Translation uses your browser when available; otherwise the pasted text is sent to a public translation service.</p>
         <label htmlFor="add-agency">Agency</label><input id="add-agency" value={manual.sourceName} maxLength="100" onChange={event => setManual(current => ({ ...current, sourceName: event.target.value }))}/>
-        <label htmlFor="add-article-date">Article date in Vienna (optional)</label><input id="add-article-date" type="date" value={manual.date} onChange={event => setManual(current => ({ ...current, date: event.target.value }))}/><p className="add-url-notice">A date without a time is shown as 12:00 Vienna time.</p>
+        <label htmlFor="add-article-date">Article date in Vienna (optional)</label><input id="add-article-date" type="date" value={manual.date} onChange={event => setManual(current => ({ ...current, date: event.target.value, publishedAt: null }))}/><p className="add-url-notice">{manual.publishedAt && manual.date ? 'The exact publication time read from the page will be used.' : 'A date without a time is shown as 12:00 Vienna time.'}</p>
         {manualError && <p className="add-manual-error" role="alert">{manualError}</p>}
         <div className="add-dialog-actions"><button type="button" onClick={onClose}>Close</button><button type="submit" disabled={remainingSlots < 1 || urlBusy || preparing}>{preparing ? 'Preparing article…' : 'Choose placement'}</button></div>
       </form>
