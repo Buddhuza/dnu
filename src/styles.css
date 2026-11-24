@@ -772,3 +772,7 @@
   .scrape-dialog .native-actions>button{height:28px;min-height:28px;font-size:12.5px!important}
   .scrape-dialog .import-google-controls button:not(.import-copy-url){min-height:28px;font-size:12.5px!important}
 }
+
+/* Story text uses its personal reading size; country and organisation labels stay at 18 px. */
+.daily-story p,.daily-story-agency,.daily-story-date{font-size:var(--story-reading-size,16px)}
+.daily-country{font-size:18px}

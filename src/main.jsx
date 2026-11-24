@@ -174,7 +174,7 @@ function App() {
   const managementEnabled = isEditor && editorUser.editorProfile.role === 'owner';
   const [personalAppearanceState, setPersonalAppearanceState] = useState({ userId: '', value: {} });
   const personalAppearance = managementEnabled && personalAppearanceState.userId === editorUser?.id ? personalAppearanceState.value : {};
-  const viewConfig = useMemo(() => withPersonalAppearance(siteConfig, personalAppearance), [siteConfig, personalAppearanceState, managementEnabled]);
+  const viewConfig = useMemo(() => withPersonalAppearance({ ...siteConfig, fontSize: 16 }, personalAppearance), [siteConfig, personalAppearanceState, managementEnabled]);
   useEffect(() => {
     if (!managementEnabled || !editorUser?.id) return;
     const remote = normalizePersonalAppearance(editorUser.user_metadata?.dnuAppearance);
@@ -451,7 +451,8 @@ function App() {
     '--site-bg': activeTheme.background, '--site-surface': activeTheme.surface,
     '--site-text': activeTheme.text, '--site-section': activeTheme.section,
     '--site-font': activeTheme.font === 'Georgia' ? 'Georgia, serif' : `'${activeTheme.font}', Arial, sans-serif`,
-    '--site-body-size': `${viewConfig.fontSize}px`,
+    '--site-body-size': '18px',
+    '--story-reading-size': `${viewConfig.fontSize}px`,
     '--section-heading-size': `${viewConfig.sectionHeadingSize}px`,
     '--update-width': `${viewConfig.updateWidth}px`,
     ...(activeTheme.headerTop ? { '--header-top-color': activeTheme.headerTop } : {}),

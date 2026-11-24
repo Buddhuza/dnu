@@ -20,8 +20,8 @@ const articles = [
   { id: 'b', section: 'Asia', subsection: 'Japan', title: 'Second headline', summary: 'Second summary.', sourceName: 'Agency', url: 'https://example.com/b' }
 ];
 
-test('default reading text starts at 18 px', () => {
-  assert.equal(defaultSiteConfig(articles).fontSize, 18);
+test('default reading text starts at 16 px', () => {
+  assert.equal(defaultSiteConfig(articles).fontSize, 16);
 });
 
 test('existing DM Sans, Helvetica and Source Sans 3 themes use Lato after normalisation', () => {
