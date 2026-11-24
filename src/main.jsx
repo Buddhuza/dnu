@@ -982,7 +982,7 @@ function App() {
             </div>)}</div>)}</div>
             {!readingArticles.length && <p className="daily-empty">{displayedArticles.length ? isEditor ? 'No stories are selected. Press Edit to choose stories for this update.' : 'No stories are selected for this update.' : isEditor ? 'No stories yet. Open Scrape news to import a spreadsheet.' : 'No stories have been published yet.'}</p>}
             {selectedArticles.length > 0 && <div className="daily-disclaimer"><p><strong>Disclaimer:</strong> {disclaimerFirst}</p><p>{disclaimerSecond}</p></div>}
-            {siteConfig.showCoverage && coverageNote && selectedArticles.length > 0 && <p className="daily-coverage">{coverageNote}</p>}
+            {coverageNote && selectedArticles.length > 0 && <p className="daily-coverage">{coverageNote}</p>}
           </div>}
         </section>}
         {websiteSource && <section className="website-panel" aria-label={`${websiteSource.name} website`}><div className="website-panel-heading"><div><span className="eyebrow">SOURCE WEBSITE</span><h2>{websiteSource.name}</h2></div><button onClick={() => setWebsiteSourceId('')} aria-label="Close source website">×</button></div><div className="website-panel-actions"><a href={websiteSource.url} target="_blank" rel="noopener noreferrer">Open website in new tab ↗</a></div><p>{isEditor ? 'To add an article, copy its link address, then paste it into Add.' : 'Some publishers block display here; use the link above if this panel stays blank.'}</p><iframe key={websiteSource.id} src={websiteSource.url} title={`${websiteSource.name} website`} referrerPolicy="no-referrer" loading="lazy"/></section>}
