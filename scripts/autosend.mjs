@@ -6,6 +6,7 @@ import { latestCollectionArticles } from '../src/editionActions.js';
 import { extendSiteConfigForImportedPlacements, normalizeSiteConfig } from '../src/siteConfig.js';
 import { gmailMessageFromState } from './build-gmail-message.mjs';
 import { ensureUkraineWarLeads } from '../src/weekendEdition.js';
+import { loadSelectedRecipients } from '../src/recipientStore.js';
 
 const supabaseUrl = 'https://epghsyajgspcywqqbfso.supabase.co';
 
@@ -35,7 +36,8 @@ export function autosendEdition(draft, status, settings, requiredDate = '') {
     url: article.url, heading: article.originalHeadline || article.title || '', body: article.body,
     translated: article.translated === true
   }));
-  return { edition, settings: nextSettings, bodies };
+  const { gmailRecipients, ...publishedSettings } = nextSettings;
+  return { edition, settings: publishedSettings, bodies };
 }
 
 async function serviceRoleKey() {
@@ -55,6 +57,8 @@ export async function autosend(draft, status, client) {
   const { data: current, error: readError } = await client.from('dnu_state')
     .select('revision,edition,settings,excluded_story_ids').eq('id', 'main').single();
   if (readError) throw readError;
+  const recipients = await loadSelectedRecipients(client);
+  if (!recipients.length || recipients.length > 400) throw new Error('Choose between 1 and 400 recipients in the address book before autosend.');
   const next = autosendEdition(draft, status, current.settings);
   if (next.bodies.length) {
     const { error } = await client.from('dnu_bodies').upsert(next.bodies, { onConflict: 'url' });
@@ -67,7 +71,7 @@ export async function autosend(draft, status, client) {
   if (saveError) throw saveError;
   if (!saved) throw new Error('Another editor changed the update. No email was sent; run autosend again.');
   const message = gmailMessageFromState({ revision: Number(saved.revision), edition: next.edition,
-    settings: next.settings, excluded_story_ids: [], compiled_at: draft.checkedAt }, Number(saved.revision), true);
+    settings: next.settings, excluded_story_ids: [], compiled_at: draft.checkedAt }, Number(saved.revision), true, recipients);
   return { message, storyCount: next.edition.articles.length, cachedBodies: next.bodies.length };
 }
 

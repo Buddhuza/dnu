@@ -27,3 +27,10 @@ test('reading columns stay personal and are clamped to one through four', () => 
   assert.equal(normalizePersonalAppearance({ columnCount: 0 }).columnCount, 1);
   assert.equal(normalizePersonalAppearance({ columnCount: 8 }).columnCount, 4);
 });
+
+test('personal spacing, heading size and link colour are bounded', () => {
+  const appearance = normalizePersonalAppearance({ countryHeadingSize: 30, storyLineHeight: 1.25, storySpacing: 0, sectionSpacing: 25, theme: { link: '#123456', accent: '#abcdef' } });
+  assert.deepEqual({ countryHeadingSize: appearance.countryHeadingSize, storyLineHeight: appearance.storyLineHeight, storySpacing: appearance.storySpacing, sectionSpacing: appearance.sectionSpacing }, { countryHeadingSize: 24, storyLineHeight: 1.25, storySpacing: 2, sectionSpacing: 25 });
+  assert.equal(appearance.theme.link, '#123456');
+  assert.equal(appearance.theme.accent, '#abcdef');
+});

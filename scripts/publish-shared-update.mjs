@@ -34,7 +34,7 @@ for (let attempt = 0; attempt < 3; attempt++) {
   if (readError) throw readError;
   const customUrls = (state.settings?.customArticles || []).map(article => article.url);
   const update = appendScrapedEdition(state.edition?.articles ? state.edition : {}, { ...edition, articles: incoming.map(({ body, ...article }) => article) }, customUrls);
-  const settings = extendSiteConfigForImportedPlacements(normalizeSiteConfig(state.settings, update.articles), update.articles);
+  const { gmailRecipients, ...settings } = extendSiteConfigForImportedPlacements(normalizeSiteConfig(state.settings, update.articles), update.articles);
   settings.leadOrigins = { ...settings.leadOrigins, ...(edition.leadOrigins || {}) };
   const { data, error } = await client.from('dnu_state').update({
     revision: Number(state.revision) + 1,

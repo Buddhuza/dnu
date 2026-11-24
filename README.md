@@ -6,7 +6,7 @@ The versioned [DNU rulebook](public/dnu-rules.md) is the single editable Markdow
 
 ## Shared public site and editor login
 
-The shared edition uses Supabase Auth and Postgres while GitHub Pages serves the website. Visitors can browse, switch views, search, download, email and export. Signed-in members of `dnu_editors` can add, import and edit. Only the owner can open **Manage site**. Their changes are saved to the same shared edition; public browsers load it immediately on opening and poll for changes every 20 seconds. Dark mode remains a personal browser setting. Native collection requires the Node server or an offline GitHub Actions run. Collection creates a draft JSON and does not automatically publish to Supabase.
+The shared edition uses Supabase Auth and Postgres while GitHub Pages serves the website. Visitors can browse, switch views, search, download, email and export. Signed-in members of `dnu_editors` can add, import and edit. Active editors can open **Manage site** for shared tabs; only the owner can open Scope and personal Theme settings. Their changes are saved to the same shared edition; public browsers load it immediately on opening and poll for changes every 20 seconds. Dark mode remains a personal browser setting. Native collection requires the Node server or an offline GitHub Actions run. Collection creates a draft JSON and does not automatically publish to Supabase.
 
 To activate shared editing for a new Supabase project:
 
@@ -137,3 +137,7 @@ Run DNU_TEST_DOMAIN=bbc.com npm run collect:daily first. It writes data/native-t
 For a local editor Collect button, configure the normal public Supabase URL and anon key in the browser build and set SUPABASE_URL and SUPABASE_ANON_KEY on the Node server. The server verifies the editor's access token; anonymous users cannot start collection. A local draft preview does not publish it to Supabase. Keep the service-role key only in the separate publication process.
 
 Run npm test and npm run build before deployment. GitHub Actions collection runs twice daily and saves JSON drafts only. Shared publication and Outlook email remain disabled until reviewed.
+
+## Address book database
+
+Run [supabase/address-book.sql](supabase/address-book.sql) in the Supabase SQL Editor after the main schema. It creates an editor-only contact table, migrates the existing BCC list and adds an atomic recipient-selection function. The live DNU project received this migration on 24 November 2026. The Send workflow needs either `SUPABASE_SERVICE_ROLE_KEY` or `SUPABASE_ACCESS_TOKEN` as a GitHub Actions secret so it can read the selected recipients.

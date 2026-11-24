@@ -23,7 +23,7 @@ export async function loadEditorProfile(user) {
 }
 
 export function sharedSettings(settings) {
-  const { darkMode, ...published } = settings;
+  const { darkMode, gmailRecipients, ...published } = settings;
   return published;
 }
 

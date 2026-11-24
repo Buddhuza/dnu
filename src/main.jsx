@@ -29,6 +29,7 @@ import { countCoveredCountries } from './collectionSummary.js';
 import { formatViennaDateTime } from './viennaTime.js';
 import { emailSubject } from './emailUpdate.js';
 import { waitForGmailDelivery } from './gmailDelivery.js';
+import { loadSelectedRecipients, saveSelectedRecipients } from './recipientStore.js';
 import { loadFullArticle } from './articleBodyClient.js';
 import { getStoredArticleBody, storeArticleBodies } from './articleBodyStore.js';
 import { loadEditorProfile, loadSharedBody, loadSharedEdition, publishSharedEdition, sharedClient, sharedPayload } from './sharedEdition.js';
@@ -104,6 +105,7 @@ function App() {
   const [loginOpen, setLoginOpen] = useState(false);
   const [sendingGmail, setSendingGmail] = useState(false);
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
+  const [selectedMailRecipients, setSelectedMailRecipients] = useState(null);
   const [sharedReady, setSharedReady] = useState(!sharedEnabled);
   const [sharedError, setSharedError] = useState('');
   const [saveStatus, setSaveStatus] = useState('');
@@ -170,6 +172,13 @@ function App() {
     return normalizeSiteConfig({ ...stored, fontSize: shouldIncrease ? 18 : stored.fontSize }, preparedUpdate.articles);
   });
   const isEditor = Boolean(editorUser && sharedReady);
+  useEffect(() => {
+    if (!isEditor || !sharedClient) { setSelectedMailRecipients(null); return; }
+    let active = true;
+    loadSelectedRecipients(sharedClient).then(recipients => { if (active) setSelectedMailRecipients(recipients); })
+      .catch(error => { if (active) setToast(`Could not load the address book: ${error.message}`); });
+    return () => { active = false; };
+  }, [isEditor, editorUser?.id]);
   const contributor = contributorFromUser(editorUser);
   const managementEnabled = isEditor && editorUser.editorProfile.role === 'owner';
   const [personalAppearanceState, setPersonalAppearanceState] = useState({ userId: '', value: {} });
@@ -449,10 +458,14 @@ function App() {
   const themeStyle = {
     '--site-primary': activeTheme.primary, '--site-accent': activeTheme.accent,
     '--site-bg': activeTheme.background, '--site-surface': activeTheme.surface,
-    '--site-text': activeTheme.text, '--site-section': activeTheme.section,
+    '--site-text': activeTheme.text, '--site-section': activeTheme.section, '--site-link': activeTheme.link || activeTheme.section,
     '--site-font': activeTheme.font === 'Georgia' ? 'Georgia, serif' : `'${activeTheme.font}', Arial, sans-serif`,
     '--site-body-size': '18px',
     '--story-reading-size': `${viewConfig.fontSize}px`,
+    '--country-heading-size': `${viewConfig.countryHeadingSize ?? 18}px`,
+    '--story-line-height': viewConfig.storyLineHeight ?? 1.1,
+    '--story-spacing': `${viewConfig.storySpacing ?? 6}px`,
+    '--section-spacing': `${viewConfig.sectionSpacing ?? 18}px`,
     '--section-heading-size': `${viewConfig.sectionHeadingSize}px`,
     '--update-width': `${viewConfig.updateWidth}px`,
     ...(activeTheme.headerTop ? { '--header-top-color': activeTheme.headerTop } : {}),
@@ -616,22 +629,9 @@ function App() {
         JSON.stringify(sharedPayload(daily, siteConfig, excludedStoryIds, compiledAt)) !== savedPayloadRef.current) {
       throw new Error('Wait for “Saved for everyone” before changing recipients or sending.');
     }
-    if (JSON.stringify(recipients) === JSON.stringify(siteConfig.gmailRecipients)) return sharedRevisionRef.current;
-    savingRef.current = true;
-    setSaveStatus('Saving recipients…');
-    try {
-      const nextConfig = { ...siteConfig, gmailRecipients: recipients };
-      const payload = sharedPayload(daily, nextConfig, excludedStoryIds, compiledAt);
-      const revision = await publishSharedEdition(sharedRevisionRef.current, payload);
-      sharedRevisionRef.current = revision;
-      savedPayloadRef.current = JSON.stringify(payload);
-      setSiteConfig(nextConfig);
-      setSaveStatus('Saved for everyone');
-      return revision;
-    } catch (failure) {
-      setSaveStatus(`Not published: ${failure.message}`);
-      throw failure;
-    } finally { savingRef.current = false; }
+    const saved = await saveSelectedRecipients(sharedClient, recipients);
+    setSelectedMailRecipients(saved);
+    return sharedRevisionRef.current;
   }
 
   async function sendPublishedGmail(recipients) {
@@ -993,8 +993,8 @@ function App() {
     </div>
     {isEditor && showScrapeNotice(scrapeStatus, { dialogOpen: scrapingOpen, dismissedRunId: dismissedScrapeRunId, hiddenBefore: scrapeNoticeHiddenBefore, now: scrapeNoticeClock }) && <button type="button" className="scrape-live-status" role="status" onClick={() => { dismissCompletedScrape(); setScrapingOpen(true); }}><strong>{scrapeStatus.state === 'complete' ? 'Scrape complete' : 'Scraping news'}</strong><span>{scrapeStatus.message}</span><small>{scrapeStatus.state === 'complete' ? 'Publish draft' : 'Open progress'}</small></button>}
     {spreadsheetResults && <div className="add-backdrop" onClick={() => setSpreadsheetResults(null)}><section className="add-dialog spreadsheet-results" role="dialog" aria-modal="true" aria-labelledby="spreadsheet-results-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="spreadsheet-results-title">Spreadsheet export results</h2><button type="button" aria-label="Close export results" onClick={() => setSpreadsheetResults(null)}>×</button></div><p>{spreadsheetResults.downloaded ? `Downloaded ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} visible full articles.` : `No spreadsheet downloaded. ${spreadsheetResults.exported} of ${spreadsheetResults.attempted} articles available.`}</p>{spreadsheetResults.error && <p role="alert">{spreadsheetResults.error}</p>}{spreadsheetResults.failures.length > 0 && <><h3>{spreadsheetResults.failures.length} unavailable</h3><ul>{spreadsheetResults.failures.map((failure, index) => <li key={index}>{failure}</li>)}</ul></>}<div className="add-dialog-actions"><button type="button" onClick={() => setSpreadsheetResults(null)}>Close</button></div></section></div>}
-    {isEditor && managing && <SiteManager initialTab={managerTab} isOwner={managementEnabled} collectionPanel={collectionPanel} config={siteConfig} appearanceConfig={viewConfig} onAppearanceChange={changePersonalAppearance} onAppearanceReset={resetPersonalAppearance} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} accountProfile={editorUser.editorProfile} onApproveRejected={approveRejectedStory} onClose={() => setManaging(false)}/>}
-    {isEditor && sendDialogOpen && <SendGmailDialog recipients={siteConfig.gmailRecipients} subject={`[TEST] ${emailSubject(compiledAt)}`} articleCount={selectedArticles.length} onSave={saveGmailRecipients} onSend={sendPublishedGmail} onClose={() => setSendDialogOpen(false)}/>}
+    {isEditor && managing && <SiteManager initialTab={managerTab} isOwner={managementEnabled} collectionPanel={collectionPanel} config={siteConfig} appearanceConfig={viewConfig} onAppearanceChange={changePersonalAppearance} onAppearanceReset={resetPersonalAppearance} setConfig={setSiteConfig} articles={daily?.articles ?? preparedUpdate.articles} baseSources={config?.sources ?? []} accountProfile={editorUser.editorProfile} onApproveRejected={approveRejectedStory} onRecipientsChange={setSelectedMailRecipients} onClose={() => setManaging(false)}/>}
+    {isEditor && sendDialogOpen && <SendGmailDialog recipients={selectedMailRecipients || []} loading={selectedMailRecipients === null} subject={`[TEST] ${emailSubject(compiledAt)}`} articleCount={selectedArticles.length} onSave={saveGmailRecipients} onSend={sendPublishedGmail} onClose={() => setSendDialogOpen(false)}/>}
     {isEditor && scrapingOpen && <div className="add-backdrop" onClick={closeScrapeDialog}><section className="add-dialog scrape-dialog" role="dialog" aria-modal="true" aria-labelledby="scrape-dialog-title" onClick={event => event.stopPropagation()}><div className="add-dialog-heading"><h2 id="scrape-dialog-title">Scrape news</h2><button type="button" aria-label="Close scrape status" onClick={closeScrapeDialog} disabled={importBusy}>×</button></div><NativeCollection onPublish={publishNativeDraft} onClear={clearCurrentUpdate} hasStories={Boolean((daily?.articles.length || 0) + (siteConfig.customArticles?.length || 0))} interactionDisabled={importBusy}/><hr className="scrape-import-divider"/><ImportSpreadsheetDialog sections={siteConfig.sections} customCountries={siteConfig.customCountries} existingArticles={[...archivedImportReference.articles, ...preparedUpdate.articles, ...(daily?.articles ?? [])]} sources={configuredSources} editorialLearning={siteConfig.editorialLearning} importedMode={importedMode} sharedMode={sharedEnabled} onImport={importSpreadsheet} onRestore={restorePublishedUpdate} onReviewReject={item => setSiteConfig(current => recordEditorialDecision(current, item, 'reject'))} onBusyChange={setImportBusy}/></section></div>}
     {isEditor && addingArticles && daily && <AddArticlesDialog sections={siteConfig.sections} sources={configuredSources} customCountries={siteConfig.customCountries} existingArticles={selectedArticles} remainingSlots={100 - siteConfig.customArticles.length} onAdd={async (article, placement, body) => { if (body?.body) { try { await storeArticleBodies([body]); } catch (error) { if (!sharedEnabled) throw error; } if (sharedEnabled) { const prior = pendingBodiesRef.current?.bodies || []; pendingBodiesRef.current = { replace: false, bodies: [...new Map([...prior, body].map(item => [item.url, item])).values()] }; } } setSiteConfig(current => addCustomArticleInConfig(current, { ...article, addedBy: contributor }, placement)); setCompiledAt(new Date().toISOString()); }} onClose={() => setAddingArticles(false)}/>}
     {isEditor && editingStories && storyToMove && <MoveStoryDialog story={storyToMove} sections={siteConfig.sections} articles={displayedArticles} customCountries={siteConfig.customCountries} onMove={moveStory} onClose={() => setMoveStoryId('')}/>}

@@ -34,3 +34,8 @@ test('Gmail renders the latest saved recipient list from the published state', (
 test('Gmail refuses an edition changed since the button was pressed', () => {
   assert.throws(() => gmailMessageFromState(state, 6), /changed before email delivery/);
 });
+
+test('Gmail uses the private selected recipients when supplied', () => {
+  const message = gmailMessageFromState(state, 7, true, ['private@example.com']);
+  assert.deepEqual(message.recipients, ['private@example.com']);
+});

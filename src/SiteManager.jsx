@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useEscapeToClose } from './useEscapeToClose.js';
-import { parseGmailRecipients } from './gmailRecipients.js';
+import AddressBook from './AddressBook.jsx';
 import ScrapeLog from './ScrapeLog.jsx';
 import RejectedStories from './RejectedStories.jsx';
 import PersonalTheme from './PersonalTheme.jsx';
@@ -8,17 +8,16 @@ import { EditorAccountForm } from './EditorAccountDialog.jsx';
 import './cms.css';
 
 export const ownerTabs = ['Scope', 'Theme'];
-export const sharedTabs = ['Collect', 'Rejected', 'Sources', 'Email', 'Account'];
-const tabs = ['Scope', 'Collect', 'Rejected', 'Sources', 'Theme', 'Email', 'Account'];
+export const sharedTabs = ['Collect', 'Rejected', 'Sources', 'Address book', 'Account'];
+const tabs = ['Scope', 'Collect', 'Rejected', 'Sources', 'Theme', 'Address book', 'Account'];
 const personalTabs = new Set(['Theme', 'Account']);
 
-export default function SiteManager({ initialTab = 'Scope', isOwner = false, collectionPanel, config, setConfig, articles, baseSources, accountProfile, appearanceConfig, onAppearanceChange, onAppearanceReset, onApproveRejected, onClose }) {
+export default function SiteManager({ initialTab = 'Scope', isOwner = false, collectionPanel, config, setConfig, articles, baseSources, accountProfile, appearanceConfig, onAppearanceChange, onAppearanceReset, onApproveRejected, onRecipientsChange, onClose }) {
   useEscapeToClose('cms-title', onClose);
   const availableTabs = isOwner ? tabs : sharedTabs;
   const [tab, setTab] = useState(availableTabs.includes(initialTab) ? initialTab : availableTabs[0]);
   const [sourceSearch, setSourceSearch] = useState('');
   const [message, setMessage] = useState('');
-  const [recipientText, setRecipientText] = useState(() => (config.gmailRecipients || []).join('\n'));
   const [newSource, setNewSource] = useState({ name: '', group: 'Custom', url: '' });
   const update = patch => setConfig(current => ({ ...current, ...patch }));
   const addSource = () => {
@@ -39,7 +38,7 @@ export default function SiteManager({ initialTab = 'Scope', isOwner = false, col
           {tab === 'Scope' && isOwner && <div><h3>Coverage keywords</h3><p className="cms-help">Only the owner can edit these shared editorial rules. The native collector applies its configured rules to completed JSON.</p><div className="cms-fields"><label>Include keywords<textarea rows="4" value={config.scopeInclude} onChange={e => update({ scopeInclude: e.target.value })} placeholder="security, politics, election"/></label><label>Exclude keywords<textarea rows="4" value={config.scopeExclude} onChange={e => update({ scopeExclude: e.target.value })} placeholder="sports, entertainment, opinion"/></label></div></div>}
           {tab === 'Collect' && <>{collectionPanel}<ScrapeLog/></>}
           {tab === 'Rejected' && <RejectedStories config={config} setConfig={setConfig} publishedArticles={articles} onApprove={onApproveRejected}/>}
-          {tab === 'Email' && <div className="cms-fields"><h3>Gmail recipients</h3><p className="cms-help">The update is addressed to sitroom.github@gmail.com. Add BCC recipients below, one address per line.</p><label>BCC recipients<textarea rows="6" value={recipientText} onChange={event => setRecipientText(event.target.value)} placeholder="name@example.com"/></label><button className="cms-primary" type="button" onClick={() => { try { const recipients = parseGmailRecipients(recipientText); update({ gmailRecipients: recipients }); setRecipientText(recipients.join('\n')); setMessage('Recipient list saved. Wait for “Saved for everyone” before sending.'); } catch (error) { setMessage(error.message); } }}>Save recipients</button></div>}
+          {tab === 'Address book' && <AddressBook onSelectedChange={onRecipientsChange}/>}
           {tab === 'Account' && accountProfile && <EditorAccountForm profile={accountProfile}/>}
           {tab === 'Sources' && <div><h3>News sources</h3><p className="cms-help">Add a website to the source list. In the full app, the Node collector checks publisher feeds, pages and discovery feeds. A static site cannot start collection without the server.</p><h3>Add source</h3><div className="cms-fields"><label>Source name<input value={newSource.name} onChange={e => setNewSource(current => ({ ...current, name: e.target.value }))}/></label><label>Region or category<input value={newSource.group} onChange={e => setNewSource(current => ({ ...current, group: e.target.value }))}/></label><label>News page URL<input type="url" value={newSource.url} onChange={e => setNewSource(current => ({ ...current, url: e.target.value }))} placeholder="https://example.com/news/"/></label><button className="cms-primary" onClick={addSource}>＋ Add news source</button></div><h3>My sources ({config.customSources.length})</h3><div className="cms-source-list">{config.customSources.map(item => <div className="cms-custom-source" key={item.id}><input aria-label={`Name of ${item.name}`} value={item.name} onChange={e => setConfig(current => ({ ...current, customSources: current.customSources.map(source => source.id === item.id ? { ...source, name: e.target.value } : source) }))}/><input aria-label={`Group for ${item.name}`} value={item.group} onChange={e => setConfig(current => ({ ...current, customSources: current.customSources.map(source => source.id === item.id ? { ...source, group: e.target.value } : source) }))}/><input aria-label={`URL for ${item.name}`} type="url" value={item.url} onChange={e => setConfig(current => ({ ...current, customSources: current.customSources.map(source => source.id === item.id ? { ...source, url: e.target.value } : source) }))}/><button className="cms-danger" onClick={() => setConfig(current => ({ ...current, customSources: current.customSources.filter(source => source.id !== item.id) }))}>Remove</button></div>)}</div><h3>Provided sources</h3><input className="cms-search" value={sourceSearch} onChange={e => setSourceSearch(e.target.value)} placeholder="Search provided sources" aria-label="Search provided sources"/><div className="cms-source-list">{baseSources.filter(item => `${item.name} ${item.group}`.toLowerCase().includes(sourceSearch.toLowerCase())).map(item => <label className="cms-source-row" key={item.id}><input type="checkbox" checked={!config.hiddenSourceIds.includes(item.id)} onChange={() => toggleSource(item.id)}/><span>{item.name}<small>{item.group}</small></span></label>)}</div></div>}
           {tab === 'Sources' && <div><h3>Collection pages for provided sources</h3><p className="cms-help">Collection page changes must be added to the source catalogue before running the Node collector.</p><div className="cms-fields">{baseSources.filter(item => `${item.name} ${item.group}`.toLowerCase().includes(sourceSearch.toLowerCase())).map(item => <label key={`listing-${item.id}`}>{item.name} collection page<input type="url" value={config.sourceListingOverrides?.[item.id] ?? ''} placeholder={item.listingUrl || item.url} onChange={event => setConfig(current => ({ ...current, sourceListingOverrides: { ...current.sourceListingOverrides, [item.id]: event.target.value } }))}/></label>)}</div></div>}

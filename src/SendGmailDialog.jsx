@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { parseGmailRecipients } from './gmailRecipients.js';
 import { useEscapeToClose } from './useEscapeToClose.js';
 
-export default function SendGmailDialog({ recipients, subject, articleCount, onSave, onSend, onClose }) {
+export default function SendGmailDialog({ recipients, loading = false, subject, articleCount, onSave, onSend, onClose }) {
   const [recipientText, setRecipientText] = useState(() => recipients.join('\n'));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  useEffect(() => { if (!loading) setRecipientText(recipients.join('\n')); }, [loading]);
   useEscapeToClose('send-gmail-title', () => { if (!busy) onClose(); });
 
   async function submit(action) {
@@ -31,11 +32,12 @@ export default function SendGmailDialog({ recipients, subject, articleCount, onS
       <p><strong>Subject:</strong> {subject}</p>
       <p>{articleCount} published {articleCount === 1 ? 'story' : 'stories'} will be sent from OSCE SitRoom to <strong>sitroom.github@gmail.com</strong>.</p>
       <label htmlFor="send-gmail-recipients">BCC recipients</label>
-      <textarea id="send-gmail-recipients" rows="6" value={recipientText} onChange={event => setRecipientText(event.target.value)} placeholder="name@example.com" disabled={busy}/>
+      <textarea id="send-gmail-recipients" rows="6" value={recipientText} onChange={event => setRecipientText(event.target.value)} placeholder="name@example.com" disabled={busy || loading}/>
       <p className="send-gmail-hint">One BCC address per line. Save or Send updates the main address book for everyone.</p>
+      {loading && <p role="status">Loading saved recipients…</p>}
       {error && <p role="alert" className="add-manual-error">{error}</p>}
       {message && <p role="status">{message}</p>}
-      <div className="add-dialog-actions"><button type="button" onClick={onClose} disabled={busy}>Cancel</button><button type="button" onClick={() => submit('save')} disabled={busy}>Save recipients</button><button type="submit" onClick={() => submit('send')} disabled={busy}>{busy ? 'Working…' : 'Send'}</button></div>
+      <div className="add-dialog-actions"><button type="button" onClick={onClose} disabled={busy}>Cancel</button><button type="button" onClick={() => submit('save')} disabled={busy || loading}>Save recipients</button><button type="submit" onClick={() => submit('send')} disabled={busy || loading}>{busy ? 'Working…' : 'Send'}</button></div>
     </section>
   </div>;
 }

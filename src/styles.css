@@ -776,3 +776,13 @@
 /* Story text uses its personal reading size; country and organisation labels stay at 18 px. */
 .daily-story p,.daily-story-agency,.daily-story-date{font-size:var(--story-reading-size,16px)}
 .daily-country{font-size:18px}
+
+/* Personal reading controls and compact mobile section titles. */
+.daily-story p{line-height:var(--story-line-height,1.1)}
+.daily-story{padding-top:var(--story-spacing,6px);padding-bottom:var(--story-spacing,6px)}
+.daily-section{margin-bottom:var(--section-spacing,18px)!important}
+.daily-country{font-size:var(--country-heading-size,18px)}
+.daily-story a.daily-story-headline{color:var(--site-link,var(--site-section))}
+@media(max-width:700px){
+  .daily-section h3{font-size:clamp(14px,calc(var(--section-heading-size,26px) * .62),18px);letter-spacing:.04em;white-space:nowrap}
+}

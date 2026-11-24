@@ -15,7 +15,7 @@ TO_ADDRESS = "sitroom.github@gmail.com"
 
 def validated_recipients(data):
     recipients = data.get("recipients", [])
-    if not isinstance(recipients, list) or not 1 <= len(recipients) <= 30:
+    if not isinstance(recipients, list) or not 1 <= len(recipients) <= 400:
         raise SystemExit("The published update has no valid recipient list; no email was sent.")
     if any(not isinstance(address, str) or len(address) > 254 or "\n" in address or "\r" in address or "@" not in address for address in recipients):
         raise SystemExit("The published update has an invalid recipient; no email was sent.")

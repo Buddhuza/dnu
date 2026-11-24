@@ -8,7 +8,7 @@ const draft = {
 };
 const status = { runId: 123, checkedAt: draft.checkedAt, stories: 1 };
 
-test('autosend replaces old stories and edits while retaining section settings and the address book', () => {
+test('autosend replaces old stories and edits while retaining section settings', () => {
   const { edition, settings, bodies } = autosendEdition(draft, status, {
     gmailRecipients: ['editor@example.com'], customArticles: [{ id: 'old' }], articleEdits: { old: { title: 'Old' } },
     articleOrder: ['old'], sections: ['Eastern Europe'], customCountries: { 'Eastern Europe': ['Ukraine'] },
@@ -19,7 +19,7 @@ test('autosend replaces old stories and edits while retaining section settings a
   assert.deepEqual(settings.customArticles, []);
   assert.equal(Object.keys(settings.articleEdits).length, 0);
   assert.deepEqual(settings.articleOrder, []);
-  assert.deepEqual(settings.gmailRecipients, ['editor@example.com']);
+  assert.equal('gmailRecipients' in settings, false);
   assert.equal(settings.editorialLearning[0].title, 'Old story');
   assert.equal(bodies[0].body, 'Full article text');
 });

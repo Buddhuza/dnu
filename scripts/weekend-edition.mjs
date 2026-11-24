@@ -163,7 +163,7 @@ if (bodies.length) {
   const { error } = await client.from('dnu_bodies').upsert(bodies, { onConflict: 'url' });
   if (error) throw error;
 }
-const settings = extendSiteConfigForImportedPlacements(normalizeSiteConfig(state.settings, selection.articles), selection.articles);
+const { gmailRecipients, ...settings } = extendSiteConfigForImportedPlacements(normalizeSiteConfig(state.settings, selection.articles), selection.articles);
 const selectedIds = new Set(selection.articles.map(article => article.id));
 const newSettings = {
   ...settings, customArticles: [],

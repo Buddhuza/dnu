@@ -59,12 +59,14 @@ jobs:
         if: steps.delivery.outputs.send == 'true'
         env:
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
-          DNU_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.DNU_SUPABASE_PUBLISHABLE_KEY }}
-        run: test -n "$GMAIL_APP_PASSWORD" && test -n "$DNU_SUPABASE_PUBLISHABLE_KEY"
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: test -n "$GMAIL_APP_PASSWORD" && { test -n "$SUPABASE_SERVICE_ROLE_KEY" || test -n "$SUPABASE_ACCESS_TOKEN"; }
       - name: Render the published edition
         if: steps.delivery.outputs.send == 'true'
         env:
-          DNU_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.DNU_SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           EXPECTED_REVISION: ${{ github.event_name != 'workflow_dispatch' && 'latest' || inputs.expected_revision }}
           HEADLINE_ONLY: ${{ github.event_name != 'workflow_dispatch' && 'true' || inputs.scheduled_delivery && 'true' || inputs.headline_only && 'true' || 'false' }}
         run: node scripts/build-gmail-message.mjs "$EXPECTED_REVISION" "$HEADLINE_ONLY" "$RUNNER_TEMP/dnu-gmail-message.json"
