@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "runId": 44996201117,
-  "runUrl": "https://github.com/Buddhuza/dnu/actions/runs/44996201117",
-  "commit": "55f9e17ad7069896d8b07b5917a5837746d7e815",
-  "finishedAt": "2026-11-22T07:00:36.836Z",
-  "scheduledDate": "2026-11-22",
+  "runId": 46119142399,
+  "runUrl": "https://github.com/Buddhuza/dnu/actions/runs/46119142399",
+  "commit": "b01e875ee44b08cbbf17ec6ed151d0b8171e507d",
+  "finishedAt": "2026-11-28T07:00:39.877Z",
+  "scheduledDate": "2026-11-28",
   "result": "email_submitted",
   "steps": {
     "credentials": "success",
@@ -15,8 +15,8 @@
     "email": "success"
   },
   "draft": {
-    "checkedAt": "2026-11-22T06:05:29.372Z",
-    "stories": 61,
-    "runId": 44992138481
+    "checkedAt": "2026-11-28T06:05:29.095Z",
+    "stories": 74,
+    "runId": 46114963334
   }
 }
