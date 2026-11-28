@@ -1,5 +1,7 @@
 # DNU
 
+To work on this project from another ChatGPT account, follow [the second-account setup guide](docs/second-chatgpt-account.md). It lists the required access and environment binding names without exposing credentials.
+
 ## Project instructions
 
 The versioned [DNU rulebook](public/dnu-rules.md) is the single editable Markdown file for standing editorial, site design, export and collection workflow rules. It is publicly readable at `https://buddhuza.github.io/dnu/dnu-rules.md`, without a link in the public site header. To edit it, open the file on GitHub, click the pencil, and commit to `main`. The rules file is then republished to GitHub Pages. A written rule does not by itself enforce behavior: update and deploy the relevant code or collection workflow too. The older `editorial-policy.md` and `site-specification.md` URLs point to the rulebook.
