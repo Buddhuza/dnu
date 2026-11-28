@@ -4,6 +4,11 @@ const githubApi = 'https://api.github.com/repos/Buddhuza/dnu';
 const startDate = '2026-11-20';
 const testDate = '2026-11-20';
 const secondTestKey = '2026-11-20-2300';
+// Vienna column of OSCE Staff Circular 01/2026, "Official Holidays in 2027".
+const holidays = new Set([
+  '2027-01-01', '2027-03-09', '2027-03-22', '2027-03-26',
+  '2027-03-29', '2027-05-03', '2027-05-17', '2027-10-26', '2027-12-24'
+]);
 
 function sameSecret(left: string, right: string) {
   if (!left || !right || left.length !== right.length) return false;
@@ -39,13 +44,12 @@ Deno.serve(async request => {
       history = JSON.parse(atob(String(payload.content || '').replace(/\s/g, '')));
     } else if (record.status !== 404) return reply(502, { error: `Could not check AUTOSEND history (HTTP ${record.status}).` });
     const current = viennaNow();
-    const holidays: string[] = []; // Add the owner's holiday dates here when supplied.
     let due = '';
     for (let day = new Date(`${startDate}T12:00:00Z`); day.toISOString().slice(0, 10) <= current.date; day.setUTCDate(day.getUTCDate() + 1)) {
       const date = day.toISOString().slice(0, 10);
       if (date === testDate && date !== current.date) continue;
       const weekday = day.getUTCDay();
-      if (date !== testDate && weekday !== 0 && weekday !== 6 && !holidays.includes(date)) continue;
+      if (date !== testDate && weekday !== 0 && weekday !== 6 && !holidays.has(date)) continue;
       if (history[date] === 'email_submitted') continue;
       if (date === current.date && current.time < (date === testDate ? '22:15' : '08:00')) continue;
       due = date;
